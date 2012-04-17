@@ -3,8 +3,8 @@
  *
  *  FVAL PHP Framework for Web Applications
  *
- *  \version 1.0.0
- *  Copyright (c) 2007-2009 FVAL Consultoria e Informática Ltda.
+ *  \version 1.0.1
+ *  Copyright (c) 2007-2010 FVAL Consultoria e Informática Ltda.
  *
  *  http://www.fval.com.br
  *
@@ -12,29 +12,6 @@
  *  \author Lucas Cardozo - lucas.cardozo@gmail.com
  *
  */
-
-/*  ------------------------------------------------------------------------------------ --- -- -
-	FVAL PHP Framework for Web Sites
-
-	Copyright (c) 2007-2009 FVAL - Consultoria e Informática Ltda.
-	Copyright (C) 2009 Fernando Val
-	Copyright (C) 2009 Lucas Cardozo
-
-	http://www.fval.com.br
-
-	Developer team:
-		Fernando Val  - fernando.val@gmail.com
-		Lucas Cardozo - lucas.cardozo@gmail.com
-
-	Framework version:
-		1.0.0
-
-	Script version:
-		0.9.6
-
-	This script:
-		Framework startup script
-	------------------------------------------------------------------------------------ --- -- - */
 
 $FWGV_START_TIME = microtime(true); // Memoriza a hora do início do processamento
 
@@ -81,7 +58,7 @@ if (Kernel::get_conf('system', 'development')) {
 // [pt-br] Envia o charset
 header('Content-Type: text/html; charset='.$GLOBALS['SYSTEM']['CHARSET'], true);
 
-ini_set('zlib.output_compression', 'on');
+//ini_set('zlib.output_compression', 'on');
 ini_set('mbstring.internal_encoding', $GLOBALS['SYSTEM']['CHARSET']);
 ini_set('default_charset', $GLOBALS['SYSTEM']['CHARSET']);
 

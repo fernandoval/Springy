@@ -14,6 +14,9 @@
 	Framework Update History
 	------------------------------------------------------------------------------------ --- -- - */
 
+	1.0.1
+		- Atualizadas as classes Smarty e ADODB;
+		- Diretório system movido para dentro de www por padrão.
+		
 	1.0.0
-		- [pt-br] Versão inicial do framework confeccionada por Fernando Val com auxílio de
-			Lucas Cardozo
+		- Versão inicial do framework confeccionada por Fernando Val com auxílio de Lucas Cardozo
