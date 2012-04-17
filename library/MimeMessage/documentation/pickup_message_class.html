@@ -1,0 +1,170 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>Class: MIME E-mail message composing and sending using a Windows mail
+		server pickup directory</title>
+</head>
+<body>
+<center><h1>Class: MIME E-mail message composing and sending using a Windows mail
+		server pickup directory</h1></center>
+<hr />
+<ul>
+<p><b>Version:</b> <tt>@(#) $Id: pickup_message.php,v 1.3 2004/09/22 21:21:31 mlemos Exp $</tt></p>
+<h2><a name="table_of_contents">Contents</a></h2>
+<ul>
+<li><a href="#2.1.1">Summary</a></li>
+<ul>
+<li><a href="#3.2.0">Name</a></li>
+<li><a href="#3.2.0.0">Author</a></li>
+<li><a href="#3.2.0.1">Copyright</a></li>
+<li><a href="#3.2.0.2">Version</a></li>
+<li><a href="#3.2.0.3">Parent classes</a></li>
+<li><a href="#4.2.0">Purpose</a></li>
+<li><a href="#4.2.0.0">Usage</a></li>
+</ul>
+<li><a href="#5.1.1">Variables</a></li>
+<ul>
+<li><a href="#6.2.3">mailroot_directory</a></li>
+<li><a href="#6.2.4">mailer_delivery</a></li>
+</ul>
+<li><a href="#7.1.1">Inherited variables</a></li>
+<li><a href="#9.1.1">Functions</a></li>
+<li><a href="#11.1.1">Inherited functions</a></li>
+</ul>
+<p><a href="#table_of_contents">Top of the table of contents</a></p>
+</ul>
+<hr />
+<ul>
+<h2><li><a name="2.1.1">Summary</a></li></h2>
+<ul>
+<h3><a name="3.2.0">Name</a></h3>
+<p>MIME E-mail message composing and sending using a Windows mail server pickup directory</p>
+<h3><a name="3.2.0.0">Author</a></h3>
+<p>Manuel Lemos (<a href="mailto:mlemos-at-acm.org">mlemos-at-acm.org</a>)</p>
+<h3><a name="3.2.0.1">Copyright</a></h3>
+<p>Copyright &iquest; (C) Manuel Lemos 1999-2004</p>
+<h3><a name="3.2.0.2">Version</a></h3>
+<p>@(#) $Id: pickup_message.php,v 1.3 2004/09/22 21:21:31 mlemos Exp $</p>
+<h3><a name="3.2.0.3">Parent classes</a></h3>
+<ul>
+<p><li>MIME E-mail message composing and sending</li></p>
+<p><b>Version:</b> <tt>@(#) $Id: email_message.php,v 1.53 2004/09/14 03:01:04 mlemos Exp $</tt></p>
+</ul>
+<h3><a name="4.2.0">Purpose</a></h3>
+<p>Implement an alternative message delivery method by dropping messages in a Windows mail server pickup directory, thus overriding the method of using the PHP <tt>mail()</tt> function implemented by the base class.</p>
+<p> It is meant to be used by on Windows 2000 or later with IIS or Exchange mail servers because since this release the pickup directory started being supported.</p>
+<p> It is much faster than relaying messages to an SMTP server because it works simply by storing messages in a special directory. This delivery method does not have the overhead of the SMTP protocol. The class does not need to wait for the mail server to pickup the messages and deliver them to the destination recipients. Therefore, it is recommended for bulk mailing.</p>
+<h3><a name="4.2.0.0">Usage</a></h3>
+<p>This class should be used exactly the same way as the base class for composing and sending messages. Just create a new object of this class as follows and set only the necessary variables to configure details of the message pickup.</p>
+<p> <tt>require('email_message.php');<br />
+ require('pickup_message.php');<br />
+ <br />
+ $message_object = new pickup_message_class;<br />
+</tt></p>
+<p> <b>- Requirements</b></p>
+<p> You need to use at least Windows 2000 with IIS mail server or Exchange 2000 or later.</p>
+<p> The PHP script using this class must also run in the same Windows machine on which the mail server is running. The current user must have sufficient privileges to write to the mail server pickup directory.</p>
+<p> <b>- Pickup directory</b></p>
+<p> Before sending a message you need set the <tt><a href="#variable_mailroot_directory">mailroot_directory</a></tt> variable to specify the path of the mail server directory, so the class knows where the messages must be dropped for subsequent pickup and delivery by the mail server.</p>
+<p><a href="#table_of_contents">Table of contents</a></p>
+</ul>
+</ul>
+<hr />
+<ul>
+<h2><li><a name="variables"></a><a name="5.1.1">Variables</a></li></h2>
+<ul>
+<li><tt><a href="#variable_mailroot_directory">mailroot_directory</a></tt></li><br />
+<li><tt><a href="#variable_mailer_delivery">mailer_delivery</a></tt></li><br />
+<p><a href="#table_of_contents">Table of contents</a></p>
+<h3><a name="variable_mailroot_directory"></a><li><a name="6.2.3">mailroot_directory</a></li></h3>
+<h3>Type</h3>
+<p><tt><i>string</i></tt></p>
+<h3>Default value</h3>
+<p><tt>''</tt></p>
+<h3>Purpose</h3>
+<p>Specify the path of the directory where the <tt>Pickup</tt> sub-directory is located. This sub-directory is used by the mail server to pickup the messages to deliver.</p>
+<h3>Usage</h3>
+<p>If this variable is set to an empty string, the class attempts to locate the directory automatically checking the registry.</p>
+<p> If the class is not able to determine the mailroot directory path and you are certain that IIS or Exchange programs are installed in your Windows 2000 or later machine, set this variable to the correct path of your mail server root directory.</p>
+<p> Usually it is located inside the <tt>Inetpub</tt> directory of IIS or Exchange installation path, but it may also be located in a slightly different path.</p>
+<h3>Example</h3>
+<p><tt>'C:\\Inetpub\\mailroot\\'</tt></p>
+<p><a href="#variables">Variables</a></p>
+<h3><a name="variable_mailer_delivery"></a><li><a name="6.2.4">mailer_delivery</a></li></h3>
+<h3>Type</h3>
+<p><tt><i>string</i></tt></p>
+<h3>Default value</h3>
+<p><tt>'pickup $Revision: 1.3 $'</tt></p>
+<h3>Purpose</h3>
+<p>Specify the text that is used to identify the mail delivery class or sub-class. This text is appended to the <tt>X-Mailer</tt> header text defined by the mailer variable.</p>
+<h3>Usage</h3>
+<p>Do not change this variable.</p>
+<p><a href="#variables">Variables</a></p>
+<p><a href="#table_of_contents">Table of contents</a></p>
+</ul>
+</ul>
+<ul>
+<h2><li><a name="functions"></a><a name="7.1.1">Inherited variables</a></li></h2>
+<ul>
+<li>email_regular_expression</li><br />
+<li>mailer</li><br />
+<li>default_charset</li><br />
+<li>line_quote_prefix</li><br />
+<li>file_buffer_length</li><br />
+<li>debug</li><br />
+<li>cache_body</li><br />
+<li>error</li><br />
+<p><a href="#table_of_contents">Table of contents</a></p>
+</ul>
+</ul>
+<hr />
+<ul>
+<h2><li><a name="functions"></a><a name="9.1.1">Functions</a></li></h2>
+<ul>
+<p><a href="#table_of_contents">Table of contents</a></p>
+<p><a href="#table_of_contents">Table of contents</a></p>
+</ul>
+</ul>
+<ul>
+<h2><li><a name="functions"></a><a name="11.1.1">Inherited functions</a></li></h2>
+<ul>
+<li>ValidateEmailAddress</li><br />
+<li>WrapText</li><br />
+<li>QuoteText</li><br />
+<li>SetHeader</li><br />
+<li>SetEncodedHeader</li><br />
+<li>SetEncodedEmailHeader</li><br />
+<li>SetMultipleEncodedEmailHeader</li><br />
+<li>ResetMessage</li><br />
+<li>AddPart</li><br />
+<li>ReplacePart</li><br />
+<li>CreatePlainTextPart</li><br />
+<li>AddPlainTextPart</li><br />
+<li>CreateQuotedPrintableTextPart</li><br />
+<li>AddQuotedPrintableTextPart</li><br />
+<li>CreateHTMLPart</li><br />
+<li>AddHTMLPart</li><br />
+<li>CreateQuotedPrintableHTMLPart</li><br />
+<li>AddQuotedPrintableHTMLPart</li><br />
+<li>CreateFilePart</li><br />
+<li>AddFilePart</li><br />
+<li>CreateMessagePart</li><br />
+<li>AddMessagePart</li><br />
+<li>CreateAlternativeMultipart</li><br />
+<li>AddAlternativeMultipart</li><br />
+<li>CreateRelatedMultipart</li><br />
+<li>AddRelatedMultipart</li><br />
+<li>CreateMixedMultipart</li><br />
+<li>AddMixedMultipart</li><br />
+<li>GetPartContentID</li><br />
+<li>GetDataURL</li><br />
+<li>Send</li><br />
+<li>Mail</li><br />
+<p><a href="#table_of_contents">Table of contents</a></p>
+</ul>
+</ul>
+
+<hr />
+<address>Manuel Lemos (<a href="mailto:mlemos-at-acm.org">mlemos-at-acm.org</a>)</address>
+</body>
+</html>

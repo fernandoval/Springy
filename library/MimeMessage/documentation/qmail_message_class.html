@@ -1,0 +1,156 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>Class: MIME E-mail message composing and sending using Qmail</title>
+</head>
+<body>
+<center><h1>Class: MIME E-mail message composing and sending using Qmail</h1></center>
+<hr />
+<ul>
+<p><b>Version:</b> <tt>@(#) $Id: qmail_message.php,v 1.9 2004/07/08 07:18:00 mlemos Exp $</tt></p>
+<h2><a name="table_of_contents">Contents</a></h2>
+<ul>
+<li><a href="#2.1.1">Summary</a></li>
+<ul>
+<li><a href="#3.2.0">Name</a></li>
+<li><a href="#3.2.0.0">Author</a></li>
+<li><a href="#3.2.0.1">Copyright</a></li>
+<li><a href="#3.2.0.2">Version</a></li>
+<li><a href="#3.2.0.3">Parent classes</a></li>
+<li><a href="#4.2.0">Purpose</a></li>
+<li><a href="#4.2.0.0">Usage</a></li>
+</ul>
+<li><a href="#5.1.1">Variables</a></li>
+<ul>
+<li><a href="#6.2.3">qmail_path</a></li>
+<li><a href="#6.2.4">mailer_delivery</a></li>
+</ul>
+<li><a href="#7.1.1">Inherited variables</a></li>
+<li><a href="#9.1.1">Functions</a></li>
+<li><a href="#11.1.1">Inherited functions</a></li>
+</ul>
+<p><a href="#table_of_contents">Top of the table of contents</a></p>
+</ul>
+<hr />
+<ul>
+<h2><li><a name="2.1.1">Summary</a></li></h2>
+<ul>
+<h3><a name="3.2.0">Name</a></h3>
+<p>MIME E-mail message composing and sending using Qmail</p>
+<h3><a name="3.2.0.0">Author</a></h3>
+<p>Manuel Lemos (<a href="mailto:mlemos-at-acm.org">mlemos-at-acm.org</a>)</p>
+<h3><a name="3.2.0.1">Copyright</a></h3>
+<p>Copyright &copy; (C) Manuel Lemos 2001-2004</p>
+<h3><a name="3.2.0.2">Version</a></h3>
+<p>@(#) $Id: qmail_message.php,v 1.9 2004/07/08 07:18:00 mlemos Exp $</p>
+<h3><a name="3.2.0.3">Parent classes</a></h3>
+<ul>
+<p><li>MIME E-mail message composing and sending</li></p>
+<p><b>Version:</b> <tt>@(#) $Id: email_message.php,v 1.45 2004/07/08 03:37:48 mlemos Exp $</tt></p>
+</ul>
+<h3><a name="4.2.0">Purpose</a></h3>
+<p>Implement an alternative message delivery method using <a href="http://www.qmail.org/">Qmail</a> MTA (Mail Transfer Agent).</p>
+<h3><a name="4.2.0.0">Usage</a></h3>
+<p>This class should be used exactly the same way as the base class for composing and sending messages. Just create a new object of this class as follows and set only the necessary variables to configure details of delivery using Qmail.</p>
+<p> <tt>require('email_message.php');<br />
+ require('qmail_message.php');<br />
+ <br />
+ $message_object = new qmail_message_class;<br />
+</tt></p>
+<p> </p>
+<p><a href="#table_of_contents">Table of contents</a></p>
+</ul>
+</ul>
+<hr />
+<ul>
+<h2><li><a name="variables"></a><a name="5.1.1">Variables</a></li></h2>
+<ul>
+<li><tt><a href="#variable_qmail_path">qmail_path</a></tt></li><br />
+<li><tt><a href="#variable_mailer_delivery">mailer_delivery</a></tt></li><br />
+<p><a href="#table_of_contents">Table of contents</a></p>
+<h3><a name="variable_qmail_path"></a><li><a name="6.2.3">qmail_path</a></li></h3>
+<h3>Type</h3>
+<p><tt><i>string</i></tt></p>
+<h3>Default value</h3>
+<p><tt>'/var/qmail/bin'</tt></p>
+<h3>Purpose</h3>
+<p>Specifying the path of the Qmail programs.</p>
+<h3>Usage</h3>
+<p>Usually the default is correct.</p>
+<p><a href="#variables">Variables</a></p>
+<h3><a name="variable_mailer_delivery"></a><li><a name="6.2.4">mailer_delivery</a></li></h3>
+<h3>Type</h3>
+<p><tt><i>string</i></tt></p>
+<h3>Default value</h3>
+<p><tt>'qmail $Revision: 1.9 $'</tt></p>
+<h3>Purpose</h3>
+<p>Specify the text that is used to identify the mail delivery class or sub-class. This text is appended to the <tt>X-Mailer</tt> header text defined by the mailer variable.</p>
+<h3>Usage</h3>
+<p>Do not change this variable.</p>
+<p><a href="#variables">Variables</a></p>
+<p><a href="#table_of_contents">Table of contents</a></p>
+</ul>
+</ul>
+<ul>
+<h2><li><a name="functions"></a><a name="7.1.1">Inherited variables</a></li></h2>
+<ul>
+<li>email_regular_expression</li><br />
+<li>mailer</li><br />
+<li>default_charset</li><br />
+<li>line_quote_prefix</li><br />
+<li>file_buffer_length</li><br />
+<li>debug</li><br />
+<li>cache_body</li><br />
+<li>error</li><br />
+<p><a href="#table_of_contents">Table of contents</a></p>
+</ul>
+</ul>
+<hr />
+<ul>
+<h2><li><a name="functions"></a><a name="9.1.1">Functions</a></li></h2>
+<ul>
+<p><a href="#table_of_contents">Table of contents</a></p>
+<p><a href="#table_of_contents">Table of contents</a></p>
+</ul>
+</ul>
+<ul>
+<h2><li><a name="functions"></a><a name="11.1.1">Inherited functions</a></li></h2>
+<ul>
+<li>ValidateEmailAddress</li><br />
+<li>WrapText</li><br />
+<li>QuoteText</li><br />
+<li>SetHeader</li><br />
+<li>SetEncodedHeader</li><br />
+<li>SetEncodedEmailHeader</li><br />
+<li>ResetMessage</li><br />
+<li>AddPart</li><br />
+<li>ReplacePart</li><br />
+<li>CreatePlainTextPart</li><br />
+<li>AddPlainTextPart</li><br />
+<li>CreateQuotedPrintableTextPart</li><br />
+<li>AddQuotedPrintableTextPart</li><br />
+<li>CreateHTMLPart</li><br />
+<li>AddHTMLPart</li><br />
+<li>CreateQuotedPrintableHTMLPart</li><br />
+<li>AddQuotedPrintableHTMLPart</li><br />
+<li>CreateFilePart</li><br />
+<li>AddFilePart</li><br />
+<li>CreateMessagePart</li><br />
+<li>AddMessagePart</li><br />
+<li>CreateAlternativeMultipart</li><br />
+<li>AddAlternativeMultipart</li><br />
+<li>CreateRelatedMultipart</li><br />
+<li>AddRelatedMultipart</li><br />
+<li>CreateMixedMultipart</li><br />
+<li>AddMixedMultipart</li><br />
+<li>GetDataURL</li><br />
+<li>Send</li><br />
+<li>Mail</li><br />
+<p><a href="#table_of_contents">Table of contents</a></p>
+</ul>
+</ul>
+
+<hr />
+<address>Manuel Lemos (<a href="mailto:mlemos-at-acm.org">mlemos-at-acm.org</a>)</address>
+</body>
+</html>

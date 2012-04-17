@@ -1,0 +1,929 @@
+<html>
+<head>
+<title>anyDB Manual</title>
+<style type="text/css">
+   .new, .update {
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      margin-left: 10px;
+      padding-left: 2px;
+      padding-right: 2px;
+      background: black;
+      color: white;
+      font-weight: bold;
+      font-size: 8pt;
+      }
+</style>
+</head>
+
+<body>
+<font face='arial'>
+<!---------------------------------------------------->
+
+<a name="top" />
+<h2>anyDB</h2>
+
+Class class for easy and unified database access.
+<p>
+<!---------------------------------------------------->
+<hr>
+
+<h3>Content</h3>
+<ol>
+<li><a href="#scope">Scope</a><br>
+<li><a href="#features">Features</a><br>
+<li><a href="#usage">Usage/Examples</a><br>
+    <ul>
+    <li><a href="#ex1">Connecting and disconnecting</a><br>
+    <li><a href="#ex19">Submit a query</a><br>
+    <li><a href="#ex2">Get the next result</a><br>
+    <li><a href="#ex3">Get the next result and displaying it in a table</a><br>
+    <li><a href="#ex4">Get the next results in a numeric array</a><br>
+    <li><a href="#ex5">Get the next results as an array or an object</a><span class="update">update</span><br>
+    <li><a href="#ex6">Get all results</a><br>
+    <li><a href="#ex7">Get all results with execute()</a><br>
+    <li><a href="#ex8">Dump all results</a><br>
+    <li><a href="#ex9">Get one result column</a><br>
+    <li><a href="#ex10">Dump one result column</a><br>
+    <li><a href="#ex11">Dump one result column in a Selectbox</a><br>
+    <li><a href="#ex20">Set the submit value for a Selectbox</a><span class="new">new</span><br>
+    <li><a href="#ex21">Specify your result array index</a><span class="new">new</span><br>
+    <li><a href="#ex12">Get one result value</a><span class="update">update</span><br>
+    <li><a href="#ex13">Insert data into the database</a><br>
+    <li><a href="#ex22">Get the ID of the last inserted dataset</a><span class="new">new</span><br>
+    <li><a href="#ex23">Check for data in the database</a><span class="new">new</span><br>
+    <li><a href="#ex24">Connect to another database</a><span class="new">new</span><br>
+    <li><a href="#ex25">Make data ready for submission</a><span class="update">update</span><br>
+    <li>More about errors</li>
+    <li>getCount, getMax, getMin</li>
+    <li>num and affected rows</li>
+    <li><a href="#ex14">Build a paging mechanism</a><br>
+    <li><a href="#ex16">Get table names</a><br>
+    <li><a href="#ex17">Export table data to csv</a><br>
+    <li><a href="#ex18">Export database data to sql</a><br>
+
+    <li><a href="#ex15">How to use QueryHelper</a><br>
+    </ul>
+<li><a href="#api">Interface</a><br>
+<li><a href="#notes">Notes</a><br>
+<li><a href="#history">History/Changes</a><br>
+</ol>
+<!---------------------------------------------------->
+<hr>
+
+<a name="scope">
+<h3>1. Scope</h3>
+</a>
+<div align=right><font size=-2><a href="#top">to top</a></font></div>
+
+If you believe that database abstraction is a good thing, but you don't want
+to join the religous fights about the best one out there, then we have
+a common interest. 
+<p>
+This abstract wrapper class provides easy and simple class methods to access
+the most important db function.<br> 
+Classes implementing the functionality for native PHP functions, PEAR, 
+PHPLIB, ADOdb and METABASE enables you to switch between these db abstraction 
+layers by changing only a single line of code.
+<p>
+Now you are able to use a unifed abstraction layer for database access and 
+switch between the underlaying layers.
+
+<!---------------------------------------------------->
+<hr>
+<a name="features">
+<h3>2. Features</h3>
+</a>
+<div align=right><font size=-2><a href="#top">to top</a></font></div>
+<ul>
+   <li>Can access MYSQL, POSTGRESQL, SQLITE and ODBC databases</li>
+   <li>Works with php4 and php5</li>
+   <li>Unified interface for different databases</li>
+   <li>A very light and small interface - less code to write</li>
+   <li>Query results can be single values, arrays or objects</li>
+   <li>Optional helper classes provide additional functionality, like paging, generating form elements, etc.</li>
+</ul>
+<br>
+
+Download the latest version at <a href="http://lensphp.sourceforge.net">sourceforge.net</a>, <a href="http://lensphp.sourceforge.net">phpclasses.org</a>
+
+<p>
+<!------ Start of HTML Code ------->
+
+<table border="1" cellpadding="1" cellspacing="0" bordercolor="#000000">
+<form action="http://www.hotscripts.com/cgi-bin/rate.cgi" method="POST">
+<tr>
+<td>
+<table width="100%" border="0" cellspacing="0"  cellpadding="10">
+<tr>
+<td>Rate this script @ <a href="http://www.hotscripts.com">www.hoscripts.com</a>
+<input type="hidden" name="ID" value="18702">
+<input type="hidden" name="external" value="1"></td>
+<td><select name="rate" size="1">
+<option value="5" selected>Excellent!</option>
+<option value="4">Very Good</option>
+<option value="3">Good</option>
+<option value="2">Fair</option>
+<option value="1">Poor</option>
+</select>
+<input name="submit" type="submit" value="Vote"> </td>
+
+</tr>
+</table></td>
+</tr></form>
+</table>
+<!------ End of HTML Code ------->
+</ul>
+
+
+<!---------------------------------------------------->
+<hr>
+
+<a name="usage">
+<h3>3. Usage</h3>
+</a>
+<div align=right><font size=-2><a href="#top">to top</a></font></div>
+
+The following examples use a database table called 'users' containing the following data:
+<p>
+<table border=1>
+<tr><th>id</th><th>name</th><th>email</th></tr>
+<tr><td>1</td><td>peter</td><td>peter@peter.de</td></tr>
+<tr><td>2</td><td>uschi</td><td>uschi@uschi.de</td></tr>
+</table>
+<br>
+ID is the primary key of this table.
+
+<a name="ex1">
+<h4>Connecting and Disconnecting</h4>
+</a>
+<div align=right><font size=-2><a href="#top">to top</a></font></div>
+
+<code><font color="#000000">
+<font color="#0000CC">
+<br /></font><font color="#006600">require_once&nbsp;</font><font color="#CC0000">'../anyDB.php'</font><font color="#006600">;
+<br />require_once&nbsp;</font><font color="#CC0000">'../addon/DBHelper.php'</font><font color="#006600">;
+<br />require_once&nbsp;</font><font color="#CC0000">'../addon/QueryHelper.php'</font><font color="#006600">;
+<br />
+<br /></font><font color="#0000CC">$database&nbsp;</font><font color="#006600">=&nbsp;</font><font color="#CC0000">'lens'</font><font color="#006600">;
+<br /></font><font color="#0000CC">$host&nbsp;</font><font color="#006600">=&nbsp;</font><font color="#CC0000">'localhost'</font><font color="#006600">;
+<br /></font><font color="#0000CC">$user&nbsp;</font><font color="#006600">=&nbsp;</font><font color="#CC0000">''</font><font color="#006600">;
+<br /></font><font color="#0000CC">$password&nbsp;</font><font color="#006600">=&nbsp;</font><font color="#CC0000">''</font><font color="#006600">;
+<br /></font><font color="#0000CC">$dbType&nbsp;</font><font color="#006600">=&nbsp;</font><font color="#CC0000">'mysql'</font><font color="#006600">;
+<br /></font><font color="#0000CC">$persistent&nbsp;</font><font color="#006600">=&nbsp;</font><font color="#0000CC">false</font><font color="#006600">;
+<br />
+<br /></font><font color="#FF9900">// create a new db layer
+<br /></font><font color="#0000CC">$db&nbsp;</font><font color="#006600">=&nbsp;</font><font color="#0000CC">anyDB</font><font color="#006600">::</font><font color="#0000CC">getLayer</font><font color="#006600">(</font><font color="#CC0000">'MYSQL'</font><font color="#006600">,</font><font color="#CC0000">''</font><font color="#006600">,&nbsp;</font><font color="#0000CC">$dbType</font><font color="#006600">);
+<br />&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#FF9900">//$db = anyDB::getLayer('POSTGRESQL', '', 'pgsql');
+<br />&nbsp;&nbsp;&nbsp;&nbsp;//$db = anyDB::getLayer('SQLITE', '', 'sqlite');
+<br />&nbsp;&nbsp;&nbsp;&nbsp;//$db = anyDB::getLayer('DBX', '../../../inc/dbx/', 'dbx');
+<br />
+<br />&nbsp;&nbsp;&nbsp;&nbsp;//$db = anyDB::getLayer('PEAR', 'c:/php4/pear/', $dbType);
+<br />&nbsp;&nbsp;&nbsp;&nbsp;//$db = anyDB::getLayer('PHPLIB', '../../../inc/phplib-7.2d/', $dbType);
+<br />&nbsp;&nbsp;&nbsp;&nbsp;//$db = anyDB::getLayer('METABASE', '../../../inc/metabase/', $dbType);
+<br />&nbsp;&nbsp;&nbsp;&nbsp;//$db = anyDB::getLayer('ADODB', '../../../inc/adodb/', $dbType);
+<br />
+<br />//connect to db
+<br /></font><font color="#0000CC">$db</font><font color="#006600">-&gt;</font><font color="#0000CC">connect</font><font color="#006600">(</font><font color="#0000CC">$host</font><font color="#006600">,&nbsp;</font><font color="#0000CC">$database</font><font color="#006600">,&nbsp;</font><font color="#0000CC">$user</font><font color="#006600">,&nbsp;</font><font color="#0000CC">$password</font><font color="#006600">,&nbsp;</font><font color="#0000CC">$persistent</font><font color="#006600">);
+<br />
+<br /></font><font color="#FF9900">// do something here
+<br />
+<br /></font><font color="#0000CC">$db</font><font color="#006600">-&gt;</font><font color="#0000CC">free</font><font color="#006600">();
+<br /></font><font color="#0000CC">$db</font><font color="#006600">-&gt;</font><font color="#0000CC">disconnect</font><font color="#006600">();
+<br />
+<br />echo&nbsp;</font><font color="#0000CC">$db</font><font color="#006600">-&gt;</font><font color="#0000CC">error</font><font color="#006600">;
+<br /></font><font color="#0000CC"></font>
+</font>
+</code>
+<p>
+The 'mysql' database layer is selected and an database object is returned. In the commented lines all possible db layers are listed.
+<br>With PEAR, PHPLIB, METABASE and ADODB you can access different types of databases, thats why you have to provide a $dbType. The apropriate type is explained in their documentation.
+
+
+<!---------------------------------------------------->
+<hr>
+<a name="ex19">
+<h4>Submit a query</h4>
+</a>
+<div align=right><font size=-2><a href="#top">to top</a></font></div>
+
+<code><font color="#000000">
+<font color="#0000CC">
+<br /></font><font color="#FF9900">// submit a query
+<br /></font><font color="#006600">if&nbsp;(</font><font color="#0000CC">$db</font><font color="#006600">-&gt;</font><font color="#0000CC">query</font><font color="#006600">(</font><font color="#CC0000">"SELECT name, email FROM users where id=2"</font><font color="#006600">))&nbsp;{
+<br />&nbsp;&nbsp;&nbsp;&nbsp;echo&nbsp;</font><font color="#CC0000">'OK!'</font><font color="#006600">;
+<br />}&nbsp;else&nbsp;{
+<br />&nbsp;&nbsp;&nbsp;&nbsp;echo&nbsp;</font><font color="#0000CC">$db</font><font color="#006600">-&gt;</font><font color="#0000CC">error</font><font color="#006600">;
+<br />}
+<br /></font><font color="#0000CC"></font>
+</font>
+</code>
+<p>
+The query() function will submit a sql query to the database. It will return TRUE upon success otherwise FALSE. 
+<br>If a function returned FALSE, most likely an error occured and the most recent error string can be found in the $error variable. 
+<br>All functions of this class will return FALSE in case of an error!
+
+
+<!---------------------------------------------------->
+<hr>
+<a name="ex2">
+<h4>Get the next result</h4>
+</a>
+<div align=right><font size=-2><a href="#top">to top</a></font></div>
+
+<code><font color="#000000">
+<font color="#0000CC">
+<br /></font><font color="#FF9900">// get the next result set
+<br /></font><font color="#006600">if&nbsp;(</font><font color="#0000CC">$db</font><font color="#006600">-&gt;</font><font color="#0000CC">query</font><font color="#006600">(</font><font color="#CC0000">"SELECT name, email FROM users where id=2"</font><font color="#006600">))&nbsp;{
+<br />&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#0000CC">$res&nbsp;</font><font color="#006600">=&nbsp;</font><font color="#0000CC">$db</font><font color="#006600">-&gt;</font><font color="#0000CC">getNext</font><font color="#006600">();
+<br />&nbsp;&nbsp;&nbsp;&nbsp;echo&nbsp;</font><font color="#0000CC">implode</font><font color="#006600">(</font><font color="#CC0000">' - '</font><font color="#006600">,&nbsp;</font><font color="#0000CC">$res</font><font color="#006600">)&nbsp;.&nbsp;</font><font color="#CC0000">'&lt;br&gt;'</font><font color="#006600">;
+<br />}&nbsp;else&nbsp;{
+<br />&nbsp;&nbsp;&nbsp;&nbsp;echo&nbsp;</font><font color="#0000CC">$db</font><font color="#006600">-&gt;</font><font color="#0000CC">error</font><font color="#006600">;
+<br />}
+<br /></font><font color="#0000CC"></font>
+</font>
+</code>
+<p>
+
+<b>Output:</b><br>
+uschi - uschi@uschi.de<br>
+<p>
+getNext() returns the next row from the result set. If no rows are available it will return FALSE.
+
+<!---------------------------------------------------->
+<hr>
+<a name="ex3">
+<h4>Get the next result and displaying it in a table</h4>
+</a>
+<div align=right><font size=-2><a href="#top">to top</a></font></div>
+
+<code><font color="#000000">
+<font color="#0000CC">
+<br /></font><font color="#FF9900">// get the next result and put it in a html table
+<br /></font><font color="#006600">if&nbsp;(</font><font color="#0000CC">$db</font><font color="#006600">-&gt;</font><font color="#0000CC">query</font><font color="#006600">(</font><font color="#CC0000">"SELECT name, email FROM users where id=2"</font><font color="#006600">))&nbsp;{
+<br />&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#0000CC">$res&nbsp;</font><font color="#006600">=&nbsp;</font><font color="#0000CC">$db</font><font color="#006600">-&gt;</font><font color="#0000CC">getNext</font><font color="#006600">();
+<br />&nbsp;&nbsp;&nbsp;&nbsp;echo&nbsp;</font><font color="#0000CC">DBHelper</font><font color="#006600">::</font><font color="#0000CC">dumpNext</font><font color="#006600">(</font><font color="#0000CC">$res</font><font color="#006600">,&nbsp;</font><font color="#0000CC">true</font><font color="#006600">);
+<br />}&nbsp;else&nbsp;{
+<br />&nbsp;&nbsp;&nbsp;&nbsp;echo&nbsp;</font><font color="#0000CC">$db</font><font color="#006600">-&gt;</font><font color="#0000CC">error</font><font color="#006600">;
+<br />}
+<br /></font><font color="#0000CC"></font>
+</font>
+</code>
+<p>
+
+<b>Output:</b><br>
+<table border=1>
+<tr>
+	<th>name</th><td>uschi</td>
+</tr>
+<tr>
+	<th>email</th><td>uschi@uschi.de</td>
+</tr>
+</table>
+<p>
+The DBHelper class contains different functions for displaying data as HTML.<br>
+dumpNext() will display a result row in a table and can optionally display a (user definable) header.
+<!---------------------------------------------------->
+<hr>
+<a name="ex4">
+<h4>Get the next results in a numeric array</h4>
+</a>
+<div align=right><font size=-2><a href="#top">to top</a></font></div>
+
+<code><font color="#000000">
+<font color="#0000CC">
+<br /></font><font color="#FF9900">// get the next result set as a numeric array
+<br /></font><font color="#006600">if&nbsp;(</font><font color="#0000CC">$db</font><font color="#006600">-&gt;</font><font color="#0000CC">query</font><font color="#006600">(</font><font color="#CC0000">"SELECT name, email FROM users where id=2"</font><font color="#006600">))&nbsp;{
+<br />&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#0000CC">$res&nbsp;</font><font color="#006600">=&nbsp;</font><font color="#0000CC">$db</font><font color="#006600">-&gt;</font><font color="#0000CC">getNext</font><font color="#006600">(</font><font color="#0000CC">ANYDB_RES_NUM</font><font color="#006600">);
+<br />&nbsp;&nbsp;&nbsp;&nbsp;echo&nbsp;</font><font color="#0000CC">DBHelper</font><font color="#006600">::</font><font color="#0000CC">dumpNext</font><font color="#006600">(</font><font color="#0000CC">$res</font><font color="#006600">,&nbsp;</font><font color="#0000CC">true</font><font color="#006600">);
+<br />}&nbsp;else&nbsp;{
+<br />&nbsp;&nbsp;&nbsp;&nbsp;echo&nbsp;</font><font color="#0000CC">$db</font><font color="#006600">-&gt;</font><font color="#0000CC">error</font><font color="#006600">;
+<br />}
+<br /></font><font color="#0000CC"></font>
+</font>
+</code>
+<p>
+
+<b>Output:</b><br>
+<table border=1>
+<tr>
+	<th>0</th><td>uschi</td>
+</tr>
+<tr>
+	<th>1</th><td>uschi@uschi.de</td>
+</tr>
+</table>
+<p>
+You can define what type of result you want to get with getNext(). It can be an associative array (the default), a numeric array or both combined into one, or you can request a result obj.
+This is done by passing a constant to the function.<br>
+The constants are:
+<ul>
+<li>ANYDB_RES_ASSOC (default)</li>
+<li>ANYDB_RES_NUM</li>
+<li>ANYDB_RES_BOTH</li>
+<li>ANYDB_RES_OBJ</li>
+</ul>
+
+<!---------------------------------------------------->
+<hr>
+<a name="ex5">
+<h4>Get the next result in an array with numeric and associative entries</h4>
+</a>
+<div align=right><font size=-2><a href="#top">to top</a></font></div>
+
+<code><font color="#000000">
+<font color="#0000CC">
+<br /></font><font color="#FF9900">// get the next result set as an array with numeric and associative entries
+<br /></font><font color="#006600">if&nbsp;(</font><font color="#0000CC">$db</font><font color="#006600">-&gt;</font><font color="#0000CC">query</font><font color="#006600">(</font><font color="#CC0000">"SELECT name, email FROM users where id=2"</font><font color="#006600">))&nbsp;{
+<br />&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#0000CC">$res&nbsp;</font><font color="#006600">=&nbsp;</font><font color="#0000CC">$db</font><font color="#006600">-&gt;</font><font color="#0000CC">getNext</font><font color="#006600">(</font><font color="#0000CC">ANYDB_RES_BOTH</font><font color="#006600">);
+<br />&nbsp;&nbsp;&nbsp;&nbsp;echo&nbsp;</font><font color="#0000CC">DBHelper</font><font color="#006600">::</font><font color="#0000CC">dumpNext</font><font color="#006600">(</font><font color="#0000CC">$res</font><font color="#006600">,&nbsp;</font><font color="#0000CC">true</font><font color="#006600">);
+<br />}&nbsp;else&nbsp;{
+<br />&nbsp;&nbsp;&nbsp;&nbsp;echo&nbsp;</font><font color="#0000CC">$db</font><font color="#006600">-&gt;</font><font color="#0000CC">error</font><font color="#006600">;
+<br />}
+<br /></font><font color="#0000CC"></font>
+</font>
+</code>
+<p>
+
+<b>Output:</b><br>
+<table border=1>
+<tr>
+	<th>0</th><td>uschi</td>
+</tr>
+<tr>
+	<th>name</th><td>uschi</td>
+</tr>
+<tr>
+	<th>1</th><td>uschi@uschi.de</td>
+</tr>
+<tr>
+	<th>email</th><td>uschi@uschi.de</td>
+</tr>
+</table>
+<p>
+Metabase returns the numeric entries first for ANYDB_RES_BOTH and PEAR returns the alphanumeric entries first. The other layers will do it as shown in the example.
+
+<!---------------------------------------------------->
+<hr>
+<a name="ex6">
+<h4>Get all results</h4>
+</a>
+<div align=right><font size=-2><a href="#top">to top</a></font></div>
+
+<code><font color="#000000">
+<font color="#0000CC">
+<br /></font><font color="#FF9900">// get all results
+<br /></font><font color="#006600">if&nbsp;(</font><font color="#0000CC">$db</font><font color="#006600">-&gt;</font><font color="#0000CC">query</font><font color="#006600">(</font><font color="#CC0000">"SELECT name, email FROM users"</font><font color="#006600">))&nbsp;{
+<br />&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#0000CC">$results&nbsp;</font><font color="#006600">=&nbsp;</font><font color="#0000CC">$db</font><font color="#006600">-&gt;</font><font color="#0000CC">getAll</font><font color="#006600">();
+<br />&nbsp;&nbsp;&nbsp;&nbsp;foreach&nbsp;(</font><font color="#0000CC">$results&nbsp;</font><font color="#006600">as&nbsp;</font><font color="#0000CC">$res</font><font color="#006600">)&nbsp;{
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo&nbsp;</font><font color="#0000CC">implode</font><font color="#006600">(</font><font color="#CC0000">' - '</font><font color="#006600">,&nbsp;</font><font color="#0000CC">$res</font><font color="#006600">)&nbsp;.&nbsp;</font><font color="#CC0000">'&lt;br&gt;'</font><font color="#006600">;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;}
+<br />}&nbsp;else&nbsp;{
+<br />&nbsp;&nbsp;&nbsp;&nbsp;echo&nbsp;</font><font color="#0000CC">$db</font><font color="#006600">-&gt;</font><font color="#0000CC">error</font><font color="#006600">;
+<br />}
+<br /></font><font color="#0000CC"></font>
+</font>
+</code>
+<p>
+
+<b>Output:</b><br>
+peter - peter@peter.de<br>uschi - uschi@uschi.de<br>
+<p>
+getAll() returns a two dimensional array which represents the complete result set. You can also define (like for <a href="#ex4">getNext()</a>) if the result array should contain numeric, associative keys, both or be an array of objects.<br>
+<br>
+In this example $res[1]['name'] is equal to "uschi"
+<!---------------------------------------------------->
+<hr>
+<a name="ex7">
+<h4>Get all results with execute()</h4>
+</a>
+<div align=right><font size=-2><a href="#top">to top</a></font></div>
+
+<code><font color="#000000">
+<font color="#0000CC">
+<br /></font><font color="#FF9900">// get all the results with execute
+<br /></font><font color="#0000CC">$results&nbsp;</font><font color="#006600">=&nbsp;</font><font color="#0000CC">$db</font><font color="#006600">-&gt;</font><font color="#0000CC">execute</font><font color="#006600">(</font><font color="#CC0000">"SELECT name, email FROM users"</font><font color="#006600">);
+<br />foreach&nbsp;(@</font><font color="#0000CC">$results&nbsp;</font><font color="#006600">as&nbsp;</font><font color="#0000CC">$res</font><font color="#006600">)&nbsp;{
+<br />&nbsp;&nbsp;&nbsp;&nbsp;echo&nbsp;</font><font color="#0000CC">implode</font><font color="#006600">(</font><font color="#CC0000">' - '</font><font color="#006600">,&nbsp;</font><font color="#0000CC">$res</font><font color="#006600">)&nbsp;.&nbsp;</font><font color="#CC0000">'&lt;br&gt;'</font><font color="#006600">;
+<br />}
+<br /></font><font color="#0000CC"></font>
+</font>
+</code>
+<p>
+
+<b>Output:</b><br>
+peter - peter@peter.de<br>uschi - uschi@uschi.de<br>
+<br>
+execute() combines the query() and the getAll() function. It passes the query to the database and returns the complete result set.
+<!---------------------------------------------------->
+<hr>
+<a name="ex8">
+<h4>Dump all results</h4>
+</a>
+<div align=right><font size=-2><a href="#top">to top</a></font></div>
+
+<code><font color="#000000">
+<font color="#0000CC">
+<br /></font><font color="#FF9900">// get all the results and print them in a html table
+<br /></font><font color="#0000CC">$results&nbsp;</font><font color="#006600">=&nbsp;</font><font color="#0000CC">$db</font><font color="#006600">-&gt;</font><font color="#0000CC">execute</font><font color="#006600">(</font><font color="#CC0000">"SELECT name, email FROM users"</font><font color="#006600">);
+<br />echo&nbsp;</font><font color="#0000CC">DBHelper</font><font color="#006600">::</font><font color="#0000CC">dumpAll</font><font color="#006600">(</font><font color="#0000CC">$results</font><font color="#006600">,&nbsp;</font><font color="#0000CC">true</font><font color="#006600">,&nbsp;array(</font><font color="#CC0000">'Name'</font><font color="#006600">,</font><font color="#CC0000">'Email Adress'</font><font color="#006600">));
+<br /></font><font color="#0000CC"></font>
+</font>
+</code>
+<p>
+
+<b>Output:</b><br>
+<table border=1>
+<tr><th>Name</th><th>Email Adress</th></tr>
+<tr>
+<td>peter</td><td>peter@peter.de</td></tr>
+<tr>
+<td>uschi</td><td>uschi@uschi.de</td></tr>
+</table>
+<br>
+Just like <a href="#ex3">dumpNext()</a> does dumpAll() convert the returned array from getAll() or execute() into a html table.
+<!---------------------------------------------------->
+<hr>
+<a name="ex9">
+<h4>Get one result column</h4>
+</a>
+<div align=right><font size=-2><a href="#top">to top</a></font></div>
+
+<code><font color="#000000">
+<font color="#0000CC">
+<br /></font><font color="#FF9900">// get one column
+<br /></font><font color="#006600">if&nbsp;(</font><font color="#0000CC">$db</font><font color="#006600">-&gt;</font><font color="#0000CC">query</font><font color="#006600">(</font><font color="#CC0000">"SELECT name FROM users"</font><font color="#006600">))&nbsp;{
+<br />&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#0000CC">$results&nbsp;</font><font color="#006600">=&nbsp;</font><font color="#0000CC">$db</font><font color="#006600">-&gt;</font><font color="#0000CC">getColumn</font><font color="#006600">();
+<br />&nbsp;&nbsp;&nbsp;&nbsp;foreach&nbsp;(</font><font color="#0000CC">$results&nbsp;</font><font color="#006600">as&nbsp;</font><font color="#0000CC">$res</font><font color="#006600">)&nbsp;{
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo&nbsp;</font><font color="#0000CC">$res&nbsp;</font><font color="#006600">.&nbsp;</font><font color="#CC0000">'&lt;br&gt;'</font><font color="#006600">;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;}
+<br />}&nbsp;else&nbsp;{
+<br />&nbsp;&nbsp;&nbsp;&nbsp;echo&nbsp;</font><font color="#0000CC">$db</font><font color="#006600">-&gt;</font><font color="#0000CC">error</font><font color="#006600">;
+<br />}
+<br /></font><font color="#0000CC"></font>
+</font>
+</code>
+<p>
+
+<b>Output:</b><br>
+peter<br>
+uschi<br>
+<br>
+If you want only one column of data ('name' in the example above) you can use getColumn() to retrieve it.<br>
+It will return a one dimensional array or FALSE.
+
+<!---------------------------------------------------->
+<hr>
+<a name="ex10">
+<h4>Dump one result column</h4>
+</a>
+<div align=right><font size=-2><a href="#top">to top</a></font></div>
+
+<code><font color="#000000">
+<font color="#0000CC">
+<br /></font><font color="#FF9900">// get all one column and print them in a table
+<br /></font><font color="#006600">if&nbsp;(</font><font color="#0000CC">$db</font><font color="#006600">-&gt;</font><font color="#0000CC">query</font><font color="#006600">(</font><font color="#CC0000">"SELECT name FROM users"</font><font color="#006600">))&nbsp;{
+<br />&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#0000CC">$res&nbsp;</font><font color="#006600">=&nbsp;</font><font color="#0000CC">$db</font><font color="#006600">-&gt;</font><font color="#0000CC">getColumn</font><font color="#006600">();
+<br />&nbsp;&nbsp;&nbsp;&nbsp;echo&nbsp;</font><font color="#0000CC">DBHelper</font><font color="#006600">::</font><font color="#0000CC">dumpColumn</font><font color="#006600">(</font><font color="#0000CC">$res</font><font color="#006600">,&nbsp;</font><font color="#0000CC">true</font><font color="#006600">,&nbsp;</font><font color="#CC0000">'all names'</font><font color="#006600">);
+<br />&nbsp;&nbsp;&nbsp;&nbsp;echo&nbsp;</font><font color="#CC0000">'&lt;br&gt;'</font><font color="#006600">;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;echo&nbsp;</font><font color="#0000CC">DBHelper</font><font color="#006600">::</font><font color="#0000CC">dumpColumn</font><font color="#006600">(</font><font color="#0000CC">$res</font><font color="#006600">,&nbsp;</font><font color="#0000CC">false</font><font color="#006600">,&nbsp;</font><font color="#CC0000">'name'</font><font color="#006600">);
+<br />}&nbsp;else&nbsp;{
+<br />&nbsp;&nbsp;&nbsp;&nbsp;echo&nbsp;</font><font color="#0000CC">$db</font><font color="#006600">-&gt;</font><font color="#0000CC">error</font><font color="#006600">;
+<br />}
+<br /></font><font color="#0000CC"></font>
+</font>
+</code>
+<p>
+
+<b>Output:</b><br>
+<table border=1>
+<tr>
+<th>all names</th>
+<td>peter</td><td>uschi</td></tr>
+</table>
+<br><table border=1>
+<tr>
+<th>name</th>
+</tr>
+<tr><td>peter</td></tr>
+<tr><td>uschi</td></tr>
+
+</table>
+<br>
+dumpColumn() will display the column data horizontally or vertically. A header can be specified as well.
+
+<!---------------------------------------------------->
+
+<hr>
+<a name="ex11">
+<h4>Dump one result column in a Selectbox</h4>
+</a>
+<div align=right><font size=-2><a href="#top">to top</a></font></div>
+
+<code><font color="#000000">
+<font color="#0000CC"><br /></font><font color="#FF9900">// display a column in a select box
+<br /></font><font color="#006600">if&nbsp;(</font><font color="#0000CC">$db</font><font color="#006600">-&gt;</font><font color="#0000CC">query</font><font color="#006600">(</font><font color="#CC0000">"SELECT name FROM users"</font><font color="#006600">))&nbsp;{
+<br />&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#0000CC">$res&nbsp;</font><font color="#006600">=&nbsp;</font><font color="#0000CC">$db</font><font color="#006600">-&gt;</font><font color="#0000CC">getColumn</font><font color="#006600">();
+<br />&nbsp;&nbsp;&nbsp;&nbsp;echo&nbsp;</font><font color="#0000CC">DBHelper</font><font color="#006600">::</font><font color="#0000CC">selectBox</font><font color="#006600">(</font><font color="#0000CC">$res</font><font color="#006600">,&nbsp;</font><font color="#0000CC">0</font><font color="#006600">,&nbsp;</font><font color="#CC0000">'mybox'</font><font color="#006600">);
+<br />}
+<br /></font><font color="#0000CC"></font>
+</font>
+</code>
+<p>
+
+<b>Output:</b><br>
+<select name="mybox" size="1">
+<option value="peter">peter</option>
+<option value="uschi">uschi</option>
+</select>
+<p>
+The first parameter for selectBox() is the result array. The second specifies what entry is selected and the third the name of the selectbox. There are more parameters but you will rarely use them, I think...
+
+<!---------------------------------------------------->
+
+<hr>
+<a name="ex20">
+<h4>Set the submit values for a Selectbox</h4>
+</a>
+<div align=right><font size=-2><a href="#top">to top</a></font></div>
+
+<code><font color="#000000">
+<font color="#0000CC"><br /></font><font color="#FF9900">// display a column in a select box
+<br /></font><font color="#006600">if&nbsp;(</font><font color="#0000CC">$db</font><font color="#006600">-&gt;</font><font color="#0000CC">query</font><font color="#006600">(</font><font color="#CC0000">"SELECT name, id FROM users"</font><font color="#006600">))&nbsp;{
+<br />&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#0000CC">$res&nbsp;</font><font color="#006600">=&nbsp;</font><font color="#0000CC">$db</font><font color="#006600">-&gt;</font><font color="#0000CC">getAll</font><font color="#006600">();
+<br />&nbsp;&nbsp;&nbsp;&nbsp;echo&nbsp;</font><font color="#0000CC">DBHelper</font><font color="#006600">::</font><font color="#0000CC">selectBox</font><font color="#006600">(</font><font color="#0000CC">$res</font><font color="#006600">,&nbsp;</font><font color="#0000CC">0</font><font color="#006600">,&nbsp;</font><font color="#CC0000">'mybox'</font><font color="#006600">);
+<br />}
+<br /></font><font color="#0000CC"></font>
+</font>
+</code>
+<p>
+
+<b>Output:</b><br>
+<select name="mybox" size="1">
+<option value="1">peter</option>
+<option value="2">uschi</option>
+</select>
+<p>
+The selectbox looks the same but the result is different in this example.<br>
+If you specify two columns in your SQL query selectBox() will use the first column for the display and wil submit the second column as the submit value. 
+In the example the selectbox would either submit '1' for 'peter' or '2' for 'uschi'.
+
+
+<!---------------------------------------------------->
+
+<hr>
+<a name="ex21">
+<h4>Specify your result array index</h4>
+</a>
+<div align=right><font size=-2><a href="#top">to top</a></font></div>
+
+<code>
+<div style="white-space: nowrap;"><font color="#FF8000">// uses the ID column as a result index
+</div><div style="white-space: nowrap;"></font><font color="#0000BB">$db</font><font color="#007700">-&gt;</font><font color="#0000BB">query</font><font color="#007700">(</font><font color="#DD0000">"SELECT * FROM users LIMIT 2"</font><font color="#007700">);
+</div><div style="white-space: nowrap;"></font><font color="#0000BB">$mapped </font><font color="#007700">= </font><font color="#0000BB">$db</font><font color="#007700">-&gt;</font><font color="#0000BB">getMapped</font><font color="#007700">(</font><font color="#DD0000">'name'</font><font color="#007700">);
+</div></font></span>
+</code>
+<p>
+<b>Result:</b><br>
+<div class="dbgDump">$mapped = <strong>array[2] <a name="open1"> {</a></strong><a href="#close1">&darr;</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;'peter' => <strong>array[2] <a name="open3"> {</a></strong><a href="#close3">&darr;</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;id => integer(1)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;email => string[14]('peter@peter.de')<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<strong><a name="close2">} </a></strong><a href="#open2">&uarr;</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;'uschi' => <strong>array[2] <a name="open2"> {</a></strong><a href="#close2">&darr;</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;id => integer(2)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;email => string[14]('uschi@uschi.de')<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<strong><a name="close3">} </a></strong><a href="#open3">&uarr;</a><br />
+<strong><a name="close1">} </a></strong><a href="#open1">&uarr;</a></div>
+<br>
+getMapped() uses one of your result columns as an index for the result set. In the example the 'id' column is used.<br>
+If you specify only two result columns in your SQL query you will get a one dimensional array containing the single result column instead.<br>
+If you specify a column with non unique data, entries will get overwritten. So it makes sense to use database key columns.
+
+<!---------------------------------------------------->
+<hr>
+<a name="ex12">
+<h4>Get one result value</h4>
+</a>
+<div align=right><font size=-2><a href="#top">to top</a></font></div>
+
+<code><font color="#000000">
+<font color="#0000CC">
+<br /></font><font color="#FF9900">// get a single value from the database
+<br /></font><font color="#006600">if&nbsp;(</font><font color="#0000CC">$db</font><font color="#006600">-&gt;</font><font color="#0000CC">query</font><font color="#006600">(</font><font color="#CC0000">"SELECT count(*) FROM users"</font><font color="#006600">))&nbsp;{
+<br />&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#0000CC">$count&nbsp;</font><font color="#006600">=&nbsp;</font><font color="#0000CC">$db</font><font color="#006600">-&gt;</font><font color="#0000CC">getValue</font><font color="#006600">(<font color="#0000CC">ANYDB_INT</font>);
+<br />&nbsp;&nbsp;&nbsp;&nbsp;echo&nbsp;</font><font color="#0000CC">$count</font><font color="#006600">;
+<br />}&nbsp;else&nbsp;{
+<br />&nbsp;&nbsp;&nbsp;&nbsp;echo&nbsp;</font><font color="#0000CC">$db</font><font color="#006600">-&gt;</font><font color="#0000CC">error</font><font color="#006600">;
+<br />}
+<br /></font><font color="#0000CC"></font>
+</font>
+</code>
+<p>
+
+<b>Output:</b><br>
+2
+<p>
+This will by default return a string. But you can choose to get a different result type by passing a constant to the function. The possible constants are:
+<ul>
+   <li>ANYDB_INT</li>
+   <li>ANYDB_FLOAT</li>
+   <li>ANYDB_DOUBLE</li>
+   <li>ANYDB_BOOL</li>
+   <li>ANYDB_STRING</li>
+</ul>   
+<!---------------------------------------------------->
+<hr>
+<a name="ex13">
+<h4>Insert data into the database</h4>
+</a>
+<div align=right><font size=-2><a href="#top">to top</a></font></div>
+
+<code><font color="#000000">
+<font color="#0000CC">
+<br /></font><font color="#FF9900">// insert data in the database
+<br /></font><font color="#006600">if&nbsp;(</font><font color="#0000CC">$db</font><font color="#006600">-&gt;</font><font color="#0000CC">query</font><font color="#006600">(</font><font color="#CC0000">"INSERT INTO users (name, email) VALUES ('joost','joost@joost.de')"</font><font color="#006600">))&nbsp;{
+<br />&nbsp;&nbsp;&nbsp;&nbsp;echo&nbsp;</font><font color="#CC0000">'ok'</font><font color="#006600">;
+<br />}&nbsp;else&nbsp;{
+<br />&nbsp;&nbsp;&nbsp;&nbsp;echo&nbsp;</font><font color="#0000CC">$db</font><font color="#006600">-&gt;</font><font color="#0000CC">error</font><font color="#006600">;
+<br />}
+<br /></font><font color="#0000CC"></font>
+</font>
+</code>
+<p>
+
+<b>Output:</b><br>
+ok
+<p>
+The function is query() as for all other SQL queries and it will return TRUE if your query was successful.
+
+<!---------------------------------------------------->
+<hr>
+<a name="ex22">
+<h4>Get the ID of the last inserted dataset</h4>
+</a>
+<div align=right><font size=-2><a href="#top">to top</a></font></div>
+
+<code><font color="#000000">
+<font color="#0000CC">
+<br /></font><font color="#FF9900">// insert data in the database
+<br /></font><font color="#006600">if&nbsp;(</font><font color="#0000CC">$db</font><font color="#006600">-&gt;</font><font color="#0000CC">query</font><font color="#006600">(</font><font color="#CC0000">"INSERT INTO users (name, email) VALUES ('lennart','lennart@lennart.de')"</font><font color="#006600">))&nbsp;{
+<br />&nbsp;&nbsp;&nbsp;&nbsp;echo&nbsp;</font>
+
+<font color="#0000CC">$db</font><font color="#006600">-&gt;</font><font color="#0000CC">getInsertId</font><font color="#006600">()</font><font color="#006600">;
+<br />}&nbsp;else&nbsp;{
+<br />&nbsp;&nbsp;&nbsp;&nbsp;echo&nbsp;</font><font color="#0000CC">$db</font><font color="#006600">-&gt;</font><font color="#0000CC">error</font><font color="#006600">;
+<br />}
+<br /></font><font color="#0000CC"></font>
+</font>
+</code>
+<b>Output:</b><br>
+4
+<p><p>
+getInsertId() will return the index of the result of the last INSERT statement. Here it should return 4 because 'uschi' has the id 2 and we added something in the previous example.<br>
+This function is not supported by the ODBC class.
+<!---------------------------------------------------->
+<hr>
+<a name="ex23">
+<h4>Check for data in the database</h4>
+</a>
+<div align=right><font size=-2><a href="#top">to top</a></font></div>
+
+<code><font color="#000000">
+<div style="white-space: nowrap;">
+</div><div style="white-space: nowrap;"></font><font color="#0000BB">$data </font><font color="#007700">= array(</font><font color="#DD0000">'name' </font><font color="#007700">=&gt; </font><font color="#DD0000">'uschi'</font><font color="#007700">, </font><font color="#DD0000">'email' </font><font color="#007700">=&gt; </font><font color="#DD0000">'uschi@uschi.de'</font><font color="#007700">);
+</div><div style="white-space: nowrap;">&nbsp;&nbsp;&nbsp;</font><font color="#FF8000">// check if data already exists
+</div><div style="white-space: nowrap;"></font><font color="#0000BB">$id </font><font color="#007700">= </font><font color="#0000BB">$db</font><font color="#007700">-&gt;</font><font color="#0000BB">getDataId</font><font color="#007700">(</font><font color="#DD0000">'users'</font><font color="#007700">, </font><font color="#0000BB">$data</font><font color="#007700">);
+</div><div style="white-space: nowrap;">if (</font><font color="#0000BB">$id </font><font color="#007700">=== </font><font color="#0000BB">false</font><font color="#007700">) {
+</div><div style="white-space: nowrap;">&nbsp;&nbsp;&nbsp;echo </font><font color="#DD0000">"new dataset!"</font><font color="#007700">;
+</div><div style="white-space: nowrap;">} else {
+</div><div style="white-space: nowrap;">&nbsp;&nbsp;&nbsp;echo </font><font color="#DD0000">"dataset exists (id=$id)!"</font><font color="#007700">;
+</div><div style="white-space: nowrap;">}
+</div></div></font>
+</code>
+<p>
+<b>Output:</b><br>
+dataset exists (id=2)!
+<p>
+getDataId() checks is data, provided in an array, exists in a database table. If it does, it returns the index or FALSE.<br>
+If you have an array with entries you don't want to check, you can pass a third parameter (an array) with the names of the keys you want to check. <br>
+In an optional fourth parameter you can specify which database column the function should return. The default is set to 'ID'.
+<p>
+This function is very useful for checking data submitted through a web form. 
+<!---------------------------------------------------->
+<hr>
+<a name="ex24">
+<h4>Connect to another database</h4>
+</a>
+<div align=right><font size=-2><a href="#top">to top</a></font></div>
+
+<code><font color="#000000">
+<font color="#0000BB">$res </font><font color="#007700">= </font><font color="#0000BB">$db</font><font color="#007700">-&gt;</font><font color="#0000BB">setDB</font><font color="#007700">(</font><font color="#DD0000">'test2'</font><font color="#007700">);
+</div>if (!</font><font color="#0000BB">$res</font><font color="#007700">) {
+</div><div style="white-space: nowrap;">&nbsp;&nbsp;&nbsp;echo </font><font color="#0000BB">$db</font><font color="#007700">-&gt;</font><font color="#0000BB">error</font><font color="#007700">;
+</div><div style="white-space: nowrap;">}
+</font>
+</code>
+<p>
+<b>Output:</b><br>
+Unknown database 'test2'
+<p>
+testDB() connects to a different database.
+<!---------------------------------------------------->
+<hr>
+<a name="ex25">
+<h4>Make data ready for submission</h4>
+</a>
+<div align=right><font size=-2><a href="#top">to top</a></font></div>
+
+<code><font color="#000000">
+
+
+<font color="#0000BB">$str </font><font color="#007700">= </font><font color="#DD0000">"INSERT INTO users (name, email) VAULES ('test', 'test@test.de')"</font><font color="#007700">;
+</div><div style="white-space: nowrap;"><font color="#0000BB">$res1 </font><font color="#007700">= </font><font color="#0000BB">$db</font><font color="#007700">-&gt;</font><font color="#0000BB">escapeStr</font><font color="#007700">(</font><font color="#0000BB">$str</font><font color="#007700">);
+</div></font>
+</font></code>
+<p>
+<b>Output:</b><br>
+$res1 = string[67]('INSERT INTO users (name, email) VAULES (\'test\', \'test@test.de\')')
+<p>
+escapeStr() makes a query ready for executing. You can pass a string or an array of strings to the function. It will then escape the string(s).<br>
+ If you only want certain entries of the array to be escaped you can pass the array keys to be escaped in a second array.
+<!---------------------------------------------------->
+<hr>
+<a name="ex14">
+<h4>Build a paging mechanism</h4>
+</a>
+<div align=right><font size=-2><a href="#top">to top</a></font></div>
+
+<code><font color="#000000">
+<font color="#0000CC">
+<br /></font><font color="#FF9900">// create a new page widget
+<br /></font><font color="#006600">require_once&nbsp;</font><font color="#CC0000">'../addon/PageWidget.php'</font><font color="#006600">;
+<br /></font><font color="#FF9900">// widget settings
+<br /></font><font color="#0000CC">$entries&nbsp;</font><font color="#006600">=&nbsp;</font><font color="#0000CC">2</font><font color="#006600">;
+<br /></font><font color="#0000CC">$table&nbsp;</font><font color="#006600">=&nbsp;</font><font color="#CC0000">'users'</font><font color="#006600">;
+<br /></font><font color="#FF9900">// which rows to display
+<br /></font><font color="#0000CC">$rows&nbsp;</font><font color="#006600">=&nbsp;array(</font><font color="#CC0000">'name'</font><font color="#006600">,&nbsp;</font><font color="#CC0000">'email'</font><font color="#006600">);
+<br /></font><font color="#0000CC">$widget&nbsp;</font><font color="#006600">=&nbsp;new&nbsp;</font><font color="#0000CC">PageWidget</font><font color="#006600">(</font><font color="#0000CC">$db</font><font color="#006600">,&nbsp;</font><font color="#CC0000">'mysqlLimitQuery'</font><font color="#006600">,&nbsp;</font><font color="#0000CC">$table</font><font color="#006600">,&nbsp;</font><font color="#0000CC">$entries</font><font color="#006600">);
+<br />
+<br />echo&nbsp;</font><font color="#CC0000">"&lt;h2&gt;Page&nbsp;$widget</font><font color="#006600">-&gt;</font><font color="#CC0000">page&lt;/h2&gt;"</font><font color="#006600">;
+<br />echo&nbsp;</font><font color="#0000CC">$widget</font><font color="#006600">-&gt;</font><font color="#0000CC">getPageDropdown</font><font color="#006600">();
+<br />echo&nbsp;</font><font color="#CC0000">"Entries&nbsp;$widget</font><font color="#006600">-&gt;</font><font color="#CC0000">start&nbsp;-&nbsp;&nbsp;$widget</font><font color="#006600">-&gt;</font><font color="#CC0000">end&nbsp;of&nbsp;$widget</font><font color="#006600">-&gt;</font><font color="#CC0000">total&lt;p&gt;"</font><font color="#006600">;
+<br />echo&nbsp;</font><font color="#CC0000">'['&nbsp;</font><font color="#006600">.&nbsp;</font><font color="#0000CC">$widget</font><font color="#006600">-&gt;</font><font color="#0000CC">getIndex</font><font color="#006600">(</font><font color="#CC0000">'] ['</font><font color="#006600">)&nbsp;.</font><font color="#CC0000">']&lt;p&gt;'</font><font color="#006600">;
+<br />echo&nbsp;</font><font color="#0000CC">$widget</font><font color="#006600">-&gt;</font><font color="#0000CC">getOrderDropdown</font><font color="#006600">(</font><font color="#0000CC">$rows</font><font color="#006600">);
+<br />echo&nbsp;</font><font color="#0000CC">$widget</font><font color="#006600">-&gt;</font><font color="#0000CC">getNextLink</font><font color="#006600">();
+<br />echo&nbsp;</font><font color="#CC0000">'&lt;br&gt;'</font><font color="#006600">;
+<br />echo&nbsp;</font><font color="#0000CC">$widget</font><font color="#006600">-&gt;</font><font color="#0000CC">getPrevLink</font><font color="#006600">();
+<br /></font><font color="#FF9900">// get the data
+<br /></font><font color="#006600">echo&nbsp;</font><font color="#0000CC">DBHelper</font><font color="#006600">::</font><font color="#0000CC">dumpAll</font><font color="#006600">(</font><font color="#0000CC">$widget</font><font color="#006600">-&gt;</font><font color="#0000CC">get</font><font color="#006600">(</font><font color="#0000CC">$rows</font><font color="#006600">),&nbsp;</font><font color="#0000CC">true</font><font color="#006600">);
+<br /></font><font color="#0000CC"></font>
+</font>
+</code>
+<p>
+
+<b>Output:</b><br>
+Example output (with more entries)<br>
+<br>
+<img src="screenshot.jpg" border=0 alt="example output">
+
+
+<!---------------------------------------------------->
+<hr>
+<a name="ex16">
+<h4>Get table names</h4>
+</a>
+<div align=right><font size=-2><a href="#top">to top</a></font></div>
+
+<code><font color="#0000BB">
+<br /></font><font color="#FF8000">// get all tables
+<br /></font><font color="#0000BB">$tables </font><font color="#007700">= </font><font color="#0000BB">$db</font><font color="#007700">-&gt;</font><font color="#0000BB">getTables</font><font color="#007700">();
+<br />foreach (</font><font color="#0000BB">$tables </font><font color="#007700">as </font><font color="#0000BB">$table</font><font color="#007700">) {
+<br />&nbsp;&nbsp;&nbsp;&nbsp;echo </font><font color="#0000BB">$table </font><font color="#007700">. </font><font color="#DD0000">'&lt;br&gt;'</font><font color="#007700">;
+<br />}
+</font>
+</code>
+<p>
+
+<b>Output:</b><br>
+users
+
+<!---------------------------------------------------->
+<hr>
+<a name="ex17">
+<h4>Export table data to csv</h4>
+</a>
+<div align=right><font size=-2><a href="#top">to top</a></font></div>
+
+<code><font color="#000000">
+<font color="#0000BB">
+<br /></font><font color="#FF8000">// export table content as csv data
+<br /></font><font color="#0000BB">$csv </font><font color="#007700">= </font><font color="#0000BB">Exporter</font><font color="#007700">::</font><font color="#0000BB">getTable</font><font color="#007700">(</font><font color="#0000BB">$db</font><font color="#007700">, </font><font color="#DD0000">'users'</font><font color="#007700">, </font><font color="#0000BB">ANYDB_DUMP_CSV</font><font color="#007700">);
+<br />echo </font><font color="#0000BB">nl2br</font><font color="#007700">(</font><font color="#0000BB">$csv</font><font color="#007700">);
+</font>
+</code>
+<p>
+
+<b>Output:</b><br>
+id	name	login	email<br />
+1	peter	peter	peter@peter.de<br />
+2	uschi	uschi	uschi@uschi.de<br />
+<!---------------------------------------------------->
+<hr>
+<a name="ex18">
+<h4>Export database data to sql</h4>
+</a>
+<div align=right><font size=-2><a href="#top">to top</a></font></div>
+
+<code><font color="#000000">
+<font color="#0000BB">
+<br /></font><font color="#FF8000">// export table content as sql statements
+<br /></font><font color="#0000BB">$sqlData </font><font color="#007700">= </font><font color="#0000BB">Exporter</font><font color="#007700">::</font><font color="#0000BB">getDB</font><font color="#007700">(</font><font color="#0000BB">$db</font><font color="#007700">, </font><font color="#0000BB">ANYDB_DUMP_SQL</font><font color="#007700">);
+<br />
+<br />foreach(</font><font color="#0000BB">$sqlData </font><font color="#007700">as </font><font color="#0000BB">$key </font><font color="#007700">=&gt; </font><font color="#0000BB">$data</font><font color="#007700">) {
+<br />&nbsp;&nbsp;&nbsp;&nbsp;echo </font><font color="#DD0000">"$key&lt;br&gt;"</font><font color="#007700">;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;echo </font><font color="#0000BB">nl2br</font><font color="#007700">(</font><font color="#0000BB">$data</font><font color="#007700">);
+<br />}
+</font>
+</code>
+<p>
+
+<b>Output:</b><br>
+users<br>INSERT  INTO users (id, name, login, email) VALUES ('1', 'peter', 'peter', 'peter@peter.de') ;<br />
+INSERT  INTO users (id, name, login, email) VALUES ('2', 'uschi', 'uschi', 'uschi@uschi.de') ;<br />
+
+<!---------------------------------------------------->
+<hr>
+<a name="ex15">
+<h4>How to use QueryHelper</h4>
+</a>
+<div align=right><font size=-2><a href="#top">to top</a></font></div>
+
+<code><font color="#000000">
+<font color="#0000CC">
+<br /></font><font color="#006600">require_once&nbsp;</font><font color="#CC0000">'../addon/QueryHelper.php'</font><font color="#006600">;
+<br /></font><font color="#006600">echo&nbsp;</font><font color="#0000CC">QueryHelper</font><font color="#006600">::</font><font color="#0000CC">insert</font><font color="#006600">(</font><font color="#CC0000">'peter'</font><font color="#006600">,&nbsp;array(</font><font color="#CC0000">'a'</font><font color="#006600">,</font><font color="#0000CC">4</font><font color="#006600">,</font><font color="#0000CC">2</font><font color="#006600">))&nbsp;.&nbsp;</font><font color="#CC0000">'&lt;br&gt;'</font><font color="#006600">;
+<br />echo&nbsp;</font><font color="#0000CC">QueryHelper</font><font color="#006600">::</font><font color="#0000CC">insert</font><font color="#006600">(</font><font color="#CC0000">'peter'</font><font color="#006600">,&nbsp;array(</font><font color="#CC0000">'id'&nbsp;</font><font color="#006600">=&gt;&nbsp;</font><font color="#CC0000">2</font><font color="#006600">,</font><font color="#CC0000">'name'&nbsp;</font><font color="#006600">=&gt;</font><font color="#CC0000">'peter'</font><font color="#006600">))&nbsp;.&nbsp;</font><font color="#CC0000">'&lt;br&gt;'</font><font color="#006600">;
+<br />echo&nbsp;</font><font color="#0000CC">QueryHelper</font><font color="#006600">::</font><font color="#0000CC">insert</font><font color="#006600">(</font><font color="#CC0000">'peter'</font><font color="#006600">,&nbsp;array(</font><font color="#CC0000">'id'&nbsp;</font><font color="#006600">=&gt;&nbsp;</font><font color="#CC0000">2</font><font color="#006600">,</font><font color="#CC0000">'name'&nbsp;</font><font color="#006600">=&gt;</font><font color="#CC0000">&quot;'peter'&quot;</font><font color="#006600">),&nbsp;</font><font color="#0000CC">false</font><font color="#006600">)&nbsp;.&nbsp;</font><font color="#CC0000">'&lt;br&gt;'</font><font color="#006600">;
+<br />
+<br />echo&nbsp;</font><font color="#0000CC">QueryHelper</font><font color="#006600">::</font><font color="#0000CC">delete</font><font color="#006600">(</font><font color="#CC0000">'peter'</font><font color="#006600">,&nbsp;array(</font><font color="#CC0000">'id'</font><font color="#006600">=&gt;</font><font color="#0000CC">2</font><font color="#006600">,</font><font color="#CC0000">'name'&nbsp;</font><font color="#006600">=&gt;</font><font color="#CC0000">'peter'</font><font color="#006600">))&nbsp;.&nbsp;</font><font color="#CC0000">'&lt;br&gt;'</font><font color="#006600">;
+<br />echo&nbsp;</font><font color="#0000CC">QueryHelper</font><font color="#006600">::</font><font color="#0000CC">replace</font><font color="#006600">(</font><font color="#CC0000">'peter'</font><font color="#006600">,&nbsp;array(</font><font color="#CC0000">'id'&nbsp;</font><font color="#006600">=&gt;&nbsp;</font><font color="#0000CC">2</font><font color="#006600">,</font><font color="#CC0000">'name'&nbsp;</font><font color="#006600">=&gt;</font><font color="#CC0000">'peter'</font><font color="#006600">))&nbsp;.&nbsp;</font><font color="#CC0000">'&lt;br&gt;'</font><font color="#006600">;
+<br />
+<br />echo&nbsp;</font><font color="#0000CC">QueryHelper</font><font color="#006600">::</font><font color="#0000CC">select</font><font color="#006600">(array(</font><font color="#CC0000">'name'</font><font color="#006600">,&nbsp;</font><font color="#CC0000">'test'</font><font color="#006600">),&nbsp;</font><font color="#CC0000">'peter'</font><font color="#006600">,&nbsp;array(</font><font color="#CC0000">'id'&nbsp;</font><font color="#006600">=&gt;</font><font color="#CC0000">5</font><font color="#006600">,</font><font color="#CC0000">'test'</font><font color="#006600">=&gt;</font><font color="#CC0000">'2'</font><font color="#006600">),&nbsp;</font><font color="#0000CC">true</font><font color="#006600">,&nbsp;</font><font color="#CC0000">'LIMIT 10'</font><font color="#006600">,&nbsp;</font><font color="#CC0000">'DISTINCT'</font><font color="#006600">)&nbsp;.&nbsp;</font><font color="#CC0000">'&lt;br&gt;'</font><font color="#006600">;
+<br />echo&nbsp;</font><font color="#0000CC">QueryHelper</font><font color="#006600">::</font><font color="#0000CC">select</font><font color="#006600">(array(</font><font color="#CC0000">'name'</font><font color="#006600">,&nbsp;</font><font color="#CC0000">'test'</font><font color="#006600">),&nbsp;</font><font color="#CC0000">'peter'</font><font color="#006600">,&nbsp;</font><font color="#CC0000">'id=3'</font><font color="#006600">,&nbsp;</font><font color="#0000CC">false</font><font color="#006600">,&nbsp;</font><font color="#CC0000">'LIMIT 10'</font><font color="#006600">)&nbsp;.&nbsp;</font><font color="#CC0000">'&lt;br&gt;'</font><font color="#006600">;
+<br />
+<br />echo&nbsp;</font><font color="#0000CC">QueryHelper</font><font color="#006600">::</font><font color="#0000CC">update</font><font color="#006600">(</font><font color="#CC0000">'peter'</font><font color="#006600">,&nbsp;array(</font><font color="#CC0000">'name'&nbsp;</font><font color="#006600">=&gt;</font><font color="#CC0000">'peter'</font><font color="#006600">,&nbsp;</font><font color="#CC0000">'id'</font><font color="#006600">=&gt;</font><font color="#0000CC">4</font><font color="#006600">),&nbsp;</font><font color="#CC0000">'id=10'</font><font color="#006600">)&nbsp;.&nbsp;</font><font color="#CC0000">'&lt;br&gt;'</font><font color="#006600">;
+<br />echo&nbsp;</font><font color="#0000CC">QueryHelper</font><font color="#006600">::</font><font color="#0000CC">update</font><font color="#006600">(</font><font color="#CC0000">'peter'</font><font color="#006600">,&nbsp;array(</font><font color="#CC0000">'name'&nbsp;</font><font color="#006600">=&gt;</font><font color="#CC0000">'peter'</font><font color="#006600">,&nbsp;</font><font color="#CC0000">'id'</font><font color="#006600">=&gt;</font><font color="#0000CC">2</font><font color="#006600">),&nbsp;</font><font color="#CC0000">'id=10'</font><font color="#006600">,&nbsp;</font><font color="#0000CC">false</font><font color="#006600">)&nbsp;.&nbsp;</font><font color="#CC0000">'&lt;br&gt;'</font><font color="#006600">;
+<br /></font><font color="#0000CC"></font>
+</font>
+</code>
+<p>
+
+<b>Output:</b><br>
+INSERT INTO peter VALUES ('a', 4, 2) <br>
+INSERT INTO peter (id, name) VALUES (2, 'peter') <br>
+INSERT INTO peter (id, name) VALUES (2, 'peter') <br>
+DELETE FROM peter WHERE id=2, name='peter' <br>
+REPLACE INTO peter (id, name) VALUES (2, 'peter') <br>
+SELECT DISTINCT name, test FROM peter WHERE id=5, test='2' LIMIT 10<br>
+SELECT name, test FROM peter WHERE id=3 LIMIT 10<br>
+UPDATE peter SET name='peter', id=4 WHERE id=10 <br>
+UPDATE peter SET name=peter, id=2 WHERE id=10 <br>
+<!---------------------------------------------------->
+<hr>
+
+<a name="api">
+<h3>4. Interface</h3>
+</a>
+<div align=right><font size=-2><a href="#top">to top</a></font></div>
+
+See <a href="../interface.txt">interface.txt</a> for the current interface description
+
+<!---------------------------------------------------->
+<hr>
+
+<a name="notes">
+<h3>5. Notes</h3>
+</a>
+<div align=right><font size=-2><a href="#top">to top</a></font></div>
+<ul>
+	<li>The default result type is an associative array
+	<li>Metabase converts the keys in an associative array to lower keys
+	<li>Metabase returns the numeric entries first for 'ANYDB_RES_BOTH' 
+	<li>PEAR returns the alphanumeric entries first for 'ANYDB_RES_BOTH' 
+	<li>Native mysql, PHPLIB, ADOdb return the numeric, alphanumeric pairs for 'ANYDB_RES_BOTH' 
+</ul>
+
+<!---------------------------------------------------->
+<hr>
+
+<a name="history">
+<h3>6. History/Changes</h3>
+</a>
+<div align=right><font size=-2><a href="#top">to top</a></font></div>
+
+See <a href="../changes.txt">changes.txt</a> in the root directory
+<!---------------------------------------------------->
+
+</body>
+</html>

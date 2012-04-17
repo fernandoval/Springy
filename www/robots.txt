@@ -1,0 +1,7 @@
+User-agent: *
+Disallow: /css
+Disallow: /images
+Disallow: /scripts
+
+#Request-rate: 10/5         # maximum rate is 10 pages every 5 seconds
+#Crawl-delay: 0.1           # 100ms entre uma pagina e outra

@@ -1,0 +1,61 @@
+//////////////////////////////////////////////////////////////////////////////
+/*
+   interface for anyDB 1.2b
+   12/11/04
+*/
+//////////////////////////////////////////////////////////////////////////////
+
+constructor($libraryPath, $dbType, $preferredResType = ANYDB_RES) 
+function connect($host, $db, $user, $password, persistent = FALSE) 
+function disconnect() 
+function setDB($database)                                            //new for 1.2 
+
+function query($query) 
+function execute($query, $resultType = PREDEFINED_VALUE)
+
+function getNext($resultType = PREDEFINED_VALUE) 
+function getAll($resultType = PREDEFINED_VALUE) 
+function getColumn($resultType = PREDEFINED_VALUE) 
+function getValue($resultType = ANYDB_STRING)                        //updated for 1.2
+
+function getMapped($key)                                             //new for 1.2 
+function getInsertId()                                               //new for 1.2 
+function getDataId($table, $array, $fields = null, $id_field = 'id') //new for 1.2 
+function getTables()                                                 //updated for 1.2
+function getDBs() 
+
+function escapeStr($str)                                             // updated for 1.2
+function free() 
+
+function numRows() 
+function affectedRows() 
+
+function getIdentifier() 
+function getDBType() 
+function getVersion() 
+
+// values ////////////////////////////////////////////////////////////////////
+
+string $host 
+string $database 
+string $user 
+string $password 
+string $dns                   // for odbc
+string $persistent
+
+integer $prefResType 
+string $lastQuery 
+string $error 
+Array[] $errors
+
+string $db 
+string $result
+
+
+// possible constants for the result types ///////////////////////////////////
+
+constructor(), getNext(), getAll(), getColumn()
+   $resultType = {ANYDB_RES_ASSOC | ANYDB_RES_NUM | ANYDB_RES_BOTH | ANYDB_RES_OBJ}
+
+getValue()
+   $resultType = {ANYDB_INT | ANYDB_FLOAT | ANYDB_DOUBLE | ANYDB_STRING | ANYDB_BOOL}

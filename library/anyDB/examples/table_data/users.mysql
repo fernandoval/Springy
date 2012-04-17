@@ -1,0 +1,9 @@
+CREATE TABLE users (
+    id int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    name varchar(20) NOT NULL,
+    login varchar (20) NOT NULL,
+    email varchar(20)
+);
+
+INSERT INTO users (name, login, email) VALUES ('peter', 'peter', 'peter@peter.de');
+INSERT INTO users (name, login, email) VALUES ('uschi', 'uschi', 'uschi@uschi.de');
