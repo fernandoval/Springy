@@ -1,0 +1,168 @@
+////////////////////////////////////////////////////////////////////////
+11/30/04 - Version 1.2:
+////////////////////////////////////////////////////////////////////////
+
+GENERAL:
+- I stopped supporting PHLIB and IDYA.DBX, since they did not release any updates 
+   since last year to their code. They seem to be dead. Let me know if you still need them.
+
+- more information for errors
+      array $errors[] contains timestamp, string, function and stack trace of all errors
+
+- results can now be returned as objects
+      works with: MYSQL, POSTGRESQL, SQLITE, ADODB, PEAR
+      
+
+DBS:
+- new database layer for ODBC
+
+- layers check if their php extension is installed
+      for POSTGRESQL and SQLITE 
+      
+- added function to extend SQLITE to support the UPDATE statement
+
+               ALTER TABLE tbl_name alter_specification [, alter_specification] ...
+               
+               alter_specification:
+                   ADD column_definition
+                 | DROP column_definition
+                 | CHANGE old_col_name column_definition
+               
+               column_definition:
+                   same as for create table statements
+
+INTERFACE:
+- enhanced getTables() function
+      works with: MYSQL, POSTGRES, ADODB, ODBC, SQLITE, PEAR
+
+- new function getDBs()
+      returns an array with the available databases
+      works with: MYSQL, POSTGRES, ADODB
+
+- new function setDB()
+      changes the current database
+      
+- new function getInsertId()
+      returns the id of the last INSERT statement
+
+- new function getDataId()
+      checks if a certain dataset already exists and returns the id
+
+- new function getMapped() 
+      works like getAll() but uses one of the result fields as an array key
+
+- changed getValue() 
+      it can now return strings, boolean, integer and float values
+
+
+ADDONS:
+- updated PageWidget
+      predefined paging functions for MYSQL, POSTGRESQL, MS ACCESS, SQLITE, DBX
+
+- enhanced DBHelper::selectBox()
+      you can now pass names and (optionally) values to the drop down
+
+- added DBHelper::checkBoxes(), DBHelper::radioButtons()
+      similar functionality to selectBox() 
+      
+- added DBHelper::cloneDataset()
+      creates a copy of a dataset
+
+-enhanced DBHelper::dumpAll(), dumpColumn, dumpNext()      
+      you can now pass additional string to the TABLE, TR, TH and TD tags
+
+
+BUGS:
+- fixed bug in escapeStr()
+
+- fixed bug in anyDB::getLayer()
+
+////////////////////////////////////////////////////////////////////////
+Version 1.1:
+////////////////////////////////////////////////////////////////////////
+
+internal version - was not released
+
+////////////////////////////////////////////////////////////////////////
+Version 1.0:
+////////////////////////////////////////////////////////////////////////
+
+GENERAL:
+- fixed bug in QueryHelper
+
+DBS:
+- added db class for DBX (http://dbx.idya.net/) a flatfile xml-based db class
+- added db class for SQLite (http://www.sqlite.org/, http://www.php.net/manual/de/ref.sqlite.php) a binary flatfile db class
+
+ADDONS:
+- added possible to pass a where clause to the PageWidget class
+- added function dbxLimitFunction() for supporting DBX
+
+DOCS: 
+- rewrote all example files
+- enhanced the documentation
+- updated apidoc
+
+////////////////////////////////////////////////////////////////////////
+
+Version 0.9:
+
+GENERAL:
+- changed project name to anyDB
+- changed name of AbstractDB.php to anyDB.phy
+- possible to choose between persistent and non-persistent connections
+- phpdoc for all classes (use phpDoucmentor to generate it yourself)
+- added directory with test scripts for easy functionality test
+- fixed bug within the error storage
+- made include paths more secure
+- renamed all the constants:
+    NUMERIC_RESULT      -->  ANYDB_RES_NUM
+    ASSOCIATIVE_RESULT  -->  ANYDB_RES_ASSOC
+    BOTH                -->  ANYDB_RES_BOTH
+    PREDEFINED_VALUE    -->  ANYDB_PREDEFINED_VALUE
+
+INTERFACE:
+- new function getVersion()
+- new function escapeStr() for all dbs
+- new function getTables() for all dbs
+- new function anyDB::wrapDB() to use an existing connection of ADODB, Metabase, 
+   etc. for usage with anyDB
+- renamed getDbLayer() to getLayer() in anyDB.php
+
+ADDONS:
+- new class for exporting db and table contents to SQL and CSV: Exporter
+- function getMin() added in DBHelper
+- improved object hierachy for the helper classes
+
+DBS:
+- added native POSTGRESQL wrapper class PostgresDB.php
+- removed unnecessary code from AdodbDB.php
+- cleaned up PhplibDB.php and MetabaseDB.php
+
+ARCHITECTURE:
+- changed the inheritance structure
+- introduced a new base class 'UtilityClass'
+
+////////////////////////////////////////////////////////////////////////
+
+Version 0.8:
+
+GENERAL:
+- created directory structure to make things easier to find
+- redesigned AbstractDB.php and added BasicDB.php to seperate interface from implementation
+
+INTERFACE:
+- due to request I changed the names (yes, it will be the last change, I promise!) for the 
+   getXXX functions.
+
+DBS:
+- improved MetabaseDB and ADODB
+
+ADDONS:
+- new helper class QueryHelper for generating SELECT, INSERT, DELETE, UPDATE and REPLACE queries
+- new functions in DBHelper:
+        function dumpColumn($array, $horizontal = true, $headerTitle = '')
+        function getCount(& $db, $tableName)
+        function getMax(& $db, $tableName)
+
+////////////////////////////////////////////////////////////////////////

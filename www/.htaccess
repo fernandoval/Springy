@@ -3,4 +3,4 @@ RewriteBase /
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ index.php?supervar=$1&%{QUERY_STRING} [L]
+RewriteRule ^(.*)$ index.php/$1&%{QUERY_STRING} [L]

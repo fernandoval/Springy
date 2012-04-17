@@ -1,0 +1,45 @@
+{strip}
+{*
+    PaginacaoClass - Navigation Pages Builder PHP Class
+    ---------------------------------------------------
+    Author: Fernando Val 
+    
+    Description:
+        [en-US]
+        Template for Smarty - http://smarty.php.nnet
+        
+        [pt-BR]
+        Template para Smarty - http://smarty.php.nnet
+        
+    Observations:
+        [en-US]
+        
+        [pt-BR]
+        Este template leva em consideração que o array de páginas da classe foi
+        jogado na variável de template de nome pagination
+*}
+{if $Pagination}
+	<div class="pagination">
+		Pagination:
+		{if $Pagination.previous}
+			<a href="{$Pagination.previous}">
+				Previous
+			</a> 
+		{/if}
+		{if $Pagination.first}<a href="{$Pagination.first}">1</a> ...{/if}
+		{foreach from=$Pagination.pages item=pagelink key=pagenum name=listPages}
+			{if $pagelink}
+				<a href="{$pagelink}">{$pagenum}</a>
+			{else}
+				<span class="currpage">{$pagenum}</span>
+			{/if}
+		{/foreach}
+		{if $Pagination.last}
+			... <a href="{$Pagination.last}">{$Pagination.lastpage}</a>
+		{/if}
+		{if $Pagination.next}
+			<a href="{$Pagination.next}">Next</a>
+		{/if}
+	</div>
+{/if}
+{/strip}

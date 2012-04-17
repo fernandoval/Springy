@@ -1,0 +1,7 @@
+Este framework é propriedade de seus autores.
+
+A utiização deste framework é permitida somente a seus autores e a parceiros previamente autorizados mediante carta por escrita.
+
+É vetado aos clientes que tenham projetos feitos utilizando este framework como cerne alterar, comercializar ou reutilizar os scripts deste framework sem a prévia autorização dos autores.
+
+Os clientes poderão alterar ou implementar novas páginas e templates de seu projeto sem a prévia autorização dos autores.

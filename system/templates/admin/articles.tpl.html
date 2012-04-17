@@ -1,0 +1,65 @@
+{include file="_header.inc.tpl.html"}
+{strip}
+	<div id="content">
+		<h2>Manutenção dos artigos</h2>
+		{if $CMS_Article}
+			<form class="form" method="post">
+				<fieldset>
+					<div class="aright">id: <input class="input" id="article_id" type="text" name="article_id" value="{$CMS_Article.article_id}" size="5" readonly="true" /></div>
+					<label for="title">Título:</label> <input id="title" type="text" name="title" value="{$CMS_Article.title}" size="50" maxlength="100" /><br />
+					<label for="slug">Slug:</label> <input id="slug" type="text" name="slug" value="{$CMS_Article.slug}" size="50" maxlength="100" /><br />
+					<label for="category_id">Categoria:</label> <select id="category_id" name="category_id">
+						<option value="0">[selecione uma categoria]</option>
+						{foreach from=$CMS_Categories item=Category key=catNum}
+							<option value="{$Category.category_id}" {if $CMS_Article.category_id == $Category.category_id}selected="selected"{/if}>{$Category.title}</option>
+						{/foreach}
+					</select>
+					<input id="published" type="checkbox" name="published" value="1" {if $CMS_Article.published=='1'}checked="checked"{/if} /><label for="published">Publicado</label><br />
+					<textarea id="text" name="text" cols="80" rows="20">{$CMS_Article.text}</textarea><br />
+					<label for="author">Autor:</label> <input id="author" type="text" name="author" value="{$CMS_Article.author}" size="50" maxlength="100" />
+				</fieldset>
+
+				<fieldset class="buttons">
+					<input type="submit" value="Salvar" /> <input type="button" value="Cancelar" onclick="location='/admin/articles'" />
+				</fieldset>
+			</form>
+		{else}
+			<ul class="menu">
+				<li><a href="/admin">Menu Principal</a></li>
+				<li><a href="/admin/articles/add">Novo artigo</a></li>
+			</ul>
+			<table class="data" cellspacing="0" cellpadding="0" border="0">
+				<thead>
+					<tr>
+						<th>id</th>
+						<th>Título</th>
+						<th>Publicado</th>
+						<th>Categoria</th>
+						<th>Autor</th>
+						<th>Data</th>
+						<th>Atualização</th>
+						<th>Ação</th>
+					</tr>
+				</thead>
+				<tbody>
+					{foreach from=$CMS_ArticleList item=Article key=ArticleNum}
+						<tr>
+							<td>{$Article.article_id}</td>
+							<td>{$Article.title}</td>
+							<td>{if $Article.published == '1'}Sim{else}Não{/if}</td>
+							<td>{$Article.category_title}</td>
+							<td>{$Article.author}</td>
+							<td>{$Article.dt_creation}</td>
+							<td>{$Article.dt_update}</td>
+							<td><a href="/admin/articles/edit/{$Article.article_id}">Editar</a> <a href="/admin/articles/delete/{$Article.article_id}">Excluir</a></td>
+						</tr>
+					{foreachelse}
+						<tr><td>No articles to list</td></tr>
+					{/foreach}
+				</tbody>
+			</table>
+		{/if}
+	</div>
+{/strip}
+{include file="_pagination.inc.tpl.html"}
+{include file="_footer.inc.tpl.html"}

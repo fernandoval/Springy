@@ -1,0 +1,24 @@
+{include file="_header.inc.tpl.html"}
+{strip}
+<div class="blog">
+	{if $CMS_ArticleID}
+		<div class="post">
+			<h3>{$CMS_Article.title}</h3>
+			<div class="text">{$CMS_Article.text}</div>
+			<div class="author">Escrito por <strong>{$CMS_Article.author}</strong> em <strong>{$CMS_Article.dt_creation|date_format:'%d/%m/%Y %H:%M:%S'}</strong></div>
+		</div>
+	{elseif $CMS_CategoryID}
+		{foreach from=$CMS_ArticleList item=Article key=ArticleNum}
+			<div class="post">
+				<h3><a href="/{$Article.category_slug}/{$Article.slug}">{$Article.title}</a></h3>
+				<div class="text">{$Article.text}</div>
+				<div class="author">Escrito por <strong>{$Article.author}</strong> em <strong>{$Article.dt_creation|date_format:'%d/%m/%Y %H:%M:%S'}</strong></div>
+			</div>
+		{foreachelse}
+			<p>No articles to list</p>
+		{/foreach}
+		{include file="_pagination.inc.tpl.html"}
+	{/if}
+</div>
+{/strip}
+{include file="_footer.inc.tpl.html"}

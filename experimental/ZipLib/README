@@ -1,0 +1,137 @@
+Documentation for ZIPlib
+
+Copyright:              (c) 2003 by Pascal Rehfeldt
+                        Pascal@Pascal-Rehfeldt.com
+
+Version:                ZIPlib 1.0
+
+Last Changes:           14.04.2003
+
+License:                GNU General Public License (Version 2, June 1991)
+                        This program is free software; you can redistribute
+                        it and/or modify it under the terms of the GNU
+                        General Public License as published by the Free
+                        Software Foundation; either version 2 of the License,
+                        or (at your option) any later version.
+
+                        This program is distributed in the hope that it will
+                        be useful, but WITHOUT ANY WARRANTY; without even the
+                        implied warranty of MERCHANTABILITY or FITNESS FOR A
+                        PARTICULAR PURPOSE. See the GNU General Public License
+                        for more details.
+
+                        You should have received a copy of the GNU General Public
+                        License along with this program; if not, write to the Free
+                        Software Foundation, Inc., 59 Temple Place, Suite 330,
+                        Boston, MA 02111-1307 USA
+
+Description:            You can use ZIPlib to add different resources to a ZIP file.
+
+
+Generall Information about this class:
+With the constructor you can set the name of the archive, the
+path to FDPF and to DeepDir if needed.
+The usage of FPDF in combination with this class is described in
+the function "addFileAsPDF".
+
+Off course you can combine the functions as you wish it.
+An example can be found in the example.php
+
+*************************************************************************
+
+Function:     addFile()
+Syntax:       void addFile( string Content, string Filename )
+Description:  Use addFile() to add the content of a file to your
+              ZIP archive. The filecontent must be allready in a
+              string.
+              This function is usefull to add the content of a BLOB
+              field from a database.
+              To add a complete file you should use the function
+              "addFileAndRead".
+
+Example:
+
+<?php
+ob_start();
+require('zip.lib.php');
+
+$zipfile = new zipfile('archive.zip');
+$zipfile->addFile('Inhalt', 'Dateiname');
+echo $zipfile->file();
+?>
+
+*************************************************************************
+
+Function:     addFileAndRead()
+Syntax:       void addFile( resource Filename )
+Description:  addFileAndRead() takes a file, reads it and add it
+              to your archive. The targetfile in the archive has
+              the same name as the sourcefile.
+              This function can read ASCII and binary files.
+
+Example:
+
+<?php
+ob_start();
+require('zip.lib.php');
+
+$zipfile = new zipfile('archive.zip');
+$zipfile->addFileAndRead('Datei.bin');
+echo $zipfile->file();
+?>
+
+*************************************************************************
+
+Function:     addDirContent()
+Syntax:       void addDirContent( resource dir_handle )
+Description:  To add a complete dir you can use this function.
+              It doesn't matter if there are binary or ASCII files
+              in the dir.
+              The function doesn't work recursiv without the DeepDir
+              Class from Ilya Nemihin.
+              You can grab the latest version of DeepDir at phpclasses.org:
+              http://www.phpclasses.org/browse.html/package/1025.html
+
+Example:
+
+<?php
+ob_start();
+require('zip.lib.php');
+
+$zipfile = new zipfile('archive.zip');
+$zipfile->addDirContent('./');
+echo $zipfile->file();
+?>
+
+*************************************************************************
+
+Function:     addFileAsPDF()
+Syntax:       void addFileAsPDF( resource file_handle, string title, string autor )
+Description:  This function adds an ASCII file (binary files are
+              unsupported!) as PDF to the ZIP file.
+              To use this function you have to extend FPDF
+              (http://www.fpdf.org/) with this function:
+
+              function getBuffer () {
+
+                global $HTTP_ENV_VARS;
+                if($this->state < 3) $this->Close();
+                return $this->buffer;
+
+              }
+
+              You should find an extended version of FPDF
+              in this release of ZIPlib.
+
+Example:
+
+<?php
+ob_start();
+require('zip.lib.php');
+
+$zipfile = new zipfile('archive.zip');
+$zipfile->addFileAsPDF('Quelldatei.txt', 'Testdatei', 'Webmaster');
+echo $zipfile->file();
+?>
+
+*************************************************************************

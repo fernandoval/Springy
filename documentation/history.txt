@@ -1,0 +1,19 @@
+/*  ------------------------------------------------------------------------------------ --- -- -
+	FVAL PHP Framework for Web Sites
+
+	Copyright (C) 2009 FVAL - Consultoria e Informática Ltda.
+	Copyright (C) 2009 Fernando Val
+	Copyright (C) 2009 Lucas Cardozo
+
+	http://www.fval.com.br
+
+	Developer team:
+		Fernando Val  - fernando.val@gmail.com
+		Lucas Cardozo - lucas.cardozo@gmail.com
+
+	Framework Update History
+	------------------------------------------------------------------------------------ --- -- - */
+
+	1.0.0
+		- [pt-br] Versão inicial do framework confeccionada por Fernando Val com auxílio de
+			Lucas Cardozo
