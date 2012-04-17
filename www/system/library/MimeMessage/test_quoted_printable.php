@@ -2,7 +2,7 @@
 /*
  * test_quoted_printable.php
  *
- * @(#) $Header: /home/mlemos/cvsroot/mimemessage/test_quoted_printable.php,v 1.6 2008/03/05 05:29:37 mlemos Exp $
+ * @(#) $Header: /home/mlemos/cvsroot/mimemessage/test_quoted_printable.php,v 1.7 2009/07/02 21:35:14 mlemos Exp $
  *
  */
 
@@ -47,6 +47,7 @@ Function test_quoting(&$message, $test_values, $cs, $quote, $email_header, &$tes
 		"\n.Dot.ted"=>"\n\t.Dot.ted",
 		"\nFrom line\nfrom line"=>"\n\tFrom line\n\tfrom line",
 		"More\ncoffee,\nSir?"=>"=?".$cs."?q?More\n\tcoffee=2C\n\tSir=3F?=",
+		"Café?"=>"=?ISO-8859-1?q?Caf=E9=3F?=",
 	);
 	test_quoting($message, $test_values, $cs, 0, 1, $tests, $failed);
 
@@ -64,6 +65,7 @@ Function test_quoting(&$message, $test_values, $cs, $quote, $email_header, &$tes
 		"\n.Dot.ted"=>"\n\t.Dot.ted",
 		"\nFrom line\nfrom line"=>"\n\tFrom line\n\tfrom line",
 		"More\ncoffee,\nSir?"=>"More\n\tcoffee,\n\tSir?",
+		"Café?"=>"=?ISO-8859-1?q?Caf=E9=3F?=",
 	);
 	test_quoting($message, $test_values, $cs, 0, 0, $tests, $failed);
 
@@ -90,6 +92,7 @@ Function test_quoting(&$message, $test_values, $cs, $quote, $email_header, &$tes
 		"=46rom line\n=66rom line\n",
 		"Very.very.very.very.very.very.very.very.very.very.very.very.very.very.long..text"=>
 		"Very.very.very.very.very.very.very.very.very.very.very.very.very.very.long.=\n=2Etext",
+		"Café?"=>"Caf=E9?",
 	);
 	test_quoting($message, $test_values, '', 0, 1, $tests, $failed);
 

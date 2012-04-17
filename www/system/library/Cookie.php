@@ -1,47 +1,24 @@
 <?php
-/*  ------------------------------------------------------------------------------------ --- -- -
-	FVAL PHP Framework for Web Sites
-
-	Copyright (c) 2007-2009 FVAL - Consultoria e Informática Ltda.
-	Copyright (C) 2009 Fernando Val
-	Copyright (C) 2009 Lucas Cardozo
-
-	http://www.fval.com.br
-
-	Developer team:
-		Fernando Val  - fernando.val@gmail.com
-		Lucas Cardozo - lucas.cardozo@gmail.com
-
-	Framework version:
-		1.0.0
-
-	Script version:
-		0.1.0
-
-	This script:
-		Framework cookie class
-	------------------------------------------------------------------------------------ --- -- - */
+/**
+ *	FVAL PHP Framework for Web Applications\n
+ *	Copyright (c) 2007-2011 FVAL Consultoria e Informática Ltda.\n
+ *	Copyright (c) 2007-2011 Fernando Val\n
+ *	Copyright (c) 2009-2011 Lucas Cardozo
+ *
+ *	\warning Este arquivo é parte integrante do framework e não pode ser omitido
+ *
+ *	\version 0.1.1
+ *
+ *	\brief Classe para tratamento de cookies
+ */
 
 class Cookie extends Kernel {
 	// [en-us] Reserved session keys
 	private static $_reserved = array();
 
-	/*  -------------------------------------------------------------------------------- --- -- -
-		[pt-br] Classe estática não pode ser inicializada
-		[en-us] Static class cannot be initialized
-	    -------------------------------------------------------------------------------- --- -- - */
-	private function __construct() {}
-
-	/*  -------------------------------------------------------------------------------- --- -- -
-		[en-us] Alias for delete() function
-	    -------------------------------------------------------------------------------- --- -- - */
-	public static function del($key) {
-		self::delete($key);
-	}
-
-	/*  -------------------------------------------------------------------------------- --- -- -
-		[en-us] Delete a cookie
-	    -------------------------------------------------------------------------------- --- -- - */
+	/**
+	 *	\brief Delete a cookie
+	 */
 	public static function delete($key) {
 		// [en-us] Change string representation array to key/value array
 		$key = self::_scrubKey($key);
@@ -85,10 +62,16 @@ class Cookie extends Kernel {
 			}
 		}
 	}
+	/**
+	 *	\brief Alias for delete() function
+	 */
+	public static function del($key) {
+		self::delete($key);
+	}
 
-	/*  -------------------------------------------------------------------------------- --- -- -
-		[en-us] See if a cookie key exists
-	    -------------------------------------------------------------------------------- --- -- - */
+	/**
+	 *	\brief See if a cookie key exists
+	 */
 	public static function exists($key) {
 		// [en-us] Change string representation array to key/value array
 		$key = self::_scrubKey($key);
@@ -110,9 +93,9 @@ class Cookie extends Kernel {
 		return false;
 	}
 
-	/*  -------------------------------------------------------------------------------- --- -- -
-		[en-us] Get cookie information
-	    -------------------------------------------------------------------------------- --- -- - */
+	/**
+	 *	\brief Get cookie information
+	 */
 	public static function get($key) {
 		// [en-us] Change string representation array to key/value array
 		$key = self::_scrubKey($key);
@@ -134,17 +117,18 @@ class Cookie extends Kernel {
 		else return null;
 	}
 
-	/*  -------------------------------------------------------------------------------- --- -- -
-		[en-us] Return the cookie array
-	    -------------------------------------------------------------------------------- --- -- - */
+	/**
+	 *	\brief Return the cookie array
+	 */
 	public static function contents() {
 		return $_COOKIE;
 	}
 
-	/*  -------------------------------------------------------------------------------- --- -- -
-		[en-us] Set cookie information
-			Default expire time (session, 1 week = 604800)
-	    -------------------------------------------------------------------------------- --- -- - */
+	/**
+	 *	\brief Set cookie information
+	 *
+	 *		Default expire time (session, 1 week = 604800)
+	 */
 	public static function set($key, $value, $expire=0, $path='', $domain='', $secure=false, $httponly=true) {
 		// [en-us] Make sure they aren't trying to set a reserved word
 		if (!in_array($key, self::$_reserved)) {
@@ -152,7 +136,7 @@ class Cookie extends Kernel {
 			$key = self::_scrubKey($key, true);
 
 			// [en-us] Store the cookie
-			setcookie($key, $value, $expire, $path, $domain, $secure, $httponly);
+			setcookie($key, $value, ($expire ? time() + $expire : 0), $path, $domain, $secure, $httponly);
 		}
 		// [en-us] Otherwise, throw an error
 		else {
@@ -160,9 +144,9 @@ class Cookie extends Kernel {
 		}
 	}
 
-	/*  -------------------------------------------------------------------------------- --- -- -
-		[en-us] Converts strings to arrays (or vice versa if toString = true)
-	    -------------------------------------------------------------------------------- --- -- - */
+	/**
+	 *	\brief Converts strings to arrays (or vice versa if toString = true)
+	 */
 	private static function _scrubKey($key, $toString = false) {
 		// [en-us] Converting from array to string
 		if ($toString) {
@@ -187,4 +171,3 @@ class Cookie extends Kernel {
 		return $key;
 	}
 }
-?>

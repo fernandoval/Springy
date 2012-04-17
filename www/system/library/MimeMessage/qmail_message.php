@@ -15,7 +15,7 @@
 
 	<name>qmail_message_class</name>
 	<version>@(#) $Id: qmail_message.php,v 1.11 2009/07/27 22:07:23 mlemos Exp $</version>
-	<copyright>Copyright Â© (C) Manuel Lemos 2001-2004</copyright>
+	<copyright>Copyright © (C) Manuel Lemos 2001-2004</copyright>
 	<title>MIME E-mail message composing and sending using Qmail</title>
 	<author>Manuel Lemos</author>
 	<authoraddress>mlemos-at-acm.org</authoraddress>

@@ -1,11 +1,13 @@
 <?php
 /**
  *	FVAL PHP Framework for Web Applications\n
- *	Copyright (c) 2007-2010 FVAL Consultoria e Informática Ltda.
+ *	Copyright (c) 2007-2011 FVAL Consultoria e Informática Ltda.\n
+ *	Copyright (c) 2007-2011 Fernando Val\n
+ *	Copyright (c) 2009-2011 Lucas Cardozo
  *
  *	\warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
- *	\version 0.9.4
+ *	\version 0.9.6
  *
  *	\brief Classe para acesso a banco de dados
  *
@@ -53,8 +55,8 @@ class DB extends Kernel {
 		} else {
 			$connected = self::$DB[$database]->Connect($conf['host_name'], $conf['user_name'], $conf['password'], $conf['database']);
 		}
-
-		if (!$connected) {
+		
+		if ($connected === false) {
 			self::reportError('Can\'t connect to database server.', $database);
 		}
 
@@ -155,7 +157,7 @@ class DB extends Kernel {
 			}
 		}
 
-		if (self::$printSql == 2 || parent::get_conf('system', 'development')) {
+		if (self::$printSql == 2 || parent::get_conf('system', 'debug')) {
 			/*
 				[pt-BR] Caso o sistema esteja em desenvolvimento OU algum desenvolvedor esteja vendo o sistema, imprime o erro no browser.
 			*/
@@ -304,4 +306,3 @@ class DB extends Kernel {
 		return false;
 	}
 }
-?>

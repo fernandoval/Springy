@@ -7,7 +7,7 @@
 <center><h1>Class: MIME E-mail message composing and sending using Sendmail</h1></center>
 <hr />
 <ul>
-<p><b>Version:</b> <tt>@(#) $Id: sendmail_message.php,v 1.14 2004/10/05 18:22:45 mlemos Exp $</tt></p>
+<p><b>Version:</b> <tt>@(#) $Id: sendmail_message.php,v 1.18 2010/08/08 07:50:26 mlemos Exp $</tt></p>
 <h2><a name="table_of_contents">Contents</a></h2>
 <ul>
 <li><a href="#2.1.1">Summary</a></li>
@@ -45,11 +45,11 @@
 <h3><a name="3.2.0.1">Copyright</a></h3>
 <p>Copyright &copy; (C) Manuel Lemos 1999-2004</p>
 <h3><a name="3.2.0.2">Version</a></h3>
-<p>@(#) $Id: sendmail_message.php,v 1.14 2004/10/05 18:22:45 mlemos Exp $</p>
+<p>@(#) $Id: sendmail_message.php,v 1.18 2010/08/08 07:50:26 mlemos Exp $</p>
 <h3><a name="3.2.0.3">Parent classes</a></h3>
 <ul>
 <p><li>MIME E-mail message composing and sending</li></p>
-<p><b>Version:</b> <tt>@(#) $Id: email_message.php,v 1.54 2004/10/02 05:57:23 mlemos Exp $</tt></p>
+<p><b>Version:</b> <tt>@(#) $Id: email_message.php,v 1.92 2011/01/28 06:32:16 mlemos Exp $</tt></p>
 </ul>
 <h3><a name="4.2.0">Purpose</a></h3>
 <p>Implement an alternative message delivery method using <a href="http://www.sendmail.org/">Sendmail</a> MTA (Mail Transfer Agent). This class can also be used with other MTAs like <a href="http://www.exim.org/">Exim</a>, <a href="http://www.postfix.org/">Postfix</a> and <a href="http://www.qmail.org/">Qmail</a>, as they provide a wrapper commands that emulate the <tt>sendmail</tt> command.</p>
@@ -137,7 +137,7 @@
 <h3>Type</h3>
 <p><tt><i>string</i></tt></p>
 <h3>Default value</h3>
-<p><tt>'sendmail $Revision: 1.14 $'</tt></p>
+<p><tt>'sendmail $Revision: 1.18 $'</tt></p>
 <h3>Purpose</h3>
 <p>Specify the text that is used to identify the mail delivery class or sub-class. This text is appended to the <tt>X-Mailer</tt> header text defined by the mailer variable.</p>
 <h3>Usage</h3>
@@ -153,10 +153,12 @@
 <li>mailer</li><br />
 <li>default_charset</li><br />
 <li>line_quote_prefix</li><br />
+<li>break_long_lines</li><br />
 <li>file_buffer_length</li><br />
 <li>debug</li><br />
 <li>cache_body</li><br />
 <li>error</li><br />
+<li>localhost</li><br />
 <p><a href="#table_of_contents">Table of contents</a></p>
 </ul>
 </ul>
@@ -173,6 +175,8 @@
 <ul>
 <li>ValidateEmailAddress</li><br />
 <li>WrapText</li><br />
+<li>CenterText</li><br />
+<li>Ruler</li><br />
 <li>QuoteText</li><br />
 <li>SetHeader</li><br />
 <li>SetEncodedHeader</li><br />
@@ -202,6 +206,8 @@
 <li>GetPartContentID</li><br />
 <li>GetDataURL</li><br />
 <li>Send</li><br />
+<li>GetMessage</li><br />
+<li>GetMessageSize</li><br />
 <li>Mail</li><br />
 <li>SetBulkMail</li><br />
 <p><a href="#table_of_contents">Table of contents</a></p>

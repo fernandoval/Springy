@@ -7,7 +7,7 @@
 <center><h1>Class: MIME E-mail message composing and sending</h1></center>
 <hr />
 <ul>
-<p><b>Version:</b> <tt>@(#) $Id: email_message.php,v 1.85 2008/04/17 04:15:56 mlemos Exp $</tt></p>
+<p><b>Version:</b> <tt>@(#) $Id: email_message.php,v 1.92 2011/01/28 06:32:16 mlemos Exp $</tt></p>
 <h2><a name="table_of_contents">Contents</a></h2>
 <ul>
 <li><a href="#2.1.1">Summary</a></li>
@@ -23,16 +23,17 @@
 </ul>
 <li><a href="#4.1.1">Variables</a></li>
 <ul>
-<li><a href="#5.2.11">email_regular_expression</a></li>
-<li><a href="#5.2.12">mailer</a></li>
-<li><a href="#5.2.13">mailer_delivery</a></li>
-<li><a href="#5.2.14">default_charset</a></li>
-<li><a href="#5.2.15">line_quote_prefix</a></li>
-<li><a href="#5.2.16">break_long_lines</a></li>
-<li><a href="#5.2.17">file_buffer_length</a></li>
-<li><a href="#5.2.18">debug</a></li>
-<li><a href="#5.2.19">cache_body</a></li>
-<li><a href="#5.2.20">error</a></li>
+<li><a href="#5.2.12">email_regular_expression</a></li>
+<li><a href="#5.2.13">mailer</a></li>
+<li><a href="#5.2.14">mailer_delivery</a></li>
+<li><a href="#5.2.15">default_charset</a></li>
+<li><a href="#5.2.16">line_quote_prefix</a></li>
+<li><a href="#5.2.17">break_long_lines</a></li>
+<li><a href="#5.2.18">file_buffer_length</a></li>
+<li><a href="#5.2.19">debug</a></li>
+<li><a href="#5.2.20">cache_body</a></li>
+<li><a href="#5.2.21">error</a></li>
+<li><a href="#5.2.22">localhost</a></li>
 </ul>
 <li><a href="#6.1.1">Functions</a></li>
 <ul>
@@ -88,7 +89,7 @@
 <h3><a name="3.2.0.1">Copyright</a></h3>
 <p>Copyright &copy; (C) Manuel Lemos 1999-2004</p>
 <h3><a name="3.2.0.2">Version</a></h3>
-<p>@(#) $Id: email_message.php,v 1.85 2008/04/17 04:15:56 mlemos Exp $</p>
+<p>@(#) $Id: email_message.php,v 1.92 2011/01/28 06:32:16 mlemos Exp $</p>
 <h3><a name="3.2.0.3">Purpose</a></h3>
 <p>Compose and send e-mail messages according to the MIME standards.</p>
 <h3><a name="3.2.0.4">Translation</a></h3>
@@ -182,8 +183,9 @@
 <li><tt><a href="#variable_debug">debug</a></tt></li><br />
 <li><tt><a href="#variable_cache_body">cache_body</a></tt></li><br />
 <li><tt><a href="#variable_error">error</a></tt></li><br />
+<li><tt><a href="#variable_localhost">localhost</a></tt></li><br />
 <p><a href="#table_of_contents">Table of contents</a></p>
-<h3><a name="variable_email_regular_expression"></a><li><a name="5.2.11">email_regular_expression</a></li></h3>
+<h3><a name="variable_email_regular_expression"></a><li><a name="5.2.12">email_regular_expression</a></li></h3>
 <h3>Type</h3>
 <p><tt><i>string</i></tt></p>
 <h3>Default value</h3>
@@ -193,17 +195,17 @@
 <h3>Usage</h3>
 <p>Do not change this variable unless you have reason to believe that it is rejecting existing e-mail addresses that are known to be valid.</p>
 <p><a href="#variables">Variables</a></p>
-<h3><a name="variable_mailer"></a><li><a name="5.2.12">mailer</a></li></h3>
+<h3><a name="variable_mailer"></a><li><a name="5.2.13">mailer</a></li></h3>
 <h3>Type</h3>
 <p><tt><i>string</i></tt></p>
 <h3>Default value</h3>
-<p><tt>'http://www.phpclasses.org/mimemessage $Revision: 1.85 $'</tt></p>
+<p><tt>'http://www.phpclasses.org/mimemessage $Revision: 1.92 $'</tt></p>
 <h3>Purpose</h3>
 <p>Specify the base text that is used identify the name and the version of the class that is used to send the message by setting an implicit the <tt>X-Mailer</tt> message header. This is meant mostly to assist on the debugging of delivery problems.</p>
 <h3>Usage</h3>
 <p>Change this to set another mailer identification string or leave it to an empty string to prevent that the <tt>X-Mailer</tt> header be added to the message.</p>
 <p><a href="#variables">Variables</a></p>
-<h3><a name="variable_mailer_delivery"></a><li><a name="5.2.13">mailer_delivery</a></li></h3>
+<h3><a name="variable_mailer_delivery"></a><li><a name="5.2.14">mailer_delivery</a></li></h3>
 <h3>Type</h3>
 <p><tt><i>string</i></tt></p>
 <h3>Default value</h3>
@@ -213,7 +215,7 @@
 <h3>Usage</h3>
 <p>This variable should only be redefined by the different mail delivery sub-classes.</p>
 <p><a href="#variables">Variables</a></p>
-<h3><a name="variable_default_charset"></a><li><a name="5.2.14">default_charset</a></li></h3>
+<h3><a name="variable_default_charset"></a><li><a name="5.2.15">default_charset</a></li></h3>
 <h3>Type</h3>
 <p><tt><i>string</i></tt></p>
 <h3>Default value</h3>
@@ -223,7 +225,7 @@
 <h3>Usage</h3>
 <p>Change this variable to the correct character set name if it is different than the default.</p>
 <p><a href="#variables">Variables</a></p>
-<h3><a name="variable_line_quote_prefix"></a><li><a name="5.2.15">line_quote_prefix</a></li></h3>
+<h3><a name="variable_line_quote_prefix"></a><li><a name="5.2.16">line_quote_prefix</a></li></h3>
 <h3>Type</h3>
 <p><tt><i>string</i></tt></p>
 <h3>Default value</h3>
@@ -233,7 +235,7 @@
 <h3>Usage</h3>
 <p>Change it only if you prefer to quote lines marking them with a different line prefix.</p>
 <p><a href="#variables">Variables</a></p>
-<h3><a name="variable_break_long_lines"></a><li><a name="5.2.16">break_long_lines</a></li></h3>
+<h3><a name="variable_break_long_lines"></a><li><a name="5.2.17">break_long_lines</a></li></h3>
 <h3>Type</h3>
 <p><tt><i>bool</i></tt></p>
 <h3>Default value</h3>
@@ -243,7 +245,7 @@
 <h3>Usage</h3>
 <p>Change it only if you to avoid breaking long lines without any space characters, like for instance of messages with long URLs.</p>
 <p><a href="#variables">Variables</a></p>
-<h3><a name="variable_file_buffer_length"></a><li><a name="5.2.17">file_buffer_length</a></li></h3>
+<h3><a name="variable_file_buffer_length"></a><li><a name="5.2.18">file_buffer_length</a></li></h3>
 <h3>Type</h3>
 <p><tt><i>int</i></tt></p>
 <h3>Default value</h3>
@@ -253,7 +255,7 @@
 <h3>Usage</h3>
 <p>The default value may be increased if you have plenty of memory and want to benefit from additional speed when processing the files that are used to compose messages.</p>
 <p><a href="#variables">Variables</a></p>
-<h3><a name="variable_debug"></a><li><a name="5.2.18">debug</a></li></h3>
+<h3><a name="variable_debug"></a><li><a name="5.2.19">debug</a></li></h3>
 <h3>Type</h3>
 <p><tt><i>string</i></tt></p>
 <h3>Default value</h3>
@@ -263,7 +265,7 @@
 <h3>Usage</h3>
 <p>If you need to track the errors that may happen during the use of the class, set this variable to the name of a callback function. It should take only one argument that is the error message. When this variable is set to an empty string, no debug callback function is called.</p>
 <p><a href="#variables">Variables</a></p>
-<h3><a name="variable_cache_body"></a><li><a name="5.2.19">cache_body</a></li></h3>
+<h3><a name="variable_cache_body"></a><li><a name="5.2.20">cache_body</a></li></h3>
 <h3>Type</h3>
 <p><tt><i>bool</i></tt></p>
 <h3>Default value</h3>
@@ -273,7 +275,7 @@
 <h3>Usage</h3>
 <p>Set this variable to <tt>1</tt> if you intend to send the a message with the same body to many recipients, so the class avoids the overhead of regenerating messages with the same content.</p>
 <p><a href="#variables">Variables</a></p>
-<h3><a name="variable_error"></a><li><a name="5.2.20">error</a></li></h3>
+<h3><a name="variable_error"></a><li><a name="5.2.21">error</a></li></h3>
 <h3>Type</h3>
 <p><tt><i>string</i></tt></p>
 <h3>Default value</h3>
@@ -282,6 +284,16 @@
 <p>Store the last error return by any function that may fail due to some error.</p>
 <h3>Usage</h3>
 <p>Do not change this variable value unless you intend to clear the error status by setting it to an empty string.</p>
+<p><a href="#variables">Variables</a></p>
+<h3><a name="variable_localhost"></a><li><a name="5.2.22">localhost</a></li></h3>
+<h3>Type</h3>
+<p><tt><i>string</i></tt></p>
+<h3>Default value</h3>
+<p><tt>''</tt></p>
+<h3>Purpose</h3>
+<p>Specify the domain name of the computer sending the message.</p>
+<h3>Usage</h3>
+<p>This value is used as default domain of the sender e-mail address when generating automatic <tt>Message-Id</tt> headers.</p>
 <p><a href="#variables">Variables</a></p>
 <p><a href="#table_of_contents">Table of contents</a></p>
 </ul>

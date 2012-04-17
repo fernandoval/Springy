@@ -2,7 +2,7 @@
 /*
  * test_smtp_message.php
  *
- * @(#) $Header: /home/mlemos/cvsroot/mimemessage/test_smtp_message.php,v 1.14 2009/04/12 08:20:39 mlemos Exp $
+ * @(#) $Header: /home/mlemos/cvsroot/mimemessage/test_smtp_message.php,v 1.15 2011/03/09 07:48:52 mlemos Exp $
  *
  */
 
@@ -49,6 +49,19 @@
 
 	/* Use TLS after connecting to the SMTP server. Hotmail requires TLS */
 	$email_message->smtp_start_tls=0;
+
+	/* Change this variable if you need to connect to SMTP server via an HTTP proxy */
+	$email_message->smtp_http_proxy_host_name='';
+	/* Change this variable if you need to connect to SMTP server via an HTTP proxy */
+	$email_message->smtp_http_proxy_host_port=3128;
+
+	/* Change this variable if you need to connect to SMTP server via an SOCKS server */
+	$email_message->smtp_socks_host_name = '';
+	/* Change this variable if you need to connect to SMTP server via an SOCKS server */
+	$email_message->smtp_socks_host_port = 1080;
+	/* Change this variable if you need to connect to SMTP server via an SOCKS server */
+	$email_message->smtp_socks_version = '5';
+
 
 	/* Deliver directly to the recipients destination SMTP server */
 	$email_message->smtp_direct_delivery=0;

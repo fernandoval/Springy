@@ -1,7 +1,26 @@
+FVAL PHP Framework for Web Applications
+
+Copyright (C) 2007-2011 FVAL - Consultoria e Informática Ltda.
+Copyright (C) 2007-2011 Fernando Val
+Copyright (C) 2009-2011 Lucas Cardozo
+
+http://www.fval.com.br
+
+Developer team:
+	Fernando Val  - fernando.val@gmail.com
+	Lucas Cardozo - lucas.cardozo@gmail.com
+
+
 Este framework é propriedade de seus autores.
 
-A utiização deste framework é permitida somente a seus autores e a parceiros previamente autorizados mediante carta por escrita.
+A utiização deste framework é permitida somente a seus autores e a parceiros previamente autorizados mediante carta escrita.
 
 É vetado aos clientes que tenham projetos feitos utilizando este framework como cerne alterar, comercializar ou reutilizar os scripts deste framework sem a prévia autorização dos autores.
 
 Os clientes poderão alterar ou implementar novas páginas e templates de seu projeto sem a prévia autorização dos autores.
+
+Os componentes distribuídos com esse framework são propriedade de seus autores que os distribuem sob a licença GPL. Todos os direitos lhe são reservados.
+
+Para maiores esclarecimentos, consulte a Lei 9.609 de 19 de fevereiro de 1998. http://www.planalto.gov.br/ccivil/Leis/L9609.htm
+
+Para detalhes de como utilizar esse framework, entre em contato com os autores.

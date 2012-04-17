@@ -1,11 +1,12 @@
 <?php
 /**
  *	FVAL PHP Framework for Web Applications\n
- *	Copyright (c) 2007-2009 FVAL Consultoria e Informática Ltda.
+ *	Copyright (c) 2007-2011 FVAL Consultoria e Informática Ltda.\n
+ *	Copyright (c) 2007-2011 Fernando Val
  *
  *	\warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
- *	\version 1.0.0
+ *	\version 1.0.1
  *
  *	\brief Classe para criação de XML de RSS
  */
@@ -121,4 +122,3 @@ class Rss extends Kernel {
 	}
 
 }
-?>

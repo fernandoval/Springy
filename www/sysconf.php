@@ -1,11 +1,10 @@
 <?php
 /** \file 
- *  FVAL PHP Framework for Web Applications\n
- *  Copyright (c) 2007-2010 FVAL Consultoria e Informática Ltda.
+ *  FVAL PHP Framework for Web Applications
  *
  *  \warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
- *  \version 1.0.0
+ *  \version 1.1.0
  *
  *  \brief Configurações do cerne do sistema
  */
@@ -16,23 +15,20 @@
 /*@{*/
 
 /// Define o ambiente do sistema
-$GLOBALS['SYSTEM']['ACTIVE_ENVIRONMENT'] = 'development';
-
-/// Define se o sistema está em manutenção
-$GLOBALS['SYSTEM']['MAINTENANCE'] = false;
+$SYSTEM['ACTIVE_ENVIRONMENT'] = 'development';
 
 /// Define se será usado o mini Framework CMS
-$GLOBALS['SYSTEM']['CMS'] = false;
+$SYSTEM['CMS'] = false;
 
 /// Caminhos das classes e arquivos de configuração
-$GLOBALS['SYSTEM']['SYSTEM_PATH'] = realpath(dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'system');
-$GLOBALS['SYSTEM']['LIBRARY_PATH'] = realpath($GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'library');
-$GLOBALS['SYSTEM']['CONTROLER_PATH'] = realpath($GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'controllers');
-$GLOBALS['SYSTEM']['USER_CLASS_PATH'] = realpath($GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'user_classes');
-$GLOBALS['SYSTEM']['CONFIG_PATH'] = realpath($GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'conf');
+$SYSTEM['SYSTEM_PATH'] = realpath(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'system');
+$SYSTEM['LIBRARY_PATH'] = realpath($SYSTEM['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'library');
+$SYSTEM['CONTROLER_PATH'] = realpath($SYSTEM['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'controllers');
+$SYSTEM['USER_CLASS_PATH'] = realpath($SYSTEM['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'user_classes');
+$SYSTEM['CONFIG_PATH'] = realpath($SYSTEM['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'conf');
 
 /// Configurações globais
-$GLOBALS['SYSTEM']['CHARSET'] = 'UTF-8';
+$SYSTEM['CHARSET'] = 'UTF-8';
+$SYSTEM['TIMEZONE'] = 'America/Sao_Paulo';
 
 /*@}*/
-?>

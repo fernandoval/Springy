@@ -1,35 +1,36 @@
 <?php
 /**
  *	FVAL PHP Framework for Web Applications\n
- *	Copyright (c) 2007-2009 FVAL Consultoria e Informática Ltda.
+ *	Copyright (c) 2007-2011 FVAL Consultoria e Informática Ltda.\n
+ *	Copyright (c) 2007-2011 Fernando Val
  *
  *	\warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
- *	\version 1.1.0
+ *	\version 1.2.1
  *
  *	\brief Classe para tratamento de strings em formato UTF-8
  */
 
-class Strings_UTF8 {
+class Strings_UTF8 extends Strings {
 
 	/**
 	 *	\brief Troca caracteres acentuados por não acentuado
 	 */
 	public static function remove_accented_chars($txt) {
-		$txt = mb_ereg_replace('[áàâãåäªÁÀÂÄÃª]', 'a', $txt);
-		$txt = mb_ereg_replace('[éèêëÉÈÊË]', 'e', $txt);
-		$txt = mb_ereg_replace('[íìîïÍÌÎÏ]', 'i', $txt);
-		$txt = mb_ereg_replace('[óòôõöºÓÒÔÕÖº]', 'o', $txt);
-		$txt = mb_ereg_replace('[úùûüÚÙÛÜµ]', 'u', $txt);
-		$txt = mb_ereg_replace('[ñÑ]', 'n', $txt);
-		$txt = mb_ereg_replace('[çÇ]', 'c', $txt);
-		$txt = mb_ereg_replace('[ÿ¥]', 'y', $txt);
-		$txt = mb_ereg_replace('[¹]', '1', $txt);
-		$txt = mb_ereg_replace('[²]', '2', $txt);
-		$txt = mb_ereg_replace('[³]', '3', $txt);
-		$txt = mb_ereg_replace('[Ææ]', 'ae', $txt);
-		$txt = mb_ereg_replace('[Øø]', '0', $txt);
-		$txt = mb_ereg_replace('[†°¢£§•¶ß®©™´¨≠±≤≥∂∑∏π∫Ω]', '', $txt);
+		$txt = preg_replace('/[áàâãåäªÁÀÂÄÃª]/u', 'a', $txt);
+		$txt = preg_replace('/[éèêëÉÈÊË]/u',      'e', $txt);
+		$txt = preg_replace('/[íìîïÍÌÎÏ]/u',      'i', $txt);
+		$txt = preg_replace('/[óòôõöºÓÒÔÕÖº]/u',  'o', $txt);
+		$txt = preg_replace('/[úùûüÚÙÛÜµ]/u',     'u', $txt);
+		$txt = preg_replace('/[ñÑ]/u',            'n', $txt);
+		$txt = preg_replace('/[çÇ]/u',            'c', $txt);
+		$txt = preg_replace('/[ÿ¥]/u',            'y', $txt);
+		$txt = preg_replace('/[¹]/u',             '1', $txt);
+		$txt = preg_replace('/[²]/u',             '2', $txt);
+		$txt = preg_replace('/[³]/u',             '3', $txt);
+		$txt = preg_replace('/[Ææ]/u',           'ae', $txt);
+		$txt = preg_replace('/[Øø]/u',            '0', $txt);
+		$txt = preg_replace('/[†°¢£§•¶ß®©™´¨≠±≤≥∂∑∏π∫Ω]/u', '', $txt);
 
 		return $txt;
 	}
@@ -44,4 +45,3 @@ class Strings_UTF8 {
 		return str_replace($chars, $cp1252, $string);
 	}
 }
-?>

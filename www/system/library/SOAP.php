@@ -1,11 +1,12 @@
 <?php
 /**
  *	FVAL PHP Framework for Web Applications\n
- *	Copyright (c) 2007-2009 FVAL Consultoria e Informática Ltda.
+ *	Copyright (c) 2007-2011 FVAL Consultoria e Informática Ltda.\n
+ *	Copyright (c) 2007-2011 Fernando Val
  *
  *	\warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
- *	\version 0.0.1
+ *	\version 0.1.2
  *
  *	\brief Classe para conexão SOAP
  */
@@ -99,5 +100,11 @@ class SOAP extends Kernel {
 	public function soapval($name='soapval', $type, $value=-1, $element_ns=false, $type_ns=false, $attributes=false) {
 		return new soapval($name, $type, $value, $element_ns, $type_ns, $attributes);
 	}
+	
+	/**
+	 *	\brief Define o encoding.
+	 */
+	public function setSOAPEncoding($encoding) {
+		$this->client->soap_defencoding = $encoding;
+	}
 }
-?>

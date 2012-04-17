@@ -2,7 +2,7 @@
 /*
  * smtp_message.php
  *
- * @(#) $Header: /home/mlemos/cvsroot/mimemessage/smtp_message.php,v 1.34 2009/04/12 08:20:39 mlemos Exp $
+ * @(#) $Header: /home/mlemos/cvsroot/mimemessage/smtp_message.php,v 1.36 2011/03/09 07:48:52 mlemos Exp $
  *
  *
  */
@@ -14,7 +14,7 @@
 	<package>net.manuellemos.mimemessage</package>
 
 	<name>smtp_message_class</name>
-	<version>@(#) $Id: smtp_message.php,v 1.34 2009/04/12 08:20:39 mlemos Exp $</version>
+	<version>@(#) $Id: smtp_message.php,v 1.36 2011/03/09 07:48:52 mlemos Exp $</version>
 	<copyright>Copyright © (C) Manuel Lemos 1999-2004</copyright>
 	<title>MIME E-mail message composing and sending via SMTP</title>
 	<author>Manuel Lemos</author>
@@ -145,7 +145,6 @@ class smtp_message_class extends email_message_class
 {metadocument}
 	<variable>
 		<name>localhost</name>
-		<type>STRING</type>
 		<value></value>
 		<documentation>
 			<purpose>Specify the domain name of the computer sending the
@@ -229,6 +228,89 @@ class smtp_message_class extends email_message_class
 {/metadocument}
 */
 	var $smtp_start_tls=0;
+
+/*
+{metadocument}
+	<variable>
+		<name>smtp_http_proxy_host_name</name>
+		<type>STRING</type>
+		<value></value>
+		<documentation>
+			<purpose>Specify name of the host when the connection should be
+				routed via an HTTP proxy.</purpose>
+			<usage>Leave empty if no proxy should be used.</usage>
+		</documentation>
+	</variable>
+{/metadocument}
+*/
+	var $smtp_http_proxy_host_name='';
+
+/*
+{metadocument}
+	<variable>
+		<name>smtp_http_proxy_host_port</name>
+		<type>INTEGER</type>
+		<value>3128</value>
+		<documentation>
+			<purpose>Specify proxy port when the connection should be routed via
+				an HTTP proxy.</purpose>
+			<usage>Change this variable if you need to use a proxy with a
+				specific port.</usage>
+		</documentation>
+	</variable>
+{/metadocument}
+*/
+	var $smtp_http_proxy_host_port=3128;
+
+/*
+{metadocument}
+	<variable>
+		<name>smtp_socks_host_name</name>
+		<type>STRING</type>
+		<value></value>
+		<documentation>
+			<purpose>Specify name of the host when the connection should be
+				routed via a SOCKS protocol proxy.</purpose>
+			<usage>Leave empty if no proxy should be used.</usage>
+		</documentation>
+	</variable>
+{/metadocument}
+*/
+	var $smtp_socks_host_name = '';
+
+/*
+{metadocument}
+	<variable>
+		<name>smtp_socks_host_port</name>
+		<type>INTEGER</type>
+		<value>1080</value>
+		<documentation>
+			<purpose>Specify proxy port when the connection should be routed via
+				a SOCKS protocol proxy.</purpose>
+			<usage>Change this variable if you need to use a proxy with a
+				specific port.</usage>
+		</documentation>
+	</variable>
+{/metadocument}
+*/
+	var $smtp_socks_host_port = 1080;
+
+/*
+{metadocument}
+	<variable>
+		<name>smtp_socks_version</name>
+		<type>STRING</type>
+		<value></value>
+		<documentation>
+			<purpose>Specify protocol version when the connection should be
+				routed via a SOCKS protocol proxy.</purpose>
+			<usage>Change this variable if you need to use a proxy with a
+				specific SOCKS protocol version.</usage>
+		</documentation>
+	</variable>
+{/metadocument}
+*/
+	var $smtp_socks_version = '5';
 
 /*
 {metadocument}
@@ -483,7 +565,7 @@ class smtp_message_class extends email_message_class
 {metadocument}
 	<variable>
 		<name>mailer_delivery</name>
-		<value>smtp $Revision: 1.34 $</value>
+		<value>smtp $Revision: 1.36 $</value>
 		<documentation>
 			<purpose>Specify the text that is used to identify the mail
 				delivery class or sub-class. This text is appended to the
@@ -494,7 +576,7 @@ class smtp_message_class extends email_message_class
 	</variable>
 {/metadocument}
 */
-	var $mailer_delivery='smtp $Revision: 1.34 $';
+	var $mailer_delivery='smtp $Revision: 1.36 $';
 
 /*
 {metadocument}
@@ -556,6 +638,11 @@ class smtp_message_class extends email_message_class
 		$this->smtp->host_port=$this->smtp_port;
 		$this->smtp->ssl=$this->smtp_ssl;
 		$this->smtp->start_tls=$this->smtp_start_tls;
+		$this->smtp->http_proxy_host_name=$this->smtp_http_proxy_host_name;
+		$this->smtp->http_proxy_host_port=$this->smtp_http_proxy_host_port;
+		$this->smtp->socks_host_name=$this->smtp_socks_host_name;
+		$this->smtp->socks_host_port=$this->smtp_socks_host_port;
+		$this->smtp->socks_version=$this->smtp_socks_version;
 		$this->smtp->timeout=$this->timeout;
 		$this->smtp->debug=$this->smtp_debug;
 		$this->smtp->html_debug=$this->smtp_html_debug;

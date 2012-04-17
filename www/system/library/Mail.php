@@ -1,11 +1,12 @@
 <?php
 /**
  *	FVAL PHP Framework for Web Applications\n
- *	Copyright (c) 2007-2010 FVAL Consultoria e Informática Ltda.
+ *	Copyright (c) 2007-2011 FVAL Consultoria e Informática Ltda.\n
+ *	Copyright (c) 2007-2011 Fernando Val
  *
  *	\warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
- *	\version 1.0.0
+ *	\version 1.0.2
  *
  *	\brief Classe para envio de email
  */
@@ -27,6 +28,9 @@ class Mail extends Kernel {
 	 */
 	function __construct() {
 		if (parent::get_conf('mail', 'method') == 'smtp') {
+			error_reporting(E_ALL^E_NOTICE);
+			restore_error_handler();
+			
 			require_once dirname( __FILE__) . DIRECTORY_SEPARATOR . 'MimeMessage' . DIRECTORY_SEPARATOR . 'smtp_message.php';
 			require_once dirname( __FILE__) . DIRECTORY_SEPARATOR . 'Smtp' . DIRECTORY_SEPARATOR . 'smtp.php';
 
@@ -148,6 +152,15 @@ class Mail extends Kernel {
 
 	/**
 	 *	\brief Envia a mensagem
+	 *
+	 *	@param[in] (string) $from - endereço de email do remetente da mensagem
+	 *	@param[in] (string) $from_name - nome do remetente da mensagem
+	 *	@param[in] (string) $mailto - endereço de email do destinatário da mensagem
+	 *	@param[in] (string) $to_name - nome do destinatário da mensagem
+	 *	@param[in] (string) $subject - assunto da mensagem
+	 *	@param[in] (string) $htmlmessage - mensagem em formato HTML
+	 *	@param[in] (string) $textmessage - mensagem em formato texto puro
+	 *	@return Retorna true se a mensagem foi enviada com sucesso ou a mensagem de erro
 	 */
 	public function send_message($from, $from_name, $mailto, $to_name, $subject, $htmlmessage, $textmessage) {
 		$this->from($from, $from_name);
@@ -158,4 +171,3 @@ class Mail extends Kernel {
 	}
 
 }
-?>

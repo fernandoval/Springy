@@ -7,7 +7,7 @@
 <center><h1>Class: MIME E-mail message composing and sending via SMTP</h1></center>
 <hr />
 <ul>
-<p><b>Version:</b> <tt>@(#) $Id: smtp_message.php,v 1.34 2009/04/12 08:20:39 mlemos Exp $</tt></p>
+<p><b>Version:</b> <tt>@(#) $Id: smtp_message.php,v 1.36 2011/03/09 07:48:52 mlemos Exp $</tt></p>
 <h2><a name="table_of_contents">Contents</a></h2>
 <ul>
 <li><a href="#2.1.1">Summary</a></li>
@@ -22,27 +22,32 @@
 </ul>
 <li><a href="#5.1.1">Variables</a></li>
 <ul>
-<li><a href="#6.2.22">localhost</a></li>
-<li><a href="#6.2.23">smtp_host</a></li>
-<li><a href="#6.2.24">smtp_port</a></li>
-<li><a href="#6.2.25">smtp_ssl</a></li>
-<li><a href="#6.2.26">smtp_start_tls</a></li>
-<li><a href="#6.2.27">smtp_direct_delivery</a></li>
-<li><a href="#6.2.28">smtp_getmxrr</a></li>
-<li><a href="#6.2.29">smtp_exclude_address</a></li>
-<li><a href="#6.2.30">smtp_user</a></li>
-<li><a href="#6.2.31">smtp_realm</a></li>
-<li><a href="#6.2.32">smtp_workstation</a></li>
-<li><a href="#6.2.33">smtp_authentication_mechanism</a></li>
-<li><a href="#6.2.34">smtp_password</a></li>
-<li><a href="#6.2.35">smtp_pop3_auth_host</a></li>
-<li><a href="#6.2.36">smtp_debug</a></li>
-<li><a href="#6.2.37">smtp_html_debug</a></li>
-<li><a href="#6.2.38">esmtp</a></li>
-<li><a href="#6.2.39">timeout</a></li>
-<li><a href="#6.2.40">invalid_recipients</a></li>
-<li><a href="#6.2.41">mailer_delivery</a></li>
-<li><a href="#6.2.42">maximum_bulk_deliveries</a></li>
+<li><a href="#6.2.27">localhost</a></li>
+<li><a href="#6.2.28">smtp_host</a></li>
+<li><a href="#6.2.29">smtp_port</a></li>
+<li><a href="#6.2.30">smtp_ssl</a></li>
+<li><a href="#6.2.31">smtp_start_tls</a></li>
+<li><a href="#6.2.32">smtp_http_proxy_host_name</a></li>
+<li><a href="#6.2.33">smtp_http_proxy_host_port</a></li>
+<li><a href="#6.2.34">smtp_socks_host_name</a></li>
+<li><a href="#6.2.35">smtp_socks_host_port</a></li>
+<li><a href="#6.2.36">smtp_socks_version</a></li>
+<li><a href="#6.2.37">smtp_direct_delivery</a></li>
+<li><a href="#6.2.38">smtp_getmxrr</a></li>
+<li><a href="#6.2.39">smtp_exclude_address</a></li>
+<li><a href="#6.2.40">smtp_user</a></li>
+<li><a href="#6.2.41">smtp_realm</a></li>
+<li><a href="#6.2.42">smtp_workstation</a></li>
+<li><a href="#6.2.43">smtp_authentication_mechanism</a></li>
+<li><a href="#6.2.44">smtp_password</a></li>
+<li><a href="#6.2.45">smtp_pop3_auth_host</a></li>
+<li><a href="#6.2.46">smtp_debug</a></li>
+<li><a href="#6.2.47">smtp_html_debug</a></li>
+<li><a href="#6.2.48">esmtp</a></li>
+<li><a href="#6.2.49">timeout</a></li>
+<li><a href="#6.2.50">invalid_recipients</a></li>
+<li><a href="#6.2.51">mailer_delivery</a></li>
+<li><a href="#6.2.52">maximum_bulk_deliveries</a></li>
 </ul>
 <li><a href="#7.1.1">Inherited variables</a></li>
 <li><a href="#9.1.1">Functions</a></li>
@@ -61,11 +66,11 @@
 <h3><a name="3.2.0.1">Copyright</a></h3>
 <p>Copyright &copy; (C) Manuel Lemos 1999-2004</p>
 <h3><a name="3.2.0.2">Version</a></h3>
-<p>@(#) $Id: smtp_message.php,v 1.34 2009/04/12 08:20:39 mlemos Exp $</p>
+<p>@(#) $Id: smtp_message.php,v 1.36 2011/03/09 07:48:52 mlemos Exp $</p>
 <h3><a name="3.2.0.3">Parent classes</a></h3>
 <ul>
 <p><li>MIME E-mail message composing and sending</li></p>
-<p><b>Version:</b> <tt>@(#) $Id: email_message.php,v 1.87 2009/02/16 22:27:25 mlemos Exp $</tt></p>
+<p><b>Version:</b> <tt>@(#) $Id: email_message.php,v 1.93 2011/03/09 07:47:59 mlemos Exp $</tt></p>
 </ul>
 <h3><a name="4.2.0">Purpose</a></h3>
 <p>Implement an alternative message delivery method via SMTP protocol, overriding the method of using the PHP <tt>mail()</tt> function implemented by the base class.</p>
@@ -112,6 +117,11 @@
 <li><tt><a href="#variable_smtp_port">smtp_port</a></tt></li><br />
 <li><tt><a href="#variable_smtp_ssl">smtp_ssl</a></tt></li><br />
 <li><tt><a href="#variable_smtp_start_tls">smtp_start_tls</a></tt></li><br />
+<li><tt><a href="#variable_smtp_http_proxy_host_name">smtp_http_proxy_host_name</a></tt></li><br />
+<li><tt><a href="#variable_smtp_http_proxy_host_port">smtp_http_proxy_host_port</a></tt></li><br />
+<li><tt><a href="#variable_smtp_socks_host_name">smtp_socks_host_name</a></tt></li><br />
+<li><tt><a href="#variable_smtp_socks_host_port">smtp_socks_host_port</a></tt></li><br />
+<li><tt><a href="#variable_smtp_socks_version">smtp_socks_version</a></tt></li><br />
 <li><tt><a href="#variable_smtp_direct_delivery">smtp_direct_delivery</a></tt></li><br />
 <li><tt><a href="#variable_smtp_getmxrr">smtp_getmxrr</a></tt></li><br />
 <li><tt><a href="#variable_smtp_exclude_address">smtp_exclude_address</a></tt></li><br />
@@ -129,7 +139,7 @@
 <li><tt><a href="#variable_mailer_delivery">mailer_delivery</a></tt></li><br />
 <li><tt><a href="#variable_maximum_bulk_deliveries">maximum_bulk_deliveries</a></tt></li><br />
 <p><a href="#table_of_contents">Table of contents</a></p>
-<h3><a name="variable_localhost"></a><li><a name="6.2.22">localhost</a></li></h3>
+<h3><a name="variable_localhost"></a><li><a name="6.2.27">localhost</a></li></h3>
 <h3>Type</h3>
 <p><tt><i>string</i></tt></p>
 <h3>Default value</h3>
@@ -139,7 +149,7 @@
 <h3>Usage</h3>
 <p>This value is used to identify the sending machine to the SMTP server. When using the direct delivery mode, if this variable is set to a non-empty string it used to generate the <tt>Recieved</tt> header to show that the message passed by the specified host address. To prevent confusing directly delivered messages with spam, it is strongly recommended that you set this variable to you server host name.</p>
 <p><a href="#variables">Variables</a></p>
-<h3><a name="variable_smtp_host"></a><li><a name="6.2.23">smtp_host</a></li></h3>
+<h3><a name="variable_smtp_host"></a><li><a name="6.2.28">smtp_host</a></li></h3>
 <h3>Type</h3>
 <p><tt><i>string</i></tt></p>
 <h3>Default value</h3>
@@ -149,7 +159,7 @@
 <h3>Usage</h3>
 <p>Set to the address of the SMTP server that will relay the messages. This variable is not used in direct delivery mode.</p>
 <p><a href="#variables">Variables</a></p>
-<h3><a name="variable_smtp_port"></a><li><a name="6.2.24">smtp_port</a></li></h3>
+<h3><a name="variable_smtp_port"></a><li><a name="6.2.29">smtp_port</a></li></h3>
 <h3>Type</h3>
 <p><tt><i>int</i></tt></p>
 <h3>Default value</h3>
@@ -159,7 +169,7 @@
 <h3>Usage</h3>
 <p>Most servers work on port 25 . Certain e-mail services use alternative ports to avoid firewall blocking. Gmail uses port 465.</p>
 <p><a href="#variables">Variables</a></p>
-<h3><a name="variable_smtp_ssl"></a><li><a name="6.2.25">smtp_ssl</a></li></h3>
+<h3><a name="variable_smtp_ssl"></a><li><a name="6.2.30">smtp_ssl</a></li></h3>
 <h3>Type</h3>
 <p><tt><i>bool</i></tt></p>
 <h3>Default value</h3>
@@ -169,7 +179,7 @@
 <h3>Usage</h3>
 <p>Certain e-mail services like Gmail require SSL connections.</p>
 <p><a href="#variables">Variables</a></p>
-<h3><a name="variable_smtp_start_tls"></a><li><a name="6.2.26">smtp_start_tls</a></li></h3>
+<h3><a name="variable_smtp_start_tls"></a><li><a name="6.2.31">smtp_start_tls</a></li></h3>
 <h3>Type</h3>
 <p><tt><i>bool</i></tt></p>
 <h3>Default value</h3>
@@ -179,7 +189,57 @@
 <h3>Usage</h3>
 <p>Certain e-mail services like Hotmail require starting TLS protocol after the connection to the SMTP server is already established.</p>
 <p><a href="#variables">Variables</a></p>
-<h3><a name="variable_smtp_direct_delivery"></a><li><a name="6.2.27">smtp_direct_delivery</a></li></h3>
+<h3><a name="variable_smtp_http_proxy_host_name"></a><li><a name="6.2.32">smtp_http_proxy_host_name</a></li></h3>
+<h3>Type</h3>
+<p><tt><i>string</i></tt></p>
+<h3>Default value</h3>
+<p><tt>''</tt></p>
+<h3>Purpose</h3>
+<p>Specify name of the host when the connection should be routed via an HTTP proxy.</p>
+<h3>Usage</h3>
+<p>Leave empty if no proxy should be used.</p>
+<p><a href="#variables">Variables</a></p>
+<h3><a name="variable_smtp_http_proxy_host_port"></a><li><a name="6.2.33">smtp_http_proxy_host_port</a></li></h3>
+<h3>Type</h3>
+<p><tt><i>int</i></tt></p>
+<h3>Default value</h3>
+<p><tt>3128</tt></p>
+<h3>Purpose</h3>
+<p>Specify proxy port when the connection should be routed via an HTTP proxy.</p>
+<h3>Usage</h3>
+<p>Change this variable if you need to use a proxy with a specific port.</p>
+<p><a href="#variables">Variables</a></p>
+<h3><a name="variable_smtp_socks_host_name"></a><li><a name="6.2.34">smtp_socks_host_name</a></li></h3>
+<h3>Type</h3>
+<p><tt><i>string</i></tt></p>
+<h3>Default value</h3>
+<p><tt>''</tt></p>
+<h3>Purpose</h3>
+<p>Specify name of the host when the connection should be routed via a SOCKS protocol proxy.</p>
+<h3>Usage</h3>
+<p>Leave empty if no proxy should be used.</p>
+<p><a href="#variables">Variables</a></p>
+<h3><a name="variable_smtp_socks_host_port"></a><li><a name="6.2.35">smtp_socks_host_port</a></li></h3>
+<h3>Type</h3>
+<p><tt><i>int</i></tt></p>
+<h3>Default value</h3>
+<p><tt>1080</tt></p>
+<h3>Purpose</h3>
+<p>Specify proxy port when the connection should be routed via a SOCKS protocol proxy.</p>
+<h3>Usage</h3>
+<p>Change this variable if you need to use a proxy with a specific port.</p>
+<p><a href="#variables">Variables</a></p>
+<h3><a name="variable_smtp_socks_version"></a><li><a name="6.2.36">smtp_socks_version</a></li></h3>
+<h3>Type</h3>
+<p><tt><i>string</i></tt></p>
+<h3>Default value</h3>
+<p><tt>''</tt></p>
+<h3>Purpose</h3>
+<p>Specify protocol version when the connection should be routed via a SOCKS protocol proxy.</p>
+<h3>Usage</h3>
+<p>Change this variable if you need to use a proxy with a specific SOCKS protocol version.</p>
+<p><a href="#variables">Variables</a></p>
+<h3><a name="variable_smtp_direct_delivery"></a><li><a name="6.2.37">smtp_direct_delivery</a></li></h3>
 <h3>Type</h3>
 <p><tt><i>bool</i></tt></p>
 <h3>Default value</h3>
@@ -189,7 +249,7 @@
 <h3>Usage</h3>
 <p>Set this to <tt>1</tt> if you want to send urgent messages directly to the recipient domain SMTP server.</p>
 <p><a href="#variables">Variables</a></p>
-<h3><a name="variable_smtp_getmxrr"></a><li><a name="6.2.28">smtp_getmxrr</a></li></h3>
+<h3><a name="variable_smtp_getmxrr"></a><li><a name="6.2.38">smtp_getmxrr</a></li></h3>
 <h3>Type</h3>
 <p><tt><i>string</i></tt></p>
 <h3>Default value</h3>
@@ -199,7 +259,7 @@
 <h3>Usage</h3>
 <p>Change this to a working replacement of the PHP <tt>getmxrr()</tt> function if this is not working in your system and you want to send messages in direct delivery mode.</p>
 <p><a href="#variables">Variables</a></p>
-<h3><a name="variable_smtp_exclude_address"></a><li><a name="6.2.29">smtp_exclude_address</a></li></h3>
+<h3><a name="variable_smtp_exclude_address"></a><li><a name="6.2.39">smtp_exclude_address</a></li></h3>
 <h3>Type</h3>
 <p><tt><i>string</i></tt></p>
 <h3>Default value</h3>
@@ -210,7 +270,7 @@
 <p>In some networks any domain name that does not exist is resolved as a sub-domain of the default local domain. If the DNS is configured in such way that it always resolves any sub-domain of the default local domain to a given address, it is hard to determine whether a given domain does not exist.</p>
 <p> If your network is configured this way, you may set this variable to the address that all sub-domains of the default local domain resolves, so the class can assume that such address is invalid.</p>
 <p><a href="#variables">Variables</a></p>
-<h3><a name="variable_smtp_user"></a><li><a name="6.2.30">smtp_user</a></li></h3>
+<h3><a name="variable_smtp_user"></a><li><a name="6.2.40">smtp_user</a></li></h3>
 <h3>Type</h3>
 <p><tt><i>string</i></tt></p>
 <h3>Default value</h3>
@@ -220,7 +280,7 @@
 <h3>Usage</h3>
 <p>Set this variable if you need to authenticate before sending a message.</p>
 <p><a href="#variables">Variables</a></p>
-<h3><a name="variable_smtp_realm"></a><li><a name="6.2.31">smtp_realm</a></li></h3>
+<h3><a name="variable_smtp_realm"></a><li><a name="6.2.41">smtp_realm</a></li></h3>
 <h3>Type</h3>
 <p><tt><i>string</i></tt></p>
 <h3>Default value</h3>
@@ -230,7 +290,7 @@
 <h3>Usage</h3>
 <p>Set this variable if you need to authenticate before sending a message.</p>
 <p><a href="#variables">Variables</a></p>
-<h3><a name="variable_smtp_workstation"></a><li><a name="6.2.32">smtp_workstation</a></li></h3>
+<h3><a name="variable_smtp_workstation"></a><li><a name="6.2.42">smtp_workstation</a></li></h3>
 <h3>Type</h3>
 <p><tt><i>string</i></tt></p>
 <h3>Default value</h3>
@@ -240,7 +300,7 @@
 <h3>Usage</h3>
 <p>Set this variable if you need to authenticate before sending a message.</p>
 <p><a href="#variables">Variables</a></p>
-<h3><a name="variable_smtp_authentication_mechanism"></a><li><a name="6.2.33">smtp_authentication_mechanism</a></li></h3>
+<h3><a name="variable_smtp_authentication_mechanism"></a><li><a name="6.2.43">smtp_authentication_mechanism</a></li></h3>
 <h3>Type</h3>
 <p><tt><i>string</i></tt></p>
 <h3>Default value</h3>
@@ -250,7 +310,7 @@
 <h3>Usage</h3>
 <p>Set this variable if you need to force the SMTP connection to authenticate with a specific authentication mechanism. Leave this variable with an empty string if you want the authentication mechanism be determined automatically from the list of mechanisms supported by the server.</p>
 <p><a href="#variables">Variables</a></p>
-<h3><a name="variable_smtp_password"></a><li><a name="6.2.34">smtp_password</a></li></h3>
+<h3><a name="variable_smtp_password"></a><li><a name="6.2.44">smtp_password</a></li></h3>
 <h3>Type</h3>
 <p><tt><i>string</i></tt></p>
 <h3>Default value</h3>
@@ -260,7 +320,7 @@
 <h3>Usage</h3>
 <p>Set this variable if you need to authenticate before sending a message.</p>
 <p><a href="#variables">Variables</a></p>
-<h3><a name="variable_smtp_pop3_auth_host"></a><li><a name="6.2.35">smtp_pop3_auth_host</a></li></h3>
+<h3><a name="variable_smtp_pop3_auth_host"></a><li><a name="6.2.45">smtp_pop3_auth_host</a></li></h3>
 <h3>Type</h3>
 <p><tt><i>string</i></tt></p>
 <h3>Default value</h3>
@@ -270,7 +330,7 @@
 <h3>Usage</h3>
 <p>Set this variable to the address of the POP3 server if the SMTP server requires POP3 based authentication.</p>
 <p><a href="#variables">Variables</a></p>
-<h3><a name="variable_smtp_debug"></a><li><a name="6.2.36">smtp_debug</a></li></h3>
+<h3><a name="variable_smtp_debug"></a><li><a name="6.2.46">smtp_debug</a></li></h3>
 <h3>Type</h3>
 <p><tt><i>bool</i></tt></p>
 <h3>Default value</h3>
@@ -280,7 +340,7 @@
 <h3>Usage</h3>
 <p>Set this variable to <tt>1</tt> if you need to see the progress of the SMTP connection and protocol dialog when you need to understand the reason for delivery problems.</p>
 <p><a href="#variables">Variables</a></p>
-<h3><a name="variable_smtp_html_debug"></a><li><a name="6.2.37">smtp_html_debug</a></li></h3>
+<h3><a name="variable_smtp_html_debug"></a><li><a name="6.2.47">smtp_html_debug</a></li></h3>
 <h3>Type</h3>
 <p><tt><i>bool</i></tt></p>
 <h3>Default value</h3>
@@ -290,7 +350,7 @@
 <h3>Usage</h3>
 <p>Set this variable to <tt>1</tt> if you need to see the debug output in a Web page.</p>
 <p><a href="#variables">Variables</a></p>
-<h3><a name="variable_esmtp"></a><li><a name="6.2.38">esmtp</a></li></h3>
+<h3><a name="variable_esmtp"></a><li><a name="6.2.48">esmtp</a></li></h3>
 <h3>Type</h3>
 <p><tt><i>bool</i></tt></p>
 <h3>Default value</h3>
@@ -300,7 +360,7 @@
 <h3>Usage</h3>
 <p>It is recommended to leave this variable set to <tt>1</tt> so the class can take advantage of Enhanced SMTP protocol features.</p>
 <p><a href="#variables">Variables</a></p>
-<h3><a name="variable_timeout"></a><li><a name="6.2.39">timeout</a></li></h3>
+<h3><a name="variable_timeout"></a><li><a name="6.2.49">timeout</a></li></h3>
 <h3>Type</h3>
 <p><tt><i>int</i></tt></p>
 <h3>Default value</h3>
@@ -310,7 +370,7 @@
 <h3>Usage</h3>
 <p>Change this value if for some reason the timeout period seems insufficient or otherwise it seems too long.</p>
 <p><a href="#variables">Variables</a></p>
-<h3><a name="variable_invalid_recipients"></a><li><a name="6.2.40">invalid_recipients</a></li></h3>
+<h3><a name="variable_invalid_recipients"></a><li><a name="6.2.50">invalid_recipients</a></li></h3>
 <h3>Type</h3>
 <p><tt><i>array</i></tt></p>
 <h3>Default value</h3>
@@ -320,17 +380,17 @@
 <h3>Usage</h3>
 <p>Check this variable after attempting to send a message to figure whether there were any recipients that were rejected by the SMTP server.</p>
 <p><a href="#variables">Variables</a></p>
-<h3><a name="variable_mailer_delivery"></a><li><a name="6.2.41">mailer_delivery</a></li></h3>
+<h3><a name="variable_mailer_delivery"></a><li><a name="6.2.51">mailer_delivery</a></li></h3>
 <h3>Type</h3>
 <p><tt><i>string</i></tt></p>
 <h3>Default value</h3>
-<p><tt>'smtp $Revision: 1.34 $'</tt></p>
+<p><tt>'smtp $Revision: 1.36 $'</tt></p>
 <h3>Purpose</h3>
 <p>Specify the text that is used to identify the mail delivery class or sub-class. This text is appended to the <tt>X-Mailer</tt> header text defined by the mailer variable.</p>
 <h3>Usage</h3>
 <p>Do not change this variable.</p>
 <p><a href="#variables">Variables</a></p>
-<h3><a name="variable_maximum_bulk_deliveries"></a><li><a name="6.2.42">maximum_bulk_deliveries</a></li></h3>
+<h3><a name="variable_maximum_bulk_deliveries"></a><li><a name="6.2.52">maximum_bulk_deliveries</a></li></h3>
 <h3>Type</h3>
 <p><tt><i>int</i></tt></p>
 <h3>Default value</h3>

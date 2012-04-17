@@ -1,11 +1,11 @@
 <?php
 /** \file
  *  FVAL PHP Framework for Web Applications\n
- *  Copyright (c) 2007-2009 FVAL Consultoria e Informática Ltda.
+ *  Copyright (c) 2007-2011 FVAL Consultoria e Informática Ltda.
  *
  *  \warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
- *  \version 1.0.0
+ *  \version 1.0.1	
  *
  *  \brief Configurações da classe de envio de email
  *
@@ -44,7 +44,7 @@
 			$conf['development']['auth_host'] = '';
 			$conf['development']['debug'] = 0;
 			$conf['development']['html_debug'] = 1;
-			$conf['development']['errors_go_to'] = 'yourname@yourisp.com';
+			$conf['development']['errors_go_to'] = NULL;
 		/*@}*/
 
 		/**
@@ -71,4 +71,3 @@
 
 	/*@}*/
 /*@}*/
-?>

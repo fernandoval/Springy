@@ -1,7 +1,7 @@
 <?php
 /** \file
  *  FVAL PHP Framework for Web Applications\n
- *  Copyright (c) 2007-2009 FVAL Consultoria e Informática Ltda.
+ *  Copyright (c) 2007-2011 FVAL Consultoria e Informática Ltda.
  *
  *  \warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
@@ -39,4 +39,3 @@
 
 	/*@}*/
 /*@}*/
-?>

@@ -1,22 +1,71 @@
-/*  ------------------------------------------------------------------------------------ --- -- -
-	FVAL PHP Framework for Web Sites
+FVAL PHP Framework for Web Applications
 
-	Copyright (C) 2009 FVAL - Consultoria e Informática Ltda.
-	Copyright (C) 2009 Fernando Val
-	Copyright (C) 2009 Lucas Cardozo
+Copyright (C) 2007-2011 FVAL - Consultoria e Informática Ltda.
+Copyright (C) 2007-2011 Fernando Val
+Copyright (C) 2009-2011 Lucas Cardozo
 
-	http://www.fval.com.br
+http://www.fval.com.br
 
-	Developer team:
-		Fernando Val  - fernando.val@gmail.com
-		Lucas Cardozo - lucas.cardozo@gmail.com
+Developer team:
+	Fernando Val  - fernando.val@gmail.com
+	Lucas Cardozo - lucas.cardozo@gmail.com
 
-	Framework Update History
-	------------------------------------------------------------------------------------ --- -- - */
 
-	1.0.1
-		- Atualizadas as classes Smarty e ADODB;
-		- Diretório system movido para dentro de www por padrão.
-		
-	1.0.0
-		- Versão inicial do framework confeccionada por Fernando Val com auxílio de Lucas Cardozo
+Framework Update History
+
+------------------------------------------------------------------------------------ --- -- -
+
+1.2.1c
+	- Modificada a forma de armazenamento interno das variáveis defaul de template;
+	- Adicionado método assign_default_var() à classe Template para adição de variáveis de template;
+	- Adicionado método get_default_var() à classe Template para pegar valores de variáveis de template.
+
+1.2.1b
+	- Classe NuSOAP atualizada para a versão 0.9.5.
+
+1.2.1
+	- Adicionado uri /_pi_ que mostra as configurações do PHP - phpinfo();
+	- Correções no sistema de debug;
+	- Melhorias no classe de paginação.
+
+1.2.0c
+	- Removida tag de fechamento de código PHP de todas as classes da biblioteca, index e configurações.
+
+1.2.0b
+	- Removida tag de fechamento de código PHP de algumas das classes da biblioteca.
+
+1.2.0
+	- Adicionada classe para criação de arquivos Excel;
+	- Atualização da Smarty para a versão 3;
+	- Atualização da classe Template para a versão 3 da Smarty;
+	- Adicionada função para vefiricar se string está codificada como UTF-8 na classe Strings;
+	- Substituída utilização da função mb_ereg_replate por preg_replace nas subclasses Strings_UTF8 e Strings_ANSI.
+
+1.1.0
+	- Adicionado método de créditos do framework;
+	- Melhorias no sistema de debug;
+	- Método de busca da controller movido da index.php para o URI::parse_uri;
+	- Implementado conceito de configuração default;
+	- Implementado sistema de rotas alternativas para controllers.
+
+1.0.1.5
+	- Classe MimeMessage atualizada.
+
+1.0.1.4
+	- Inclusão da configuração de timezone.
+
+1.0.1.3
+	- Inclusão das seguintes constantes de template:
+		$HOST - string com a URL do host
+		$CURRENT_PAGE_URI - string com a URI da página atual
+
+1.0.1.2
+	- Inclusão da biblioteca Javascript jQuery v1.4.2 <http://jquery.com/> no pacote do framework;
+	- Componente TinyMCE editor atualizado para a versão 3.3.8.
+
+1.0.1
+	- Atualizadas as classes Smarty e ADODB;
+	- Diretório system movido para dentro de www por padrão.
+
+1.0.0
+	- Versão inicial do framework confeccionada por Fernando Val com auxílio de Lucas Cardozo

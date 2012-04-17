@@ -1,11 +1,13 @@
 <?php
 /**
  *	FVAL PHP Framework for Web Applications\n
- *	Copyright (c) 2007-2009 FVAL Consultoria e Informática Ltda.
+ *	Copyright (c) 2007-2011 FVAL Consultoria e Informática Ltda.\n
+ *	Copyright (c) 2007-2011 Fernando Val\n
+ *	Copyright (c) 2009-2011 Lucas Cardozo
  *
  *	\warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
- *	\version 0.9.5
+ *	\version 2.2.1
  *
  *	\brief Classe de tratamento de templates
  */
@@ -20,12 +22,18 @@ class Template extends Kernel {
 	private static $template_obj = NULL;
 	private static $template_name = NULL;
 	private static $template_name_sufix = '.tpl.html';
+	private static $template_cache_id = "";
+	private static $template_compile_id = "";
+	private static $template_vars = array();
 
 	/**
 	 *	\brief Inicializa a classe de template
 	 */
 	public static function start($tpl=NULL) {
-		if (self::$started) return true;
+		if (self::$started) {
+			self::set_template($tpl);
+			return true;
+		}
 
 		// Verifica o sub-dir
 		if (is_dir(parent::get_conf('template', 'template_path') . DIRECTORY_SEPARATOR . URI::current_page())) {
@@ -42,22 +50,53 @@ class Template extends Kernel {
 		//self::$template_obj->use_sub_dirs = true;
 		self::$template_obj->cache_lifetime = 0;
 		self::$template_obj->caching = false;
-		self::$template_obj->force_compile = parent::get_conf('system', 'development');
+		self::$template_obj->force_compile = parent::get_conf('system', 'debug');
 
 		// Limpa qualquer variável que por ventura exista no template
-		self::$template_obj->clear_all_assign();
+		self::$template_obj->clearAllAssign();
 
 		// Ajusta os caminhos de template
 		self::set_template_path( parent::get_conf('template', 'template_path') );
 		self::set_compiled_template_path( parent::get_conf('template', 'compiled_template_path') );
 		self::set_config_dif( parent::get_conf('template', 'template_config_path') );
 
-		self::$template_name = $tpl;
+		if ($tpl) {
+			self::set_template($tpl);
+		}
 
 		self::$started = true;
-		
+
 		// Iniciliza as variáveis padrão de template
-		self::set_default_vars();
+		if (parent::get_conf('uri', 'common_urls')) {
+			if (!parent::get_conf('uri', 'register_method_set_common_urls')) {
+				foreach(parent::get_conf('uri', 'common_urls') as $var => $value) {
+					if (isset($value[2])) {
+						Template::assign_default_var($var, URI::build_url($value[0], $value[1], $value[2]));
+					} else if (isset($value[1])) {
+						Template::assign_default_var($var, URI::build_url($value[0], $value[1]));
+					} else {
+						Template::assign_default_var($var, URI::build_url($value[0]));
+					}
+				}
+			} else if (Kernel::get_conf('uri', 'register_method_set_common_urls')) {
+				$toCall = Kernel::get_conf('uri', 'register_method_set_common_urls');
+				if ($toCall['static']) {
+					if (!isset($toCall['method'])) {
+						throw new Exception('You need to determine which method will be executed.', 500);
+					}
+
+					//$toCall['class']::$toCall['method'];
+				} else {
+					$obj = new $toCall['class'];
+					if (isset($toCall['method']) && $toCall['method']) {
+						$obj->$toCall['method'];
+					}
+				}
+			}
+		}
+
+		self::assign_default_var('HOST', URI::build_url());
+		self::assign_default_var('CURRENT_PAGE_URI', URI::current_page_uri());
 
 		return true;
 	}
@@ -69,7 +108,7 @@ class Template extends Kernel {
 		if (!self::$started) return true;
 
 		// Limpa qualquer variável que por ventura exista no template
-		self::$template_obj->clear_all_assign();
+		self::$template_obj->clearAllAssign();
 
 		self::$template_name = NULL;
 		self::$started = false;
@@ -86,7 +125,7 @@ class Template extends Kernel {
 
 		// Se o nome do template não foi informado, define como sendo a página atual
 		if (self::$template_name === NULL) {
-			self::$template_name = URI::current_page();
+			self::$template_name = URI::get_class_controller();
 		}
 
 		// Monta o caminho do diretório do arquivo de template
@@ -106,7 +145,7 @@ class Template extends Kernel {
 		self::set_config_dif( parent::get_conf('template', 'template_config_path') . $relative_path );
 
 		// Se o arquivo de template não existir, exibe erro 404
-		if (!self::$template_obj->template_exists(self::$template_name . self::$template_name_sufix)) {
+		if (!self::$template_obj->templateExists(self::$template_name . self::$template_name_sufix)) {
 			Errors::display_error(404, self::$template_name . self::$template_name_sufix);
 		}
 
@@ -146,11 +185,12 @@ class Template extends Kernel {
 		error_reporting(E_ALL^E_NOTICE);
 		restore_error_handler();
 
+		self::set_default_vars();
 		self::_set_template_paths();
 
 		self::$started = false;
 
-		return self::$template_obj->fetch(self::$template_name . self::$template_name_sufix);
+		return self::$template_obj->fetch(self::$template_name . self::$template_name_sufix, self::$template_cache_id, self::$template_compile_id);
 	}
 
 	/**
@@ -159,28 +199,23 @@ class Template extends Kernel {
 	public static function display() {
 		if (!self::$started) return false;
 
-		error_reporting(E_ALL^E_NOTICE);
-		restore_error_handler();
-
-		self::_set_template_paths();
-
-		self::$started = false;
-
-		self::$template_obj->display(self::$template_name . self::$template_name_sufix);
+		echo self::fetch();
 	}
 
 	/**
 	 *	\brief Verifica se o template está cacheado
 	 */
 	public static function is_cached() {
-		return (self::$template_obj->is_cached(self::$template_name, self::$smartyTplId));
+		return (self::$template_obj->isCached(self::$template_name . self::$template_name_sufix, self::$template_cache_id, self::$template_compile_id));
 	}
 
 	/**
 	 *	\brief Define as variáveis padrão
 	 */
 	public static function set_default_vars() {
-		self::assign('HOST', URI::build_url());
+		foreach (self::$template_vars as $name => $value) {
+			self::assign($name, $value);
+		}
 	}
 
 	/**
@@ -214,13 +249,18 @@ class Template extends Kernel {
 		self::$template_name = ((is_array($tpl)) ? join(DIRECTORY_SEPARATOR, $tpl) : $tpl);
 	}
 
-	// seta o ID do cache
-	public static function smartySetTplId($id, $addLogin=false) {
-		if ($addLogin !== false) {
-			$login = new Login($addLogin);
-		}
+	/**
+	 *	\brief Define o id do cache
+	 */
+	public static function set_cache_id($id) {
+		self::$template_cache_id = $id;
+	}
 
-		self::$smartyTplId = $id . (($addLogin !== false && $login->isLoged()) ? '_' . $login->getRegistered('user') : '');
+	/**
+	 *	\brief Define o id da compilação
+	 */
+	public static function set_compile_id($id) {
+		self::$template_compile_id = $id;
 	}
 
 	/**
@@ -233,22 +273,69 @@ class Template extends Kernel {
 	/**
 	 *	\brief Define uma variável do template
 	 */
-	public static function assign($var, $value) {
-		self::$template_obj->assign($var, $value);
+	public static function assign($var, $value=null, $nocache=false) {
+		if (is_array($var)) {
+			self::$template_obj->assign($var);
+		} else {
+			self::$template_obj->assign($var, $value, $nocache);
+		}
+	}
+
+	/**
+	 *	\brief Adiciona uma variável default de template
+	 */
+	public static function assign_default_var($name, $value) {
+		self::$template_vars[$name] = $value;
+	}
+
+	/**
+	 *	\brief Pega o valor de uma variável default de template
+	 */
+	public static function get_default_var($name) {
+		return isset(self::$template_vars[$name]) ? self::$template_vars[$name] : NULL;
 	}
 
 	/**
 	 *	\brief Limpa uma variável do template
 	 */
 	public static function clear_assign($var) {
-		self::$template_obj->clear_assign($var);
+		self::$template_obj->clearAssign($var);
+	}
+
+	/**
+	 *	\brief clears the entire template cache
+	 *
+	 *	As an optional parameter, you can supply a minimum age in seconds the cache files must be before they will get cleared.
+	 */
+	public static function clear_all_cache($expire_time) {
+		self::$template_obj->clearAllCache($expire_time);
+	}
+
+	/**
+	 *	\brief Limpa o cache para o template corrente
+	 */
+	public static function clear_cache($expire_time) {
+		self::$template_obj->clearCache(self::$template_name . self::$template_name_sufix, self::$template_cache_id, self::$template_compile_id, $expire_time);
+	}
+
+	/**
+	 *	\brief Limpa a versão compilada do template atual
+	 */
+	public static function clear_compiled($exp_time) {
+		self::$template_obj->clearCompiledTemplate(self::$template_name . self::$template_name_sufix, self::$template_compile_id, $exp_time);
+	}
+
+	/**
+	 *	\brief Limpa variável de config definida
+	 */
+	public static function clear_config($var) {
+		self::$template_obj->clearConfig($var);
 	}
 
 	/**
 	 *	\brief Verifica se um arquivo de template existe
 	 */
 	public static function template_exists($tpl) {
-		return self::$template_obj->template_exists($tpl . self::$template_name_sufix);
+		return self::$template_obj->templateExists($tpl . self::$template_name_sufix);
 	}
 }
-?>

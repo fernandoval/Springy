@@ -9,7 +9,7 @@
 		server pickup directory</h1></center>
 <hr />
 <ul>
-<p><b>Version:</b> <tt>@(#) $Id: pickup_message.php,v 1.3 2004/09/22 21:21:31 mlemos Exp $</tt></p>
+<p><b>Version:</b> <tt>@(#) $Id: pickup_message.php,v 1.4 2006/05/04 01:24:35 mlemos Exp $</tt></p>
 <h2><a name="table_of_contents">Contents</a></h2>
 <ul>
 <li><a href="#2.1.1">Summary</a></li>
@@ -44,11 +44,11 @@
 <h3><a name="3.2.0.1">Copyright</a></h3>
 <p>Copyright &iquest; (C) Manuel Lemos 1999-2004</p>
 <h3><a name="3.2.0.2">Version</a></h3>
-<p>@(#) $Id: pickup_message.php,v 1.3 2004/09/22 21:21:31 mlemos Exp $</p>
+<p>@(#) $Id: pickup_message.php,v 1.4 2006/05/04 01:24:35 mlemos Exp $</p>
 <h3><a name="3.2.0.3">Parent classes</a></h3>
 <ul>
 <p><li>MIME E-mail message composing and sending</li></p>
-<p><b>Version:</b> <tt>@(#) $Id: email_message.php,v 1.53 2004/09/14 03:01:04 mlemos Exp $</tt></p>
+<p><b>Version:</b> <tt>@(#) $Id: email_message.php,v 1.92 2011/01/28 06:32:16 mlemos Exp $</tt></p>
 </ul>
 <h3><a name="4.2.0">Purpose</a></h3>
 <p>Implement an alternative message delivery method by dropping messages in a Windows mail server pickup directory, thus overriding the method of using the PHP <tt>mail()</tt> function implemented by the base class.</p>
@@ -94,7 +94,7 @@
 <h3>Type</h3>
 <p><tt><i>string</i></tt></p>
 <h3>Default value</h3>
-<p><tt>'pickup $Revision: 1.3 $'</tt></p>
+<p><tt>'pickup $Revision: 1.4 $'</tt></p>
 <h3>Purpose</h3>
 <p>Specify the text that is used to identify the mail delivery class or sub-class. This text is appended to the <tt>X-Mailer</tt> header text defined by the mailer variable.</p>
 <h3>Usage</h3>
@@ -110,10 +110,12 @@
 <li>mailer</li><br />
 <li>default_charset</li><br />
 <li>line_quote_prefix</li><br />
+<li>break_long_lines</li><br />
 <li>file_buffer_length</li><br />
 <li>debug</li><br />
 <li>cache_body</li><br />
 <li>error</li><br />
+<li>localhost</li><br />
 <p><a href="#table_of_contents">Table of contents</a></p>
 </ul>
 </ul>
@@ -130,6 +132,8 @@
 <ul>
 <li>ValidateEmailAddress</li><br />
 <li>WrapText</li><br />
+<li>CenterText</li><br />
+<li>Ruler</li><br />
 <li>QuoteText</li><br />
 <li>SetHeader</li><br />
 <li>SetEncodedHeader</li><br />
@@ -159,7 +163,10 @@
 <li>GetPartContentID</li><br />
 <li>GetDataURL</li><br />
 <li>Send</li><br />
+<li>GetMessage</li><br />
+<li>GetMessageSize</li><br />
 <li>Mail</li><br />
+<li>SetBulkMail</li><br />
 <p><a href="#table_of_contents">Table of contents</a></p>
 </ul>
 </ul>

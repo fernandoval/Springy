@@ -41,9 +41,9 @@
  *
  *	\link http://www.fval.com.br/
  *
- *	\version 2.0.0
- *					copyright (c) 2007-2009 FVAL - Consultoria e Informática Ltda.\n
- *					copyright (c) 2007-2009 Fernando Val
+ *	\version 2.2.1
+ *					copyright (c) 2007-2011 FVAL - Consultoria e Informática Ltda.\n
+ *					copyright (c) 2007-2011 Fernando Val
  *
  *	\brief			A single pagination class
  *
@@ -69,19 +69,6 @@
 
 class Pagination {
     /*
-		[pt-br]  Indices dos array da classe
-	*/
-    private $IndFirst = 'first';
-    private $IndLast  = 'last';
-    private $IndPrev  = 'previous';
-    private $IndNext  = 'next';
-    private $IndPages = 'pages';
-    private $IndTotal = 'lastpage';
-    private $IndCurr  = 'currpage';
-    private $IndTotF  = 'lastpage_fmt';
-    private $IndCurrF = 'currpage_fmt';
-
-    /*
 		[pt-br]  Array contendo os links das página
 	*/
     private $PagesLink = array();
@@ -89,20 +76,27 @@ class Pagination {
     /*
 		[pt-br]  Define a página atual
 	*/
-    private $CurrentPage = false;
-    private $PaginaAtual = 1;
+    private $CurrentPage = 1;
 
     /*
 		[pt-br]  Define a quantidade de páginas
 	*/
-    private $LastPage = false;
-    private $UltimaPagina = 1;
+    private $LastPage = 1;
 
     /*
 		[pt-br]  Define quantas páginas serão navegáveis para os lados a partir da página atual
 	*/
-    private $BesidePages = false;
-    private $NumPgLaterais = 5;
+    private $BesidePages = 5;
+	
+	/*
+		[pt-br]  Define a quantidade total de registros
+	*/
+	private $nunRows = 0;
+	
+	/*
+		[pt-br]  Define a quantidade de registros a serem exibidos por página
+	*/
+	private $nunRowsPerPage = 15;
 
     /*
 		[pt-br]  Define o hyperlink dos navegadores
@@ -118,53 +112,44 @@ class Pagination {
 	private $tagLink = '[page]';
 
     /*
-		[pt-br]  Define a variável do GET que receberá o número da página para navegar
-	*/
-    public $PageGET = 'pag';
-
-    /*
 		[pt-br]  Código HTML com a navegação
 	*/
     private $HTML = '';
-    private $HTMLPaginacao = '';
 
     /*
 		[pt-br]  Texto a ser mostrado como separador para primeira e última páginas
 	*/
-    private $SeparatorText = false;
-    private $TextoSeparador = '...';
+    private $SeparatorText = '...';
 
     /*
 		[pt-br]  Classe CSS usada para a LABEL de página atual
 	*/
-    private $CurrentPageClass = false;
-    private $ClassePaginaAtual = 'paginacao_atual';
+    private $CurrentPageClass = '';
     /*
 		[pt-br]  Classe CSS usada para os LINKs de navegação
 	*/
-    private $NavigatorClass = false;
-    private $ClasseNavegadores = 'paginacao_navegar';
+    private $NavigatorClass = '';
     /*
 		[pt-br]  Classe CSS usada para os LABELS dos separadores de primeira e última páginas
 	*/
-    private $SeparatorClass = false;
-    private $ClasseSeparadores = 'paginacao_atual';
+    private $SeparatorClass = 'separador';
 
     /*
 		[pt-br]  Texto a ser mostrado no link para a página anterior
 	*/
-    private $PreviousText = false;
-    private $TextoAnterior = 'Anterior';
+    private $PreviousText = '-';
     /*
 		[pt-br]  Texto a ser mostrado no link para a príxima página
 	*/
-    private $NextText = false;
-    private $TextoProxima = 'Pr&oacute;xima';
-
-    public function CalculateNumPages($numrows, $rowsperpage) {
-        return $this->LastPage = ceil($numrows / $rowsperpage);
-    }
-
+    private $NextText = '+';
+	
+	/* ********************** */
+	public function __construct() {
+		if (isset($_REQUEST['pag']) && is_numeric($_REQUEST['pag'])) {
+			$this->setCurrentPage($_REQUEST['pag']);
+		}
+	}
+	
 	public function setTagLink($tag) {
 		$this->tagLink = $tag;
 	}
@@ -173,95 +158,102 @@ class Pagination {
 		return $this->tagLink;
 	}
 
-	public function setSiteLink($link) {
-		$this->siteLink = $link;
+	public function setSiteLink($link, $qs=array()) {
+		if (is_array($link)) {
+			$this->siteLink = str_replace(urlencode($this->tagLink), $this->tagLink, URI::build_url($link, array_merge($qs, array('pag' => $this->tagLink))));
+		} else {
+			$this->siteLink = $link;
+		}
 	}
+	
+	public function setCurrentPage($pgatual) {
+		$this->CurrentPage = $pgatual;
+	}
+	
+	public function getCurrentPage() {
+		return ($this->CurrentPage == 0 ? 1 : $this->CurrentPage);
+	}
+	
+	public function setBesidePages($BesidePages) {
+		$this->BesidePages = $BesidePages;
+	}
+	
+	public function getBesidePages() {
+		return $this->BesidePages;
+	}
+	
+	/*
+		[pt-br] Seta o numero de registros
+	*/
+	public function setNumRows($rows) {
+		$this->nunRows = $rows;
+	}
+	
+	public function getNumRows() {
+		return $this->nunRows;
+	}
+	
+	/*
+		[pt-br] Seta o numero de registros por página
+	*/
+	public function setRowsPerPage($qtd) {
+		$this->nunRowsPerPage = $qtd;
+	}
+	
+	public function getRowsPerPage() {
+		return $this->nunRowsPerPage;
+	}
+	
+	public function setPreviousText($txt) {
+		$this->PreviousText = $txt;
+	}
+	
+	public function setNextText($txt) {
+		$this->NextText = $txt;
+	}
+	
+	private function CalculateNumPages() {
+        $this->LastPage = ceil($this->nunRows / $this->nunRowsPerPage);
+    }
 
-    public function parse($pgatual = 0, $pgfim = 0) {
-        /*
-			[pt-br] Converte os parâmetros antigos para os novos
-		*/
-        if ($this->CurrentPage === false) {
-            $this->CurrentPage = $this->PaginaAtual;
-		}
+    public function parse() {
+		$this->CalculateNumPages();
 
-        if ($this->LastPage === false) {
-            $this->LastPage = $this->UltimaPagina;
-		}
-
-        if ($this->BesidePages === false) {
-            $this->BesidePages = $this->NumPgLaterais;
-		}
-
-        if ($this->SeparatorText === false) {
-            $this->SeparatorText = $this->TextoSeparador;
-		}
-
-        if ($this->CurrentPageClass === false) {
-            $this->CurrentPageClass = $this->ClassePaginaAtual;
-		}
-
-        if ($this->NavigatorClass === false) {
-            $this->NavigatorClass = $this->ClasseNavegadores;
-		}
-
-        if ($this->SeparatorClass === false) {
-            $this->SeparatorClass = $this->ClasseSeparadores;
-		}
-
-        if ($this->PreviousText === false) {
-            $this->PreviousText = $this->TextoAnterior;
-		}
-
-        if ($this->NextText === false) {
-            $this->NextText = $this->TextoProxima;
-		}
-
-        $this->PagesLink = array();
-
-        /*
-			[pt-br]  Verifica se a página atual e/ou a última foram passadas por parâmetro na chamada
-		*/
-        if ($pgatual) {
-            $this->CurrentPage = $pgatual;
-		}
-
-        if ($pgfim) {
-            $this->LastPage = $pgfim;
-		}
-
-        $this->PagesLink[$this->IndCurr] = $this->CurrentPage;
-        $this->PagesLink[$this->IndTotal] = $this->LastPage;
-        $this->PagesLink[$this->IndCurrF] = number_format($this->CurrentPage, 0);
-        $this->PagesLink[$this->IndTotF] = number_format($this->LastPage, 0);
+		$this->PagesLink['pages'] = array();
+        $this->PagesLink['currpage'] = $this->CurrentPage;
+        $this->PagesLink['IndTotal'] = $this->LastPage;
+        $this->PagesLink['currpageF'] = number_format($this->CurrentPage, 0);
+        $this->PagesLink['IndTotF'] = number_format($this->LastPage, 0);
 
         /*
 			[pt-br]  Verifica se tem navagação pra página anterior
 		*/
-        $this->PagesLink[$this->IndPrev] = ($this->CurrentPage > 1 ? str_replace($this->tagLink, ($this->CurrentPage - 1), $this->siteLink) : '');
-
+		$this->PagesLink['previous'] = ($this->CurrentPage > 1 ? str_replace($this->tagLink, ($this->CurrentPage - 1), $this->siteLink) : '');
+		
         /*
 			[pt-br]  Verifica se mostra navegador para primeira página
 		*/
-        if (($this->CurrentPage - ($this->BesidePages + 1) > 1) && ($this->LastPage > ($this->BesidePages * 2 + 2))) {
-            $this->PagesLink[$this->IndFirst] = str_replace($this->tagLink, 1, $this->siteLink);
+        if (($this->CurrentPage - $this->BesidePages > 0) && ($this->LastPage > ($this->BesidePages * 2 + 2))) {
+            $this->PagesLink['first'] = str_replace($this->tagLink, 1, $this->siteLink);
             $dec = $this->BesidePages;
         } else {
-            $this->PagesLink[$this->IndFirst] = '';
-            $dec = $this->CurrentPage;
-            while ($this->CurrentPage - $dec < 1) {
-                $dec--;
-            }
+            $this->PagesLink['first'] = '';
+            $dec = $this->CurrentPage - 1;
+			// if ($dec <= 1) {
+				// while ($this->CurrentPage - $dec < 1) {
+					// $dec--;
+				// }
+			// }
         }
 
         /*
 			[pt-br]  Verifica se mostra navegador para última página
 		*/
-        if (($this->CurrentPage + ($this->BesidePages + 1) < $this->LastPage) && ($this->LastPage > ($this->BesidePages * 2 + 2))) {
-            $this->PagesLink[$this->IndLast] = str_replace($this->tagLink, $this->LastPage, $this->siteLink);
+        if (($this->CurrentPage + $this->BesidePages < $this->LastPage) && ($this->LastPage > ($this->BesidePages * 2 + 2))) {
+            $this->PagesLink['last'] = str_replace($this->tagLink, $this->LastPage, $this->siteLink);
             $inc = $this->BesidePages;
         } else {
-            $this->PagesLink[$this->IndLast] = '';
+            $this->PagesLink['last'] = '';
             $inc = $this->LastPage - $this->CurrentPage;
         }
 
@@ -271,7 +263,6 @@ class Pagination {
         if ($dec < $this->BesidePages) {
             $x = $this->BesidePages - $dec;
             while ($this->CurrentPage + $inc < $this->LastPage && $x > 0) {
-
                 $inc++;
                 $x--;
             }
@@ -290,34 +281,42 @@ class Pagination {
         /*
 			[pt-br]  Monta o conteúdo central do navegador
 		*/
-        $Pages = array();
         for ($x = $this->CurrentPage - $dec; $x <= $this->CurrentPage + $inc; $x++) {
-            $Pages[$x] = ($x == $this->CurrentPage) ? '' : str_replace($this->tagLink, $x, $this->siteLink);
+			if ($x == 0) {
+				continue;
+			}
+			
+            $this->PagesLink['pages'][$x] = ($x == $this->CurrentPage) ? '' : str_replace($this->tagLink, $x, $this->siteLink);
         }
-        $this->PagesLink[$this->IndPages] = $Pages;
 
         /*
 			[pt-br]  Verifica se mostra navegador para próxima página
 		*/
         if ($this->CurrentPage < $this->LastPage) {
-            $this->PagesLink[$this->IndNext] = str_replace($this->tagLink, ($this->CurrentPage + 1), $this->siteLink);
+            $this->PagesLink['next'] = str_replace($this->tagLink, ($this->CurrentPage + 1), $this->siteLink);
         } else {
-            $this->PagesLink[$this->IndNext] = '';
+            $this->PagesLink['next'] = '';
         }
+		
         return $this->PagesLink;
     }
 
-    public function makeHtml($pgatual = 0, $pgfim = 0) {
-        $this->Parse($pgatual, $pgfim);
-
-        $separator = '<label class="'.$this->SeparatorClass.'">'.$this->SeparatorText.'</label>';
-        $previous  = empty($this->PagesLink[$this->IndPrev])  ? '' : '<a href="'.$this->PagesLink[$this->IndPrev].'" class="'.$this->NavigatorClass.'">'.$this->PreviousText.'</a> ';
-        $next      = empty($this->PagesLink[$this->IndNext])  ? '' : '<a href="'.$this->PagesLink[$this->IndNext].'" class="'.$this->NavigatorClass.'">'.$this->NextText.'</a>';
-        $first     = empty($this->PagesLink[$this->IndFirst]) ? '' : '<a href="'.$this->PagesLink[$this->IndFirst].'" class="'.$this->NavigatorClass.'">1</a>';
-        $last      = empty($this->PagesLink[$this->IndLast])  ? '' : '<a href="'.$this->PagesLink[$this->IndLast].'" class="'.$this->NavigatorClass.'">'.$this->LastPage.'</a>';
+    public function makeHtml() {
+        $this->Parse();
+		
+		if (count($this->PagesLink['pages']) == 1) {
+			return;
+		}
+		
+        $separator = '<span ' . ($this->SeparatorClass ? 'class="'.$this->SeparatorClass.'"' : '') . '>'.$this->SeparatorText.'</span>';
+        $previous  = empty($this->PagesLink['previous'])  ? '' : '<a href="'.$this->PagesLink['previous'].'" class="'.$this->NavigatorClass.'">'.$this->PreviousText.'</a> ';
+        $next      = empty($this->PagesLink['next'])  ? '' : '<a href="'.$this->PagesLink['next'].'" class="'.$this->NavigatorClass.'">'.$this->NextText.'</a>';
+        $first     = empty($this->PagesLink['first']) ? '' : '<a href="'.$this->PagesLink['first'].'" class="'.$this->NavigatorClass.'">1</a>';
+        $last      = empty($this->PagesLink['last'])  ? '' : '<a href="'.$this->PagesLink['last'].'" class="'.$this->NavigatorClass.'">'.$this->LastPage.'</a>';
         $pages     = array();
-        foreach($this->PagesLink[$this->IndPages] as $Page => $Link) {
-            $pages[] = empty($Link) ? '<label class="'.$this->CurrentPageClass.'">'.$Page.'</label>' : '<a href="'.$Link.'" class="'.$this->NavigatorClass.'">'.$Page.'</a> ';
+		
+        foreach($this->PagesLink['pages'] as $Page => $Link) {
+            $pages[] = empty($Link) ? '<span ' . ($this->CurrentPageClass ? 'class="'.$this->CurrentPageClass.'"' : '') . '>'.$Page.'</span>' : '<a href="'.$Link.'" class="'.$this->NavigatorClass.'">'.$Page.'</a> ';
         }
 
         $middle = '';
@@ -330,7 +329,6 @@ class Pagination {
     }
 
     public function show($pgatual = 0, $pgfim = 0) {
-        return $this->MakeHTML($pgatual, $pgfim);
+        echo $this->MakeHTML($pgatual, $pgfim);
     }
 }
-?>
