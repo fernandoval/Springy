@@ -25,6 +25,8 @@ class Template extends Kernel {
 	private static $template_cache_id = "";
 	private static $template_compile_id = "";
 	private static $template_vars = array();
+	
+	private static $template_funcs = array();
 
 	/**
 	 *	\brief Inicializa a classe de template
@@ -142,7 +144,7 @@ class Template extends Kernel {
 		// Ajusta os caminhos de template
 		self::set_template_path( parent::get_conf('template', 'template_path') . $relative_path );
 		self::set_compiled_template_path( parent::get_conf('template', 'compiled_template_path') . $relative_path );
-		self::set_config_dif( parent::get_conf('template', 'template_config_path') . $relative_path );
+		self::set_config_dif( parent::get_conf('template', 'template_config_path') );
 
 		// Se o arquivo de template não existir, exibe erro 404
 		if (!self::$template_obj->templateExists(self::$template_name . self::$template_name_sufix)) {
@@ -181,13 +183,18 @@ class Template extends Kernel {
 	 */
 	public static function fetch() {
 		if (!self::$started) return false;
-
+		
 		error_reporting(E_ALL^E_NOTICE);
 		restore_error_handler();
 
 		self::set_default_vars();
 		self::_set_template_paths();
-
+		
+		foreach(self::$template_funcs as $func) {
+			self::$template_obj->registerPlugin($func[0], $func[1], $func[2], $func[3], $func[4]);
+		}
+		self::$template_funcs = array();
+		
 		self::$started = false;
 
 		return self::$template_obj->fetch(self::$template_name . self::$template_name_sufix, self::$template_cache_id, self::$template_compile_id);
@@ -286,6 +293,13 @@ class Template extends Kernel {
 	 */
 	public static function assign_default_var($name, $value) {
 		self::$template_vars[$name] = $value;
+	}
+	
+	/**
+	 *	\brief 
+	 */
+	public static function register_plugin($type, $name, $callback, $cacheable=NULL, $cache_attrs=NULL) {
+		self::$template_funcs[] = array($type, $name, $callback, $cacheable, $cache_attrs);
 	}
 
 	/**

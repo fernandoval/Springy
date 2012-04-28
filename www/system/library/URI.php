@@ -7,7 +7,7 @@
  *
  *	\warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
- *	\version 1.4.6
+ *	\version 1.5.7
  *
  *	\brief Classe para tratamento de URI
  */
@@ -161,7 +161,7 @@ class URI extends Kernel {
 			self::_set_class_controller(self::current_page());
 		}
 
-		// Pega as rotas
+		// Varre as rotas alternativas de controladoras
 		if (is_null($controller)) {
 			$routes = parent::get_conf('uri', 'routes');
 			if (is_array($routes)) {
@@ -173,6 +173,20 @@ class URI extends Kernel {
 					}
 				}
 			}
+			unset($routes);
+		}
+
+		// Varre os redirecionamentos
+		if (is_null($controller)) {
+			$redirects = parent::get_conf('uri', 'redirects');
+			if (is_array($redirects)) {
+				foreach ($redirects as $key => $data) {
+					if (preg_match('/^'.$key.'$/', $UriString)) {
+						self::redirect(URI::build_url($data['segments'], $data['get'], $data['force_rewrite'], $data['host']), $data['type']);
+					}
+				}
+			}
+			unset($redirects);
 		}
 
 		return $controller;
@@ -378,7 +392,7 @@ class URI extends Kernel {
 
 		return self::_host($host) . $url . $param;
 	}
-	
+
 	/**
 	 *	\brief Retorna o host com protocolo
 	 *

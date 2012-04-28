@@ -5,7 +5,7 @@
  *
  *  \warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
- *  \version 1.0.0
+ *  \version 1.1.0
  *
  *  \brief Configurações da classe SOAP
  */
@@ -28,6 +28,7 @@
 			$conf['development']['proxyusername'] = '';
 			$conf['development']['proxypassword'] = '';
 			$conf['development']['useCURL'] = false;
+			$conf['development']['timeout'] = 15;
 		/*@}*/
 
 		/**
@@ -39,6 +40,7 @@
 			$conf['production']['proxyusername'] = '';
 			$conf['production']['proxypassword'] = '';
 			$conf['production']['useCURL'] = false;
+			$conf['production']['timeout'] = 15;
 		/*@}*/
 
 	/*@}*/

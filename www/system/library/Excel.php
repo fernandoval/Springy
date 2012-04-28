@@ -5,7 +5,7 @@
  *
  *	\warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
- *	\version 0.1.1
+ *	\version 0.2.2
  *
  *	\brief Classe para construção de arquivos no formato Microsoft Excel
  *
@@ -20,8 +20,10 @@ class Excel {
     private $error = 0;
     private $newRow = false;
 	private $state = NULL;
-	
+
 	private $nameFile = NULL;
+
+	private $columns = array();
 
 	// Constantes de erro
 	const ERR_ANOTHER_FILE_OPENED = 1001;
@@ -84,7 +86,10 @@ class Excel {
 		}
 		return $message;
 	}
-	
+
+	/**
+	 *	\brief Define o nome do arquivo
+	 */
 	public function setNameFile($nameFile) {
 		$this->nameFile = $nameFile;
 	}
@@ -210,14 +215,44 @@ class Excel {
        return "</table></body></html>";
     }
 
-    /**
+	/**
+	 *	\brief Escreve uma linha de título e define os tipos das colunas
+	 */
+    public function write_header($columns) {
+		if (is_null($this->fp)) {
+			$this->error = self::ERR_NO_FILE_OPENED;
+			return false;
+		}
+
+        if (!is_array($columns)) {
+			$this->error = self::ERR_INVALID_ARGUMENT_ARRAY;
+			return false;
+        }
+
+		$this->columns = array();
+        $this->open_row();
+        foreach($columns as $column) {
+			if (!is_array($column) || !isset($column['name']) || !isset($column['title']) || !isset($column['type'])) {
+				$this->close_row();
+				$this->error = self::ERR_INVALID_ARGUMENT_ARRAY;
+				return false;
+			}
+
+			$this->columns[$column['name']] = $column;
+			$this->add_col($column['name']);
+		}
+		$this->close_row();
+		$this->newRow = false;
+	}
+
+	/**
 	 *	\brief Escreve uma linha no arquivo a partir de um array de colunas
 	 *
      *	@Params : $line_arr: An valid array
      *	@Return : Void
      */
     public function write_line($line_arr) {
-		if (is_null($this->fp)){
+		if (is_null($this->fp)) {
 			$this->error = self::ERR_NO_FILE_OPENED;
 			return false;
 		}
@@ -228,8 +263,8 @@ class Excel {
         }
 
         $this->open_row();
-        foreach($line_arr as $col) {
-			$this->add_col($col);
+        foreach($line_arr as $index => $column) {
+			$this->add_col($column, $index);
 		}
 		$this->close_row();
 		$this->newRow = false;
@@ -275,12 +310,16 @@ class Excel {
      *	@Params : $value : Coloumn Value
      *	@Return : Void
      */
-    public function add_col($value) {
+    public function add_col($value, $column=NULL) {
 		if (is_null($this->fp)){
 			$this->error = self::ERR_NO_FILE_OPENED;
 			return false;
 		}
-		
-		fwrite($this->fp, '<td class="xl24" width="64"'.(is_numeric($value) ? ' x:num' : "").'>'.utf8_decode($value).'</td>');
+
+		if (is_null($column) || !isset($this->columns[$column])) {
+			fwrite($this->fp, '<td class="xl24" width="64"'.(is_numeric($value) ? ' x:num' : "").'>'.utf8_decode($value).'</td>');
+		} else {
+			fwrite($this->fp, '<td class="xl24" width="'.(empty($this->columns[$column]['width'])?'64':$this->columns[$column]['width']).'" x:'.$this->columns[$column]['type'].'>'.utf8_decode($value).'</td>');
+		}
 	}
 }

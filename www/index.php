@@ -3,11 +3,11 @@
  *
  *  FVAL PHP Framework for Web Applications
  *
- *  \version 1.2.3
+ *  \version 1.3.2
  *
- *	Copyright (c) 2007-2011 FVAL Consultoria e Informática Ltda.\n
- *	Copyright (c) 2007-2011 Fernando Val\n
- *	Copyright (c) 2009-2011 Lucas Cardozo
+ *	Copyright (c) 2007-2012 FVAL Consultoria e Informática Ltda.\n
+ *	Copyright (c) 2007-2012 Fernando Val\n
+ *	Copyright (c) 2009-2012 Lucas Cardozo
  *
  *  http://www.fval.com.br
  *
@@ -126,14 +126,23 @@ if (file_exists($path)) {
 
 // Se foi definido uma Controller, carega
 if (!is_null($controller)) {
+	// verifica se há uma classe default dentro da pasta
+	$defaultFile = dirname($controller) . DIRECTORY_SEPARATOR . '_default.page.php';
+	if (file_exists($defaultFile)) {
+		require $defaultFile;
+		new Default_Controller;
+	}
+	unset($defaultFile);
+
 	// Carrega a controller
 	require_once($controller);
-
+	
 	// Inicializa a controller
 	$ControllerClassName = str_replace('-', '_', URI::get_class_controller()) . '_Controller';
 	if (class_exists($ControllerClassName)) {
 		$PageController = new $ControllerClassName;
-		$PageMethod = URI::get_segment(0, true);
+		$PageMethod = str_replace('-', '_', URI::get_segment(0, true));
+		
 		if ($PageMethod && method_exists($PageController, $PageMethod)) {
 			call_user_func(array($PageController, $PageMethod));
 		} elseif (method_exists($PageController, '_default')) {
@@ -157,7 +166,9 @@ if (!is_null($controller)) {
 			} else {
 				$pg = 1;
 			}
+			
 			$articles_per_page = Kernel::get_conf('cms', 'articles_per_page');
+			
 			CMS::load_category_to_template();
 			CMS::load_articles_to_template(($pg - 1) * $articles_per_page, $articles_per_page);
 		}

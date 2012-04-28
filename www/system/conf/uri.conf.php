@@ -5,7 +5,7 @@
  *
  *  \warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
- *  \version 1.0.1
+ *  \version 1.1.2
  *
  *  \brief Configurações da classe URI
  *
@@ -30,16 +30,37 @@
 		 *  \addtogroup uricfgdefault Configurações padrão
 		 **/
 		/*@{*/
+			/// Rotas alternativas para controladoras
 			$conf['default']['routes'] = array(
-				'home(\/)*(\?(.*))' => array('segment' => 0, 'controller' => 'index'),
+				'home(\/)*(\?(.*))*' => array('segment' => 0, 'controller' => 'index'),
 			);
-			
+
+			/// Redirecionamentos
+			$conf['default']['redirects'] = array(
+				'404' => array('segments' => array(), 'get' => array(), 'force_rewrite' => false, 'host' => 'dynamic', 'type' => 301),
+			);
+
 			/// URI da aplicação
 			$conf['default']['system_root'] = '/';
-		
+
 			$conf['default']['register_method_set_common_urls'] = NULL;
 			$conf['default']['common_urls'] = array();
 		/*@}*/
-
+		/**
+		 *  \addtogroup uricfgdevelopment Configurações para o ambiente de Desenvolvimento
+		 **/
+		/*@{*/
+			$conf['development']['dynamic'] = $_SERVER['HTTP_HOST'];
+			$conf['development']['static'] = $_SERVER['HTTP_HOST'];
+			$conf['development']['secure'] = $_SERVER['HTTP_HOST'];
+		/*@}*/
+		/**
+		 *  \addtogroup uriecfgproduction Configurações para o ambiente de Produção
+		 **/
+		/*@{*/
+			$conf['production']['dynamic'] = isset($_SERVER['HTTPS']) ? 'http://www.hotelurbano.com.br' : $_SERVER['HTTP_HOST'];
+			$conf['production']['static'] = isset($_SERVER['HTTPS']) ? $_SERVER['HTTP_HOST'] : 'cdn.hotelurbano.com.br';
+			$conf['production']['secure'] = 'https://secure.hotelurbano.com.br';
+		/*@}*/
 	/*@}*/
 /*@}*/
