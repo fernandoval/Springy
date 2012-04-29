@@ -1,13 +1,13 @@
 <?php
 /**
  *	FVAL PHP Framework for Web Applications\n
- *	Copyright (c) 2007-2011 FVAL Consultoria e Informática Ltda.\n
- *	Copyright (c) 2007-2011 Fernando Val\n
- *	Copyright (c) 2009-2011 Lucas Cardozo
+ *	Copyright (c) 2007-2012 FVAL Consultoria e Informática Ltda.\n
+ *	Copyright (c) 2007-2012 Fernando Val\n
+ *	Copyright (c) 2009-2012 Lucas Cardozo
  *
  *	\warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
- *	\version 1.0.4
+ *	\version 1.0.5
  *
  *	\brief Classe para tratamento de erros
  */
@@ -28,7 +28,7 @@ class Errors extends Kernel {
 	 *	\brief Trata um erro ocorrido no sistema e encerra seu funcionamento
 	 */
 	public static function error_handler($errno, $errstr, $errfile, $errline, $localErro, $errorType=500) {
-		DB::transactionAllRollBack();
+		// DB::transactionAllRollBack();
 
 		switch ($errno) {
 			case E_ERROR:
