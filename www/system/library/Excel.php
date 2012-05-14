@@ -1,13 +1,13 @@
 <?php
 /**
  *	FVAL PHP Framework for Web Applications\n
- *	Copyright (c) 2007-2011 FVAL Consultoria e Informática Ltda.
+ *	Copyright (c) 2007-2012 FVAL Consultoria e Informática Ltda.
  *
  *	\warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
  *	\version 0.2.2
  *
- *	\brief Classe para construção de arquivos no formato Microsoft Excel
+ *	\brief Classe para construção de arquivos no formato Microsoft(R) Excel(R)
  *
  *	\note Classe baseada no trabalho de Harish Chauhan de 31/12/2004
  */

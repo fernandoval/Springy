@@ -1,13 +1,13 @@
 <?php
 /**
  *	FVAL PHP Framework for Web Applications\n
- *	Copyright (c) 2007-2011 FVAL Consultoria e Informática Ltda.\n
- *	Copyright (c) 2007-2011 Fernando Val\n
- *	Copyright (c) 2009-2011 Lucas Cardozo
+ *	Copyright (c) 2007-2012 FVAL Consultoria e Informática Ltda.\n
+ *	Copyright (c) 2007-2012 Fernando Val\n
+ *	Copyright (c) 2009-2012 Lucas Cardozo
  *
  *	\warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
- *	\version 2.2.1
+ *	\version 2.3.2
  *
  *	\brief Classe de tratamento de templates
  */
@@ -351,5 +351,12 @@ class Template extends Kernel {
 	 */
 	public static function template_exists($tpl) {
 		return self::$template_obj->templateExists($tpl . self::$template_name_sufix);
+	}
+	
+	/**
+	 *	\brief Fornece a versão do systema de parse de templates
+	 */
+	public static function smarty_version() {
+		return Smarty::SMARTY_VERSION;
 	}
 }

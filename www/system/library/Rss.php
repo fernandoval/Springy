@@ -114,7 +114,7 @@ class Rss extends Kernel {
 			$format = $validFormats[0];
 		}
 
-		if (substr($file, -4) != 'xml')) {
+		if ( ( substr($file, -4) != 'xml') ) {
 			$file .= '.xml';
 		}
 

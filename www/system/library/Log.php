@@ -1,14 +1,14 @@
 <?php
 /**
  *	FVAL PHP Framework for Web Applications\n
- *	Copyright (c) 2007-2011 FVAL Consultoria e Informática Ltda.\n
- *	Copyright (c) 2007-2011 Fernando Val
+ *	Copyright (c) 2007-2012 FVAL Consultoria e Informática Ltda.\n
+ *	Copyright (c) 2007-2012 Fernando Val
  *
  *	\warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
  *	\version 0.9.2
  *
- *	\brief Classe para geração de saídas em logs de evntos
+ *	\brief Classe para geração de saídas em logs de eventos
  *
  *	\author Fernando Val <fernando.val@gmail.com>
  */

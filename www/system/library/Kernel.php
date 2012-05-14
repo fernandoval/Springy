@@ -7,14 +7,14 @@
  *
  *	\warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
- *	\version 1.1.10
+ *	\version 1.1.11
  *
- *	\brief Cerne no framework
+ *	\brief Cerne do framework
  */
 
 class Kernel {
 	// Versão do framework
-	const VERSION = '1.1.0';
+	const VERSION = '1.2.4';
 	/// Array interno com dados de configuração
 	private static $confs = array();
 	/// Array com informações de debug
@@ -314,6 +314,7 @@ class Kernel {
 			ob_clean();
 		}
 
+		echo '<!DOCTYPE html>'."\n";
 		echo '<html>';
 		echo '<head>';
 		echo '<title>FVAL PHP Framework for Web Applications - About</title>';
@@ -323,6 +324,9 @@ class Kernel {
 		echo 'a:hover { color:#0B61A4; }';
 		echo '.logo { display:block;padding:0;border:0;border-bottom:1px solid #fff;margin:0 auto;width:500px;height:70px;background:transparent url(data:image/png;base64,'.self::_img_logo().') no-repeat left top; }';
 		echo '.logo a { display:block;color:#fff;padding:0;border:0;margin:0 0 0 150px;height:59px;line-height:59px;vertical-align:middle;font-size:150%;font-weight:bold; }';
+		echo 'table { padding:0;border:0;margin:0 auto;cell-padding:0; }';
+		echo 'tr { padding:0;border:0;margin:0; }';
+		echo 'td { padding:0 5px 0 0;border:0;text-align:left;cell-padding:0; }';
 		echo '</style>';
 		echo '</head>';
 		echo '<body>';
@@ -330,17 +334,48 @@ class Kernel {
 		echo '<p>Este projeto foi desenvolvido utilizando o <strong><a href="http://www.fval.com.br">FVAL</a> PHP Framework for Web Applications v'.self::VERSION.'</strong> para PHP.<br /></p>';
 		echo '<p><strong>Este framework foi escrito por</strong></p><p>';
 		echo 'Fernando Val - fernando at fval dot com dot br<br />';
-		echo 'Lucas Cardozo - lucas dot cardozo at live dot com<br />';
-		echo '</p><p><strong>Classes Inclusas nesse Framework</strong></p><p>';
+		echo 'Lucas Cardozo - lucas dot cardozo at live dot com</p>';
+		
+		echo '<p><strong>Bibliotecas utilizadas nesse projeto</strong></p><table align="center">';
+		$fv = array();
+		$d = rtrim(dirname(__FILE__), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+		if ($r = opendir($d)) {
+			while (($f = readdir($r)) !== false) {
+				if (filetype($d . $f) == 'file' && substr($f, -4) == '.php') {
+					$fc = file($d . $f);
+					$v = array('b'=>"",'v'=>"",'n'=>"");
+					while (list(,$l) = each($fc)) {
+						if (preg_match('/\*(\s*)[\\\\|@]brief[\s|\t]{1,}(.*)((\r)*(\n))$/', $l, $a)) {
+							$v['b'] = trim($a[2]);
+						}
+						elseif (preg_match('/\*(\s*)\\\\version[\s|\t]{1,}(.*)((\r)*(\n))$/', $l, $a)) {
+							$v['v'] = trim($a[2]);
+						}
+						elseif (preg_match('/(\s*)class[\s|\t]{1,}([a-zA-Z0-9_]+)(\s*)(extends)*(\s*)([a-zA-Z0-9_]*)(\s*)(\\{)/', $l, $a)) {
+							$v['n'] = trim($a[2]);
+							break;
+						}
+					}
+					if ($v['n'] && $v['v'])
+						$fv[$v['n']] = $v;
+				}
+			}
+		}
+		ksort($fv);
+		foreach ($fv as $k => $v) {
+			echo '<tr><td>'.$v['n'].'</td><td>'.$v['v'].($v['b']?'</td><td>'.$v['b']:"").'</td></tr>';
+		}
+		echo '</table>';
+		
+		echo '<p><strong>Classes Inclusas nesse framework</strong></p><p>';
 		echo 'Smarty: the PHP compiling template engine v3.1.8 (c) 2008 New Digital Group, Inc.<br />';
 		echo 'Sending e-mail messages via SMTP protocol v1.41 (c) 1999-2009 Manuel Lemos<br />';
 		echo 'MIME E-mail message composing and sending v1.92 (c) 1999-2004 Manuel Lemos<br />';
 		echo 'MIME E-mail message composing and sending using Sendmail v1.18 (c) 1999-2004 Manuel Lemos<br />';
 		echo 'MIME E-mail message composing and sending via SMTP v1.36 (c) 1999-2004 Manuel Lemos<br />';
 		echo 'Simple Authentication and Security Layer client v1.11 (c) 2001-2005 Manuel Lemos<br />';
-		echo 'NuSOAP - Web Services Toolkit for PHP v1.123 (c) 2002 NuSphere Corporation<br />';
+		// echo 'NuSOAP - Web Services Toolkit for PHP v1.123 (c) 2002 NuSphere Corporation<br />';
 		echo 'FeedCreator v1.7.2 (c) Kai Blankenhorn<br />';
-		echo 'FVAL PHP Pagination Class 2 v2.2.1 (c) 2007-2011 FVAL - Consultoria e Informática Ltda.<br />';
 		echo '</p></body>';
 		echo '</html>';
 
