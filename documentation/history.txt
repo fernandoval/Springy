@@ -1,8 +1,8 @@
 FVAL PHP Framework for Web Applications
 
-Copyright (C) 2007-2011 FVAL - Consultoria e Informática Ltda.
-Copyright (C) 2007-2011 Fernando Val
-Copyright (C) 2009-2011 Lucas Cardozo
+Copyright (C) 2007-2012 FVAL - Consultoria e Informática Ltda.
+Copyright (C) 2007-2012 Fernando Val
+Copyright (C) 2009-2012 Lucas Cardozo
 
 http://www.fval.com.br
 
@@ -14,6 +14,20 @@ Developer team:
 Framework Update History
 
 ------------------------------------------------------------------------------------ --- -- -
+
+1.2.5
+	- Adicionado mecanismo de acesso restrito por ambiente, configurável na 'system'.
+
+1.2.4
+	- Melhorias no método "copyright" do framework.
+
+1.2.3
+	- Inclusão da classe SOAP_Client;
+	- Início do desenvolvimento da classe SOAP_Server;
+	- Implementação de possibilidade de sessão em banco de dados e Memcached.
+
+1.2.2
+	- Melhorias nos métodos de debug.
 
 1.2.1c
 	- Modificada a forma de armazenamento interno das variáveis defaul de template;

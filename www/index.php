@@ -3,7 +3,7 @@
  *
  *  FVAL PHP Framework for Web Applications
  *
- *  \version 1.3.2
+ *  \version 1.4.4
  *
  *	Copyright (c) 2007-2012 FVAL Consultoria e Informática Ltda.\n
  *	Copyright (c) 2007-2012 Fernando Val\n
@@ -52,7 +52,7 @@ set_error_handler('FW_ErrorHandler');
 /*  ------------------------------------------------------------------------------------ --- -- -
 	Início do script
 	------------------------------------------------------------------------------------ --- -- - */
-
+	
 ob_start();
 
 // Envia o charset
@@ -64,25 +64,38 @@ ini_set('default_charset', $GLOBALS['SYSTEM']['CHARSET']);
 ini_set('date.timezone', $GLOBALS['SYSTEM']['TIMEZONE']);
 
 // Resolve a URI e monta as variáveis internas
-/*
-	O parse precisa ficar aqui pois na linha de baixo possui um URI::_GET que só funciona após o parse
-*/
 $controller = URI::parse_uri();
 
+// Verifica se o acesso ao sistema necessita de autenticação
+if (is_array(Kernel::get_conf('system', 'authentication'))) {
+	$auth = Kernel::get_conf('system', 'authentication');
+	if (isset($auth['user']) && isset($auth['pass'])) {
+		if (!Cookie::get('__sys_auth__')) {
+			if (!isset($_SERVER['PHP_AUTH_USER']) || !isset($_SERVER['PHP_AUTH_PW']) || $_SERVER['PHP_AUTH_USER'] != $auth['user'] || $_SERVER['PHP_AUTH_PW'] != $auth['pass']) {
+				header('WWW-Authenticate: Basic realm="' . utf8_decode('What are you doing here?') . '"');
+				header('HTTP/1.0 401 Unauthorized');
+				die('Não autorizado.');
+			}
+			Cookie::set('__sys_auth__', true);
+		}
+	}
+}
+
+// Verifica se o usuário desenvolvedor está acessando
 if (Kernel::get_conf('system', 'developer_user') && Kernel::get_conf('system', 'developer_pass')) {
 	if (URI::_GET( Kernel::get_conf('system', 'developer_user') ) == Kernel::get_conf('system', 'developer_pass')) {
 		Cookie::set('_developer', true);
 		/**
-		 * A var $_SytemDeveloperOn é setada pois, quando o site tá em manutenção e é passado o user e pass para que o desenvolvedor veja o site,
+		 * A var $_SystemDeveloperOn é setada pois, quando o site tá em manutenção e é passado o user e pass para que o desenvolvedor veja o site,
 		 * devido ao uso de Cookies, o site só aparece quando dá um refresh
 		 */
-		$_SytemDeveloperOn = true;
+		$_SystemDeveloperOn = true;
 	} else if (URI::_GET( Kernel::get_conf('system', 'developer_user') ) == 'off') {
 		Cookie::delete('_developer');
 	}
 }
 
-if (Cookie::exists('_developer') || isset($_SytemDeveloperOn)) {
+if (Cookie::exists('_developer') || isset($_SystemDeveloperOn)) {
 	Kernel::set_conf('system', 'maintenance', false);
 	Kernel::set_conf('system', 'debug', true);
 }

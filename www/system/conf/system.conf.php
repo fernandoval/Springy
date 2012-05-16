@@ -1,13 +1,13 @@
 <?php
 /** \file
  *	FVAL PHP Framework for Web Applications\n
- *	Copyright (c) 2007-2011 FVAL Consultoria e Informática Ltda.\n
- *	Copyright (c) 2007-2011 Fernando Val\n
- *	Copyright (c) 2009-2011 Lucas Cardozo
+ *	Copyright (c) 2007-2012 FVAL Consultoria e Informática Ltda.\n
+ *	Copyright (c) 2007-2012 Fernando Val\n
+ *	Copyright (c) 2009-2012 Lucas Cardozo
  *
  *  \warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
- *  \version 1.1.0
+ *  \version 1.2.0
  *
  *  \brief Configurações gerais do sistema
  */
@@ -52,6 +52,8 @@
 		$conf['development']['rewrite_url'] = true;
 		/// Define se o cache está ligado
 		$conf['development']['cache'] = false;
+		/// Define o acesso autenticado por sistema
+		$conf['development']['authentication'] = array('user' => '', 'pass' => '');
 
 		/// Caminho do diretório de scripts de controle (controllers)
 		$conf['development']['controller_path'] = $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'controllers';
@@ -74,6 +76,8 @@
 		$conf['production']['rewrite_url'] = true;
 		/// Define se o cache está ligado
 		$conf['production']['cache'] = false;
+		/// Define o acesso autenticado por sistema
+		$conf['production']['authentication'] = false;
 
 		/// Caminho do diretório de scripts de controle (controllers)
 		$conf['production']['controller_path'] = $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'controllers';
