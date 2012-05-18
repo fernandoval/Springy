@@ -1,13 +1,13 @@
 <?php
 /**
  *	FVAL PHP Framework for Web Applications\n
- *	Copyright (c) 2007-2011 FVAL Consultoria e Informática Ltda.\n
- *	Copyright (c) 2007-2011 Fernando Val\n
- *	Copyright (c) 2009-2011 Lucas Cardozo
+ *	Copyright (c) 2007-2012 FVAL Consultoria e Informática Ltda.\n
+ *	Copyright (c) 2007-2012 Fernando Val\n
+ *	Copyright (c) 2009-2012 Lucas Cardozo
  *
  *	\warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
- *	\version 0.1.2
+ *	\version 0.1.3
  *
  *	\brief Classe com métodos para diversos tipos de tratamento e validação de dados string
  */
@@ -94,11 +94,19 @@ class Strings extends Kernel {
 		return preg_match('/^[0-9]{'.$minimo.',' . $tamanho . '}' . ($float ? '\.[0-9]{1,' . $float . '}' : '') . '$/', $numero);
 	}
 
-	/*
-	 * @param Int $idade -- passando esse paramentro, define quantos anos o individuo deve ter
+	/**
+	 *	\brief Valida uma data no formato dd/mm/yyyy
+	 *
+	 *	Só serão consideradas válidas datas de 01/01/1900 até 31/12/2199.
+	 *
+	 *	@param[in] (string)$data - data no formato d/m/Y
 	 */
-	public static function data($data/*, $idade=false*/) {
-		if (!preg_match('/(((0[1-9]|[1-2][0-9]|3[0-1])\/(0[1-9]|1[0-2])\/19|20[0-9]{2}))/', $data, $res)) {
+	public static function data($data) {
+		if (!preg_match('/^(0[1-9]|[1-2][0-9]|3[0-1])\/(0[1-9]|1[0-2])\/((19|20|21)[0-9]{2})$/', $data, $res)) {
+			return false;
+		}
+
+		if (date('d/m/Y', mktime(0, 0, 0, $res[2], $res[1], $res[3])) != $data) {
 			return false;
 		}
 

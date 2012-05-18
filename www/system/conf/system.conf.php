@@ -7,7 +7,7 @@
  *
  *  \warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
- *  \version 1.2.0
+ *  \version 1.3.0
  *
  *  \brief Configurações gerais do sistema
  */
@@ -52,6 +52,8 @@
 		$conf['development']['rewrite_url'] = true;
 		/// Define se o cache está ligado
 		$conf['development']['cache'] = false;
+		/// Define o header HTTP/1.1 Cache-Control
+		$conf['development']['cache-control'] = 'no-cache';
 		/// Define o acesso autenticado por sistema
 		$conf['development']['authentication'] = array('user' => '', 'pass' => '');
 
@@ -76,6 +78,8 @@
 		$conf['production']['rewrite_url'] = true;
 		/// Define se o cache está ligado
 		$conf['production']['cache'] = false;
+		/// Define o header HTTP/1.1 Cache-Control
+		$conf['production']['cache-control'] = 'private, must-revalidate';
 		/// Define o acesso autenticado por sistema
 		$conf['production']['authentication'] = false;
 

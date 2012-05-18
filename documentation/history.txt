@@ -14,6 +14,9 @@ Developer team:
 Framework Update History
 
 ------------------------------------------------------------------------------------ --- -- -
+1.2.6.18
+	- Adicionado controle sobre o header HTTP/1.0 Cache-Control;
+	- Corrigido validação feita pelo método data da biblioteca Strings.
 
 1.2.5
 	- Adicionado mecanismo de acesso restrito por ambiente, configurável na 'system'.

@@ -3,7 +3,7 @@
  *
  *  FVAL PHP Framework for Web Applications
  *
- *  \version 1.4.4
+ *  \version 1.5.5
  *
  *	Copyright (c) 2007-2012 FVAL Consultoria e Informática Ltda.\n
  *	Copyright (c) 2007-2012 Fernando Val\n
@@ -55,8 +55,10 @@ set_error_handler('FW_ErrorHandler');
 	
 ob_start();
 
-// Envia o charset
+// Envia o content-type e o charset
 header('Content-Type: text/html; charset='.$GLOBALS['SYSTEM']['CHARSET'], true);
+// Envia o cache-control
+header('Cache-Control: '.Kernel::get_conf('system', 'cache-control'), true);
 
 //ini_set('zlib.output_compression', 'on');
 ini_set('mbstring.internal_encoding', $GLOBALS['SYSTEM']['CHARSET']);

@@ -7,14 +7,14 @@
  *
  *	\warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
- *	\version 1.1.12
+ *	\version 1.1.13
  *
  *	\brief Cerne do framework
  */
 
 class Kernel {
 	// Versão do framework
-	const VERSION = '1.2.5';
+	const VERSION = '1.2.6';
 	/// Array interno com dados de configuração
 	private static $confs = array();
 	/// Array com informações de debug
