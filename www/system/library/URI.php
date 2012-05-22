@@ -7,7 +7,7 @@
  *
  *	\warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
- *	\version 1.5.7
+ *	\version 1.5.8
  *
  *	\brief Classe para tratamento de URI
  */
@@ -440,10 +440,18 @@ class URI extends Kernel {
 	 *		Se omitido usa 302 por padrão.
 	 */
 	public static function redirect($url, $header=302) {
+		$redirs = array(
+			301 => 'Moved Permanently',
+			302 => 'Found',
+			303 => 'See Other',
+			307 => 'Temporary Redirect',
+		);
+
 		if (ob_get_level() > 0) ob_clean();
 
-		header('Status: ' . $header);
-		header('Location: ' . $url, $header);
+		header('HTTP/1.1 ' . $header . (isset($redirs[$header])?$redirs[$header]:""), true);
+		header('Status: ' . $header, true);
+		header('Location: ' . $url, true, $header);
 		exit;
 	}
 

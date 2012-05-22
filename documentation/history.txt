@@ -14,6 +14,9 @@ Developer team:
 Framework Update History
 
 ------------------------------------------------------------------------------------ --- -- -
+1.2.6.19
+	- Corrigido bug do redirecionamento 302 do método redirect da classe URI.
+
 1.2.6.18
 	- Adicionado controle sobre o header HTTP/1.0 Cache-Control;
 	- Corrigido validação feita pelo método data da biblioteca Strings.
