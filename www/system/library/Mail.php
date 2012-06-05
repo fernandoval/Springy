@@ -6,7 +6,7 @@
  *
  *	\warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
- *	\version 1.0.2
+ *	\version 1.1.3
  *
  *	\brief Classe para envio de email
  */
@@ -99,6 +99,20 @@ class Mail extends Kernel {
 		} else {
 			$this->mail_to = $email;
 		}
+	}
+	
+	/**
+	 *	\brief Define o valor do campo Cc
+	 */
+	public function cc($email, $name='') {
+		$this->set_email_header('Cc', $email, $name);
+	}
+	
+	/**
+	 *	\brief Define o valor do campo Bcc
+	 */
+	public function bcc($email, $name='') {
+		$this->set_email_header('Bcc', $email, $name);
 	}
 
 	/**

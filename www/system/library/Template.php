@@ -7,7 +7,7 @@
  *
  *	\warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
- *	\version 2.3.2
+ *	\version 2.3.3
  *
  *	\brief Classe de tratamento de templates
  */
@@ -123,7 +123,7 @@ class Template extends Kernel {
 	 */
 	private static function _set_template_paths() {
 		// Pega o caminha relativo da página atual
-		$relative_path_page = URI::relative_path_page();
+		$relative_path_page = URI::relative_path_page(TRUE);
 
 		// Se o nome do template não foi informado, define como sendo a página atual
 		if (self::$template_name === NULL) {

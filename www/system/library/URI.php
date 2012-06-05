@@ -7,7 +7,7 @@
  *
  *	\warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
- *	\version 1.5.8
+ *	\version 1.6.9
  *
  *	\brief Classe para tratamento de URI
  */
@@ -86,6 +86,15 @@ class URI extends Kernel {
 
 		$UriString = trim(self::$uri_string, '/');
 
+		// Verifica se altera o diretório de controladoras para o HOST
+		if ($url = (isset($_SERVER) && isset($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : "") {
+			foreach (parent::get_conf('uri', 'host_controller_path') as $host => $root) {
+				if ($url == $host) {
+					parent::set_controller_root($root);
+				}
+			}
+		}
+		
 		// Processa a URI e separa os segmentos
 		$Segments = array();
 		foreach(explode("/", preg_replace("|/*(.+?)/*$|", "\\1", $UriString)) as $val) {
@@ -121,7 +130,7 @@ class URI extends Kernel {
 		$controller = null;
 
 		// Procura a controller correta e corrige a página atual se necessário
-		$path = $GLOBALS['SYSTEM']['CONTROLER_PATH'];
+		$path = $GLOBALS['SYSTEM']['CONTROLER_PATH'] . (count(parent::get_controller_root()) ? DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, parent::get_controller_root()) : "");
 		$segment = 0;
 		while (self::get_segment($segment, false)) {
 			$path .= DIRECTORY_SEPARATOR . self::get_segment($segment, false);
@@ -167,7 +176,7 @@ class URI extends Kernel {
 			if (is_array($routes)) {
 				foreach ($routes as $key => $data) {
 					if (preg_match('/^'.$key.'$/', $UriString)) {
-						$controller = $GLOBALS['SYSTEM']['CONTROLER_PATH'] . DIRECTORY_SEPARATOR . $data['controller'] . '.page.php';
+						$controller = $GLOBALS['SYSTEM']['CONTROLER_PATH'] . (parent::get_controller_root() ? DIRECTORY_SEPARATOR . parent::get_controller_root() : "") . DIRECTORY_SEPARATOR . $data['controller'] . '.page.php';
 						self::_set_class_controller($data['controller']);
 						self::set_current_page($data['segment']);
 					}
@@ -231,14 +240,14 @@ class URI extends Kernel {
 	 *
 	 *	\return Uma string contendo o caminho relativo à página atual
 	 */
-	public static function relative_path_page() {
-		$path = '';
+	public static function relative_path_page($consider_controller_root=FALSE) {
+		$path = (count(parent::get_controller_root()) && $consider_controller_root? implode(DIRECTORY_SEPARATOR, parent::get_controller_root()) : "");
 		for ($i = 0; $i < self::$segment_page; $i++) {
-			$path .= (empty($path) ? '' : DIRECTORY_SEPARATOR) . self::get_segment($i, false);
+			$path .= (empty($path) ? "" : DIRECTORY_SEPARATOR) . self::get_segment($i, false);
 		}
 		return $path;
 	}
-
+	
 	/**
 	 *	\brief Retorna a URI da página atual
 	 *
@@ -271,9 +280,12 @@ class URI extends Kernel {
 	 *		relativo ao segmento que determina a página atual. Default = true
 	 *	\return o valor do segmento ou \c false caso o segmento não exista
 	 */
-	public static function get_segment($segment_num, $relative_to_page=true) {
+	public static function get_segment($segment_num, $relative_to_page=TRUE, $consider_controller_root=FALSE) {
 		if ($relative_to_page) {
 			$segment_num += (1 + self::$segment_page);
+		}
+		if ($consider_controller_root) {
+			$segment_num -= count(parent::get_controller_root());
 		}
 		if (array_key_exists($segment_num, self::$segments)) {
 			return self::$segments[ $segment_num ];

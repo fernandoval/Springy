@@ -7,14 +7,14 @@
  *
  *	\warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
- *	\version 1.1.13
+ *	\version 1.1.17
  *
  *	\brief Cerne do framework
  */
 
 class Kernel {
 	// Versão do framework
-	const VERSION = '1.2.6';
+	const VERSION = '1.2.7';
 	/// Array interno com dados de configuração
 	private static $confs = array();
 	/// Array com informações de debug
@@ -23,6 +23,23 @@ class Kernel {
 	private static $mobile = NULL;
 	/// Determina o tipo de dispositivo móvel
 	private static $mobile_device = NULL;
+	/// 
+	private static $controller_root = array();
+	
+	
+	/**
+	 *
+	 */
+	public static function get_controller_root() {
+		return self::$controller_root;
+	}
+
+	/**
+	 *
+	 */
+	public static function set_controller_root($controller_root) {
+		return self::$controller_root = $controller_root;
+	}
 
 	/**
 	 *	\brief Põe uma informação na janela de debug
@@ -138,7 +155,7 @@ class Kernel {
 		$aDados = array();
 
 		foreach($debug as $value) {
-			if (empty($value['line'])) {
+			if (empty($value['line']) || strpos($value['file'], 'Errors.php') > 0) {
 				continue;
 			}
 
