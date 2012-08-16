@@ -5,7 +5,7 @@
  *
  *  \warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
- *  \version 1.2.3
+ *  \version 1.3.4
  *
  *  \brief Configurações da classe URI
  *
@@ -45,6 +45,7 @@
 
 			$conf['default']['register_method_set_common_urls'] = NULL;
 			$conf['default']['common_urls'] = array();
+			$conf['default']['redirect_last_slash'] = true;
 		/*@}*/
 		/**
 		 *  \addtogroup uricfgdevelopment Configurações para o ambiente de Desenvolvimento

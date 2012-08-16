@@ -6,7 +6,7 @@
  *
  *	\warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
- *	\version 1.1.3
+ *	\version 1.3.5
  *
  *	\brief Classe para envio de email
  */
@@ -30,7 +30,7 @@ class Mail extends Kernel {
 		if (parent::get_conf('mail', 'method') == 'smtp') {
 			error_reporting(E_ALL^E_NOTICE);
 			restore_error_handler();
-			
+
 			require_once dirname( __FILE__) . DIRECTORY_SEPARATOR . 'MimeMessage' . DIRECTORY_SEPARATOR . 'smtp_message.php';
 			require_once dirname( __FILE__) . DIRECTORY_SEPARATOR . 'Smtp' . DIRECTORY_SEPARATOR . 'smtp.php';
 
@@ -91,23 +91,30 @@ class Mail extends Kernel {
 
 	/**
 	 *	\brief Define o valor do campo To
+	 *
+	 *	@param[in] $email - string contendo o endereço de email do destinatário ou um array contendo a lista de destinatários, no seguinte formato:
+	 *		['email1@dominio.com' => 'Nome 1', 'email2@dominio.com' => 'Nome 2']
+	 *	@param[in] $name - string contendo o nome do destinatário
+	 *
+	 *	Obs.: Caso seja passado um array de emails para $email, o valor de $name será ignorado.
 	 */
 	public function to($email, $name='') {
 		$this->set_email_header('To', $email, $name);
 		if (is_array($email)) {
-			$this->mail_to = key($email[0]);
+			reset($email);
+			$this->mail_to = key($email);
 		} else {
 			$this->mail_to = $email;
 		}
 	}
-	
+
 	/**
 	 *	\brief Define o valor do campo Cc
 	 */
 	public function cc($email, $name='') {
 		$this->set_email_header('Cc', $email, $name);
 	}
-	
+
 	/**
 	 *	\brief Define o valor do campo Bcc
 	 */
@@ -150,6 +157,18 @@ class Mail extends Kernel {
 		}
 		// [pt-br] Monta as partes alternativas
 		$this->message_obj->AddAlternativeMultipart($alternative_parts);
+	}
+
+	/*
+	 * \brief Adiciona um anexo ao e-mail
+	 */
+	public function add_attach($filePost){
+		$file['FileName'] = $filePost['tmp_name'];
+		$file['Name'] = $filePost['name'];
+		$file['Content-Type'] = $filePost['type'];
+
+		$this->message_obj->AddFilePart($file);
+		return $file;
 	}
 
 	/**

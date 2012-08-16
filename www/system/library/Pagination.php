@@ -41,9 +41,9 @@
  *
  *	\link http://www.fval.com.br/
  *
- *	\version 2.2.1
- *					copyright (c) 2007-2011 FVAL - Consultoria e Informática Ltda.\n
- *					copyright (c) 2007-2011 Fernando Val
+ *	\version 2.2.2
+ *					copyright (c) 2007-2012 FVAL - Consultoria e Informática Ltda.\n
+ *					copyright (c) 2007-2012 Fernando Val
  *
  *	\brief			A single pagination class
  *
@@ -233,7 +233,7 @@ class Pagination {
         /*
 			[pt-br]  Verifica se mostra navegador para primeira página
 		*/
-        if (($this->CurrentPage - $this->BesidePages > 0) && ($this->LastPage > ($this->BesidePages * 2 + 2))) {
+        if (($this->CurrentPage - $this->BesidePages > 0) && ($this->LastPage > ($this->BesidePages * 2 + 1))) {
             $this->PagesLink['first'] = str_replace($this->tagLink, 1, $this->siteLink);
             $dec = $this->BesidePages;
         } else {
@@ -249,7 +249,7 @@ class Pagination {
         /*
 			[pt-br]  Verifica se mostra navegador para última página
 		*/
-        if (($this->CurrentPage + $this->BesidePages < $this->LastPage) && ($this->LastPage > ($this->BesidePages * 2 + 2))) {
+        if (($this->CurrentPage + $this->BesidePages < $this->LastPage) && ($this->LastPage > ($this->BesidePages * 2 + 1))) {
             $this->PagesLink['last'] = str_replace($this->tagLink, $this->LastPage, $this->siteLink);
             $inc = $this->BesidePages;
         } else {

@@ -7,7 +7,7 @@
  *
  *	\warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
- *	\version 1.0.5
+ *	\version 1.0.6
  *
  *	\brief Classe para tratamento de erros
  */
@@ -191,7 +191,7 @@ class Errors extends Kernel {
 			$email = new Mail;
 			$email->to(parent::get_conf('mail', 'errors_go_to'));
 			$email->from(parent::get_conf('mail', 'errors_go_to'));
-			$email->subject('Erro em ' . ((isset($_SERVER) && isset($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : ""));
+			$email->subject('Erro em ' . $GLOBALS['SYSTEM']['SITE_NAME'] . ' - ' . ((isset($_SERVER) && isset($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : ""));
 			$email->body($msg);
 			$email->send();
 			unset($email);

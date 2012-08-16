@@ -82,6 +82,16 @@ class Strings extends Kernel {
 		return Strings_ANSI::remove_accented_chars($txt);
 	}
 
+	/**
+	 *	\brief Retorna um texto com a string fornecida soletrada
+	 */
+	public static function spell($txt, $separator=' ', $lng='pt') {
+		if ((function_exists('mb_check_encoding') && mb_check_encoding($txt, 'UTF-8')) || self::check_utf8($txt)) {
+			return Strings_UTF8::spell($txt, $separator, $lng);
+		}
+
+		return Strings_ANSI::spell($txt, $separator, $lng);
+	}
 
 	/* As funções abaixo ainda estão em processo de migração para o framework e não devem ser utilizadas */
 

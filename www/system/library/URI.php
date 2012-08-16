@@ -7,7 +7,7 @@
  *
  *	\warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
- *	\version 1.6.9
+ *	\version 1.7.10
  *
  *	\brief Classe para tratamento de URI
  */
@@ -81,8 +81,14 @@ class URI extends Kernel {
 			header('Cache-Control: private', false);
 			die(md5(microtime()));
 		}
-
+		
 		self::_fetch_uri_string();
+
+		// Redireciona URIs terminadas em / para evitar conteúdo duplicado de SEO?
+		if (parent::get_conf('uri', 'redirect_last_slash') && substr(self::$uri_string, -1) == '/') {
+			if (isset($_GET['SUPERVAR'])) unset($_GET['SUPERVAR']);
+			self::redirect(self::build_url(explode('/', trim(self::$uri_string, '/')), empty($_GET) ? array() : $_GET), 301);
+		}
 
 		$UriString = trim(self::$uri_string, '/');
 
