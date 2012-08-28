@@ -14,7 +14,7 @@
 
 class Kernel {
 	// Versão do framework
-	const VERSION = '1.2.8';
+	const VERSION = '1.2.9';
 	/// Array interno com dados de configuração
 	private static $confs = array();
 	/// Array com informações de debug
@@ -148,7 +148,7 @@ class Kernel {
 	 *
 	 *	@param[in] (string) $errono - número do erro
 	 */
-	public static function make_debug_backtrace() {
+	public static function make_debug_backtrace(&$aDados=array()) {
 		$debug = debug_backtrace();
 		array_shift($debug);
 

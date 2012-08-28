@@ -7,7 +7,7 @@
  *
  *	\warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
- *	\version 2.3.3
+ *	\version 2.4.4
  *
  *	\brief Classe de tratamento de templates
  */
@@ -24,6 +24,7 @@ class Template extends Kernel {
 	private static $template_name_sufix = '.tpl.html';
 	private static $template_cache_id = "";
 	private static $template_compile_id = "";
+	private static $template_dvars = array();
 	private static $template_vars = array();
 	
 	private static $template_funcs = array();
@@ -56,6 +57,7 @@ class Template extends Kernel {
 
 		// Limpa qualquer variável que por ventura exista no template
 		self::$template_obj->clearAllAssign();
+		self::$template_vars = array();
 
 		// Ajusta os caminhos de template
 		self::set_template_path( parent::get_conf('template', 'template_path') );
@@ -190,6 +192,10 @@ class Template extends Kernel {
 		self::set_default_vars();
 		self::_set_template_paths();
 		
+		foreach (self::$template_vars as $name => $data) {
+			self::$template_obj->assign($name, $data['value'], $data['nocache']);
+		}
+		
 		foreach(self::$template_funcs as $func) {
 			self::$template_obj->registerPlugin($func[0], $func[1], $func[2], $func[3], $func[4]);
 		}
@@ -220,8 +226,8 @@ class Template extends Kernel {
 	 *	\brief Define as variáveis padrão
 	 */
 	public static function set_default_vars() {
-		foreach (self::$template_vars as $name => $value) {
-			self::assign($name, $value);
+		foreach (self::$template_dvars as $name => $value) {
+			self::$template_obj->assign($name, $value);
 		}
 	}
 
@@ -282,9 +288,11 @@ class Template extends Kernel {
 	 */
 	public static function assign($var, $value=null, $nocache=false) {
 		if (is_array($var)) {
-			self::$template_obj->assign($var);
+			foreach ($var as $name => $value) {
+				self::assign($name, $value);
+			}
 		} else {
-			self::$template_obj->assign($var, $value, $nocache);
+			self::$template_vars[$var] = array('value' => $value, 'nocache' => $nocache);
 		}
 	}
 
@@ -292,7 +300,7 @@ class Template extends Kernel {
 	 *	\brief Adiciona uma variável default de template
 	 */
 	public static function assign_default_var($name, $value) {
-		self::$template_vars[$name] = $value;
+		self::$template_dvars[$name] = $value;
 	}
 	
 	/**
@@ -306,7 +314,7 @@ class Template extends Kernel {
 	 *	\brief Pega o valor de uma variável default de template
 	 */
 	public static function get_default_var($name) {
-		return isset(self::$template_vars[$name]) ? self::$template_vars[$name] : NULL;
+		return isset(self::$template_dvars[$name]) ? self::$template_dvars[$name] : NULL;
 	}
 
 	/**

@@ -7,7 +7,7 @@
  *
  *	\warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
- *	\version 1.7.10
+ *	\version 1.8.12
  *
  *	\brief Classe para tratamento de URI
  */
@@ -97,6 +97,7 @@ class URI extends Kernel {
 			foreach (parent::get_conf('uri', 'host_controller_path') as $host => $root) {
 				if ($url == $host) {
 					parent::set_controller_root($root);
+					break;
 				}
 			}
 		}
@@ -185,6 +186,7 @@ class URI extends Kernel {
 						$controller = $GLOBALS['SYSTEM']['CONTROLER_PATH'] . (parent::get_controller_root() ? DIRECTORY_SEPARATOR . parent::get_controller_root() : "") . DIRECTORY_SEPARATOR . $data['controller'] . '.page.php';
 						self::_set_class_controller($data['controller']);
 						self::set_current_page($data['segment']);
+						break;
 					}
 				}
 			}
@@ -198,6 +200,7 @@ class URI extends Kernel {
 				foreach ($redirects as $key => $data) {
 					if (preg_match('/^'.$key.'$/', $UriString)) {
 						self::redirect(URI::build_url($data['segments'], $data['get'], $data['force_rewrite'], $data['host']), $data['type']);
+						break;
 					}
 				}
 			}
@@ -207,6 +210,49 @@ class URI extends Kernel {
 		return $controller;
 	}
 
+	/**
+	 *	\brief Valida a quantidade de segmentos da URI conforme a controladora
+	 */
+	public static function validate_uri() {
+		$ctrl = trim(str_replace(DIRECTORY_SEPARATOR, '/', (parent::get_controller_root() ? DIRECTORY_SEPARATOR . parent::get_controller_root() : "")) . '/' . self::get_class_controller(), '/');
+		
+		if ($pc = parent::get_conf('uri', 'prevalidate_controller')) {
+			if (isset($pc[$ctrl . '/' . self::get_segment(0)])) {
+				$ctrl .= '/' . self::get_segment(0);
+			}
+			
+			if (isset($pc[$ctrl]) && isset($pc[$ctrl]['command'])) {
+				$action = 200;
+				if (isset($pc[$ctrl]['segments'])) {
+					if (count(self::$segments) - self::$segment_page - 1 > $pc[$ctrl]['segments']) {
+						$action = $pc[$ctrl]['command'];
+					}
+				}
+				if (isset($pc[$ctrl]['validate'])) {
+					foreach ($pc[$ctrl]['validate'] as $idx => $expression) {
+						if (!preg_match($expression, self::get_segment($idx))) {
+							$action = $pc[$ctrl]['command'];
+						}
+					}
+				}
+				switch ($action) {
+					case 301:
+					case 302:
+						while (count(self::$segments) - self::$segment_page - 1 > $pc[$ctrl]['segments']) {
+							array_pop(self::$segments);
+						}
+						self::redirect(self::build_url(self::$segments, empty($_GET) ? array() : $_GET), $action);
+						break;
+					case 404:
+					case 500:
+					case 503:
+						Errors::display_error($action);
+						break;
+				}
+			}
+		}
+	}
+	
 	/**
 	 *	\brief Define o nome da classe da controller
 	 */

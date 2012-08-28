@@ -5,7 +5,7 @@
  *
  *  \warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
- *  \version 1.3.4
+ *  \version 1.4.5
  *
  *  \brief Configurações da classe URI
  *
@@ -40,6 +40,11 @@
 				'404' => array('segments' => array(), 'get' => array(), 'force_rewrite' => false, 'host' => 'dynamic', 'type' => 301),
 			);
 
+			$conf['default']['prevalidate_controller'] = array(
+				'mycontroller' => array('command' => 301, 'segments' => 2),
+				'myothercontroller' => array('command' => 404, 'segments' => 2, 'validate' => array('/^[a-z0-9\-]+$/', '/^[0-9]+$/')),
+			);
+			
 			/// URI da aplicação
 			$conf['default']['system_root'] = '/';
 

@@ -4,7 +4,7 @@
  *
  *  \warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
- *  \version 1.2.1
+ *  \version 1.2.2
  *
  *  \brief Configurações do cerne do sistema
  */
@@ -14,7 +14,10 @@
  **/
 /*@{*/
 /// Define o ambiente do sistema
-$SYSTEM['SITE_NAME'] = 'NomeDoSeuSistema';
+$SYSTEM['SITE_NAME'] = 'Nome Do Seu Sistema';
+
+/// Define a versão do sistema
+$SYSTEM['PROJECT_VERSION'] = 'Versão do Seu Projeto';
 
 /// Define o ambiente do sistema
 $SYSTEM['ACTIVE_ENVIRONMENT'] = 'development';

@@ -3,7 +3,7 @@
  *
  *  FVAL PHP Framework for Web Applications
  *
- *  \version 1.5.5
+ *  \version 1.6.6
  *
  *	Copyright (c) 2007-2012 FVAL Consultoria e Informática Ltda.\n
  *	Copyright (c) 2007-2012 Fernando Val\n
@@ -149,7 +149,10 @@ if (!is_null($controller)) {
 	}
 	unset($defaultFile);
 
-	// Carrega a controller
+	// Valida a URI antes de carregar a controladora
+	URI::validate_uri();
+	
+	// Carrega a controladora
 	require_once($controller);
 	
 	// Inicializa a controller
