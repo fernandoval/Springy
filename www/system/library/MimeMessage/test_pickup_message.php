@@ -2,7 +2,7 @@
 /*
  * test_pickup_message.php
  *
- * @(#) $Header: /home/mlemos/cvsroot/mimemessage/test_pickup_message.php,v 1.2 2004/09/22 20:13:26 mlemos Exp $
+ * @(#) $Header: /opt2/ena/metal/mimemessage/test_pickup_message.php,v 1.2 2004/09/22 20:13:26 mlemos Exp $
  *
  */
 

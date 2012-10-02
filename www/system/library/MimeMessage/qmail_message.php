@@ -2,7 +2,7 @@
 /*
  * qmail_message.php
  *
- * @(#) $Header: /home/mlemos/cvsroot/mimemessage/qmail_message.php,v 1.11 2009/07/27 22:07:23 mlemos Exp $
+ * @(#) $Header: /opt2/ena/metal/mimemessage/qmail_message.php,v 1.11 2009/07/27 22:07:23 mlemos Exp $
  *
  *
  */

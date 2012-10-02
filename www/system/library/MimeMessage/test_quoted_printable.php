@@ -2,7 +2,7 @@
 /*
  * test_quoted_printable.php
  *
- * @(#) $Header: /home/mlemos/cvsroot/mimemessage/test_quoted_printable.php,v 1.7 2009/07/02 21:35:14 mlemos Exp $
+ * @(#) $Id: test_quoted_printable.php,v 1.8 2012/08/25 10:01:39 mlemos Exp $
  *
  */
 
@@ -98,8 +98,8 @@ Function test_quoting(&$message, $test_values, $cs, $quote, $email_header, &$tes
 
 	$test_values=array(
 		"S XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"=>"> S
-> XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-> XXXXXXXXXXXXXXXXXXXXXXXXXX
+> XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+> XXXXXXXXXXXXXXXXXXXXXXXXX
 ",
 	);
 	echo "\nTesting quoting text ...\n\n";

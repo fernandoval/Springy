@@ -2,7 +2,7 @@
 /*
  * test_html_mail_message.php
  *
- * @(#) $Header: /home/mlemos/cvsroot/mimemessage/test_html_mail_message.php,v 1.14 2008/04/07 22:19:08 mlemos Exp $
+ * @(#) $Header: /opt2/ena/metal/mimemessage/test_html_mail_message.php,v 1.15 2012/09/15 09:15:48 mlemos Exp $
  *
  */
 
@@ -59,7 +59,7 @@
  *  the content type automatically from the file name.
  */
 	$image=array(
-		"FileName"=>"http://www.phpclasses.org/graphics/logo.gif",
+		"FileName"=>"http://files.phpclasses.org/graphics/phpclasses/logo-phpclasses.png",
 		"Content-Type"=>"automatic/name",
 		"Disposition"=>"inline",
 /*
@@ -83,7 +83,7 @@
  *  Many related file parts may be embedded in the message.
  */
 	$image=array(
-		"FileName"=>"http://www.phpclasses.org/graphics/background.gif",
+		"FileName"=>"http://files.phpclasses.org/graphics/phpclasses/background.jpg",
 		"Content-Type"=>"automatic/name",
 		"Disposition"=>"inline",
 /*
@@ -102,7 +102,7 @@
  *  this method of embedding images in HTML messages.
  *
  *  $image=array(
- *    "FileName"=>"http://www.phpclasses.org/graphics/elephpant_logo.gif",
+ *    "FileName"=>"http://files.phpclasses.org/graphics/phpclasses/logo-phpclasses.png",
  *    "Content-Type"=>"automatic/name",
  *  );
  *  $image_data_url=$email_message->GetDataURL($image);
@@ -215,5 +215,4 @@ $from_name</p>
 		echo "Error: $error\n";
 	else
 		echo "Message sent to $to_name\n";
-	var_dump($email_message->parts);
 ?>

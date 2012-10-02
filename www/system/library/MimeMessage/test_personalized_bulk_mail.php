@@ -2,7 +2,7 @@
 /*
  * test_personalized_bulk_mail.php
  *
- * @(#) $Header: /home/mlemos/cvsroot/mimemessage/test_personalized_bulk_mail.php,v 1.6 2005/02/16 04:04:03 mlemos Exp $
+ * @(#) $Header: /opt2/ena/metal/mimemessage/test_personalized_bulk_mail.php,v 1.6 2005/02/16 04:04:03 mlemos Exp $
  *
  */
 

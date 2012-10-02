@@ -1,32 +1,32 @@
 Return-Path: <mlemos@acm.org>
-To: mlemos@linux.local (Manuel Lemos)
+To: Manuel Lemos <mlemos@linux.local>
 Subject: Testing Manuel Lemos' MIME E-mail composing and sending PHP class: HTML message
-From: mlemos@acm.org (mlemos)
-Reply-To: mlemos@acm.org (mlemos)
+From: mlemos <mlemos@acm.org>
+Reply-To: mlemos <mlemos@acm.org>
 Sender: mlemos@acm.org
-X-Mailer: http://www.phpclasses.org/mimemessage $Revision: 1.40 $ (mail)
+X-Mailer: http://www.phpclasses.org/mimemessage $Revision: 1.63 $ (mail)
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8df03daa632c7fcfd84eae7cbc250d21"
-Message-ID: <20040624030359.2172.mlemos@acm.org>
-Date: Thu, 24 Jun 2004 03:03:59 -0300 (BRT)
+Content-Type: multipart/mixed; boundary="652b8c4dcb00cdcdda1e16af36781caf"
+Message-ID: <20050430192829.0489.mlemos@acm.org>
+Date: Sat, 30 Apr 2005 19:28:29 -0300
 
 
---8df03daa632c7fcfd84eae7cbc250d21
-Content-Type: multipart/alternative; boundary="ed6217f8422717ca80eaa439fe8617cf"
+--652b8c4dcb00cdcdda1e16af36781caf
+Content-Type: multipart/related; boundary="6a82fb459dcaacd40ab3404529e808dc"
 
 
---ed6217f8422717ca80eaa439fe8617cf
+--6a82fb459dcaacd40ab3404529e808dc
+Content-Type: multipart/alternative; boundary="69c1683a3ee16ef7cf16edd700694a2f"
+
+
+--69c1683a3ee16ef7cf16edd700694a2f
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
 This is an HTML message. Please use an HTML capable mail program to read
 this message.
 
---ed6217f8422717ca80eaa439fe8617cf
-Content-Type: multipart/related; boundary="368ef052959c6b3f8f7ec5a8b60bb115"
-
-
---368ef052959c6b3f8f7ec5a8b60bb115
+--69c1683a3ee16ef7cf16edd700694a2f
 Content-Type: text/html; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
@@ -41,7 +41,7 @@ A:link, A:visited, A:active { text-decoration: underline }
 --></style>
 </head>
 <body>
-<table background=3D"cid:fa55314ce277295750e71ed83bc5dbc3.gif" width=3D"100=
+<table background=3D"cid:4c837ed463ad29c820668e835a270e8a.gif" width=3D"100=
 %">
 <tr>
 <td>
@@ -54,7 +54,7 @@ ses.org/mimemessage">MIME E-mail message composing and sending PHP class</a=
 > is working as expected.<br><br>
 <center><h2>Here is an image embedded in a message as a separate part:</h2>=
 </center>
-<center><img src=3D"cid:1cd0609bd9beebb15c129c8441e91175.gif"></center>Than=
+<center><img src=3D"cid:ae0357e57f04b8347f7621662cb63855.gif"></center>Than=
 k you,<br>
 mlemos</p>
 </td>
@@ -62,11 +62,13 @@ mlemos</p>
 </table>
 </body>
 </html>
---368ef052959c6b3f8f7ec5a8b60bb115
+--69c1683a3ee16ef7cf16edd700694a2f--
+
+--6a82fb459dcaacd40ab3404529e808dc
 Content-Type: image/gif; name="logo.gif"
 Content-Transfer-Encoding: base64
 Content-Disposition: inline; filename="logo.gif"
-Content-ID: 1cd0609bd9beebb15c129c8441e91175.gif
+Content-ID: <ae0357e57f04b8347f7621662cb63855.gif>
 
 R0lGODlhlgAjAPMJAAAAAAAA/y8vLz8/P19fX19f339/f4+Pj4+Pz7+/v///////////////////
 /////yH5BAEAAAkALAAAAACWACMAQwT+MMlJq7046827/2AoHYChGAChAkBylgKgKClFyEl6xDMg
@@ -90,11 +92,11 @@ soeaw994z+rwQVInvqLenBftYjLOVphLFHhV9qsnez8AEUbQRgO737AxChjmyANxuEFHSGi7hFCV
 VFQnKB5uX4mr9qJ79pann+VcfcSzsSCd2mw5scqRRvlQ6TgcUelYhu75iPE4JejrsJOFQAG01277
 7bjnrvvuvPfu++/ABy887hfc6OPxyCevPDdAVoDA89BHL/301Fdv/fXYZ6/99tx3Pz0FEQAAOw==
 
---368ef052959c6b3f8f7ec5a8b60bb115
+--6a82fb459dcaacd40ab3404529e808dc
 Content-Type: image/gif; name="background.gif"
 Content-Transfer-Encoding: base64
 Content-Disposition: inline; filename="background.gif"
-Content-ID: fa55314ce277295750e71ed83bc5dbc3.gif
+Content-ID: <4c837ed463ad29c820668e835a270e8a.gif>
 
 R0lGODlh+wHCAPMAAKPFzKLEy6HDyqHCyaDByJ/Ax56/xp2+xZ28xJy7w5u6wpq5wZm4wJm3v5i2
 vpe1vSwAAAAA+wHCAEME/hDISau9OOvNu/9gKI5kaZ5oqq5s675wLM90bd94ru987//AoHBILBqP
@@ -155,11 +157,9 @@ lYlgg2F8Fw3WlnZW9HiCB2Q0Y3ic8k2Kl5V4JQhUiXgWFgqUh1e9h3mcpy2epxdm+XnjQ1EiMHoQ
 pVtogiWuV3urBxGod4Xnw41huJfjKHvtg3t8GYKEWZiGeZiImZiKuZiM2ZiO+ZiQGZmSOZmUWZmW
 eZmYmZmauZmc2ZlCEQEAOw==
 
---368ef052959c6b3f8f7ec5a8b60bb115--
+--6a82fb459dcaacd40ab3404529e808dc--
 
---ed6217f8422717ca80eaa439fe8617cf--
-
---8df03daa632c7fcfd84eae7cbc250d21
+--652b8c4dcb00cdcdda1e16af36781caf
 Content-Type: text/plain; name="attachment.txt"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="attachment.txt"
@@ -167,7 +167,5 @@ Content-Disposition: attachment; filename="attachment.txt"
 VGhpcyBpcyBqdXN0IGEgcGxhaW4gdGV4dCBhdHRhY2htZW50IGZpbGUgbmFtZWQgYXR0YWNobWVu
 dC50eHQgLg==
 
---8df03daa632c7fcfd84eae7cbc250d21--
-
-
+--652b8c4dcb00cdcdda1e16af36781caf--
 

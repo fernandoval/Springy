@@ -2,7 +2,7 @@
 /*
  * test_attachment_message.php
  *
- * @(#) $Header: /home/mlemos/cvsroot/PHPlibrary/mimemessage/test_attachment_message.php,v 1.3 2003/01/29 02:44:33 mlemos Exp $
+ * @(#) $Header: /opt2/ena/metal/mimemessage/test_attachment_message.php,v 1.4 2012/09/15 09:15:48 mlemos Exp $
  *
  */
 
@@ -63,7 +63,7 @@
 	$email_message->AddFilePart($text_attachment);
 
 	$image_attachment=array(
-		"FileName"=>"http://www.phpclasses.org/graphics/logo.gif",
+		"FileName"=>"http://files.phpclasses.org/graphics/phpclasses/logo-phpclasses.png",
 		"Content-Type"=>"automatic/name",
 		"Disposition"=>"attachment"
 	);

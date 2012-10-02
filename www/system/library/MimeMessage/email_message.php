@@ -2,7 +2,7 @@
 /*
  * email_message.php
  *
- * @(#) $Header: /home/mlemos/cvsroot/mimemessage/email_message.php,v 1.92 2011/01/28 06:32:16 mlemos Exp $
+ * @(#) $Id: email_message.php,v 1.98 2012/09/15 09:07:50 mlemos Exp $
  *
  *
  */
@@ -13,7 +13,7 @@
 
 	<package>net.manuellemos.mimemessage</package>
 
-	<version>@(#) $Id: email_message.php,v 1.92 2011/01/28 06:32:16 mlemos Exp $</version>
+	<version>@(#) $Id: email_message.php,v 1.98 2012/09/15 09:07:50 mlemos Exp $</version>
 	<copyright>Copyright © (C) Manuel Lemos 1999-2004</copyright>
 	<title>MIME E-mail message composing and sending</title>
 	<author>Manuel Lemos</author>
@@ -322,7 +322,7 @@ class email_message_class
 	var $mailing_path="";
 	var $body_cache=array();
 	var $line_break="\n";
-	var $line_length=75;
+	var $line_length=76;
 	var $ruler="_";
 	var $email_address_pattern="([-!#\$%&'*+./0-9=?A-Z^_`a-z{|}~])+@([-!#\$%&'*+/0-9=?A-Z^_`a-z{|}~]+\\.)+[a-zA-Z]{2,6}";
 	var $bulk_mail=0;
@@ -353,7 +353,7 @@ class email_message_class
 	<variable>
 		<name>mailer</name>
 		<type>STRING</type>
-		<value>http://www.phpclasses.org/mimemessage $Revision: 1.92 $</value>
+		<value>http://www.phpclasses.org/mimemessage $Revision: 1.98 $</value>
 		<documentation>
 			<purpose>Specify the base text that is used identify the name and the
 				version of the class that is used to send the message by setting an
@@ -431,9 +431,9 @@ class email_message_class
 			<purpose>Determine whether lines exceeding the length limit will be
 				broken by the line break character when using the
 				<functionlink>WrapText</functionlink> function.</purpose>
-			<usage>Change it only if you to avoid breaking long lines without
-				any space characters, like for instance of messages with long
-				URLs.</usage>
+			<usage>Change it only if you want to avoid breaking long lines
+				without any space characters, like for instance of messages with
+				long URLs.</usage>
 		</documentation>
 	</variable>
 {/metadocument}
@@ -675,7 +675,7 @@ class email_message_class
 		return($this->FormatHeader("Message-ID", "<".strftime("%Y%m%d%H%M%S", $seconds).substr($micros,1,5).".".preg_replace('/[^A-Za-z]/', '-', $local)."@".preg_replace('/[^.A-Za-z_-]/', '', $host).">"));
 	}
 
-	Function SendMail($to,$subject,&$body,&$headers,$return_path)
+	Function SendMail($to, $subject, $body, $headers, $return_path)
 	{
 		if(!function_exists("mail"))
 			return($this->OutputError("the mail() function is not available in this PHP installation"));
@@ -920,7 +920,7 @@ class email_message_class
 				switch($encoding)
 				{
 					case "base64":
-						$body=chunk_split(base64_encode($body));
+						$body=chunk_split(base64_encode($body), $this->line_length, $this->line_break);
 						break;
 					case "":
 					case "quoted-printable":
@@ -938,10 +938,15 @@ class email_message_class
 					case "mixed":
 					case "parallel":
 						$this->GetPartBoundary($part);
-						$boundary=$this->line_break."--".$this->parts[$part]["BOUNDARY"];
+						$boundary="--".$this->parts[$part]["BOUNDARY"];
 						$parts=count($this->parts[$part]["PARTS"]);
+						$b = $this->line_break;
+						$lb = strlen($b);
 						for($multipart=0;$multipart<$parts;$multipart++)
 						{
+							if(strlen($body) >= $lb
+							&& strcmp(substr($body, -$lb), $b))
+								$body.=$b;
 							$body.=$boundary.$this->line_break;
 							$part_headers=array();
 							$sub_part=$this->parts[$part]["PARTS"][$multipart];
@@ -950,14 +955,17 @@ class email_message_class
 							for($part_header=0,Reset($part_headers);$part_header<count($part_headers);$part_header++,Next($part_headers))
 							{
 								$header=Key($part_headers);
-								$body.=$header.": ".$part_headers[$header].$this->line_break;
+								$body.=$header.": ".$part_headers[$header].$b;
 							}
-							$body.=$this->line_break;
+							$body.=$b;
 							if(strlen($error=$this->GetPartBody($part_body,$sub_part)))
 								return($error);
 							$body.=$part_body;
 						}
-						$body.=$boundary."--".$this->line_break;
+						if(strlen($body) >= $lb
+						&& strcmp(substr($body, -$lb), $b))
+							$body.=$b;
+						$body.=$boundary."--".$b;
 						break;
 					default:
 						return($this->OutputError("multipart Content-Type sub_type $sub_type not yet supported"));
@@ -1005,7 +1013,7 @@ class email_message_class
 */
 	Function ValidateEmailAddress($address)
 	{
-		return(preg_match('/'.str_replace('/', '\\/'. $this->email_regular_expression).'/i',$address));
+		return(preg_match('/'.str_replace('/', '\\/', $this->email_regular_expression).'/i',$address));
 	}
 /*
 {metadocument}
@@ -3274,7 +3282,7 @@ class email_message_class
 			if(function_exists("ini_get")
 			&& ini_get("magic_quotes_runtime"))
 				$body=StripSlashes($body);
-			$body=chunk_split(base64_encode($body));
+			$body=chunk_split(base64_encode($body), $this->line_length, $this->line_break);
 		}
 		else
 		{
@@ -3283,7 +3291,7 @@ class email_message_class
 				$this->OutputError("it was not specified a file or data block");
 				return("");
 			}
-			$body=chunk_split(base64_encode($definition["DATA"]));
+			$body=chunk_split(base64_encode($definition["DATA"]), $this->line_length, $this->line_break);
 		}
 		return("data:".$definition["Content-Type"].";base64,".$body);
 	}

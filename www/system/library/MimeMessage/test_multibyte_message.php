@@ -2,7 +2,7 @@
 /*
  * test_multibyte_message.php
  *
- * @(#) $Header: /home/mlemos/cvsroot/PHPlibrary/mimemessage/test_multibyte_message.php,v 1.1 2002/11/14 05:48:01 mlemos Exp $
+ * @(#) $Header: /opt2/ena/metal/mimemessage/test_multibyte_message.php,v 1.1 2002/11/14 05:48:01 mlemos Exp $
  *
  */
 

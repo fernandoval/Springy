@@ -2,7 +2,7 @@
 /*
  * sendmail_mail.php
  *
- * @(#) $Header: /home/mlemos/cvsroot/mimemessage/sendmail_mail.php,v 1.2 2004/10/05 18:57:33 mlemos Exp $
+ * @(#) $Header: /opt2/ena/metal/mimemessage/sendmail_mail.php,v 1.2 2004/10/05 18:57:33 mlemos Exp $
  *
  *
  */

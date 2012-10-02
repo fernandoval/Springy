@@ -2,7 +2,7 @@
 /*
  * test_simple_html_mail_message.php
  *
- * @(#) $Header: /home/mlemos/cvsroot/mimemessage/test_simple_html_mail_message.php,v 1.1 2005/02/10 03:45:02 mlemos Exp $
+ * @(#) $Header: /opt2/ena/metal/mimemessage/test_simple_html_mail_message.php,v 1.1 2005/02/10 03:45:02 mlemos Exp $
  *
  */
 

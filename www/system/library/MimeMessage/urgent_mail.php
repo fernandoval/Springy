@@ -2,7 +2,7 @@
 /*
  * urgent_mail.php
  *
- * @(#) $Header: /home/mlemos/cvsroot/mimemessage/urgent_mail.php,v 1.1 2004/07/27 07:53:54 mlemos Exp $
+ * @(#) $Header: /opt2/ena/metal/mimemessage/urgent_mail.php,v 1.1 2004/07/27 07:53:54 mlemos Exp $
  *
  *
  */

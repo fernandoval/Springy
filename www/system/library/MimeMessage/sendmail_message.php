@@ -2,7 +2,7 @@
 /*
  * sendmail_message.php
  *
- * @(#) $Header: /home/mlemos/cvsroot/mimemessage/sendmail_message.php,v 1.18 2010/08/08 07:50:26 mlemos Exp $
+ * @(#) $Header: /opt2/ena/metal/mimemessage/sendmail_message.php,v 1.19 2011/11/26 09:41:09 mlemos Exp $
  *
  *
  */
@@ -14,7 +14,7 @@
 	<package>net.manuellemos.mimemessage</package>
 
 	<name>sendmail_message_class</name>
-	<version>@(#) $Id: sendmail_message.php,v 1.18 2010/08/08 07:50:26 mlemos Exp $</version>
+	<version>@(#) $Id: sendmail_message.php,v 1.19 2011/11/26 09:41:09 mlemos Exp $</version>
 	<copyright>Copyright © (C) Manuel Lemos 1999-2004</copyright>
 	<title>MIME E-mail message composing and sending using Sendmail</title>
 	<author>Manuel Lemos</author>
@@ -211,7 +211,7 @@ class sendmail_message_class extends email_message_class
 {metadocument}
 	<variable>
 		<name>mailer_delivery</name>
-		<value>sendmail $Revision: 1.18 $</value>
+		<value>sendmail $Revision: 1.19 $</value>
 		<documentation>
 			<purpose>Specify the text that is used to identify the mail
 				delivery class or sub-class. This text is appended to the
@@ -222,9 +222,9 @@ class sendmail_message_class extends email_message_class
 	</variable>
 {/metadocument}
 */
-	var $mailer_delivery='sendmail $Revision: 1.18 $';
+	var $mailer_delivery='sendmail $Revision: 1.19 $';
 
-	Function SendMail($to,$subject,&$body,&$headers,$return_path)
+	Function SendMail($to, $subject, $body, $headers, $return_path)
 	{
 		$command=$this->sendmail_path." -t -i";
 		switch($this->bulk_mail ? $this->bulk_mail_delivery_mode : $this->delivery_mode)

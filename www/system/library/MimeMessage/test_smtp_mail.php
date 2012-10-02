@@ -2,7 +2,7 @@
 /*
  * test_smtp_mail.php
  *
- * @(#) $Header: /home/mlemos/cvsroot/mimemessage/test_smtp_mail.php,v 1.2 2003/10/05 17:48:55 mlemos Exp $
+ * @(#) $Header: /opt2/ena/metal/mimemessage/test_smtp_mail.php,v 1.2 2003/10/05 17:48:55 mlemos Exp $
  *
  *
  */

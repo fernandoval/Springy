@@ -2,7 +2,7 @@
 /*
  * test_forwarding_message.php
  *
- * @(#) $Header: /home/mlemos/cvsroot/mimemessage/test_forwarding_message.php,v 1.1 2004/06/24 06:34:11 mlemos Exp $
+ * @(#) $Header: /opt2/ena/metal/mimemessage/test_forwarding_message.php,v 1.1 2004/06/24 06:34:11 mlemos Exp $
  *
  */
 
