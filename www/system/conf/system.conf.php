@@ -36,6 +36,9 @@ $conf['default']['developer_pass'] = '';
  * www.meusite.com.br/?{$dba_user}=off
  */
 $conf['default']['dba_user'] = '';
+
+/// Caminho do diretório de scripts de controle (controllers)
+$conf['default']['controller_path'] = $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'controllers';
 ///@}
 
 /**
@@ -54,10 +57,6 @@ $conf['development']['rewrite_url'] = true;
 $conf['development']['cache'] = false;
 /// Define o header HTTP/1.1 Cache-Control
 $conf['development']['cache-control'] = 'no-cache';
-/// Define o acesso autenticado por sistema
-$conf['development']['authentication'] = array('user' => '', 'pass' => '');
-/// Caminho do diretório de scripts de controle (controllers)
-$conf['development']['controller_path'] = $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'controllers';
 ///@}
 
 /**
@@ -78,8 +77,6 @@ $conf['production']['cache'] = false;
 $conf['production']['cache-control'] = 'private, must-revalidate';
 /// Define o acesso autenticado por sistema
 $conf['production']['authentication'] = false;
-/// Caminho do diretório de scripts de controle (controllers)
-$conf['production']['controller_path'] = $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'controllers';
 ///@}
 
 /**@}*/
