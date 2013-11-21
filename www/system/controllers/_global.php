@@ -27,7 +27,7 @@ class Global_Controller {
 		Template_Static::assignDefaultVar('isMobileDevice', Kernel::get_mobile_device());
 
 		// Inicializa as URLs estáticas
-		Template_Static::assignDefaultVar('urlJS',  URI::build_url(array('scripts'), array(), true, 'static'));
+		Template_Static::assignDefaultVar('urlJS',  URI::build_url(array('js'), array(), true, 'static'));
 		Template_Static::assignDefaultVar('urlCSS', URI::build_url(array('css'), array(), true, 'static'));
 		Template_Static::assignDefaultVar('urlIMG', URI::build_url(array('images'), array(), true, 'static'));
 		Template_Static::assignDefaultVar('urlSWF', URI::build_url(array('swf'), array(), true, 'static'));

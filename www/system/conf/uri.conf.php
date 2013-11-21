@@ -65,7 +65,7 @@ $conf['default']['redirect_last_slash'] = true;
 /// Força o uso de barra (/) ao final da URL para o primeiro segmento (index).
 $conf['default']['force_slash_on_index'] = true;
 /// Número de segmentos ignorados no parse da URI para determinação da controladora
-$conf['default']['ignored_segments'] = 1;
+$conf['default']['ignored_segments'] = 0;
 ///@}
 
 /**
