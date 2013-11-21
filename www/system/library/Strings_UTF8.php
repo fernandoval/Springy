@@ -1,14 +1,16 @@
 <?php
-/**
- *	FVAL PHP Framework for Web Applications\n
- *	Copyright (c) 2007-2011 FVAL Consultoria e Informática Ltda.\n
- *	Copyright (c) 2007-2011 Fernando Val
+/**	\file
+ *	FVAL PHP Framework for Web Applications
  *
- *	\warning Este arquivo é parte integrante do framework e não pode ser omitido
+ *	\copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.\n
+ *	\copyright Copyright (c) 2007-2013 Fernando Val\n
+ *	\copyright Copyright (c) 2009-2013 Lucas Cardozo
  *
- *	\version 1.2.1
- *
- *	\brief Classe para tratamento de strings em formato UTF-8
+ *	\brief		Classe para tratamento de strings em formato UTF-8
+ *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
+ *	\version	1.2.1
+ *  \author		Fernando Val  - fernando.val@gmail.com
+ *	\ingroup	framework
  */
 
 class Strings_UTF8 extends Strings {

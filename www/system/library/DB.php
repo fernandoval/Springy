@@ -1,308 +1,590 @@
 <?php
-/**
- *	FVAL PHP Framework for Web Applications\n
- *	Copyright (c) 2007-2011 FVAL Consultoria e Informática Ltda.\n
- *	Copyright (c) 2007-2011 Fernando Val\n
- *	Copyright (c) 2009-2011 Lucas Cardozo
+/**	\file
+ *	FVAL PHP Framework for Web Applications
  *
- *	\warning Este arquivo é parte integrante do framework e não pode ser omitido
+ *	\copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.\n
+ *	\copyright Copyright (c) 2007-2013 Fernando Val\n
+ *	\copyright Copyright (c) 2009-2013 Lucas Cardozo
  *
- *	\version 0.9.6
- *
- *	\brief Classe para acesso a banco de dados
- *
- *	\note Esta classe usa a classe de acesso a banco de dados adoDB
+ *	\brief		Classe para acesso a banco de dados
+ *	\note		Esta classe usa a PHP Data Object (PDO) para acesso a banco de dados
+ *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
+ *	\version	1.0.14
+ *  \author		Fernando Val  - fernando.val@gmail.com
+ *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
+ *	\ingroup	framework
  */
 
-define('DB_RESTYPE_ASSOC', 0);
-define('DB_RESTYPE_ARRAY', 1);
-define('DB_RESTYPE_ROWS', 2);
+class DB {
+	/// Guarda os IDs de conexão com os SGBDs
+	private static $DB = array();
+	/// SQL Resource
+	private $SQLRes = NULL;
+	/// Último comando executado
+	private $LastQuery = '';
+	/// Contador de comandos SQL executados
+	private static $sqlNum = 0;
+	/// Recurso de conexão atual
+	private $dataConnect = false;
+	/// Entrada de configuração de banco atual
+	private $database = false;
+	/// Flag do modo debug
+	private static $db_debug = false;
+	/// Controle de falhas de conexão
+	private static $conErrors = array();
 
-require_once 'adoDB' . DIRECTORY_SEPARATOR . 'adodb.inc.php';
+	/**
+	 *	\brief Método construtor da classe
+	 *
+	 *	Cria uma instância da classe a inicializa a conexão com o banco de dados
+	 *
+	 *	@param $database chave de configuração do banco de dados.
+	 *		Default = 'default'
+	 */
+	public function __construct($database='default') {
+		$this->database = $database;
+		$this->dataConnect = $this->connect($this->database);
+	}
 
-class DB extends Kernel {
-	private static $DB = Array();
-
-	private static $SQLRes = Array();
-
-	private static $LastQuery = Array();
-
-	private $sqlNum = 0;
-
-	private $data;
-	private static $printSql = 1;
+	/**
+	 *  \brief Método destrutor da classe
+	 *
+	 *  Fecha todos os cursores, consultas em aberto com banco de dados e desinstancia a classe
+	 */
+	public function __destruct() {
+		if (!is_null($this->SQLRes)) {
+			$this->SQLRes->closeCursor();
+			$this->SQLRes = NULL;
+		}
+	}
 
 	/**
 	 *	\brief Conecta ao banco de dados
 	 *
 	 *	@param $database chave de configuração do banco de dados.
 	 *		Default = 'default'
+	 *
+	 *	@return Retorna o conector do banco de dados
 	 */
-	public static function connect($database='default') {
-		// Verifica se a instância já está definida e conectada
-		if (isset(self::$DB[$database]) && self::$DB[$database]->IsConnected()) {
-			return true;
+	public function connect($database) {
+		if (isset(self::$conErrors[$database])) {
+			return false;
 		}
-	
-		// Lê as configurações de acesso ao banco de dados
-		$conf = parent::get_conf('db', $database);
 
-		// Cria uma nova instância de acesso
-		self::$DB[$database] = ADONewConnection($conf['database_type']);
+		// Verifica se a instância já está definida e conectada
+		if (isset(self::$DB[$database])) {
+			return self::$DB[$database]['con'];
+		}
+
+		// Lê as configurações de acesso ao banco de dados
+		$conf = Kernel::get_conf('db', $database);
+
+		// Verifica se o servidor é um pool (round robin)
+		if ($conf['database_type'] == 'pool' && is_array($conf['host_name'])) {
+			return $this->_round_robin($database, $conf);
+		}
+
+		$pdoConf = array();
+		if ($conf['database_type'] == 'mysql') {
+			$pdoConf[PDO::MYSQL_ATTR_INIT_COMMAND] = 'SET NAMES \'UTF8\'';
+		}
 
 		if ($conf['persistent']) {
-			$connected = self::$DB[$database]->PConnect($conf['host_name'], $conf['user_name'], $conf['password'], $conf['database']);
-		} else {
-			$connected = self::$DB[$database]->Connect($conf['host_name'], $conf['user_name'], $conf['password'], $conf['database']);
-		}
-		
-		if ($connected === false) {
-			self::reportError('Can\'t connect to database server.', $database);
+			$pdoConf[ PDO::ATTR_PERSISTENT ] = true;
 		}
 
-		// Define o modo de recuperação de dados padrão
-		self::$DB[$database]->SetFetchMode(ADODB_FETCH_ASSOC);
+		/*
+		 *  A variável abaixo é setda pois caso a conexão com o banco falhe, o callback de erro será chamado e a variável já estará setada.
+		 *  Caso a conexão seja feita com sucesso, a variavel é removida.
+		 */
+		self::$conErrors[$database] = true;
 
-		self::execute('SET NAMES \''.$conf['charset'].'\'', false, false, $database);
+		if (!$conf['host_name'] || !$conf['database']) {
+			$this->report_error('HostName / DataBase not defined.');
+		}
+
+		//	a instância de conexão é estática, para nao criar uma nova a cada nova instãncia da classe
+		self::$DB[$database] = array(
+			'con' => new PDO(
+				$conf['database_type'] . ':host=' . $conf['host_name'] . ';dbname=' . $conf['database'],
+				$conf['user_name'],
+				$conf['password'],
+				$pdoConf
+			),
+			'dbName' => $database
+		);
+		unset($pdoConf, self::$conErrors[$database]);
+
+		return self::$DB[$database]['con'];
 	}
 
 	/**
-	 *	\brief Fecha a conexão com o banco de dados
+	 *	\brief Método privado de controle de round robin de conexão
+	 *
+	 *	Define o próximo servidor do pool de SGBDs.
+	 *
+	 *	@param $database chave de configuração do banco de dados.
+	 *	@param $dbconf entradas de configuração do banco de dados.
+	 *
+	 *	@return Retorna o conector do banco de dados.
+	 */
+	private function _round_robin($database, $dbconf) {
+		// Lê as configurações de controle de round robin
+		$rr = Kernel::get_conf('db', 'round_robin');
+
+		// Efetua controle de round robin por Memcached
+		if ($rr['type'] == 'memcached') {
+			$mc = new Memcached();
+			$mc->addServer($rr['server_addr'], $rr['server_port']);
+
+			// Define o próximo servidor do pool
+			if (!($actual = (int)$mc->get('dbrr_' . $database))) {
+				$actual = 0;
+			}
+			if (++$actual >= count($dbconf['host_name'])) {
+				$actual = 0;
+			}
+
+			$mc->set('dbrr_'.$database, $actual, 0);
+		}
+		// Efetua controle de round robin em arquivo
+		elseif ($rr['type'] == 'file') {
+			// Define o próximo servidor do pool
+			if ((!file_exists($rr['server_addr'] . DIRECTORY_SEPARATOR . 'dbrr_' . $database)) || !($actual = (int)file_get_contents($rr['server_addr'] . DIRECTORY_SEPARATOR . 'dbrr_' . $database))) {
+				$actual = 0;
+			}
+			if (++$actual >= count($dbconf['host_name'])) {
+				$actual = 0;
+			}
+
+			file_put_contents($rr['server_addr'] . DIRECTORY_SEPARATOR . 'dbrr_' . $database, $actual);
+		}
+		else {
+			return false;
+		}
+
+		// Tenta conectar ao banco e retorna o resultado
+		self::$DB[$database] = array(
+			'con' => $this->connect($dbconf['host_name'][$actual]),
+			'dbName' => $dbconf['host_name'][$actual]
+		);
+		return self::$DB[$database]['con'];
+	}
+
+	/**
+	 *	\brief Método para verificar se a conexão com o banco foi feita
 	 *
 	 *	@param $database chave de configuração do banco de dados.
 	 *		Default = 'default'
 	 */
-	public function disconnect($database='default') {
-		if (isset(self::$DB[$database]) && self::$DB[$database]->IsConnected()) {
-			self::$DB[$database]->Disconnect();
-		}
-		unset(self::$DB[$database]);
+	public static function has_connection($database='default') {
+		return !isset(self::$conErrors[$database]) && isset(self::$DB[$database]) && self::$DB[$database]['con'];
+	}
+	public static function hasConnection($database='default') {
+		self::has_connection($database);
 	}
 
-	/*
-		[pt-BR] Método de retorno de erros. Também envia e-mails com informações sobre o erro e grava-o em um arquivo de Log.
-	*/
-	private static function reportError($msg, $database='default') {
-		// [pt-br] Lê as configurações de acesso ao banco de dados
-		$conf = parent::get_conf('db', $database);
+	/**
+	 *	\brief Fecha a conexão com o banco de dados
+	 */
+	public function disconnect() {
+		if ($this->dataConnect && $this->dataConnect->IsConnected()) {
+			///	a instância de conexão é estática, para nao criar uma nova a cada nova instãncia da classe
+			self::$DB[$this->database]['con']->Disconnect();
+		}
+		unset(self::$DB[$this->database]);
+	}
 
-		if (isset(self::$LastQuery[$database])) {
-			$sqlError = str_replace('       ', "\n\t", self::$LastQuery[$database]);
+	/**
+	 *	\brief Reporta a ocorrência de erro para o Webmaster
+	 *
+	 *	Método para alerta de erros. Também envia e-mails com informações sobre o erro e grava-o em um arquivo de Log.
+	 */
+	private function report_error($msg, PDOException $exception=NULL) {
+		// [pt-br] Lê as configurações de acesso ao banco de dados
+		$conf = Kernel::get_conf('db', self::$DB[$this->database]['dbName']);
+
+		if (isset($this->LastQuery)) {
+			$sqlError = '<pre>' . htmlentities((is_object($this->LastQuery) ? $this->LastQuery->__toString() : $this->LastQuery)) . '</pre><br /> Parametros:<br />' . Kernel::print_rc($this->LastValues, true);
 		} else {
 			$sqlError = 'Still this connection was not executed some instruction SQL using.';
 		}
-	
+
+		$errorInfo = ($this->SQLRes ? $this->SQLRes->errorInfo() : $this->dataConnect->errorInfo());
+
 		$htmlError = '
-			<div style="font-family:Arial, Helvetica, sans-serif; font-size:12px">
-				<div style="background-color:6666CC; color:#FFFFFF; font-weight:bold; padding-left:10px">Description error</div>
-				<label style="width:140px; font-weight:bold; float:left">Erro:</label><div style="width:80%">'.$msg . '<br />(' . self::$DB[$database]->ErrorNo() . ') '. self::$DB[$database]->ErrorMsg() . '</div>
-				<label style="width:140px; font-weight:bold; float:left">SQL:</label><div style="width:80%">'.htmlentities($sqlError).'</div>
-				<br />
-				<div style="background-color:6666CC; color:#FFFFFF; font-weight:bold; padding-left:10px">Debug</div>
-				<label style="width:140px; font-weight:bold; float:left">Debug:</label><pre>' . print_r(debug_backtrace(), true) . '</pre><br />
-				<label style="width:140px; font-weight:bold; float:left">Protocolo:</label>'.$_SERVER['SERVER_PROTOCOL'].'<br />
-				<label style="width:140px; font-weight:bold; float:left">URL:</label><br />
-				<br />
-				<div style="background-color:6666CC; color:#FFFFFF; font-weight:bold; padding-left:10px">IP</div>
-				<label style="width:140px; font-weight:bold; float:left">IP:</label>'.$_SERVER['REMOTE_ADDR'].'<br />
-				<label style="width:140px; font-weight:bold; float:left">Browser:</label>'.(isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '').'<br />
-				<br />
-				<div style="background-color:6666CC; color:#FFFFFF; font-weight:bold; padding-left:10px">Dados do baco</div>
-				<label style="width:140px; font-weight:bold; float:left">Host:</label>'.$conf['host_name'].'<br />
-				<label style="width:140px; font-weight:bold; float:left">User:</label>'.$conf['user_name'].'<br />
-				<label style="width:140px; font-weight:bold; float:left">Pass:</label>'.$conf['password'].'<br />
-				<label style="width:140px; font-weight:bold; float:left">D.B.:</label>'.$conf['database'].'<br />
-				<br />
-				<div style="background-color:6666CC; color:#FFFFFF; font-weight:bold; padding-left:10px">VARS</div>
-				<label style="width:140px; font-weight:bold; float:left">_GET</label><div style="width:80%"><pre>' . print_r($_GET, true) . '</pre></div>
-				<label style="width:140px; font-weight:bold; float:left">_POST</label><div style="width:80%"><pre>' . print_r($_POST, true) . '</pre></div>
-			</div>
+			  <tr>
+				<td style="background-color:#66C; color:#FFF; font-weight:bold; padding-left:10px; padding:3px 2px" colspan="2">Dados do banco</td>
+			  </tr>
+			  <tr>
+				<td valign="top"><label style="font-weight:bold">Host:</label></td>
+				<td>'.$conf['host_name'].'</td>
+			  </tr>
+			  <tr style="background:#efefef">
+				<td valign="top"><label style="font-weight:bold">User:</label></td>
+				<td><span style="background:#efefef">' . (isset($conf['user_name']) ? $conf['user_name'] : 'não informado') . '</span></td>
+			  </tr>
+			  <tr>
+				<td valign="top"><label style="font-weight:bold">Pass:</label></td>
+				<td>' . (isset($conf['password']) ? $conf['password'] : 'não informado') . '</td>
+			  </tr>
+			  <tr>
+				<td valign="top"><label style="font-weight:bold">DB:</label></td>
+				<td><span style="background:#efefef">' . (isset($conf['database']) ? $conf['database'] : 'não informado') . '</span></td>
+			  </tr>
 		';
 		unset($sqlError);
 
-		// [pt-BR] Caso o sistema esteja em produção ($printSql == 1), mas não há um desenvolvedor vendo a página, manda e-mail.
-		if (!parent::get_conf('system', 'development') && parent::get_conf('system', 'mail_error') && parent::get_conf('system', 'from_site') && parent::get_conf('system', 'log_mysql_file') && file_exists(parent::get_conf('system', 'log_mysql_file'))) {
-			if (strpos(file_get_contents(parent::get_conf('system', 'log_mysql_file')), mysql_error() )) {
+		Errors::send_report(
+			'<span style="color:#FF0000">' . $msg . '</span> - ' . '(' . $errorInfo[1] . ') ' . $errorInfo[2] . ($exception ? '<br />' . $exception->getMessage() : '') . '<br /><pre>' . $this->LastQuery . '</pre><br />Valores: ' . Kernel::print_rc($this->LastValues, true),
+			500,
+			hash('crc32', $msg . $errorInfo[1] . $this->LastQuery), // error id
+			$htmlError
+		);
 
-				$email_message = new EmailMessage;
-
-				$email_message->SetBulkMail(1);
-				$email_message->SetEncodedEmailHeader('From', parent::get_conf('system', 'mail_error'), parent::get_conf('sytem', 'site_name'));
-				$email_message->SetEncodedHeader('Subject', 'Query error: '.parent::get_conf('sytem', 'site_name'));
-				$email_message->cache_body = 0;
-				$email_message->CreateQuotedPrintableHTMLPart($htmlError , '', $html_part);
-				$email_message->SetEncodedEmailHeader('To', parent::get_conf('system', 'mail_error'), parent::get_conf('sytem', 'site_name'));
-				$email_message->SetEncodedEmailHeader('Reply-To', parent::get_conf('system', 'mail_error'), parent::get_conf('sytem', 'site_name'));
-				$email_message->SetEncodedEmailHeader('Errors-To', parent::get_conf('system', 'mail_error'), parent::get_conf('sytem', 'site_name'));
-
-				$alternative_parts = array($html_part);
-				$email_message->AddAlternativeMultipart($alternative_parts);
-
-				if ($email_message->Send()) {
-					$email_message->SetBulkMail(0);
-				}
-				unset($email_message);
-
-				//mail(parent::get_conf('system', 'mail_error'), 'Query error: '.parent::get_conf('system', 'from_site'), $htmlError, 'From:"'.parent::get_conf('system', 'mail_error').'" <'.parent::get_conf('system', 'from_site').">\n"."Content-type:text/html\n");
-
-				$fileErro = fopen(parent::get_conf('system', 'log_mysql_file'));
-				fwrite($fileErro, "\n" );
-				fwrite($fileErro, "\n=== BEGIN of ".date('d/m/Y H:i:s')." ===\n" );
-				fwrite($fileErro, $erro );
-				fwrite($fileErro, "\n=== FIM of ".date('d/m/Y H:i:s')." ===" );
-				fwrite($fileErro, "\n==========================================" );
-				fwrite($fileErro, "\n" );
-				fclose($fileErro);
-				unset($fileErro);
-			}
-		}
-
-		if (self::$printSql == 2 || parent::get_conf('system', 'debug')) {
-			/*
-				[pt-BR] Caso o sistema esteja em desenvolvimento OU algum desenvolvedor esteja vendo o sistema, imprime o erro no browser.
-			*/
-			if (parent::get_conf('system', 'ajax')) {
-				Errors::ajax(500, array('Erro' => mysql_error(), 'No' => mysql_errno(), 'SQL' => addslashes( $this->DB->lastQuery )));
-			} else {
-				echo $htmlError;
-			}
-			die;
-		}
+		die;
 	}
 
 	/**
-	 *	\brief Executa uma consulta no banco de dados
+	 *	\brief Alterna o estado de debug de banco de dados
+	 */
+	public static function debug($debug) {
+		self::$db_debug = $debug;
+		Kernel::debug('DEBUG DE BANCO DE DADOS: ' . ($debug ? 'LIGADO' : 'DESLIGADO'));
+	}
+
+	/**
+	 *	\brief Inicializa uma transação
+	 *
+	 *	Como as transações podem utilzar varias classes e métodos, a transação será "estatica"
+	 */
+	public static function begintran($database='default') {
+		self::connect($database)->beginTransaction();
+	}
+	public static function begin_transaction($database='default') {
+		self::begintran($database);
+	}
+
+	/**
+	 *	\brief Cancela as alterações e termina a transação
+	 *
+	 *	Como as transações podem utilzar varias classes e métodos, a transação será "estatica"
+	 */
+	public static function rollback($database='default') {
+		self::connect($database)->rollBack();
+	}
+
+	/**
+	 *	\brief Confirma as alterações e termina a transação
+	 *
+	 *	Como as transações podem utilzar varias classes e métodos, a transação será "estatica"
+	 */
+	public static function commit($database='default') {
+		self::connect($database)->commit();
+	}
+	public static function commit_transaction($database='default') {
+		self::commit($database);
+	}
+
+	/**
+	 *	\brief Cancela todas as transações ativas
+	 *
+	 *	Em caso de erro no php, executa um all roll back.
+	 *
+	 *	Como as transações podem utilzar varias classes e métodos, a transação será "estatica"
+	 */
+	public static function rollback_all() {
+		foreach (self::$DB as $db => $v) {
+			if ($v['con']->inTransaction()) {
+				Kernel::debug('DB ' . $db . ' rollback start');
+				$v['con']->rollBack();
+				Kernel::debug('DB ' . $db . ' rollback done!');
+			}
+		}
+	}
+	public static function transactionAllRollBack() {
+		self::rollback_all();
+	}
+
+	/**
+	 *	Executa uma consulta no banco de dados
 	 *
 	 *	@param[in] $sql Comando SQL a ser executado
 	 */
-	public static function execute($sql, $params=false, $returnRows=false, $database='default') {
-		if (URI::_GET('debugSQL') && parent::get_conf('system', 'development')) {
-			Kernel::debug('SQL number:'.(++$this->sqlNum));
+	public function execute($sql, array $where_v=array()) {
+		self::$sqlNum++;
+
+		$this->LastQuery = $sql;
+
+		if (($sql instanceof DBSelect) || ($sql instanceof DBInsert) || ($sql instanceof DBUpdate) || ($sql instanceof DBDelete)) {
+			$this->LastValues = $sql->getAllValues();
+		} else {
+			$this->LastValues = $where_v;
+			$where_v = array();
 		}
 
-		self::$LastQuery[$database] = $sql;
-		if (($res = self::$DB[$database]->execute($sql, $params)) === false) {
-			self::reportError('Can\'t execute query.', $database);
+		$sql = NULL;
+
+		if (($this->SQLRes = $this->dataConnect->prepare($this->LastQuery)) === false) {
+			$this->report_error('Can\'t prepare query.');
 		}
-		
-		self::$SQLRes[$database] = $res;
-		
-		if ($returnRows) {
-			return self::get_all($database);
+
+		if (count($this->LastValues)) {
+			$numeric = 0;
+
+			foreach($this->LastValues as $key => $where) {
+				switch(gettype($where)) {
+					case 'boolean' :
+						$param = PDO::PARAM_BOOL;
+					break;
+					case 'integer' :
+						$param = PDO::PARAM_INT;
+					break;
+					case 'NULL' :
+						$param = PDO::PARAM_NULL;
+					break;
+					default :
+						$param = PDO::PARAM_STR;
+					break;
+				}
+
+				if (is_numeric($key)) {
+					$this->SQLRes->bindValue(++$numeric, $where, $param);
+				} else {
+					$this->SQLRes->bindValue(':' . $key, $where, $param);
+				}
+			}
+			unset($key, $where, $param, $numeric);
 		}
+
+		if ($this->SQLRes->execute() === false) {
+			$this->report_error('Can\'t execute query.');
+		}
+
+		if (self::$db_debug || Kernel::get_conf('system', 'sql_debug')) {
+			$conf = Kernel::get_conf('db', self::$DB[$this->database]['dbName']);
+
+			Kernel::debug(
+				'<pre>' .
+					$this->LastQuery .
+				'</pre><br />Valores: ' . Kernel::print_rc($this->LastValues, true) . '<br />' .
+				'Affected Rows: ' . $this->affected_rows() . '<br />' .
+				'DB: ' . (isset($conf['database']) ? $conf['database'] : 'não informado')
+			, 'SQL #'  . self::$sqlNum, false);
+		}
+
 		return true;
-	}
-	/**
-	 *	\brief Apelido para execute
-	 *
-	 *	\see execute
-	 */
-	public static function query($sql, $params=false, $returnRows=false, $database='default') {
-		return self::execute($sql, $params, $returnRows, $database);
-	}
-
-	/**
-	 *	\brief Escapa uma string para uso em comando SQL
-	 */
-	public static function escape_str($str, $database='default') {
-		return self::$DB[$database]->Quote($str);
 	}
 
 	/**
 	 *	\brief Retorna o último comando executado
 	 */
-	public static function last_query($database='default') {
-		return self::$LastQuery[$database];
+	public function last_query() {
+		return $this->LastQuery;
+	}
+
+	/**
+	 *	\brief Pega o tipo do banco de dados
+	 *
+	 *	@return Retorna o tipo do banco de dados atual
+	 */
+	public function getDatabase() {
+		switch ($this->dataConnect->databaseType) {
+			case 'postgres' :
+			case 'postgres7' :
+			case 'postgres8' :
+			case 'postgres64' :
+				return 'postgres';
+			case 'mssql' :
+			case 'mssqlnative' :
+			case 'mssqlpo':
+			case 'mssql_n':
+				return 'mysql';
+			break;
+		}
+		return false;
 	}
 
 	/**
 	 *	\brief Retorna o valor do campo autoincremento do último INSERT
 	 */
-	public static function get_inserted_id($database='default') {
-		$ret = self::$DB[$database]->Insert_ID();
-		if (self::$DB[$database]->ErrorNo() > 0) {
-			self::reportError('Can\'t get last inserted id.', $database);
-		}
-		return $ret;
+	public function get_inserted_id($indice='') {
+		return $this->dataConnect->lastInsertId( ((!$indice && $this->LastQuery instanceof DBInsert) ? $this->LastQuery->getTable() . '_id_seq' : $indice) );
 	}
 
 	/**
 	 *	\brief Retorna o número de linhas afetadas no último comando
 	 */
-	public static function affected_rows($database='default') {
-		$ret = self::$DB[$database]->Affected_Rows();
-		if (self::$DB[$database]->ErrorNo() > 0) {
-			self::reportError('Can\'t get number of affected rows.', $database);
-		}
-		return $ret;
+	public function affected_rows() {
+		return $this->num_rows();
 	}
 
 	/**
-	 *	\brief Retorna o número de resultados de um SELECT
+	 *	\brief Retorna o número de resultados de uma consulta
 	 */
-	public static function num_rows($database='default') {
-		if (isset(self::$SQLRes[$database])) {
-			return self::$SQLRes[$database]->RecordCount();
+	public function num_rows() {
+		return $this->SQLRes->rowCount();
+	}
+
+	/**
+	 *	\brief Retorna o resultado de uma consulta
+	 */
+	public function get_all($resultType=PDO::FETCH_ASSOC) {
+		if ($this->SQLRes) {
+			return $this->SQLRes->fetchAll($resultType);
 		}
+
 		return false;
 	}
 
 	/**
-	 *	\brief Retorna o resultado de um SELECT
+	 *	\brief Retorna o próximo resultado de uma consulta
 	 */
-	public static function get_all($database='default', $resultType=DB_RESTYPE_ROWS) {
-		if (isset(self::$SQLRes[$database])) {
-			switch ($resultType) {
-				case DB_RESTYPE_ASSOC:
-					$ret = self::$SQLRes[$database]->GetAssoc();
-					break;
-				case DB_RESTYPE_ARRAY:
-					$ret = self::$SQLRes[$database]->GetArray();
-					break;
-				case DB_RESTYPE_ROWS:
-					$ret = self::$SQLRes[$database]->GetRows();
-					break;
-				default:
-					return false;
-			}
-			if (self::$DB[$database]->ErrorNo() > 0) {
-				self::reportError('Can\'t get all results.', $database);
-			}
-			return $ret;
+	public function fetch_next($resultType=PDO::FETCH_ASSOC) {
+		if ($this->SQLRes) {
+			return $this->SQLRes->fetch($resultType);
 		}
-		self::reportError('There is no resultset to get.', $database);
-		return false;
-	}
 
-	/**
-	 *	\brief Retorna o próximo resultado de um SELECT
-	 */
-	public static function fetch_next($database='default') {
-		if (isset(self::$SQLRes[$database])) {
-			return self::$SQLRes[$database]->FetchRow();
-		}
 		return false;
 	}
 
 	/**
 	 *	\brief Retorna o valor de uma coluna do último registro pego por fetch_next
 	 */
-	public static function get_column($var, $database='default') {
-		if (isset(self::$SQLRes[$database])) {
-			return self::$SQLRes[$database]->Fields($var);
+	public function get_column($var=0) {
+		if ($this->SQLRes && is_numeric($var)) {
+			return $this->SQLRes->fetchColumn($var);
 		}
-		self::reportError($var.' is not defined in select (remember, it\'s a case sensitive) or $data is empty.', $database);
+
+		$this->report_error($var . ' is not defined in select (remember, it\'s a case sensitive) or $data is empty.');
+
 		return false;
 	}
 
 	/**
-	 *	\brief Libera o resultset
+	 *	\brief Converte uma data do formato brasileiro para o formato universal
+	 *
+	 *	@param $datetime String contendo a data e hora no formato brasileiro (d/m/Y H:n:s)
+	 *	@param $flgtime Interruptor de concatenação da hora após a data
+	 *
+	 *	@return Retorna a data no formato universal (Y-m-d) concatenada da hora no formato universal (H:n:s), se o $flgtime for TRUE.
 	 */
-	public static function free($database='default') {
-		if (isset(self::$SQLRes[$database])) {
-			self::$SQLRes[$database]->Close();
-			unset(self::$SQLRes[$database]);
+	public static function cast_date_br_to_db($datetime, $flgtime=false) {
+		if (preg_match('/^([0-9]{2})\/([0-9]{2})\/([0-9]{4})/', $datetime, $res)) {
+			$date = array($res[1], $res[2], $res[3]);
+		} else {
+			return '';
 		}
-		return false;
+
+		if ($flgtime) {
+			if (preg_match('/([0-9]{2})\:([0-9]{2})\:([0-9]{2})$/', $datetime, $res)) {
+				$time = array($res[1], $res[2], $res[3]);
+			} else {
+				return '';
+			}
+		}
+
+		$date = $date[2] . '-' . $date[1] . '-' . $date[0];
+		unset($res);
+
+		if (!$flgtime) {
+			return $date;
+		}
+
+		return $date . ' ' . $time[0] . ':' . $time[1] . ':' . $time[2];
+	}
+
+	/**
+	 *	\brief Converte uma data do formato universal para o formato brasileiro 24h
+	 *
+	 *	@param $datetime String contendo a data e hora no formato universal (Y-m-d H:n:s)
+	 *	@param $flgtime Interruptor de concatenação da hora após a data
+	 *	@param $seconds Interruptor de concatenação dos segundos após a data
+	 *
+	 *	@return Retorna a data no formato brasileiro (d/m/Y) concatenada da hora no formato brasileiro 24h (H:n:s), se o $flgtime for TRUE.
+	 */
+	public static function cast_date_db_to_br($datetime, $flgtime=false, $sec=false) {
+		if (preg_match('/^([0-9]{4})-([0-9]{2})-([0-9]{2})/', $datetime, $res)) {
+			$date = array($res[1], $res[2], $res[3]);
+		} else {
+			return '';
+		}
+
+		if ($flgtime) {
+			if (preg_match('/([0-9]{2})\:([0-9]{2})\:([0-9]{2})/', $datetime, $res)) {
+				$time = array($res[1], $res[2], $res[3]);
+			} else {
+				return '';
+			}
+		}
+
+		$date = $date[2] . '/' . $date[1] . '/' . $date[0];
+		unset($res);
+
+		if (!$flgtime) {
+			return $date;
+		}
+
+		return $date . ' ' . $time[0] . ':' . $time[1] . ($sec ? ':' . $time[2] : '');
+    }
+
+	/**
+	 *  \brief Converte em UNIX timestamp o valor data + hora no formato universal
+	 *  
+	 *  \param (string)$dateTime - data hora no format Y-m-d H:i:s
+	 *  
+	 *  \return Retorna o valor UNIX timestamp
+	 */
+	public static function mk_db_datetime($dateTime) {
+		if (preg_match('/^([0-9]{4})-([0-9]{2})-([0-9]{2})/', $dateTime, $res)) {
+			$data = array(
+				$res[1],
+				$res[2],
+				$res[3],
+			);
+		} else if (preg_match('/^([0-9]{2})\/([0-9]{2})\/([0-9]{4})/', $dateTime, $res)) {
+			$data = array(
+				$res[3],
+				$res[2],
+				$res[1],
+			);
+		}
+		unset($res);
+
+		preg_match('/([0-9]{2}):([0-9]{2}):([0-9]{2})$/', $dateTime, $res);
+		if (isset($res[1])) {
+			$hora = array(
+				$res[1],
+				$res[2],
+				$res[3],
+			);
+		} else {
+			$hora = array(
+				0,
+				0,
+				0,
+			);
+		}
+		unset($res);
+		return mktime($hora[0], $hora[1], $hora[2], $data[1], $data[2], $data[0]);
+    }
+	public static function dateToTime($dateTime) {
+		return self::mk_db_datetime($dateTime);
+	}
+
+	/**
+	 *  \brief Converte um valor datetime do banco em string de data brasileira
+	 *  
+	 *  \note Verificar real necessidade de manutenção desse método
+	 *  \param (string)$dataTimeStamp - data hora no format Y-m-d H:i:s
+	 *  \return Retorna uma string no formato '<dia> de <nome_do_mes>'.
+	 */
+	public static function deymonth_brazilian($dataTimeStamp) {
+		$dateTime = DB::mk_db_datetime($dataTimeStamp);
+		$mes = array('Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro');
+		return date('d', $dateTime) . ' de ' . $mes[date('m', $dateTime)];
+    }
+	public static function dateToStr($dataTimeStamp) {
+		return self::lond_date_brazilian($dataTimeStamp);
 	}
 }

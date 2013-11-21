@@ -1,14 +1,15 @@
 <?php
-/**
- *	FVAL PHP Framework for Web Applications\n
- *	Copyright (c) 2007-2011 FVAL Consultoria e Informática Ltda.\n
- *	Copyright (c) 2007-2011 Fernando Val
+/**	\file
+ *	FVAL PHP Framework for Web Applications
  *
- *	\warning Este arquivo é parte integrante do framework e não pode ser omitido
+ *	\copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.\n
+ *	\copyright Copyright (c) 2007-2013 Fernando Val\n
  *
- *	\version 1.0.1
- *
- *	\brief Classe para criação de XML de RSS
+ *	\brief		Classe para criação de XML de RSS
+ *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
+ *	\version	1.0.1
+ *  \author		Fernando Val  - fernando.val@gmail.com
+ *	\ingroup	framework
  */
 
 require_once dirname( __FILE__) . DIRECTORY_SEPARATOR . 'feedcreator' . DIRECTORY_SEPARATOR . 'feedcreator.class.php';

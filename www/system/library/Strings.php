@@ -1,15 +1,16 @@
 <?php
-/**
- *	FVAL PHP Framework for Web Applications\n
- *	Copyright (c) 2007-2012 FVAL Consultoria e Informática Ltda.\n
- *	Copyright (c) 2007-2012 Fernando Val\n
- *	Copyright (c) 2009-2012 Lucas Cardozo
+/**	\file
+ *	FVAL PHP Framework for Web Applications
  *
- *	\warning Este arquivo é parte integrante do framework e não pode ser omitido
+ *	\copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.\n
+ *	\copyright Copyright (c) 2007-2013 Fernando Val\n
+ *	\copyright Copyright (c) 2009-2013 Lucas Cardozo
  *
- *	\version 0.1.3
- *
- *	\brief Classe com métodos para diversos tipos de tratamento e validação de dados string
+ *	\brief		Classe com métodos para diversos tipos de tratamento e validação de dados string
+ *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
+ *	\version	0.3.5
+ *  \author		Fernando Val  - fernando.val@gmail.com
+ *	\ingroup	framework
  */
 
 class Strings extends Kernel {
@@ -58,6 +59,13 @@ class Strings extends Kernel {
 	}
 
 	/**
+	 *	\brief Verifica se é um slug válido
+	 */
+	public static function check_valid_slug($txt) {
+		return preg_match('/^[a-z0-9-]+$/', $txt);
+	}
+
+	/**
 	 *	\brief Valida um texto qualquer, verificanso se tem um tamanho mínimo e máximo desejado.
 	 *	O método também remove todas as TAGs HTML que o texto possua.
 	 *
@@ -72,6 +80,74 @@ class Strings extends Kernel {
 	}
 
 	/**
+	 *	\brief Retorna o endereço IP remoto real
+	 */
+	public static function get_real_remote_addr() {
+		// Pega o IP que vem por trás de proxies
+		// $ApacheHeader = apache_request_headers();
+		// if (!empty($_SERVER['HTTP_X_FORWARDED_FOR']) || !empty($ApacheHeader['X-Forwarded-For']))
+		if (empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+			$ip = "";
+		} else {
+			// $httpip = empty($_SERVER['HTTP_X_FORWARDED_FOR']) ? $ApacheHeader['X-Forwarded-For'] : $_SERVER['HTTP_X_FORWARDED_FOR'];
+			$httpip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+			if (strpos($httpip, ',')) {
+				$httpip = explode(',', $httpip);
+				while (list(, $val) = each($httpip)) {
+					$val = trim($val);
+					if (substr($val, 0, 3) != '10.' && substr($val, 0, 8) != '192.168.' && substr($val, 0, 7) != '172.16.') {
+						$ip = $val;
+						break;
+					}
+				}
+			} else {
+				$ip = $httpip;
+			}
+		}
+		// Verifica se ainda não chegou ao IP real
+		if (empty($ip) || substr($ip, 0, 3) == '10.' || substr($ip, 0, 8) == '192.168.' || substr($ip, 0, 7) == '172.16.') {
+			if (!empty($_SERVER['HTTP_X_REAL_IP'])) {
+				$ip = $_SERVER['HTTP_X_REAL_IP'];
+			} else {
+				$ip = $_SERVER['REMOTE_ADDR'];
+			}
+		}
+
+		return $ip;
+	}
+
+	/**
+	 *	\brief Gena um identificador único global (globally unique identifier - GUID)
+	 *
+	 *	\note Esta função foi copiada da contribuição de Alix Axel para a documentação do PHP
+	 *	em http://php.net/manual/en/function.com-create-guid.php
+	 */
+	public static function guid() {
+		if (function_exists('com_create_guid') === true) {
+			return trim(com_create_guid(), '{}');
+		}
+
+		return sprintf('%04X%04X-%04X-%04X-%04X-%04X%04X%04X', mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(16384, 20479), mt_rand(32768, 49151), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535));
+	}
+
+	/**
+	 *	\brief Converte um IPv4 em valor inteiro
+	 *
+	 *	@param String $ip - endereço ip
+	 *	@return Retorna um valor inteiro
+	 */
+	public static function ipv4_to_number($ip) {
+		// Sepada os octetos do IP
+		$m = explode('.', $ip);
+		if (count($m) < 4) {
+			$m = array(127, 0, 0, 1);
+		}
+
+		// Calcula o valor do IP
+		return (16777216 * (int)$m[0]) + (65536 * (int)$m[1]) + (256 * (int)$m[2]) + (int)$m[3];
+	}
+
+	/**
 	 *	\brief Troca caracteres acentuados por não acentuado
 	 */
 	public static function remove_accented_chars($txt) {
@@ -82,28 +158,25 @@ class Strings extends Kernel {
 		return Strings_ANSI::remove_accented_chars($txt);
 	}
 
-	/**
-	 *	\brief Retorna um texto com a string fornecida soletrada
-	 */
-	public static function spell($txt, $separator=' ', $lng='pt') {
-		if ((function_exists('mb_check_encoding') && mb_check_encoding($txt, 'UTF-8')) || self::check_utf8($txt)) {
-			return Strings_UTF8::spell($txt, $separator, $lng);
-		}
-
-		return Strings_ANSI::spell($txt, $separator, $lng);
-	}
-
 	/* As funções abaixo ainda estão em processo de migração para o framework e não devem ser utilizadas */
 
 	public static function bigText(&$txt, $notStripTags='') {
 		$txt = trim(strip_tags($txt, $notStripTags));
 		return !empty($txt);
 	}
-
-	public static function numero($numero, $tamanho='', $minimo=1, $float=false) {
-		return preg_match('/^[0-9]{'.$minimo.',' . $tamanho . '}' . ($float ? '\.[0-9]{1,' . $float . '}' : '') . '$/', $numero);
+	
+	/*
+	 * 
+	 * @param[in] (string)$numero - variável a ser validado
+	 * @param[in] (string)$tamanho - quantidade máxima de caracteres [0-9] aceitos. Se for passado vazio (''), será infinito
+	 * @param[in] (string)$minimo - quantidade mínima de caracteres [0-9] aceitos
+	 * @param[in] (boolean|int|string)$float - Se for === false, não poderá ser flutuante. Se for int, será o número máximo de caracteres aceitos após o ponto. Se for vazio ('') será infinito
+	 * @param[in] (boolean)$negativo - informa se o número poderá ser negativo
+	 */
+	public static function numero($numero, $tamanho='', $minimo=1, $float=false, $negativo=false) {
+		return preg_match('/^' . ($negativo ? '[\-]?' : '') . '[0-9]{'.$minimo.',' . $tamanho . '}' . ($float !== false ? '\.[0-9]{1,' . $float . '}' : '') . '$/', $numero);
 	}
-
+	
 	/**
 	 *	\brief Valida uma data no formato dd/mm/yyyy
 	 *
@@ -139,7 +212,8 @@ class Strings extends Kernel {
 
 	public static function telefone(&$ddd, &$telefone) {
 		$telefone = str_replace('-', '', $telefone);
-		return strlen($ddd . $telefone) == 10 && is_numeric($ddd . $telefone);
+		$len = strlen($ddd . $telefone);
+		return ($len == 10 || $len == 11) && is_numeric($ddd . $telefone);
 	}
 
 	/* *** */
@@ -273,5 +347,65 @@ class Strings extends Kernel {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Método que valida a google maps.
+	 *
+	 * @access public
+	 * @param string $url
+	 * @return bool true||false
+	 */
+	public static function validarMaps( $url )
+	{
+		$domin = "";
+		$urls = explode("/", $url);
+
+		foreach( $urls as $url )
+		{
+			if( preg_match('/maps.google.com.br|maps.google.com/i', $url ) )
+				return true;
+		}//forech
+
+		return false;
+
+	}//function
+
+	/**
+	 * função que retorna a quantidade de dias entre 2 datas
+	 *
+	 * @access public
+	 * @param string $data1, $data 2, $tipo 31/12/2013 ou 2012-12-31
+	 * @return mktime $data
+	 */
+
+	public static function qtdDias($dataIni, $dataFim) {
+		if( (!isset($dataIni) || empty($dataIni)) || (!isset($dataFim) || empty($dataFim))) {
+			return false;
+		}
+
+		if(strpos($dataIni, '/')) {
+			$partes = explode('/', $dataIni);
+			$time_inicial = mktime(0, 0, 0, $partes[1], $partes[0], $partes[2]);
+
+			$partes = explode('/', $dataFim);
+			$time_final = mktime(0, 0, 0, $partes[1], $partes[0], $partes[2]);
+		} elseif(strpos($dataIni, '-')) {
+			$partes = explode('-', $dataIni);
+			$time_inicial = mktime(0, 0, 0, $partes[1], $partes[2], $partes[0]);
+
+			$partes = explode('-', $dataFim);
+			$time_final = mktime(0, 0, 0, $partes[1], $partes[2], $partes[0]);
+
+		} else {
+			return false;
+		}
+
+		// Calcula a diferença de segundos entre as duas datas:
+		$diferenca = $time_final - $time_inicial; // segundos
+
+		// Calcula a diferença de dias
+		return (int)floor( $diferenca / 86400); // 24 horas  = 86400 segundos
+
 	}
 }

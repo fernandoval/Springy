@@ -1,21 +1,20 @@
 <?php
-/**
- *	FVAL PHP Framework for Web Applications\n
- *	Copyright (c) 2007-2011 FVAL Consultoria e Informática Ltda.\n
- *	Copyright (c) 2007-2011 Fernando Val
+/**	\file
+ *	FVAL PHP Framework for Web Applications
  *
- *	\warning Este arquivo é parte integrante do framework e não pode ser omitido
+ *	\copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.\n
+ *	\copyright Copyright (c) 2007-2013 Fernando Val\n
+ *	\copyright Copyright (c) 2003 by Pascal Rehfeldt
  *
- *	\version 1.0.1
- *
- *	\brief Classe de pilha (FILO - First In Last Out)
+ *	\brief		Classe de pilha (FILO - First In Last Out)
+ *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
+ *	\version	1.0.1
+ *	\author		Pascal@Pascal-Rehfeldt.com
+ *	\author		Under license GNU General Public License (Version 2, June 1991)
+ *	\ingroup	framework
  *
  *	Esta classe foi baseada no excelente trabalho de Pascal Rehfeldt.\n
  *	Conversão para PHP 5, melhorias, documentação e adaptação por Fernando Val.
- *
- *	\author (c) 2003 by Pascal Rehfeldt
- *	\author Pascal@Pascal-Rehfeldt.com
- *	\author Under license GNU General Public License (Version 2, June 1991)
  */
 
 class FILO extends Kernel {

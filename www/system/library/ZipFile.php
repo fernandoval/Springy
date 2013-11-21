@@ -1,14 +1,14 @@
 <?php
-/**
- *	FVAL PHP Framework for Web Applications\n
- *	Copyright (c) 2007-2011 FVAL Consultoria e Informática Ltda.\n
- *	Copyright (c) 2007-2011 Fernando Val
+/**	\file
+ *	FVAL PHP Framework for Web Applications
  *
- *	\warning Este arquivo é parte integrante do framework e não pode ser omitido
+ *	\copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.\n
+ *	\copyright Copyright (c) 2007-2013 Fernando Val\n
  *
- *	\version 0.1.3
- *
- *	\brief Classe para geração de arquivos ZIP
+ *	\brief		Classe para geração de arquivos ZIP
+ *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
+ *	\version	0.1.3
+ *	\ingroup	framework
  *
  *	Esta classe foi baseada no excelente trabalho de Pascal Rehfeldt.\n
  *	Conversão para PHP 5, melhorias, documentação e adaptação por Fernando Val.

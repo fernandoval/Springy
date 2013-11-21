@@ -1,15 +1,17 @@
 <?php
-/**
- *	FVAL PHP Framework for Web Applications\n
- *	Copyright (c) 2007-2011 FVAL Consultoria e Informática Ltda.\n
- *	Copyright (c) 2007-2011 Fernando Val\n
- *	Copyright (c) 2009-2011 Lucas Cardozo
+/**	\file
+ *	FVAL PHP Framework for Web Applications
  *
- *	\warning Este arquivo é parte integrante do framework e não pode ser omitido
+ *	\copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.\n
+ *	\copyright Copyright (c) 2007-2013 Fernando Val\n
+ *	\copyright Copyright (c) 2009-2013 Lucas Cardozo
  *
- *	\version 1.8.12
- *
- *	\brief Classe para tratamento de URI
+ *	\brief		Classe para tratamento de URI
+ *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
+ *	\version	1.8.15
+ *  \author		Fernando Val  - fernando.val@gmail.com
+ *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
+ *	\ingroup	framework
  */
 
 class URI extends Kernel {
@@ -17,6 +19,8 @@ class URI extends Kernel {
 	private static $uri_string = '';
 	/// Array dos segmentos da URI
 	private static $segments = array();
+	/// Array dos segmentos ignorados
+	private static $ignored_segments = array();
 	/// Array da relação dos parâmetros recebidos por GET
 	private static $get_params = array();
 	/// Índice do segmento que determina a página atual
@@ -31,11 +35,13 @@ class URI extends Kernel {
 	 *	\return \c true se houve sucesso no processo e \c false em caso contrário
 	 */
 	private static function _fetch_uri_string() {
+		// Verifica se há um único parâmetro na query string e esse parâmetro não é uma vafiável GET
 		if (is_array($_GET) && count($_GET) == 1 && (trim(key($_GET), '/') != '') && empty($_GET[key($_GET)])) {
 			self::$uri_string = key($_GET);
 			return true;
 		}
 
+		// A variável SUPERVAR foi setada na query string pelo .htacess ou enviada por GET?
 		if (is_array($_GET) && !empty($_GET['SUPERVAR'])) {
 			self::$uri_string = $_GET['SUPERVAR'];
 			return true;
@@ -81,14 +87,8 @@ class URI extends Kernel {
 			header('Cache-Control: private', false);
 			die(md5(microtime()));
 		}
-		
-		self::_fetch_uri_string();
 
-		// Redireciona URIs terminadas em / para evitar conteúdo duplicado de SEO?
-		if (parent::get_conf('uri', 'redirect_last_slash') && substr(self::$uri_string, -1) == '/') {
-			if (isset($_GET['SUPERVAR'])) unset($_GET['SUPERVAR']);
-			self::redirect(self::build_url(explode('/', trim(self::$uri_string, '/')), empty($_GET) ? array() : $_GET), 301);
-		}
+		self::_fetch_uri_string();
 
 		$UriString = trim(self::$uri_string, '/');
 
@@ -101,17 +101,34 @@ class URI extends Kernel {
 				}
 			}
 		}
-		
+
 		// Processa a URI e separa os segmentos
 		$Segments = array();
+		$SegNum = 0;
 		foreach(explode("/", preg_replace("|/*(.+?)/*$|", "\\1", $UriString)) as $val) {
 			$val = trim($val);
 
 			if ($val != '') {
-				$Segments[] = $val;
+				if ($SegNum < parent::get_conf('uri', 'ignored_segments'))
+					self::$ignored_segments[] = $val;
+				else
+					$Segments[] = $val;
 			}
+			$SegNum++;
 		}
 
+		// Redireciona URIs terminadas em / para evitar conteúdo duplicado de SEO?
+		if (parent::get_conf('uri', 'redirect_last_slash') && substr(self::$uri_string, -1) == '/' && !(parent::get_conf('uri', 'force_slash_on_index') && empty($Segments))) {
+			if (isset($_GET['SUPERVAR'])) unset($_GET['SUPERVAR']);
+			self::redirect(self::build_url(explode('/', trim(self::$uri_string, '/')), empty($_GET) ? array() : $_GET, false, 'dynamic', false), 301);
+		}
+		// Redireciona se for acesso à página inicial e a URI não terminar em / para mesma URL terminada com /
+		elseif (self::$uri_string && substr(self::$uri_string, -1) != '/' && parent::get_conf('uri', 'force_slash_on_index') && empty($Segments)) {
+			if (isset($_GET['SUPERVAR'])) unset($_GET['SUPERVAR']);
+			self::redirect(self::build_url(array_merge(explode('/', trim(self::$uri_string, '/')), array('/')), empty($_GET) ? array() : $_GET, false, 'dynamic', false), 301);
+		}
+
+		// Se nenhum segmento foi encontrado, define o segmento 'index'
 		if (empty($Segments)) {
 			$Segments[] = 'index';
 		}
@@ -193,6 +210,9 @@ class URI extends Kernel {
 			unset($routes);
 		}
 
+		// define o namespace do controller em relação a raiz da pasta de controlers
+		self::set_controller_namespace($controller);
+
 		// Varre os redirecionamentos
 		if (is_null($controller)) {
 			$redirects = parent::get_conf('uri', 'redirects');
@@ -214,13 +234,13 @@ class URI extends Kernel {
 	 *	\brief Valida a quantidade de segmentos da URI conforme a controladora
 	 */
 	public static function validate_uri() {
-		$ctrl = trim(str_replace(DIRECTORY_SEPARATOR, '/', (parent::get_controller_root() ? DIRECTORY_SEPARATOR . parent::get_controller_root() : "")) . '/' . self::get_class_controller(), '/');
-		
+		$ctrl = trim(str_replace(DIRECTORY_SEPARATOR, '/', (parent::get_controller_root() ? implode(DIRECTORY_SEPARATOR, parent::get_controller_root()) : "")) . '/' . self::get_class_controller(), '/');
+
 		if ($pc = parent::get_conf('uri', 'prevalidate_controller')) {
 			if (isset($pc[$ctrl . '/' . self::get_segment(0)])) {
 				$ctrl .= '/' . self::get_segment(0);
 			}
-			
+
 			if (isset($pc[$ctrl]) && isset($pc[$ctrl]['command'])) {
 				$action = 200;
 				if (isset($pc[$ctrl]['segments'])) {
@@ -252,7 +272,7 @@ class URI extends Kernel {
 			}
 		}
 	}
-	
+
 	/**
 	 *	\brief Define o nome da classe da controller
 	 */
@@ -299,7 +319,7 @@ class URI extends Kernel {
 		}
 		return $path;
 	}
-	
+
 	/**
 	 *	\brief Retorna a URI da página atual
 	 *
@@ -346,12 +366,34 @@ class URI extends Kernel {
 	}
 
 	/**
+	 *	\brief Retorna o segmento ignorado da URI selecionado
+	 *
+	 *	@param[in] $segment_num O número do segmento desejado
+	 *	\return o valor do segmento ignorado ou \c false caso o segmento não exista
+	 */
+	public static function get_ignored_segment($segment_num) {
+		if (array_key_exists($segment_num, self::$ignored_segments)) {
+			return self::$ignored_segments[ $segment_num ];
+		}
+		return false;
+	}
+
+	/**
 	 *	\brief Retorna todos os segmentos
 	 *
 	 *	\return um array contendo todos os segmentos
 	 */
 	public static function get_all_segments() {
 		return self::$segments;
+	}
+
+	/**
+	 *	\brief Retorna todos os segmentos ignorados
+	 *
+	 *	\return um array contendo todos os segmentos ignorados
+	 */
+	public static function get_all_ignored_segments() {
+		return self::$ignored_segments;
 	}
 
 	/**
@@ -430,7 +472,11 @@ class URI extends Kernel {
 	 *	@param[in] $forceRewrite flag (true/false) que determina se o formato SEF deve ser forçado
 	 *	\return Uma \c string contendo a URL
 	 */
-	public static function build_url($segments=array(), $query=array(), $forceRewrite=false, $host='dynamic') {
+	public static function build_url($segments=array(), $query=array(), $forceRewrite=false, $host='dynamic', $include_ignores_segments=true) {
+		if ($include_ignores_segments) {
+			$segments = array_merge(self::$ignored_segments, is_array($segments) ? $segments : array($segments));
+		}
+
 		$url = str_replace('//', '/', parent::get_conf('uri', 'system_root') . '/');
 
 		// Se rewrite de URL está desligado e não está sendo forçado, acrescenta ? à URL
@@ -441,7 +487,7 @@ class URI extends Kernel {
 		// Monta a URI
 		$uri = '';
 		for ($i=0; $i < count($segments); $i++) {
-			if ($segments[ $i ] != 'index') {
+			if ($segments[ $i ] != 'index' && $segments[ $i ] != '') {
 				$uri .= (empty($uri) ? '' : '/') . self::slug_generator($segments[ $i ]);
 			}
 		}
@@ -485,7 +531,7 @@ class URI extends Kernel {
 	private static function encode_param($query, $key, &$param) {
 		foreach ($query as $var => $value) {
 			if (is_array($value)) {
-				self::encode_param($value, $var.'[]', $param);
+				self::encode_param($value, $var.'['.key($value).']', $param);
 			} else {
 				$param .= (empty($param) ? '?' : '&') . ($key ? $key : $var) . '=' . urlencode($value);
 			}
@@ -522,9 +568,8 @@ class URI extends Kernel {
 	/**
 	 *	\brief Gera o slug de um string
 	 *
-	 *	@param[in] $txt String a ser convertida em slug
-	 *	@paran[in] $space String que será usada para substituir os espaços em $txt.
-	 *		Se for omitido utiliza '-' como padrão.
+	 *	@param[in] (string)$txt String a ser convertida em slug.
+	 *	@paran[in] (string)$space String que será usada para substituir os espaços em $txt. Utiliza '-' como padrão.
 	 *	\return Uma string com o slug
 	 */
 	public static function slug_generator($txt, $space='-') {
@@ -540,8 +585,20 @@ class URI extends Kernel {
 		$txt = mb_ereg_replace('[ ]+', $space, $txt);
 		//$txt = mb_ereg_replace('[--]+', '-', $txt);
 		//$txt = mb_ereg_replace('[__]+', '_', $txt);
-		$txt = mb_ereg_replace('[^a-z0-9_.\-]', '', $txt);
+		$txt = mb_ereg_replace('[^a-z0-9_\-]', '', $txt);
 
 		return $txt;
+	}
+
+	/**
+	 *  \brief Informa se a requisição recebida foi um Ajax
+	 *
+	 *  Verifica se a requisição recebida contém HTTP_X_REQUESTED_WITH no cabeçalho do pacote.
+	 *	Test to see if a request contains the HTTP_X_REQUESTED_WITH header.
+	 *
+	 *  @return (bool) Retorna true ou false
+	 */
+	public static function is_ajax_request() {
+		return ( ! empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest');
 	}
 }

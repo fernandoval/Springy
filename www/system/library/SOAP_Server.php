@@ -1,14 +1,17 @@
 <?php
-/**
- *	FVAL PHP Framework for Web Applications\n
- *	Copyright (c) 2007-2012 FVAL Consultoria e Informática Ltda.\n
- *	Copyright (c) 2007-2012 Fernando Val
+/**	\file
+ *	FVAL PHP Framework for Web Applications
  *
- *	\warning Este arquivo é parte integrante do framework e não pode ser omitido
+ *	\copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.\n
+ *	\copyright Copyright (c) 2007-2013 Fernando Val\n
+ *	\copyright Copyright (c) 2009-2013 Lucas Cardozo
  *
- *	\version 0.1.0
- *
- *	\brief Classe para servidor SOAP
+ *	\brief		Classe para servidor SOAP
+ *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
+ *	\version	0.1.0
+ *  \author		Fernando Val  - fernando.val@gmail.com
+ *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
+ *	\ingroup	framework
  */
 
 if (!class_exists('SoapServer')) require_once dirname( __FILE__) . DIRECTORY_SEPARATOR . 'NuSOAP' . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'nusoap.php';

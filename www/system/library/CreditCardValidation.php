@@ -1,5 +1,18 @@
 <?php
-
+/**	\file
+ *	FVAL PHP Framework for Web Applications
+ *
+ *	\copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.\n
+ *	\copyright Copyright (c) 2007-2013 Fernando Val\n
+ *
+ *	\brief		Classe de validação de número de cartão de crédito
+ *	\version	1.0.1
+ *  \author		Daniel Convissor <danielc@analysisandsolutions.com>
+ *  \author		Fernando Val <fernando.val@gmail.com>
+ *  \author		Mauricio Bastos <mbastos@gmail.com>
+ *	\ingroup	framework
+ */
+ 
 /**
  * Credit Card Validation Solution, PHP Edition.
  *
@@ -84,7 +97,13 @@ class CreditCardValidation {
      * @var  string
      */
     var $CCVSNumberLeft = '';
-
+	
+	/**
+	 * The first six digits of card
+	 * @var  string 
+	 */
+    var $CCVSNumberLeft6 = '';
+	
     /**
      * The card's last four digits.
      * @var  string
@@ -211,6 +230,7 @@ class CreditCardValidation {
 
         $this->CCVSNumber      = '';
         $this->CCVSNumberLeft  = '';
+        $this->CCVSNumberLeft6 = '';
         $this->CCVSNumberRight = '';
         $this->CCVSType        = '';
         $this->CCVSExpiration  = '';
@@ -242,6 +262,7 @@ class CreditCardValidation {
         // Set up variables.
 
         $this->CCVSNumberLeft  = substr($this->CCVSNumber, 0, 4);
+        $this->CCVSNumberLeft6 = substr($this->CCVSNumber, 0, 6);
         $this->CCVSNumberRight = substr($this->CCVSNumber, -4);
         $NumberLength          = strlen($this->CCVSNumber);
         $DoChecksum            = 'Y';
@@ -282,6 +303,24 @@ class CreditCardValidation {
             $ShouldLength = 16;
         } elseif (($this->CCVSNumberLeft >= 3528) && ($this->CCVSNumberLeft <= 3589)) {
             $this->CCVSType = 'JCB';
+            $ShouldLength = 16;
+
+        } elseif (($this->CCVSNumberLeft >= 6360) && ($this->CCVSNumberLeft <= 6369)) {
+            $this->CCVSType = 'ELO';
+            $ShouldLength = 16;
+        } elseif (($this->CCVSNumberLeft == 5067)) {
+            $this->CCVSType = 'ELO';
+            $ShouldLength = 16;
+        } elseif (($this->CCVSNumberLeft6 == 438935) || ($this->CCVSNumberLeft6 == 451416) ||
+				  ($this->CCVSNumberLeft6 == 504175) || ($this->CCVSNumberLeft6 == 636297) ||
+				  ($this->CCVSNumberLeft6 == 627780) || ($this->CCVSNumberLeft6 == 636368)) {
+            $this->CCVSType = 'ELO';
+            $ShouldLength = 16;
+        } elseif (($this->CCVSNumberLeft6 >= 401170) && ($this->CCVSNumberLeft6 <= 401179)) {
+            $this->CCVSType = 'ELO';
+            $ShouldLength = 16;
+        } elseif (($this->CCVSNumberLeft6 >= 457630) && ($this->CCVSNumberLeft6 <= 457639)) {
+            $this->CCVSType = 'ELO';
             $ShouldLength = 16;
 
         } elseif (($this->CCVSNumberLeft >= 3890) && ($this->CCVSNumberLeft <= 3899)) {

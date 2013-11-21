@@ -1,16 +1,15 @@
 <?php
-/**
- *	FVAL PHP Framework for Web Applications\n
- *	Copyright (c) 2007-2012 FVAL Consultoria e Informática Ltda.\n
- *	Copyright (c) 2007-2012 Fernando Val
+/**	\file
+ *	FVAL PHP Framework for Web Applications
  *
- *	\warning Este arquivo é parte integrante do framework e não pode ser omitido
+ *	\copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.\n
+ *	\copyright Copyright (c) 2007-2013 Fernando Val\n
  *
- *	\version 0.9.2
- *
- *	\brief Classe para geração de saídas em logs de eventos
- *
- *	\author Fernando Val <fernando.val@gmail.com>
+ *	\brief		Classe para geração de saídas em logs de eventos
+ *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
+ *	\version	0.9.3
+ *  \author		Fernando Val  - fernando.val@gmail.com
+ *	\ingroup	framework
  */
 
 class Log extends Kernel {
@@ -18,18 +17,27 @@ class Log extends Kernel {
 	 *	\brief Escreve uma informação no log
 	 *
 	 *	@param[in] $message \c string mensagem a ser gravada no log de erros do PHP
+	 *	@param[in] $type \c integer informa onde o log deve ser escrito.
+	 *	@param[in] $destination \c string destino da mensagem. Veja as opções de $type.
+	 *
+	 *	Os possívels valores para $type são:\n
+	 *		0 - messagem enviada para o sisema de log do PHP. Este é o valor padrão.\n
+	 *		1 - messagem enviada por email para o endereço definido por $destination.\n
+	 *		2 - Não é uma opção.\n
+	 *		3 - messagem adicionada ao arquivo definido por $destination. Uma nova linha não é adicionada automaticamente ao final de $message.\n
+	 *		4 - messagem enviada diretamenteo para o handler de log SAPI.
 	 */
-	public static function Write($message) {
+	public static function write($message, $type = 0, $destination = NULL) {
 		/// Pega o IP do usuário
-		$source_ip = empty($_SERVER['REMOTE_ADDR']) ? '127.0.0.1' : $_SERVER['REMOTE_ADDR'];
+		$source_ip = Strings::get_real_remote_addr();
 		/// Pega a página onde ocorreu o evento
 		$url = URI::get_uri_string();
 
 		//$message = Strings::remove_accented_chars($message);
 
 		/// Monta a linha do evento
-		$evt_message = date('Y-m-d H:i:s') . ' ' . $source_ip . ' ' . $url . ' ' . $message;
+		$evt_message = date('Y-m-d H:i:s') . ' ' . $source_ip . ' ' . $url . ' "' . $message . '"' . ($type == 3 ? "\n" : "");
 
-		error_log($evt_message);
+		error_log($evt_message, $type, $destination);
 	}
 }

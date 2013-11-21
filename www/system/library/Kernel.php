@@ -1,20 +1,22 @@
 <?php
-/**
- *	FVAL PHP Framework for Web Applications\n
- *	Copyright (c) 2007-2012 FVAL Consultoria e Informática Ltda.\n
- *	Copyright (c) 2007-2012 Fernando Val\n
- *	Copyright (c) 2009-2012 Lucas Cardozo
+/**	\file
+ *	FVAL PHP Framework for Web Applications
  *
- *	\warning Este arquivo é parte integrante do framework e não pode ser omitido
+ *	\copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.\n
+ *	\copyright Copyright (c) 2007-2013 Fernando Val\n
+ *	\copyright Copyright (c) 2009-2013 Lucas Cardozo
  *
- *	\version 1.1.18
- *
- *	\brief Cerne do framework
+ *	\brief		Cerne do framework
+ *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
+ *	\version	1.3.22
+ *  \author		Fernando Val  - fernando.val@gmail.com
+ *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
+ *	\ingroup	framework
  */
 
 class Kernel {
-	// Versão do framework
-	const VERSION = '1.2.9';
+	/// Versão do framework
+	const VERSION = '1.3.16';
 	/// Array interno com dados de configuração
 	private static $confs = array();
 	/// Array com informações de debug
@@ -23,65 +25,92 @@ class Kernel {
 	private static $mobile = NULL;
 	/// Determina o tipo de dispositivo móvel
 	private static $mobile_device = NULL;
-	/// 
+	/// Determina o root de controladoras
 	private static $controller_root = array();
-	
-	
+	/// Caminho do namespace do controller
+	private static $controller_namespace = null;
+
+
 	/**
-	 *
+	 *	\brief Pega o root de controladoras
 	 */
 	public static function get_controller_root() {
 		return self::$controller_root;
 	}
 
 	/**
-	 *
+	 *	\brief Seta o root de controladoras
 	 */
 	public static function set_controller_root($controller_root) {
 		return self::$controller_root = $controller_root;
 	}
 
 	/**
+	 *	\brief Define o namespace da controller a ser carregada
+	 *
+	 *	\param string $controller
+	 */
+	public static function set_controller_namespace($controller) {
+		if(file_exists($controller)) {
+			$controller  = pathinfo($controller);
+			$controller = str_replace($GLOBALS['SYSTEM']['CONTROLER_PATH'], '', $controller['dirname']);
+			$controller = str_replace(DIRECTORY_SEPARATOR, '/', $controller);
+			self::$controller_namespace = trim($controller, DIRECTORY_SEPARATOR);
+		}
+	}
+
+	/**
+	 *	\brief Retorna o namespace do controller
+	 *
+	 *	\return string
+	 */
+	public static function get_controller_namespace() {
+		return self::$controller_namespace;
+	}
+
+	/**
 	 *	\brief Põe uma informação na janela de debug
 	 */
 	public static function debug($txt, $name='', $highlight=true, $revert=true) {
-		$id      = 'debug_' . str_replace('.', '', current(explode(' ', microtime())));
+		if (!defined('STDIN') && self::get_conf('system', 'debug') == true && !self::get_conf('system', 'sys_ajax')) {
+			$id      = 'debug_' . str_replace('.', '', current(explode(' ', microtime())));
 
-		$size = memory_get_usage(true);
-		$unit = array('b', 'KB', 'MB', 'GB', 'TB', 'PB');
-		$memoria = round($size / pow(1024, ($i = floor(log($size,1024)))), 2) . ' ' . $unit[$i];
-		unset($unit, $size);
+			$size = memory_get_usage(true);
+			$unit = array('b', 'KB', 'MB', 'GB', 'TB', 'PB');
+			$memoria = round($size / pow(1024, ($i = floor(log($size,1024)))), 2) . ' ' . $unit[$i];
+			unset($unit, $size);
 
-		$debug = '
-		<div class="debug_info">
-			<table width="100%" border="0" cellspacing="0" cellpadding="0" align="left">
-			  <thead>
-				<th colspan="2" align="left">' . ($name ? $name . ' - ' : '') . 'Memória Alocada até aqui: ' . $memoria . '</th>
-			  </thead>
-			  <tr>
-				<td width="50%" valign="top"> ' . ($highlight ? self::print_rc($txt) : $txt) . '</td>
-				<td width="50%" valign="top">
-					<a href="javascript:;" onclick="var obj=$(\'' . $id . '\').toggle()">Debug BackTrace</a>
-					<div id="' . $id . '" style="display:none">' . self::make_debug_backtrace() . '</div></td>
-			  </tr>
-			</table>
-		</div>
-		';
+			$debug = '
+			<div class="debug_info">
+				<table width="100%" border="0" cellspacing="0" cellpadding="0" align="left">
+				  <thead>
+					<th colspan="2" align="left">' . ($name ? $name . ' - ' : '') . 'Memória Alocada até aqui: ' . $memoria . '</th>
+				  </thead>
+				  <tr>
+					<td width="50%" valign="top"> ' . ($highlight ? self::print_rc($txt) : $txt) . '</td>
+					<td width="50%" valign="top">
+						<a href="javascript:;" onclick="var obj=$(\'#' . $id . '\').toggle()">Debug BackTrace</a>
+						<div id="' . $id . '" style="display:none">' . self::make_debug_backtrace() . '</div></td>
+				  </tr>
+				</table>
+			</div>
+			';
 
-		if ($revert) {
-			array_unshift(self::$debug, $debug);
-		} else {
-			self::$debug[] = $debug;
+			if ($revert) {
+				array_unshift(self::$debug, $debug);
+			} else {
+				self::$debug[] = $debug;
+			}
 		}
 	}
 
 	/**
 	 *	\brief Imprime o bloco de debug
 	 *
-	 *	@return void
+	 *	\return void
 	 */
 	public static function debug_print() {
-		if (self::get_conf('system', 'debug') == true && !self::get_conf('system', 'sys_ajax')) {
+		if (!defined('STDIN') && self::get_conf('system', 'debug') == true && !self::get_conf('system', 'sys_ajax')) {
 			$size = memory_get_peak_usage(true);
 			$unit = array('b', 'KB', 'MB', 'GB', 'TB', 'PB');
 			$memoria = round($size / pow(1024, ($i = floor(log($size,1024)))), 2) . ' ' . $unit[$i];
@@ -92,30 +121,40 @@ class Kernel {
 
 			$conteudo = ob_get_contents();
 			ob_clean();
-
-			echo preg_replace('/<body(.*?)>/', '
-				<body\\1>
-				<style type="text/css">.debug_box {background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEgAACxIB0t1+/AAAABZ0RVh0Q3JlYXRpb24gVGltZQAwOC8wNC8xMLtLDxEAAAAcdEVYdFNvZnR3YXJlAEFkb2JlIEZpcmV3b3JrcyBDUzVxteM2AAAADUlEQVQImWP4////GQAJyAPKSOz6nwAAAABJRU5ErkJggg==); z-index: 99999; margin:0; width:50px; height:50px; display:block; position:fixed; bottom:0; left:0; text-decoration:none; border: 2px solid #06C}.debug_box * {color:#000; font-weight:normal; font-family:Verdana; font-size:11px; text-align:left; border:0; margin:0; padding:0}.debug_box_3 {cursor:pointer; font-weight: bold; color:#06C; text-align:center }.debug_box_3.close {line-height:50px}.debug_box_3.open {background:url(data:image/gif;base64,R0lGODlhBQAbAMQAAP+mIf/aov/CZv/rzP+xO//PiP/15v/ku/+7Vf/89//Jd//TkP+qKv/hs//x3f+3TP/Mf//dqv/Fbv/u1f+0Q//47v/nxP++Xf/////Wmf+tMgAAAAAAAAAAAAAAAAAAACH5BAAHAP8ALAAAAAAFABsAAAVFICaKSVlWKGqsq+O6UxwPNG3d96HrTd9HQGBgOMwYjYtkssBkQp5PhVQqqVYFWOxlu0V4vY9wmEImE85njVrNaLcBcHgIADs=); line-height:auto; height:auto}.debug_box_3.red {color:#f00}.debug_box_2 .tools {margin:3px}.debug_box_2 .tools a.close {padding:9px 2px 9px 11px; background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAK6wAACusBgosNWgAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNXG14zYAAAAVdEVYdENyZWF0aW9uIFRpbWUAMi8xNy8wOCCcqlgAAABcSURBVBiVhY/REYAwCENTr/tYJ8oomYWJdKP61R7gneQPeITQJA0AN/51QdKsJGkea8XMPja+t0GSYWBmILnr7h087KHgWCmA61yOEcCcKcPhmSzfa5JOAE8RcbyUIkZhBhiUxQAAAABJRU5ErkJggg==) no-repeat left center; color:#f00}.debug_box_2 .tools a.clear {padding:9px 2px 9px 17px; background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAMCAYAAABr5z2BAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAANrwAADa8BQr/nKgAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNXG14zYAAAHrSURBVCiRjZK/axNhGMe/7/tez7sY7HkphVLTH4tDTEBSSqHUxU1xcOofIE3i4B8hjg4Wx6QUXBzMppNjQmuh0BBiIQ2loAnhwPSC0eQS7t7e+7jYotZWv+MDnw/PL0ZE+J98zGTuMKIEhCin8vnGaZ39S1DJ5cYMxp4zIXKmbdPIdbki8hnn+3I0enSpoJbN3hRCvLsai8WnFhYiQtehwhDNUkkF/T5XRC+1i+D9TCarCfFiMpk0rbk5DgBepwNnb0+ZlkWGbaPXbPbOdVBfW7NJ11+PGcbK9NJSVI9GAQBOpUIDx2GTqRSFvh92Dw+HKgzv/iaoZbMPOGNvIrZ9Jb68LBjnkJ6H1vZ2yDWNTaXT3G00hkPX/cSI7ify+daZoJbLrWiMvY9MTBijbpcrIiZ0XSkpmTU7q67F46K9u+vRyUkRrvs4USwGAKCFAA2PjqCbJqbTaZixGAAgGAzwuVzm1+fnoY+P8+bW1pCUepIqFF79OrLmOw5a6+u4sbh4BgNA4HngjKlQyuBLtfqVSXkvublZ+3PZnBsGjJkZONUqjg8OEHgeAOC4XkcoJfvebn+Qvp+49RcYANjJzyX4nQ6+lUro7exA6Dpkvw9S6mmyUHiGS57l/BlXV3VpWQ+JyL+9sfH2IvA0PwDhFvArpErTbgAAAABJRU5ErkJggg==) no-repeat left center; color:#f00}.debug_box_2 .tools a:hover {text-decoration:underline}.debug_box_2 .debug_info_area {overflow:auto; height:97%}.debug_box_2 .debug_info { overflow: auto }.debug_box_2 .debug_info:hover {background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEgAACxIB0t1+/AAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNXG14zYAAAAWdEVYdENyZWF0aW9uIFRpbWUAMDQvMjUvMTHJkGH2AAAADUlEQVQImWP4+/v2GQAJbAOgd8SdQAAAAABJRU5ErkJggg==)} .debug_box_2 .debug_box_ajax_result > span { font-weight: bold }.debug_box_2 .debug_box_ajax_result > p { padding-left:30px }.debug_box_2 table {margin:5px 0; width:100%}.debug_box_2 table th {font-weight: bold; color:#e8740d; font-size:14px; border:0} .debug_box_2 table td {padding:0 0 3px 3px; vertical-align:top}.debug_box_2 a {color:#7250a2}.debug_box_2 > hr, .debug_box_2 .debug_info_area > hr {margin: 15px 0; border:1px solid #d8dade; visibility:visible}.debug_box_2 .ErrorTitle{background-color:#66C; color:#FFF; font-weight:bold; padding-left:10px}.debug_box_2 .ErrorZebra{background:#efefef}.debug_box_2 .ErrorLabel{font-weight:bold}</style><script type="text/javascript">Debug={opened:false,pe:null,w:window,open:function(){$(\'debug\').setStyle({\'height\':\'auto\',\'width\':(parseInt(document.viewport.getWidth())-5)+\'px\'}).down().show().setStyle({\'height\':(parseInt(document.viewport.getHeight())-18)+\'px\'}).next(\'.debug_box_3\').hide();Debug.opened=true;try{Debug.pe.stop();Debug.pe=null;$(\'debug\').down(\'.debug_box_3\').removeClassName(\'red\')}catch(e){}},close:function(){$(\'debug\').setStyle({\'width\':\'50px\',\'height\':\'\'}).down().hide().next(\'.debug_box_3\').show();Debug.opened=false},clear:function(){$(\'debug\').down(\'.debug_info_area\').update(\'\');},init:function(){if(window.parent.document.location!=self.document.location){Debug.w=window.parent;$(\'debug\').hide();Debug.printAjaxResults(\'\',$(\'debug\').down(\'.debug_info_area\').innerHTML);return}$(\'debug\').down(\'.debug_box_3\').observe(\'click\',Debug.open);$(\'debug\').down(\'.close\').observe(\'click\',Debug.close);$(\'debug\').down(\'.clear\').observe(\'click\', Debug.clear);if($$(\'#debug div.debug_box_2 div.debug_info_area div.debug_info\').size()>1){Debug.startPulsate()}},startPulsate:function(){if(typeof Effect==\'undefined\'){alert(\'Debug requires Effects (Scriptaculous lib).\');return}Effect.Pulsate($(\'debug\').down(\'.debug_box_3\').addClassName(\'red\'));if(Debug.pe==null){Debug.pe=new PeriodicalExecuter(function(){Effect.Pulsate($(\'debug\').down(\'.debug_box_3\'))},5)}},printAjaxResults:function(titulo,txt,autoShow){var d=Debug.w.$$(\'.debug_box\');if(d.size()){var now=new Date();var to=d[0].down(\'.debug_box_2\').down(\'.debug_info_area\');var title=\'Resultado do AJAX feito \';if(window.parent.document.location!=self.document.location){title+=\'no [i]?frame <em>\'+window.name+\'</em> \'}to.insert({top:new Element(\'hr\')}).insert({top:new Element(\'div\').addClassName(\'debug_box_ajax_result\').insert(new Element(\'span\').insert(title+\'às <em>\'+now.getHours()+\':\'+now.getMinutes()+\':\'+now.getSeconds()+\'</em>\')).insert(new Element(\'p\').insert(txt))});if(!Debug.w.Debug.opened){Debug.w.Debug.startPulsate()}}}};Ajax.Request.addMethods({respondToReadyState:function(readyState){var state=Ajax.Request.Events[readyState],response=new Ajax.Response(this);if(state==\'Complete\'){try{this._complete=true;(this.options[\'on\'+response.status]||this.options[\'on\'+(this.success()?\'Success\':\'Failure\')]||Prototype.emptyFunction)(response,response.headerJSON)}catch(e){this.dispatchException(e)}var contentType=response.getHeader(\'Content-type\');if(this.options.evalJS==\'force\'||(this.options.evalJS&&this.isSameOrigin()&&contentType&&contentType.match(/^\\s*(text|application)\\/(x-)?(java|ecma)script(;.*)?\\s*$/i)))this.evalResponse()}try{(this.options[\'on\'+state]||Prototype.emptyFunction)(response,response.headerJSON);Ajax.Responders.dispatch(\'on\'+state,this,response,response.headerJSON)}catch(e){this.dispatchException(e)}if(state==\'Complete\'){this.transport.onreadystatechange=Prototype.emptyFunction}if(response.status==\'500\'){Debug.printAjaxResults(\'Error 500\',response.responseText,Debug.AUTO_SHOW)}else if(state==\'Complete\'&&(response.headerJSON||response.responseText)){if(response.responseJSON){var json=response.responseJSON}else if(response.responseText.isJSON()){var json=response.responseText.evalJSON()}else{Debug.printAjaxResults(\'Result AJAX\',response.responseText,false);return}if(json.debug){Debug.printAjaxResults(\'Result JSON\',json.debug,Debug.AUTO_SHOW)}}}});document.observe(\'dom:loaded\',Debug.init);</script>
-				<div class="debug_box" id="debug">
-					 <div class="debug_box_2" style="display:none">
-						<div class="tools">
-							<a class="clear" href="javascript:;">Limpar</a>
-							<a class="close" href="javascript:;">Fechar</a>
-						</div>
-						<div class="debug_info_area">
-						' . self::get_debug() . '
-						</div>
-					 </div>
-					 <div class="debug_box_3 close">DEBUG</div>
-				</div>
-			', $conteudo);
+			
+			$htmlDebug ='<!-------------------- inicio do código de debug -------------------->' .
+						'<style type="text/css">.debug_box {background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEgAACxIB0t1+/AAAABZ0RVh0Q3JlYXRpb24gVGltZQAwOC8wNC8xMLtLDxEAAAAcdEVYdFNvZnR3YXJlAEFkb2JlIEZpcmV3b3JrcyBDUzVxteM2AAAADUlEQVQImWP4////GQAJyAPKSOz6nwAAAABJRU5ErkJggg==); z-index: 99999; margin:0; width:70px; height:30px; display:block; position:fixed; bottom:0; left:0; text-decoration:none; border: 2px solid #06C}.debug_box * {color:#000; font-weight:normal; font-family:Verdana; font-size:11px; text-align:left; border:0; margin:0; padding:0}.debug_box_3 {cursor:pointer; font-weight: bold; color:#06C; text-align:center }.debug_box_3.close {line-height:30px}.debug_box_3.open {background:url(data:image/gif;base64,R0lGODlhBQAbAMQAAP+mIf/aov/CZv/rzP+xO//PiP/15v/ku/+7Vf/89//Jd//TkP+qKv/hs//x3f+3TP/Mf//dqv/Fbv/u1f+0Q//47v/nxP++Xf/////Wmf+tMgAAAAAAAAAAAAAAAAAAACH5BAAHAP8ALAAAAAAFABsAAAVFICaKSVlWKGqsq+O6UxwPNG3d96HrTd9HQGBgOMwYjYtkssBkQp5PhVQqqVYFWOxlu0V4vY9wmEImE85njVrNaLcBcHgIADs=); line-height:auto; height:auto}.debug_box_3.red {color:#f00}.debug_box_2 .tools {margin:3px}.debug_box_2 .tools a.close {padding:9px 2px 9px 11px; background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAK6wAACusBgosNWgAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNXG14zYAAAAVdEVYdENyZWF0aW9uIFRpbWUAMi8xNy8wOCCcqlgAAABcSURBVBiVhY/REYAwCENTr/tYJ8oomYWJdKP61R7gneQPeITQJA0AN/51QdKsJGkea8XMPja+t0GSYWBmILnr7h087KHgWCmA61yOEcCcKcPhmSzfa5JOAE8RcbyUIkZhBhiUxQAAAABJRU5ErkJggg==) no-repeat left center; color:#f00}.debug_box_2 .tools a.clear {padding:9px 2px 9px 17px; background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAMCAYAAABr5z2BAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAANrwAADa8BQr/nKgAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNXG14zYAAAHrSURBVCiRjZK/axNhGMe/7/tez7sY7HkphVLTH4tDTEBSSqHUxU1xcOofIE3i4B8hjg4Wx6QUXBzMppNjQmuh0BBiIQ2loAnhwPSC0eQS7t7e+7jYotZWv+MDnw/PL0ZE+J98zGTuMKIEhCin8vnGaZ39S1DJ5cYMxp4zIXKmbdPIdbki8hnn+3I0enSpoJbN3hRCvLsai8WnFhYiQtehwhDNUkkF/T5XRC+1i+D9TCarCfFiMpk0rbk5DgBepwNnb0+ZlkWGbaPXbPbOdVBfW7NJ11+PGcbK9NJSVI9GAQBOpUIDx2GTqRSFvh92Dw+HKgzv/iaoZbMPOGNvIrZ9Jb68LBjnkJ6H1vZ2yDWNTaXT3G00hkPX/cSI7ify+daZoJbLrWiMvY9MTBijbpcrIiZ0XSkpmTU7q67F46K9u+vRyUkRrvs4USwGAKCFAA2PjqCbJqbTaZixGAAgGAzwuVzm1+fnoY+P8+bW1pCUepIqFF79OrLmOw5a6+u4sbh4BgNA4HngjKlQyuBLtfqVSXkvublZ+3PZnBsGjJkZONUqjg8OEHgeAOC4XkcoJfvebn+Qvp+49RcYANjJzyX4nQ6+lUro7exA6Dpkvw9S6mmyUHiGS57l/BlXV3VpWQ+JyL+9sfH2IvA0PwDhFvArpErTbgAAAABJRU5ErkJggg==) no-repeat left center; color:#f00}.debug_box_2 .tools a:hover {text-decoration:underline}.debug_box_2 .debug_info_area {overflow:auto; height:97%}.debug_box_2 .debug_info { overflow: auto }.debug_box_2 .debug_info:hover {background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEgAACxIB0t1+/AAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNXG14zYAAAAWdEVYdENyZWF0aW9uIFRpbWUAMDQvMjUvMTHJkGH2AAAADUlEQVQImWP4+/v2GQAJbAOgd8SdQAAAAABJRU5ErkJggg==)} .debug_box_2 .debug_box_ajax_result > span { font-weight: bold }.debug_box_2 .debug_box_ajax_result > p { padding-left:30px }.debug_box_2 table {margin:5px 0; width:100%}.debug_box_2 table th {font-weight: bold; color:#e8740d; font-size:14px; border:0} .debug_box_2 table td {padding:0 0 3px 3px; vertical-align:top}.debug_box_2 a {color:#7250a2}.debug_box_2 > hr, .debug_box_2 .debug_info_area > hr {margin: 15px 0; border:1px solid #d8dade; visibility:visible}.debug_box_2 .ErrorTitle{background-color:#66C; color:#FFF; font-weight:bold; padding-left:10px}.debug_box_2 .ErrorZebra{background:#efefef}.debug_box_2 .ErrorLabel{font-weight:bold}</style>' .
+						//'<script type="text/javascript" src="/aff.js"></script>' .
+						'<script type="text/javascript">'.
+						'Debug={opened:false,pe:null,w:window,p:null,open:function(){$(\'#debug\').css({\'height\':\'auto\',\'width\':(parseInt($(window).width())-5)+\'px\'}).find(\'div\').first().show().css({\'height\':(parseInt($(window).height())-18)+\'px\'}).next(\'.debug_box_3\').hide();Debug.opened=true;try{try{Debug.p.cancel()}catch(e){}clearInterval(Debug.pe);Debug.pe=null}catch(e){}},close:function(){$(\'#debug\').css({\'width\':\'70px\',\'height\':\'\'}).find(\'div\').first().hide().next(\'.debug_box_3\').show().removeClass(\'red\').fadeTo(1,1);Debug.opened=false},clear:function(){$(\'#debug\').find(\'.debug_info_area\').first().html(\'\')},
+						init:function(){var iniciaDoPrincipal=true;do{try{if(Debug.w.document.location==window.top.document.location){break}else{iniciaDoPrincipal=false;Debug.w=Debug.w.parent;$(\'#debug\').hide()}}catch(e){break}}while(true);if(!iniciaDoPrincipal){Debug.printAjaxResults(\'\',{},$(\'#debug\').find(\'.debug_info_area\').first().html())}$(\'#debug\').find(\'.debug_box_3\').first().bind(\'click\',Debug.open);$(\'#debug\').find(\'.close\').first().bind(\'click\',Debug.close);$(\'#debug\').find(\'.clear\').first().bind(\'click\',Debug.clear);if($(\'#debug div.debug_box_2 div.debug_info_area div.debug_info\').size()>1){Debug.startPulsate()}},pulsate:function(){$(\'#debug\').find(\'.debug_box_3\').first().addClass(\'red\');$(\'#debug\').find(\'.debug_box_3\').first().fadeOut(100,function(){$(\'#debug\').find(\'.debug_box_3\').first().fadeIn(100,function(){$(\'#debug\').find(\'.debug_box_3\').first().fadeOut(100,function(){$(\'#debug\').find(\'.debug_box_3\').first().fadeIn(100,function(){})})})})},startPulsate:function(){try{Debug.p.cancel()}catch(e){}Debug.p=1;Debug.pulsate();if(Debug.pe==null){Debug.pe=setInterval(Debug.pulsate,5000)}},printAjaxResults:function(titulo,infos,txt){var d=Debug.w.$(\'.debug_box\');if(d.size()){var now=new Date();var to=d[0].find(\'.debug_box_2\').first().find(\'.debug_info_area\').first();var title=\'Resultado do AJAX feito \';if(window.parent.document.location!==self.document.location){title+=\'no [i]?frame \'+window.name+\' \'}param=\'\';if(infos.param){infos.param=infos.param.split(\'&\');infos.param.each(function(p){param=(param?\', \':\'\')+\'[\'+p+\']\'})}var span=new Element(\'span\').insert(titulo);if(infos.url){span.insert(\'<br />\').insert(\'URL: \'+infos.url)}if(param){span.insert(\'<br />\').insert(\'Parametros:\'+param)}span.insert(\'<br />\').insert(\'Hora: \'+(now.getHours()<10?\'0\':\'\')+now.getHours()+\':\'+(now.getMinutes()<10?\'0\':\'\')+now.getMinutes()+\':\'+(now.getSeconds()<10?\'0\':\'\')+now.getSeconds()+\'\');var dbar=new Element(\'div\').addClass(\'debug_box_ajax_result\').insert(span);if(txt){dbar.insert(new Element(\'p\').insert(txt))}to.insert({top:new Element(\'hr\')}).insert({top:dbar});if(txt&&!Debug.w.Debug.opened){Debug.w.Debug.startPulsate()}}}};jQuery(Debug.init);DebugAjaxComplete=function(e, XMLHttpRequest, ajaxOptions, thrownError){var p={url:e.url,params:e.parameters};if(e.transport.status===\'500\'){Debug.printAjaxResults(\'Error 500\',p,e.transport.responseText)}else if(e.transport.responseText){if(e.transport.responseJSON){var json=e.transport.responseJSON}else if(e.transport.responseText.isJSON()){var json=e.transport.responseText.evalJSON()}else{Debug.printAjaxResults(\'Result AJAX\',p,e.transport.responseText);return}Debug.printAjaxResults(\'Result JSON\',p,(json.debug?json.debug:\'\'))}};$(window).bind(\'ajaxComplete\',DebugAjaxComplete);$(window).bind(\'ajaxSuccess\',DebugAjaxComplete);$(window).bind(\'ajaxError\',DebugAjaxComplete);'.
+						'</script>' .
+						'<div class="debug_box" id="debug">' .
+							 '<div class="debug_box_2" style="display:none">' .
+								'<div class="tools">' .
+									'<a class="clear" href="javascript:;">Limpar</a>' .
+									'<a class="close" href="javascript:;">Fechar</a>' .
+								'</div>' .
+								'<div class="debug_info_area">' .
+								self::get_debug() .
+								'</div>' .
+							 '</div>' .
+							 '<div class="debug_box_3 close">DEBUG</div>' .
+						'</div>' .
+						'<!-------------------- fim   do código de debug -------------------->';
+			
+			if (preg_match('/<body(.*?)>/', $conteudo)) {
+				echo preg_replace('/<body(.*?)>/', '<body\\1>' . $htmlDebug, $conteudo);
+			} else {
+				echo preg_replace('/^(.*?)$/', '<script type="text/javascript" src="'.URI::build_url(array('scripts'), array(), true, 'static').'/jquery.js"></script>' . $htmlDebug . '\\1', $conteudo);
+			}
 		}
 	}
 
 	/**
 	 *	\brief Junta o conteúdo do array de debug numa string com separador visual
 	 *
-	 *	@return Retorna uma string contendo os dados capturados em debug
+	 *	\return Retorna uma string contendo os dados capturados em debug
 	 */
 	public static function get_debug() {
 		return implode('<hr />', self::$debug);
@@ -124,9 +163,9 @@ class Kernel {
 	/**
 	 *	\brief Imprime os detalhes de uma variável em cores
 	 *
-	 *	@param[in] (variant) $par - variável
-	 *	@param[in] (bool) $return - sem utilização
-	 *	@return Retorna uma string HTML
+	 *	\param[in] (variant) $par - variável
+	 *	\param[in] (bool) $return - sem utilização
+	 *	\return Retorna uma string HTML
 	 */
 	public static function print_rc($par, $return=false) {
 		if (is_object($par)) {
@@ -146,9 +185,9 @@ class Kernel {
 	/**
 	 *	\brief Monta o texto do debug backtrace
 	 *
-	 *	@param[in] (string) $errono - número do erro
+	 *	\param[in] (string) $errono - número do erro
 	 */
-	public static function make_debug_backtrace(&$aDados=array()) {
+	public static function make_debug_backtrace() {
 		$debug = debug_backtrace();
 		array_shift($debug);
 
@@ -188,7 +227,7 @@ class Kernel {
 				if (count($backtrace['args'])) {
 					$id     = 'args_' . str_replace('.', '', current(explode(' ', microtime())));
 					$saida .= '        <br />' . "\n"
-						   .  '        <a href="javascript:;" onClick="var obj=$(\'' . $id . '\').toggle()" style="color:#06c; margin:3px 0">ver argumentos passados a função</a>'
+						   .  '        <a href="javascript:;" onClick="var obj=$(\'#' . $id . '\').toggle()" style="color:#06c; margin:3px 0">ver argumentos passados a função</a>'
 						   .  '        ' . (is_array($backtrace['args']) ? '<div id="'.$id.'" style="display:none">' . self::print_rc($backtrace['args'], true) . '</div>' : $backtrace['args']);
 				}
 				$saida .= '      </li>';
@@ -202,9 +241,9 @@ class Kernel {
 	/**
 	 *	\brief Pega o conteúdo de um registro de configuração
 	 *
-	 *	@param[in] (string) $local - nome do arquivo de configuração
-	 *	@param[in] (string) $var - registro desejado
-	 *	@return se o registro existir, retorna seu valor, caso contrário retorna NULL
+	 *	\param[in] (string) $local - nome do arquivo de configuração
+	 *	\param[in] (string) $var - registro desejado
+	 *	\return se o registro existir, retorna seu valor, caso contrário retorna NULL
 	 */
 	public static function get_conf($local, $var) {
 		if (!isset(self::$confs[$local])) {
@@ -216,10 +255,10 @@ class Kernel {
 	/**
 	 *	\brief Altera o valor de uma entrada de configuração
 	 *
-	 *	@param[in] (string) $local - nome do arquivo de configuração
-	 *	@param[in] (string) $val - nome da entrada de configuração
-	 *	@param[in] (variant) $valor - novo valor da entrada de configuração
-	 *	@return void
+	 *	\param[in] (string) $local - nome do arquivo de configuração
+	 *	\param[in] (string) $val - nome da entrada de configuração
+	 *	\param[in] (variant) $valor - novo valor da entrada de configuração
+	 *	\return void
 	 */
 	public static function set_conf($local, $var, $value) {
 		self::$confs[$local][$var] = $value;
@@ -228,18 +267,102 @@ class Kernel {
 	/**
 	 *	\brief Carrega um arquivo de configuração
 	 *
-	 *	@param[in] (string) $local - nome do arquivo de configuração
-	 *	@return \c true se tiver carregado o arquivo de configuração ou \c false em caso contrário
+	 *	\param[in] (string) $local - nome do arquivo de configuração
+	 *	\return \c true se tiver carregado o arquivo de configuração ou \c false em caso contrário
 	 */
 	public static function load_conf($local) {
 		$config_file = $GLOBALS['SYSTEM']['CONFIG_PATH'] . DIRECTORY_SEPARATOR . $local . '.conf.php';
+
 		if (file_exists($config_file)) {
-			require $config_file;
-			self::$confs[ $local ] = array_merge((isset($conf['default']) ? $conf['default'] : array()), (isset($conf[ $GLOBALS['SYSTEM']['ACTIVE_ENVIRONMENT'] ]) ? $conf[ $GLOBALS['SYSTEM']['ACTIVE_ENVIRONMENT'] ] : array()));
+			$conf = array();
+
+			require_once $config_file;
+
+			if (empty($GLOBALS['SYSTEM']['ACTIVE_ENVIRONMENT'])) {
+				$arr_env = array();
+
+				if (isset($_SERVER['HTTP_HOST'])) {
+
+					foreach($conf as $dominio => $values) {
+						if (preg_match('/^' . $dominio . '$/', $_SERVER['HTTP_HOST'])) {
+							$arr_env = array_merge($arr_env, $values);
+						}
+					}
+
+					if (isset($conf[ $_SERVER['HTTP_HOST'] ])) {
+						$arr_env = array_merge($conf[ $_SERVER['HTTP_HOST'] ], $arr_env);
+					}
+				}
+			} else {
+				$arr_env = isset($conf[$GLOBALS['SYSTEM']['ACTIVE_ENVIRONMENT']]) ? $conf[$GLOBALS['SYSTEM']['ACTIVE_ENVIRONMENT']] : array();
+			}
+
+			self::$confs[ $local ] = array_merge((isset($conf['default']) ? $conf['default'] : array()), $arr_env);
+
+			if (empty(self::$confs[ $local ])) {
+				/**
+				* Seta self::$confs[ $local ] como NULL para evitar futuros erros no sistema
+				*/
+			   self::$confs[ $local ] = array();
+			   Errors::display_error(500, 'Faltando entrada para o domínio "' . $_SERVER['HTTP_HOST'] . '" para a conf "' . $local . '"');
+		   }
+
+			unset($conf);
+
 			return true;
+		} else {
+			Errors::display_error(500, 'Faltando conf "' . $local . '"');
 		}
+
 		return false;
 	}
+
+	/**
+	 *	\brief Converte um array multidimensional no objeto stdClass
+	 *
+	 *	\param[in] $array (mixed) array a ser convertido
+	 *	\return Retorna um objeto stdClasse
+	 */
+	public static function arrayToObject($array) {
+		if(!is_array($array)) {
+			return $array;
+		}
+
+		$object = new stdClass();
+		if (count($array) > 0) {
+			foreach ($array as $name => $value) {
+				$name = trim($name);
+				if (!empty($name)) {
+					$object->$name = self::arrayToObject($value);
+				}
+			}
+			return $object;
+		}
+
+		return FALSE;
+	}
+
+	/**
+	 *	\brief Converte um objeto num array multidimensional
+     *
+	 *	\param[in] $object (mixed) objeto a ser convertido
+	 *	\return Retorna um array
+     */
+    public static function objectToArray($object) {
+        if (is_object($object)) {
+            $object = get_object_vars($object);
+			if (count($object) > 0) {
+				foreach ($object as $name => $value) {
+					$name = trim($name);
+					if (!empty($name)) {
+						$object[$name] = self::objectToArray($value);
+					}
+				}
+			}
+        }
+
+		return $object;
+    }
 
 	/**
 	 *	\brief Verifica se o usuário está usando um browser de dispositivo móvel
@@ -249,10 +372,15 @@ class Kernel {
 		self::$mobile = false;
 		// Define que não é um dispositivo móvel até que seja provado o contrário
 		self::$mobile_device = NULL;
+		
+		//verifica se o USER AGENT existe (acesso via API não possui user agent)
+		if(!isset($_SERVER['HTTP_USER_AGENT'])){
+			return self::$mobile;
+		}
+		
 		// Pega o valor do USER AGENT
 		$user_agent = $_SERVER['HTTP_USER_AGENT'];
-		// Pega o conteúdo de HTTP_ACCEPT
-		$accept = $_SERVER['HTTP_ACCEPT'];
+		
 		switch (true) {
 			// iPad
 			case (preg_match('/ipad/i',$user_agent));
@@ -268,7 +396,11 @@ class Kernel {
 			// Android?
 			case (preg_match('/android/i',$user_agent));
 				self::$mobile = true;
-				self::$mobile_device = 'Android';
+				if(preg_match('/mobile/i',$user_agent)){
+					self::$mobile_device = 'Android Mobile';
+				} else {
+					self::$mobile_device = 'Android';
+				}
 				break;
 			// Opera Mini?
 			case (preg_match('/opera mini/i',$user_agent));
@@ -296,7 +428,7 @@ class Kernel {
 				self::$mobile_device = 'Mobile matched on piped preg_match';
 				break;
 			// O dispositivo mostra sinais de suporte a text/vnd.wap.wml ou application/vnd.wap.xhtml+xml
-			case ((strpos($accept,'text/vnd.wap.wml')>0)||(strpos($accept,'application/vnd.wap.xhtml+xml')>0));
+			case (isset($_SERVER['HTTP_ACCEPT']) && (strpos($_SERVER['HTTP_ACCEPT'],'text/vnd.wap.wml')>0 || strpos($_SERVER['HTTP_ACCEPT'],'application/vnd.wap.xhtml+xml')>0));
 				self::$mobile = true;
 				self::$mobile_device = '(WAP) Mobile matched on content accept header';
 				break;
@@ -358,7 +490,7 @@ class Kernel {
 		echo '<p><strong>Este framework foi escrito por</strong></p><p>';
 		echo 'Fernando Val - fernando at fval dot com dot br<br />';
 		echo 'Lucas Cardozo - lucas dot cardozo at live dot com</p>';
-		
+
 		echo '<p><strong>Bibliotecas utilizadas nesse projeto</strong></p><table align="center">';
 		$fv = array();
 		$d = rtrim(dirname(__FILE__), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
@@ -389,9 +521,9 @@ class Kernel {
 			echo '<tr><td>'.$v['n'].'</td><td>'.$v['v'].($v['b']?'</td><td>'.$v['b']:"").'</td></tr>';
 		}
 		echo '</table>';
-		
+
 		echo '<p><strong>Classes Inclusas nesse framework</strong></p><p>';
-		echo 'Smarty: the PHP compiling template engine v3.1.8 (c) 2008 New Digital Group, Inc.<br />';
+		echo 'Smarty: the PHP compiling template engine v3.1.12 (c) 2008 New Digital Group, Inc.<br />';
 		echo 'Sending e-mail messages via SMTP protocol v1.41 (c) 1999-2009 Manuel Lemos<br />';
 		echo 'MIME E-mail message composing and sending v1.92 (c) 1999-2004 Manuel Lemos<br />';
 		echo 'MIME E-mail message composing and sending using Sendmail v1.18 (c) 1999-2004 Manuel Lemos<br />';

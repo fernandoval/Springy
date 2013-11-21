@@ -1,6 +1,19 @@
 <?php
-/**
- *	FVAL PHP Pagination Class 2
+/**	\file
+ *	FVAL PHP Framework for Web Applications
+ *
+ *	\copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.\n
+ *	\copyright Copyright (c) 2007-2013 Fernando Val\n
+ *
+ *	\brief		A single pagination class
+ *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
+ *	\link		http://www.fval.com.br/
+ *	\version	2.2.2
+ *	\author		Fernando Val <fernando.val@gmail.com>
+ *	\ingroup	framework
+ *
+ *	\b License:		[pt-BR] : Esta classe é Open Source e distribuida sob a licença GPL.\n
+ *					[en-US] : This class is Open Source and distributed under GPL license.
  *
  *	What's:			[pt-br]
  *					"Pagination" é uma classe em PHP para fazer os links de navegação de página:\n
@@ -39,19 +52,6 @@
  *
  *					O autor agradece quaisquer comentários e sugestões de melhorias.
  *
- *	\link http://www.fval.com.br/
- *
- *	\version 2.2.2
- *					copyright (c) 2007-2012 FVAL - Consultoria e Informática Ltda.\n
- *					copyright (c) 2007-2012 Fernando Val
- *
- *	\brief			A single pagination class
- *
- *	\author Fernando Val <fernando.val@gmail.com>
- *
- *	\b License:		[pt-BR] : Esta classe é Open Source e distribuida sob a licença GPL.\n
- *					[en-US] : This class is Open Source and distributed under GPL license.
- *
  *	How to use:	[pt-br] : Exemplo de código PHP de como usar esta classe
  *
  *					include('PaginacaoClass.php');
@@ -64,158 +64,160 @@
  *					$ultima_pag = $Pagination->CalculateNumPages((int)$reg[0], $rowsperpage);
  *					print $Pagination->Parse($curr_page, $ultima_pag);
  *
- *	@package Pagination
  */
 
 class Pagination {
-    /*
-		[pt-br]  Array contendo os links das página
-	*/
+    /// Array contendo os links das página / page link array
     private $PagesLink = array();
-
-    /*
-		[pt-br]  Define a página atual
-	*/
+	/// Define a página atual / current page number
     private $CurrentPage = 1;
-
-    /*
-		[pt-br]  Define a quantidade de páginas
-	*/
+    /// Define a quantidade de páginas / total page number
     private $LastPage = 1;
-
-    /*
-		[pt-br]  Define quantas páginas serão navegáveis para os lados a partir da página atual
-	*/
+    /// Define quantas páginas serão navegáveis para os lados a partir da página atual / number of sided pages
     private $BesidePages = 5;
-	
-	/*
-		[pt-br]  Define a quantidade total de registros
-	*/
+	/// Define a quantidade total de registros / total lines
 	private $nunRows = 0;
-	
-	/*
-		[pt-br]  Define a quantidade de registros a serem exibidos por página
-	*/
+	/// Define a quantidade de registros a serem exibidos por página / lines per page
 	private $nunRowsPerPage = 15;
-
-    /*
-		[pt-br]  Define o hyperlink dos navegadores
-	*/
+    /// Define o hyperlink dos navegadores / site link
     private $siteLink = '';
-
-	/*
-		[pt-br] Usado para indicar o local da página na URL ex:
-
-		$siteLink = 'http://www.site.com/pag/busca/[page]';
-		$siteLink = 'http://www.site.com/?page=pag&search=busca&page=[page]';
-	*/
+	/// Usado para indicar o local da página na URL ex: / page number macro
+	/// $siteLink = 'http://www.site.com/pag/busca/[page]';
+	/// $siteLink = 'http://www.site.com/?page=pag&search=busca&page=[page]';
 	private $tagLink = '[page]';
-
-    /*
-		[pt-br]  Código HTML com a navegação
-	*/
+    /// Código HTML com a navegação / HTML code
     private $HTML = '';
-
-    /*
-		[pt-br]  Texto a ser mostrado como separador para primeira e última páginas
-	*/
+    /// Texto a ser mostrado como separador para primeira e última páginas / first/last page separator
     private $SeparatorText = '...';
-
-    /*
-		[pt-br]  Classe CSS usada para a LABEL de página atual
-	*/
+    /// Classe CSS usada para a LABEL de página atual / current page class style
     private $CurrentPageClass = '';
-    /*
-		[pt-br]  Classe CSS usada para os LINKs de navegação
-	*/
+    /// Classe CSS usada para os LINKs de navegação / page link class style
     private $NavigatorClass = '';
-    /*
-		[pt-br]  Classe CSS usada para os LABELS dos separadores de primeira e última páginas
-	*/
+    /// Classe CSS usada para os LABELS dos separadores de primeira e última páginas / sepatator class style
     private $SeparatorClass = 'separador';
-
-    /*
-		[pt-br]  Texto a ser mostrado no link para a página anterior
-	*/
+    /// Texto a ser mostrado no link para a página anterior / previous page text
     private $PreviousText = '-';
-    /*
-		[pt-br]  Texto a ser mostrado no link para a príxima página
-	*/
+    /// Texto a ser mostrado no link para a príxima página / next page text
     private $NextText = '+';
-	
-	/* ********************** */
+
+	/**
+	 *  \brief Constructor
+	 */
 	public function __construct() {
 		if (isset($_REQUEST['pag']) && is_numeric($_REQUEST['pag'])) {
 			$this->setCurrentPage($_REQUEST['pag']);
 		}
 	}
-	
+
+	/**
+	 *  \brief Set tag link
+	 */
 	public function setTagLink($tag) {
 		$this->tagLink = $tag;
 	}
 
+	/**
+	 *  \brief Get tag link
+	 */
 	public function getTagLink() {
 		return $this->tagLink;
 	}
 
+	/**
+	 *  \brief Set site link
+	 */
 	public function setSiteLink($link, $qs=array()) {
 		if (is_array($link)) {
-			$this->siteLink = str_replace(urlencode($this->tagLink), $this->tagLink, URI::build_url($link, array_merge($qs, array('pag' => $this->tagLink))));
+			if (isset($_SERVER['HTTPS'])) {
+				$this->siteLink = str_replace(urlencode($this->tagLink), $this->tagLink, URI::build_url($link, array_merge($qs, array('pag' => $this->tagLink)), true, 'secure'));
+			} else {
+				$this->siteLink = str_replace(urlencode($this->tagLink), $this->tagLink, URI::build_url($link, array_merge($qs, array('pag' => $this->tagLink))));
+			}
 		} else {
 			$this->siteLink = $link;
 		}
 	}
-	
+
+	/**
+	 *  \brief Set current page
+	 */
 	public function setCurrentPage($pgatual) {
 		$this->CurrentPage = $pgatual;
 	}
-	
+
+	/**
+	 *  \brief Get current page
+	 */
 	public function getCurrentPage() {
 		return ($this->CurrentPage == 0 ? 1 : $this->CurrentPage);
 	}
-	
+
+	/**
+	 *  \brief Set number of pages beside current page
+	 */
 	public function setBesidePages($BesidePages) {
 		$this->BesidePages = $BesidePages;
 	}
-	
+
+	/**
+	 *  \brief Get number os beside pages
+	 */
 	public function getBesidePages() {
 		return $this->BesidePages;
 	}
-	
-	/*
-		[pt-br] Seta o numero de registros
-	*/
+
+	/**
+	 *  \brief Set total line number
+	 */
 	public function setNumRows($rows) {
 		$this->nunRows = $rows;
 	}
-	
+
+	/**
+	 *  \brief Get total line number
+	 */
 	public function getNumRows() {
 		return $this->nunRows;
 	}
-	
-	/*
-		[pt-br] Seta o numero de registros por página
-	*/
+
+	/**
+	 *  \brief Set number of lines per page
+	 */
 	public function setRowsPerPage($qtd) {
 		$this->nunRowsPerPage = $qtd;
 	}
-	
+
+	/**
+	 * \brief Get number of lines per page
+	 */
 	public function getRowsPerPage() {
 		return $this->nunRowsPerPage;
 	}
-	
+
+	/**
+	 *  \brief Set previous string text
+	 */
 	public function setPreviousText($txt) {
 		$this->PreviousText = $txt;
 	}
-	
+
+	/**
+	 *  \brief Set next string text
+	 */
 	public function setNextText($txt) {
 		$this->NextText = $txt;
 	}
-	
+
+	/**
+	 *  \brief Calculate total page number
+	 */
 	private function CalculateNumPages() {
         $this->LastPage = ceil($this->nunRows / $this->nunRowsPerPage);
     }
 
+	/**
+	 *  \brief Parses the pagination
+	 */
     public function parse() {
 		$this->CalculateNumPages();
 
@@ -225,30 +227,19 @@ class Pagination {
         $this->PagesLink['currpageF'] = number_format($this->CurrentPage, 0);
         $this->PagesLink['IndTotF'] = number_format($this->LastPage, 0);
 
-        /*
-			[pt-br]  Verifica se tem navagação pra página anterior
-		*/
+		// Verifica se tem navagação pra página anterior
 		$this->PagesLink['previous'] = ($this->CurrentPage > 1 ? str_replace($this->tagLink, ($this->CurrentPage - 1), $this->siteLink) : '');
-		
-        /*
-			[pt-br]  Verifica se mostra navegador para primeira página
-		*/
+
+        // Verifica se mostra navegador para primeira página
         if (($this->CurrentPage - $this->BesidePages > 0) && ($this->LastPage > ($this->BesidePages * 2 + 1))) {
             $this->PagesLink['first'] = str_replace($this->tagLink, 1, $this->siteLink);
             $dec = $this->BesidePages;
         } else {
             $this->PagesLink['first'] = '';
             $dec = $this->CurrentPage - 1;
-			// if ($dec <= 1) {
-				// while ($this->CurrentPage - $dec < 1) {
-					// $dec--;
-				// }
-			// }
         }
 
-        /*
-			[pt-br]  Verifica se mostra navegador para última página
-		*/
+        // Verifica se mostra navegador para última página
         if (($this->CurrentPage + $this->BesidePages < $this->LastPage) && ($this->LastPage > ($this->BesidePages * 2 + 1))) {
             $this->PagesLink['last'] = str_replace($this->tagLink, $this->LastPage, $this->siteLink);
             $inc = $this->BesidePages;
@@ -257,9 +248,7 @@ class Pagination {
             $inc = $this->LastPage - $this->CurrentPage;
         }
 
-        /*
-			[pt-br]  Se houverem menos páginas anteriores que o definido, tenta colocar mais páginas para a frente
-		*/
+        // Se houverem menos páginas anteriores que o definido, tenta colocar mais páginas para a frente
         if ($dec < $this->BesidePages) {
             $x = $this->BesidePages - $dec;
             while ($this->CurrentPage + $inc < $this->LastPage && $x > 0) {
@@ -267,9 +256,7 @@ class Pagination {
                 $x--;
             }
         }
-        /*
-			[pt-br]  Se houverem menos páginas seguintes que o definido, tenta colocar mais páginas para trás
-		*/
+        // Se houverem menos páginas seguintes que o definido, tenta colocar mais páginas para trás
         if ($inc < $this->BesidePages) {
             $x = $this->BesidePages - $inc;
             while ($this->CurrentPage - $dec > 1 && $x > 0) {
@@ -278,43 +265,42 @@ class Pagination {
             }
         }
 
-        /*
-			[pt-br]  Monta o conteúdo central do navegador
-		*/
+        // Monta o conteúdo central do navegador
         for ($x = $this->CurrentPage - $dec; $x <= $this->CurrentPage + $inc; $x++) {
 			if ($x == 0) {
 				continue;
 			}
-			
+
             $this->PagesLink['pages'][$x] = ($x == $this->CurrentPage) ? '' : str_replace($this->tagLink, $x, $this->siteLink);
         }
 
-        /*
-			[pt-br]  Verifica se mostra navegador para próxima página
-		*/
+        // Verifica se mostra navegador para próxima página
         if ($this->CurrentPage < $this->LastPage) {
             $this->PagesLink['next'] = str_replace($this->tagLink, ($this->CurrentPage + 1), $this->siteLink);
         } else {
             $this->PagesLink['next'] = '';
         }
-		
+
         return $this->PagesLink;
     }
 
+	/**
+	 *  \brief Make HTML format of pagination
+	 */
     public function makeHtml() {
         $this->Parse();
-		
+
 		if (count($this->PagesLink['pages']) == 1) {
 			return;
 		}
-		
+
         $separator = '<span ' . ($this->SeparatorClass ? 'class="'.$this->SeparatorClass.'"' : '') . '>'.$this->SeparatorText.'</span>';
         $previous  = empty($this->PagesLink['previous'])  ? '' : '<a href="'.$this->PagesLink['previous'].'" class="'.$this->NavigatorClass.'">'.$this->PreviousText.'</a> ';
         $next      = empty($this->PagesLink['next'])  ? '' : '<a href="'.$this->PagesLink['next'].'" class="'.$this->NavigatorClass.'">'.$this->NextText.'</a>';
         $first     = empty($this->PagesLink['first']) ? '' : '<a href="'.$this->PagesLink['first'].'" class="'.$this->NavigatorClass.'">1</a>';
         $last      = empty($this->PagesLink['last'])  ? '' : '<a href="'.$this->PagesLink['last'].'" class="'.$this->NavigatorClass.'">'.$this->LastPage.'</a>';
         $pages     = array();
-		
+
         foreach($this->PagesLink['pages'] as $Page => $Link) {
             $pages[] = empty($Link) ? '<span ' . ($this->CurrentPageClass ? 'class="'.$this->CurrentPageClass.'"' : '') . '>'.$Page.'</span>' : '<a href="'.$Link.'" class="'.$this->NavigatorClass.'">'.$Page.'</a> ';
         }
@@ -328,6 +314,9 @@ class Pagination {
         return $this->HTML;
     }
 
+	/**
+	 *  \brief Print the HTML format
+	 */
     public function show($pgatual = 0, $pgfim = 0) {
         echo $this->MakeHTML($pgatual, $pgfim);
     }

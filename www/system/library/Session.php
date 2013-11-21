@@ -1,15 +1,15 @@
 <?php
-/**
- *	FVAL PHP Framework for Web Applications\n
- *	Copyright (c) 2007-2012 FVAL Consultoria e Informática Ltda.\n
- *	Copyright (c) 2007-2012 Fernando Val\n
- *	Copyright (c) 2009-2012 Lucas Cardozo
+/**	\file
+ *	FVAL PHP Framework for Web Applications
  *
- *	\warning Este arquivo é parte integrante do framework e não pode ser omitido
+ *	\copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.\n
+ *	\copyright Copyright (c) 2007-2013 Fernando Val\n
  *
- *	\version 1.2.10
- *
- *	\brief Classe para tratamento de sessão
+ *	\brief		Classe para tratamento de sessão
+ *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
+ *	\version	1.2.10
+ *  \author		Fernando Val  - fernando.val@gmail.com
+ *	\ingroup	framework
  */
 
 class Session extends Kernel {

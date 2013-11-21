@@ -4,7 +4,7 @@
  *
  *  \warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
- *  \version 1.0.0
+ *  \version 1.2.0
  *
  *	\brief Script de execução via shell para crontab
  */
@@ -23,14 +23,24 @@ $_GET['SUPERVAR'] = $argv[1];
 $_SERVER['QUERY_STRING'] = 'SUPERVAR=' . $argv[1];
 
 $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
+$_SERVER['REQUEST_METHOD'] = 'GET';
 $_SERVER['REQUEST_URI'] = $argv[1];
 $_SERVER['SERVER_PROTOCOL'] = 'CLI/Mode';
 $_SERVER['HTTP_HOST'] = 'cmd.shell';
+$_SERVER['DOCUMENT_ROOT'] = dirname(__FILE__);
 
 if (!empty($argv[2])) {
 	$_SERVER['REQUEST_URI']  .= '?' . $argv[2];
 	$_SERVER['QUERY_STRING'] .= '&' . $argv[2];
-	$_GET = array_merge($_GET, explode('&', $argv[2]));
+	
+	foreach (explode('&', $argv[2]) as $get) {
+		$get = explode('=', $get);
+		$_GET[ $get[0] ] = $get[1];
+	}
 }
 
-require_once 'index.php';
+if (!empty($argv[3])) {
+	$_SERVER['HTTP_HOST'] = $argv[3];
+}
+
+require_once '_Main.php';

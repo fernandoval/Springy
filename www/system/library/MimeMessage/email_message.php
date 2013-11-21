@@ -2,7 +2,7 @@
 /*
  * email_message.php
  *
- * @(#) $Id: email_message.php,v 1.98 2012/09/15 09:07:50 mlemos Exp $
+ * @(#) $Id: email_message.php,v 1.99 2013/09/08 22:44:46 mlemos Exp $
  *
  *
  */
@@ -13,7 +13,7 @@
 
 	<package>net.manuellemos.mimemessage</package>
 
-	<version>@(#) $Id: email_message.php,v 1.98 2012/09/15 09:07:50 mlemos Exp $</version>
+	<version>@(#) $Id: email_message.php,v 1.99 2013/09/08 22:44:46 mlemos Exp $</version>
 	<copyright>Copyright © (C) Manuel Lemos 1999-2004</copyright>
 	<title>MIME E-mail message composing and sending</title>
 	<author>Manuel Lemos</author>
@@ -353,7 +353,7 @@ class email_message_class
 	<variable>
 		<name>mailer</name>
 		<type>STRING</type>
-		<value>http://www.phpclasses.org/mimemessage $Revision: 1.98 $</value>
+		<value>http://www.phpclasses.org/mimemessage $Revision: 1.99 $</value>
 		<documentation>
 			<purpose>Specify the base text that is used identify the name and the
 				version of the class that is used to send the message by setting an
@@ -1022,6 +1022,11 @@ class email_message_class
 {/metadocument}
 */
 
+	Function EncodeCharacter($matches)
+	{
+		return sprintf('=%02X', Ord($matches[1]));
+	}
+
 	Function QuotedPrintableEncode($text, $header_charset='', $break_lines=1, $email_header = 0)
 	{
 		$ln=strlen($text);
@@ -1083,6 +1088,16 @@ class email_message_class
 				return($text);
 			if($space>0)
 				return(substr($text,0,$space).($space<$ln ? $this->QuotedPrintableEncode(substr($text,$space), $header_charset, $break_lines, $email_header) : ""));
+		}
+		elseif(function_exists('quoted_printable_encode'))
+		{
+			$different = strcmp($this->line_break, "\r\n");
+			if($different)
+				$text = str_replace($this->line_break, "\r\n", str_replace("\r\n", $this->line_break, $text));
+			$encoded = preg_replace_callback('/^(f|F|\\.)/m', array($this, 'EncodeCharacter'), quoted_printable_encode($text));
+			if($different)
+				$encoded = str_replace("\r\n", $this->line_break, $encoded);
+			return $encoded;
 		}
 		for($w=$e='',$n=0, $l=0,$i=0;$i<$ln; ++$i)
 		{

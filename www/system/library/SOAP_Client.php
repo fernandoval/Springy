@@ -1,14 +1,15 @@
 <?php
-/**
- *	FVAL PHP Framework for Web Applications\n
- *	Copyright (c) 2007-2012 FVAL Consultoria e Informática Ltda.\n
- *	Copyright (c) 2007-2012 Fernando Val
+/**	\file
+ *	FVAL PHP Framework for Web Applications
  *
- *	\warning Este arquivo é parte integrante do framework e não pode ser omitido
+ *	\copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.\n
+ *	\copyright Copyright (c) 2007-2013 Fernando Val\n
  *
- *	\version 0.3.3
- *
- *	\brief Classe para cliente SOAP
+ *	\brief		Classe para cliente SOAP
+ *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
+ *	\version	0.5.5
+ *  \author		Fernando Val  - fernando.val@gmail.com
+ *	\ingroup	framework
  */
 
 if (!class_exists('SoapClient')) require_once dirname( __FILE__) . DIRECTORY_SEPARATOR . 'NuSOAP' . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'nusoap.php';
@@ -33,11 +34,13 @@ class SOAP_Client extends Kernel {
 		if (class_exists('SoapClient')) {
 			$this->classUsed = 'SoapClient';
 
-			if (parent::get_conf('soap', 'proxyhost')) $options['proxy_host'] = parent::get_conf('soap', 'proxyhost');
-			if (parent::get_conf('soap', 'proxyport')) $options['proxy_port'] = parent::get_conf('soap', 'proxyport');
-			if (parent::get_conf('soap', 'proxyusername')) $options['proxy_login'] = parent::get_conf('soap', 'proxyusername');
-			if (parent::get_conf('soap', 'proxypassword')) $options['proxy_password'] = parent::get_conf('soap', 'proxypassword');
-			$options['connection_timeout'] = (parent::get_conf('soap', 'connection_timeout')) ? parent::get_conf('soap', 'timeout') : 20;
+			if (parent::get_conf('system', 'proxyhost')) $options['proxy_host'] = parent::get_conf('system', 'proxyhost');
+			if (parent::get_conf('system', 'proxyport')) $options['proxy_port'] = parent::get_conf('system', 'proxyport');
+			if (parent::get_conf('system', 'proxyusername')) $options['proxy_login'] = parent::get_conf('system', 'proxyusername');
+			if (parent::get_conf('system', 'proxypassword')) $options['proxy_password'] = parent::get_conf('system', 'proxypassword');
+			if (empty($options['connection_timeout'])) {
+				$options['connection_timeout'] = (parent::get_conf('soap', 'timeout')) ? parent::get_conf('soap', 'timeout') : 20;
+			}
 			ini_set('default_socket_timeout', $options['connection_timeout']);
 
 			restore_error_handler();
@@ -96,10 +99,9 @@ class SOAP_Client extends Kernel {
 	 */
 	public function call(&$result, $operation, $params=array(), $options=NULL, $input_headers=NULL) {
 		set_time_limit(0);
-		
 		if ($this->classUsed == 'SoapClient') {
 			// $params = $this->_arrayToObject($params);
-			$params = array($this->_objectToArray($params));
+			$params = array(Kernel::objectToArray($params));
 
 			restore_error_handler();
 
@@ -119,7 +121,7 @@ class SOAP_Client extends Kernel {
 			$soapAction = isset($options['soapaction']) ? $options['soapaction'] : NULL;
 			$style = isset($options['style']) ? $options['style'] : NULL;
 			$use = isset($options['use']) ? $options['use'] : NULL;
-			$result = $this->_arrayToObject($this->client->call($operation, $params, $namespace, $soapAction, $input_headers, $rpcParams, $style, $use));
+			$result = Kernel::arrayToObject($this->client->call($operation, $params, $namespace, $soapAction, $input_headers, $rpcParams, $style, $use));
 
 			if ($this->client->fault) {
 				$result = $this->error = "";
@@ -230,58 +232,6 @@ class SOAP_Client extends Kernel {
 		}
 		$this->client->soap_defencoding = $encoding;
 	}
-
-	/**
-	 *	\brief Converte um array multidimensional no objeto stdClass
-	 *
-	 *	@param[in] $array (mixed) array a ser convertido
-	 *	@return Retorna um objeto stdClasse
-	 */
-	private function _arrayToObject($array) {
-		if(!is_array($array)) {
-			return $array;
-		}
-
-		$object = new stdClass();
-		if (count($array) > 0) {
-			foreach ($array as $name => $value) {
-				$name = trim($name);
-				if (!empty($name)) {
-					$object->$name = $this->_arrayToObject($value);
-				}
-			}
-			return $object;
-		}
-
-		return FALSE;
-	}
-
-	/**
-	 *	\brief Converte um objeto num array multidimensional
-     *
-	 *	@param[in] $object (mixed) objeto a ser convertido
-	 *	@return Retorna um array
-     */
-    private function _objectToArray($object) {
-        if (!is_object($object) && !is_array($object)) {
-            return $object;
-        }
-
-        if (is_object($object)) {
-            $object = get_object_vars($object);
-			if (count($object) > 0) {
-				foreach ($object as $name => $value) {
-					$name = trim($name);
-					if (!empty($name)) {
-						$object[$name] = $this->_objectToArray($value);
-					}
-				}
-				return $object;
-			}
-        }
-
-		return FALSE;
-    }
 }
 
 /**

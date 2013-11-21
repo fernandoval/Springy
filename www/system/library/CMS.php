@@ -1,14 +1,15 @@
 <?php
-/**
- *	FVAL PHP Framework for Web Applications\n
- *	Copyright (c) 2007-2011 FVAL Consultoria e Informática Ltda.\n
- *	Copyright (c) 2007-2011 Fernando Val\n
+/**	\file
+ *	FVAL PHP Framework for Web Applications
  *
- *	\warning Este arquivo é parte integrante do framework e não pode ser omitido
+ *	\copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.\n
+ *	\copyright Copyright (c) 2007-2013 Fernando Val\n
  *
- *	\version 0.1.1
- *
- *	\brief Classe do Mini CMS
+ *	\brief		Classe do Mini CMS
+ *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
+ *	\version	0.1.1
+ *  \author		Fernando Val  - fernando.val@gmail.com
+ *	\ingroup	framework
  */
 
 class CMS extends Kernel {
@@ -693,8 +694,8 @@ class CMS extends Kernel {
 	 */
 	public static function load_category_to_template() {
 		if (self::category_is_loaded()) {
-			if (!Template::started()) {
-				Template::start();
+			if (!$tpl = new Templateed()) {
+				$tpl = new Template();
 			}
 
 			Template::assign('CMS_Category', self::$category_data);
@@ -716,8 +717,8 @@ class CMS extends Kernel {
 	 */
 	public static function load_article_to_template() {
 		if (self::article_is_loaded()) {
-			if (!Template::started()) {
-				Template::start();
+			if (!$tpl = new Templateed()) {
+				$tpl = new Template();
 			}
 
 			Template::assign('CMS_Article', self::$article_data);
@@ -752,8 +753,8 @@ class CMS extends Kernel {
 	public static function load_articles_to_template($start=0, $limit=10) {
 		if (self::category_is_loaded()) {
 			if ($articles = self::get_last_articles(self::$category_data['category_id'], true, $start, $limit, $count)) {
-				if (!Template::started()) {
-					Template::start();
+				if (!$tpl = new Templateed()) {
+					$tpl = new Template();
 				}
 				Template::assign('CMS_ArticleList', $articles);
 

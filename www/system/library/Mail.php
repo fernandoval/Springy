@@ -1,14 +1,17 @@
 <?php
-/**
- *	FVAL PHP Framework for Web Applications\n
- *	Copyright (c) 2007-2011 FVAL Consultoria e Informática Ltda.\n
- *	Copyright (c) 2007-2011 Fernando Val
+/**	\file
+ *	FVAL PHP Framework for Web Applications
  *
- *	\warning Este arquivo é parte integrante do framework e não pode ser omitido
+ *	\copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.\n
+ *	\copyright Copyright (c) 2007-2013 Fernando Val\n
+ *	\copyright Copyright (c) 2009-2013 Lucas Cardozo
  *
- *	\version 1.3.5
- *
- *	\brief Classe para envio de email
+ *	\brief		Classe para envio de email
+ *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
+ *	\version	1.3.6
+ *  \author		Fernando Val  - fernando.val@gmail.com
+ *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
+ *	\ingroup	framework
  */
 
 require_once dirname( __FILE__) . DIRECTORY_SEPARATOR . 'MimeMessage' . DIRECTORY_SEPARATOR . 'email_message.php';
@@ -54,6 +57,16 @@ class Mail extends Kernel {
 			$this->message_obj->smtp_pop3_auth_host = parent::get_conf('mail', 'auth_host');
 			$this->message_obj->smtp_debug = parent::get_conf('mail', 'debug');
 			$this->message_obj->smtp_html_debug = parent::get_conf('mail', 'html_debug');
+
+
+			if (parent::get_conf('system', 'proxyhost')) {
+				$this->message_obj->smtp_http_proxy_host_name = parent::get_conf('system', 'proxyhost');
+				$this->message_obj->smtp_http_proxy_host_port = parent::get_conf('system', 'proxyport');
+				//$this->message_obj-> = parent::get_conf('system', 'proxyusername');
+				//$this->message_obj-> = parent::get_conf('system', 'proxypassword');
+			}
+
+
 		} elseif (parent::get_conf('mail', 'method') == 'sendmail') {
 			require_once dirname( __FILE__) . DIRECTORY_SEPARATOR . 'MimeMessage' . DIRECTORY_SEPARATOR . 'sendmail_message.php';
 
@@ -99,7 +112,14 @@ class Mail extends Kernel {
 	 *	Obs.: Caso seja passado um array de emails para $email, o valor de $name será ignorado.
 	 */
 	public function to($email, $name='') {
+		// Verifica se há a entrada forçando o envio de todos os emails para um destinatário específico
+		if (Kernel::get_conf('mail', 'mails_go_to')) {
+			$email = Kernel::get_conf('mail', 'mails_go_to');
+			$name = '';
+		}
+
 		$this->set_email_header('To', $email, $name);
+
 		if (is_array($email)) {
 			reset($email);
 			$this->mail_to = key($email);
@@ -159,15 +179,16 @@ class Mail extends Kernel {
 		$this->message_obj->AddAlternativeMultipart($alternative_parts);
 	}
 
-	/*
-	 * \brief Adiciona um anexo ao e-mail
+	/**
+	 *	\brief Adiciona um anexo ao e-mail
 	 */
-	public function add_attach($filePost){
-		$file['FileName'] = $filePost['tmp_name'];
-		$file['Name'] = $filePost['name'];
-		$file['Content-Type'] = $filePost['type'];
+	public function add_attach($attach){
+		$file['FileName'] = $attach['tmp_name'];
+		$file['Name'] = $attach['name'];
+		$file['Content-Type'] = $attach['type'];
 
 		$this->message_obj->AddFilePart($file);
+
 		return $file;
 	}
 
