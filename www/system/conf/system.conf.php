@@ -11,73 +11,65 @@
 
 /**
  *  \addtogroup systemcfg Configurações do cerne
+ *  
+ *  Os parâmetros \c developer_user e \c developer_pass informam qual parametro deverá ser passado para ligar o modo debug em servidores que não são de desenvolvimento
+ *  deveserá ser usado da seguinte forma:
+ *  
+ *  www.meusite.com.br/?{$developer_user}={$developer_pass}
+ *  
+ *  para desligar o debug use:
+ *  www.meusite.com.br/?{$developer_user}=off
+ *  
+ *  O parâmetro \c dba_user habilita o debug de SQLs exibindo TODOS os SQLs executados na página.
+ *  Para ligar este modo, primeiro deve-se habilitar o modo desenvolvedor usando o #developer_user#
+ *  ex.: www.meusite.com.br/?{$developer_user}={$developer_pass}&{$dba_user}
+ *  
+ *  Para desligar:
+ *  www.meusite.com.br/?{$dba_user}=off
+ *  
+ *  Entradas de configuração:
+ *  - \c controller_path - Caminho do diretório de scripts de controle (controllers)
+ *  - \c debug - Define se debug está ativo
+ *  - \c maintenance - Define se está em manutenção
+ *  - \c admin_maintenance - Define se o ADMIN está em manutenção
+ *  - \c rewrite_url - Define se rewrite de URL está ativo
+ *  - \c cache - Define se o cache está ligado
+ *  - \c cache-control - Define o header HTTP/1.1 Cache-Control
+ *  - \c authentication - Define o acesso autenticado por HTTP
+ *    - Esse parâmetro de configuração espera um valor \c false ou um \c array no seguinte formato:
+ *      array('user' => 'usuario', 'pass' => 'senha')
  */
 /*@{*/
 
-/**
- *  @name Configurações para todos os ambientes
- */
-///@{
-/*  informa qual parametro deverá ser passado para ligar o modo debug em servidores q não são de desenvolvimento
- *  deveserá ser usado da seguinte forma:
- *  www.meusite.com.br/?{$developer_user}={$developer_pass}
- *
- *  para desligar o debug use:
- *  www.meusite.com.br/?{$developer_user}=off
- */
-$conf['default']['developer_user'] = '';
-$conf['default']['developer_pass'] = '';
+/// Configurações para todos os ambientes
+$conf['default'] = array(
+	'developer_user'  => '',
+	'developer_pass'  => '',
+	'dba_user'        => '',
+	'controller_path' => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'controllers'
+);
 
-/*  Habilita o debug de SQLs exibindo TODOS os SQLs executados na página.
- *  Para ligar este modo, primeiro deve-se habilitar o modo desenvolvedor usando o #developer_user#
- *  ex.: www.meusite.com.br/?{$developer_user}={$developer_pass}&{$dba_user}
- *
- *  para desligar:
- * www.meusite.com.br/?{$dba_user}=off
- */
-$conf['default']['dba_user'] = '';
+/// Configurações para o ambiente de Desenvolvimento
+$conf['development'] = array(
+	'debug'             => true,
+	'maintenance'       => false,
+	'admin_maintenance' => false,
+	'rewrite_url'       => true,
+	'cache'             => false,
+	'cache-control'     => 'no-cache',
+	'authentication'    => array()
+);
 
-/// Caminho do diretório de scripts de controle (controllers)
-$conf['default']['controller_path'] = $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'controllers';
-///@}
-
-/**
- *  @name Configurações para o ambiente de Desenvolvimento
- */
-///@{
-/// Define se debug está ativo
-$conf['development']['debug'] = true;
-/// Define se está em manutenção
-$conf['development']['maintenance'] = false;
-/// Define se o ADMIN está em manutenção
-$conf['development']['admin_maintenance'] = false;
-/// Define se rewrite de URL está ativo
-$conf['development']['rewrite_url'] = true;
-/// Define se o cache está ligado
-$conf['development']['cache'] = false;
-/// Define o header HTTP/1.1 Cache-Control
-$conf['development']['cache-control'] = 'no-cache';
-///@}
-
-/**
- *  @name Configurações para o ambiente de Produção
- */
-///@{
-/// Define se debug está ativo
-$conf['production']['debug'] = false;
-/// Define se está em manutenção
-$conf['production']['maintenance'] = false;
-/// Define se o ADMIN está em manutenção
-$conf['production']['admin_maintenance'] = false;
-/// Define se rewrite de URL está ativo
-$conf['production']['rewrite_url'] = true;
-/// Define se o cache está ligado
-$conf['production']['cache'] = false;
-/// Define o header HTTP/1.1 Cache-Control
-$conf['production']['cache-control'] = 'private, must-revalidate';
-/// Define o acesso autenticado por sistema
-$conf['production']['authentication'] = false;
-///@}
+/// Configurações para o ambiente de Produção
+$conf['production'] = array(
+	'debug'             => false,
+	'maintenance'       => false,
+	'admin_maintenance' => false,
+	'rewrite_url'       => true,
+	'cache'             => false,
+	'cache-control'     => 'private, must-revalidate',
+	'authentication'    => false
+);
 
 /**@}*/
 /**@}*/

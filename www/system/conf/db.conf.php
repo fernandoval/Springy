@@ -11,6 +11,8 @@
 
 /**
  *  \addtogroup dbcfg Configurações de acesso a banco de dados
+ *  
+ *  Entradas de configuração:
  *  \c database_type determina o tipo de banco de dados.\n
  *  	Os seguintes valores são aceitos
  *  \li	\c mysql - Bancos de dados MySQL
@@ -35,45 +37,31 @@
  */
 /**@{*/
 
-/**
- *  @name Configurações para o ambiente de Desenvolvimento
- */
-///@{
-/// Tipo do banco de dados
-$conf['development']['default']['database_type'] = 'mysql';
-/// Nome do host
-$conf['development']['default']['host_name']     = '';
-/// Nome do usuário
-$conf['development']['default']['user_name']     = '';
-/// Senha de acesso
-$conf['development']['default']['password']      = '';
-/// Banco ou schema
-$conf['development']['default']['database']      = '';
-/// Charset do banco de dados
-$conf['development']['default']['charset']       = 'utf8';
-/// Flag de conexão persistente
-$conf['development']['default']['persistent']    = false;
-///@}
+/// Configurações para o ambiente de Desenvolvimento
+$conf['development'] = array(
+	'default' => array(
+		'database_type' => 'mysql',
+		'host_name'     => '',
+		'user_name'     => '',
+		'password'      => '',
+		'database'      => '',
+		'charset'       => 'utf8',
+		'persistent'    => false
+	)
+);
 
-/**
- *  @name Configurações para o ambiente de Produção
- */
-///@{
-/// Tipo do banco de dados
-$conf['production']['default']['database_type'] = 'mysql';
-/// Nome do host
-$conf['production']['default']['host_name']     = '';
-/// Nome do usuário
-$conf['production']['default']['user_name']     = '';
-/// Senha de acesso
-$conf['production']['default']['password']      = '';
-/// Banco ou schema
-$conf['production']['default']['database']      = '';
-/// Charset do banco de dados
-$conf['production']['default']['charset']       = 'utf8';
-/// Flag de conexão persistente
-$conf['production']['default']['persistent']    = true;
-///@}
+/// Configurações para o ambiente de Produção
+$conf['production'] = array(
+	'default' => array(
+		'database_type' => 'mysql',
+		'host_name'     => '',
+		'user_name'     => '',
+		'password'      => '',
+		'database'      => '',
+		'charset'       => 'utf8',
+		'persistent'    => false
+	)
+);
 
 /*@}*/
 /*@}*/

@@ -11,24 +11,24 @@
 
 /**
  *  \addtogroup soapcfg Configurações da classe SOAP
+ *  
+ *  Entradas de configuração:
+ *	- \c useCURL - determina se o modo CURL deve ser usado
+ *	- \c timeout - determina o timeout em segundos
  **/
 /**@{*/
 
-/**
- *  @name Entradas para o ambiente de Desenvolvimento
- */
-///@{
-$conf['development']['useCURL'] = false;
-$conf['development']['timeout'] = 15;
-///@}
+/// Entradas para o ambiente de Desenvolvimento
+$conf['development'] = array (
+	'useCURL' => false,
+	'timeout' => 15
+);
 
-/**
- *  @name Entradas para o ambiente de Produção
- */
-///@{
-$conf['production']['useCURL'] = false;
-$conf['production']['timeout'] = 15;
-///@}
+/// Entradas para o ambiente de Produção
+$conf['production'] = array (
+	'useCURL' => false,
+	'timeout' => 15
+);
 
 /**@}*/
 /**@}*/

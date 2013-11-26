@@ -11,35 +11,20 @@
 
 /**
  *  \addtogroup cmscfg Configurações do Mini CMS
- *  
+ *
  *  Entradas de configuração para o Mini CMS
  *  \li \c articles_per_page - Número de artigos por página
  */
 /**@{*/
 
-/**
- *  @name Entradas para todos os ambientes
- */
-///@{
-/// Define a quantidade de artigos por página
+/// Entradas para todos os ambientes
 $conf['default']['articles_per_page'] = 10;
-///@}
 
-/**
- *  @name Entradas para o ambiente de Desenvolvimento
- */
-///@{
-/// Define a quantidade de artigos por página
+/// Entradas para o ambiente de Desenvolvimento
 $conf['development']['articles_per_page'] = 10;
-///@}
 
-/**
- *  @name Entradas para o ambiente de Produção
- */
-///@{
-/// Define a quantidade de artigos por página
+/// Entradas para o ambiente de Produção
 $conf['production']['articles_per_page'] = 10;
-///@}
-		
+
 /**@}*/
 /**@}*/

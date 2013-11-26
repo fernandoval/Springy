@@ -11,15 +11,18 @@
 
 /**
  *  \addtogroup uricfg Configurações da classe de tratamento de URI/URL
- *  How to use: [pt-br] : Exemplo de código PHP de como usar
+ *  
+ *  Exemplo de código PHP de como usar a entrada \c 'register_method_set_common_urls':
  *
  *	$conf['default']['register_method_set_common_urls'] = array('class' => 'Urls', 'method' => 'setCommon', 'static' => true) // executa: Urls::setCommon();
  *	$conf['default']['register_method_set_common_urls'] = array('class' => 'Urls', 'method' => 'setCommon', 'static' => false) // executa: (new Urls())->setCommon();
  *	$conf['default']['register_method_set_common_urls'] = array('class' => 'Urls', 'static' => false) // executa: new Urls();
  *
  *  Entradas de configuração:
- *  - 'routes' - Attay contendo rotas de controladoras. Útil para utilizar mais de uma URL apontando para mesma controladora.
+ *  - 'routes' - Array contendo rotas de controladoras. Útil para utilizar mais de uma URL apontando para mesma controladora.
  *  - 'redirects' - Array de redirecionamentos. Útil para configurar redirecionamentos a acessos que possam causar erro de página não encontrada.
+ *  - \c 'prevalidate_controller' - Validação prévia de formatação de URI para determinadas controladoras
+ *  - \c 'system_root' - URI da página inicial
  *  - 'redirect_last_slash' - Valor boleano que determina se a aplicação deve redirecionar requisições a URIs terminadas em barra (/) para URI semelhante sem a barra no final.
  *  	Útil para evitar conteúdo duplicado em ferramentas SEO.
  *  - 'force_slash_on_index' - 	Força o uso de barra (/) ao final da URL para o primeiro segmento (index).
@@ -35,66 +38,45 @@
  */
 /**@{*/
 
-/**
- *  @name Configurações para todos os ambientes
- */
-///@{
-/// Rotas alternativas para controladoras
-$conf['default']['routes'] = array(
-	'home(\/)*(\?(.*))*' => array('segment' => 0, 'controller' => 'index'),
+/// Configurações para todos os ambientes
+$conf['default'] = array(
+	'routes' => array(
+		'home(\/)*(\?(.*))*' => array('segment' => 0, 'controller' => 'index'),
+	),
+	'redirects' => array(
+		'404' => array('segments' => array(), 'get' => array(), 'force_rewrite' => false, 'host' => 'dynamic', 'type' => 301),
+	),
+	'prevalidate_controller' => array(
+		'mycontroller' => array('command' => 301, 'segments' => 2),
+		'myothercontroller' => array('command' => 404, 'segments' => 2, 'validate' => array('/^[a-z0-9\-]+$/', '/^[0-9]+$/')),
+	),
+	'system_root'                     => '/',
+	'register_method_set_common_urls' => null,
+	'common_urls'                     => array(),
+	'redirect_last_slash'             => true,
+	'force_slash_on_index'            => true,
+	'ignored_segments'                => 0
 );
 
-/// Redirecionamentos
-$conf['default']['redirects'] = array(
-	'404' => array('segments' => array(), 'get' => array(), 'force_rewrite' => false, 'host' => 'dynamic', 'type' => 301),
+/// Configurações para o ambiente de Desenvolvimento
+$conf['development'] = array(
+	'host_controller_path' => array(
+		'host.seusite.localhost' => array('diretorio'),
+	),
+	'dynamic' => $_SERVER['HTTP_HOST'],
+	'static'  => $_SERVER['HTTP_HOST'],
+	'secure'  => $_SERVER['HTTP_HOST']
 );
 
-/// Validação prévia de formatação de URI para determinadas controladoras
-$conf['default']['prevalidate_controller'] = array(
-	'mycontroller' => array('command' => 301, 'segments' => 2),
-	'myothercontroller' => array('command' => 404, 'segments' => 2, 'validate' => array('/^[a-z0-9\-]+$/', '/^[0-9]+$/')),
+/// Configurações para o ambiente de Produção
+$conf['production'] = array(
+	'host_controller_path' => array(
+		'host.seusite.com' => array('diretorio'),
+	),
+	'dynamic' => $_SERVER['HTTP_HOST'],
+	'static'  => $_SERVER['HTTP_HOST'],
+	'secure'  => $_SERVER['HTTP_HOST']
 );
-
-/// URI da aplicação
-$conf['default']['system_root'] = '/';
-
-$conf['default']['register_method_set_common_urls'] = NULL;
-$conf['default']['common_urls'] = array();
-/// Remove a última barra (/) e redireciona para URL sem com objetivo de evitar conteúdo duplicado
-$conf['default']['redirect_last_slash'] = true;
-/// Força o uso de barra (/) ao final da URL para o primeiro segmento (index).
-$conf['default']['force_slash_on_index'] = true;
-/// Número de segmentos ignorados no parse da URI para determinação da controladora
-$conf['default']['ignored_segments'] = 0;
-///@}
-
-/**
- *  @name Configurações para o ambiente de Desenvolvimento
- */
-///@{
-/// Root controllers path por HOST
-$conf['development']['host_controller_path'] = array(
-	'host.seusite.localhost' => array('diretorio'),
-);
-
-$conf['development']['dynamic'] = $_SERVER['HTTP_HOST'];
-$conf['development']['static'] = $_SERVER['HTTP_HOST'];
-$conf['development']['secure'] = $_SERVER['HTTP_HOST'];
-///@}
-
-/**
- *  @name Configurações para o ambiente de Produção
- */
-///@{
-/// Root controllers path por HOST
-$conf['production']['host_controller_path'] = array(
-	'host.seusite.com' => array('diretorio'),
-);
-
-$conf['production']['dynamic'] = $_SERVER['HTTP_HOST'];
-$conf['production']['static'] = $_SERVER['HTTP_HOST'];
-$conf['production']['secure'] = $_SERVER['HTTP_HOST'];
-///@}
 
 /**@}*/
 /**@}*/

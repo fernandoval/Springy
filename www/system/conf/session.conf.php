@@ -18,56 +18,41 @@
  *	  - \c 'db' - tratamento de sessão em banco de dados;
  *	  - \c 'memcached' - tratamento de sessão utilizando Memcached (http://www.php.net/manual/en/book.memcached.php)
  *  - \c server_addr - endereço servidor de banco ou memcadhed (quando tipo de controle de sessão não é o padrão)
+ *  - \c server_port - porta do servidor de banco ou memcadhed (quando tipo de controle de sessão não é o padrão)
+ *  - \c master_domain - domínio master para o cookie de sessão
+ *  - \c expires - define o tempo de validade da sessão em minutos
+ *  - \c table_name - define o nome da tabela para sessões em banco de dados (quando o tipo de controle for 'db')
+ *  - \c id_column - define o nome da coluna do id da sessão (quando o tipo de controle for 'db')
+ *  - \c value_column - define o nome da coluna do valor da sessão (quando o tipo de controle for 'db')
+ *  - \c update_column - define o nome da coluna da data de atualização da sessão (quando o tipo de controle for 'db')
  */
 /**@{*/
 
-/**
- *  @name Configurações para o ambiente de Desenvolvimento
- */
-///@{
-/// Define o tipo de sessão
-$conf['development']['type'] = 'std';
-/// Define o endereço servidor de banco ou memcadhed
-$conf['development']['server_addr'] = '127.0.0.1';
-/// Define a porta do servidor de banco ou memcadhed
-$conf['development']['server_port'] = 11211;
-/// Define o tempo de validade da sessão em minutos
-$conf['development']['master_domain'] = "";
-/// Define o tempo de validade da sessão em minutos
-$conf['development']['expires'] = 120;
-/// Define o nome da tabela para sessões em banco de dados
-$conf['development']['table_name'] = 'sessao_usuario';
-/// Define o nome da coluna do id da sessão
-$conf['development']['id_column'] = 'id_sessao';
-/// Define o nome da coluna do valor da sessão
-$conf['development']['value_column'] = 'valor';
-/// Define o nome da coluna da data de atualização da sessão
-$conf['development']['update_column'] = 'data_atualizacao';
-///@}
+/// Configurações para o ambiente de Desenvolvimento
+$conf['development'] = array(
+	'type'          => 'std',
+	'server_addr'   => '127.0.0.1',
+	'server_port'   => 11211,
+	'master_domain' => "",
+	'expires'       => 120,
+	'table_name'    => 'sessao_usuario',
+	'id_column'     => 'id_sessao',
+	'value_column'  => 'valor',
+	'update_column' => 'data_atualizacao'
+);
 
-/**
- *  @name Configurações para o ambiente de Produção
- */
-///@{
-/// Define o tipo de sessão
-$conf['production']['type'] = 'std';
-/// Define o servidor de banco ou memcadhed
-$conf['production']['server_addr'] = '127.0.0.1';
-/// Define a porta do servidor de banco ou memcadhed
-$conf['production']['server_port'] = 11211;
-/// Define o tempo de validade da sessão em minutos
-$conf['production']['master_domain'] = "";
-/// Define o tempo de validade da sessão em minutos
-$conf['production']['expires'] = 120;
-/// Define o nome da tabela para sessões em banco de dados
-$conf['production']['table_name'] = 'sessao_usuario';
-/// Define o nome da coluna do id da sessão
-$conf['production']['id_column'] = 'id_sessao';
-/// Define o nome da coluna do valor da sessão
-$conf['production']['value_column'] = 'valor';
-/// Define o nome da coluna da data de atualização da sessão
-$conf['production']['update_column'] = 'data_atualizacao';
-///@}
-		
+/// Configurações para o ambiente de Produção
+$conf['production'] = array(
+	'type'          => 'std',
+	'server_addr'   => '127.0.0.1',
+	'server_port'   => 11211,
+	'master_domain' => "",
+	'expires'       => 120,
+	'table_name'    => 'sessao_usuario',
+	'id_column'     => 'id_sessao',
+	'value_column'  => 'valor',
+	'update_column' => 'data_atualizacao'
+);
+
 /**@}*/
 /**@}*/

@@ -11,36 +11,39 @@
 
 /**
  *  \addtogroup templatecfg Configurações da classe de templates
+ *  
+ *  Entradas de configuração:
+ *  - \c template_path - Caminho de disco do diretório de templates
+ *  - \c template_config_path - Caminho de disco do diretório configuração de templates
+ *  - \c compiled_template_path - Caminho de disco do diretório configuração de templates compilados
+ *  - \c template_cached_path - Caminho de disco do diretório configuração de templates cacheados
  */
 /**@{*/
 
-/**
- *  @name Configurações para todos os ambientes
- */
-///@{
-$conf['default']['template_path'] = $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'templates';
-$conf['default']['template_config_path'] = $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'templates_conf';
-$conf['default']['compiled_template_path'] = $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'templates_c';
-$conf['default']['template_cached_path'] = $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'templates_cached';
+/// Configurações para todos os ambientes
+$conf['default'] = array(
+	'template_path'          => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'templates',
+	'template_config_path'   => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'templates_conf',
+	'compiled_template_path' => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'templates_c',
+	'template_cached_path'   => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'templates_cached'
+);
 ///@}
 
-/**
- *  @name Configurações para o ambiente de Desenvolvimento
- */
-///@{
-// $conf['development']['template_path'] = $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'templates';
-// $conf['development']['template_config_path'] = $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'templates_conf';
-// $conf['development']['compiled_template_path'] = $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'templates_c';
-///@}
+/// Configurações para o ambiente de Desenvolvimento
+// $conf['development'] = array(
+	// 'template_path'          => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'templates',
+	// 'template_config_path'   => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'templates_conf',
+	// 'compiled_template_path' => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'templates_c',
+	// 'template_cached_path'   => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'templates_cached'
+// );
 
-/**
- *  @name Configurações para o ambiente de Produção
- **/
-///@{
-// $conf['production']['template_path'] = $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'templates';
-// $onf['production']['template_config_path'] = $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'templates_conf';
-// $conf['production']['compiled_template_path'] = $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'templates_c';
-///@}
+/// Configurações para o ambiente de Produção
+// $conf['production'] = array(
+	// 'template_path'          => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'templates',
+	// 'template_config_path'   => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'templates_conf',
+	// 'compiled_template_path' => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'templates_c',
+	// 'template_cached_path'   => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'templates_cached'
+// );
 
 /**@}*/
 /**@}*/
