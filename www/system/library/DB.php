@@ -9,7 +9,7 @@
  *	\brief		Classe para acesso a banco de dados
  *	\note		Esta classe usa a PHP Data Object (PDO) para acesso a banco de dados
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.0.14
+ *	\version	1.1.15
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
@@ -28,18 +28,20 @@ class DB {
 	private $dataConnect = false;
 	/// Entrada de configuração de banco atual
 	private $database = false;
+	/// Flag de habilitação do relatório de erros
+	private $report_error = false;
 	/// Flag do modo debug
 	private static $db_debug = false;
 	/// Controle de falhas de conexão
 	private static $conErrors = array();
 
 	/**
-	 *	\brief Método construtor da classe
+	 *  \brief Método construtor da classe
 	 *
-	 *	Cria uma instância da classe a inicializa a conexão com o banco de dados
+	 *  Cria uma instância da classe a inicializa a conexão com o banco de dados
 	 *
-	 *	@param $database chave de configuração do banco de dados.
-	 *		Default = 'default'
+	 *  @param $database chave de configuração do banco de dados.
+	 *	  Default = 'default'
 	 */
 	public function __construct($database='default') {
 		$this->database = $database;
@@ -59,12 +61,12 @@ class DB {
 	}
 
 	/**
-	 *	\brief Conecta ao banco de dados
+	 *  \brief Conecta ao banco de dados
 	 *
-	 *	@param $database chave de configuração do banco de dados.
-	 *		Default = 'default'
+	 *  @param $database chave de configuração do banco de dados.
+	 *    Default = 'default'
 	 *
-	 *	@return Retorna o conector do banco de dados
+	 *  @return Retorna o conector do banco de dados
 	 */
 	public function connect($database) {
 		if (isset(self::$conErrors[$database])) {
@@ -94,7 +96,7 @@ class DB {
 		}
 
 		/*
-		 *  A variável abaixo é setda pois caso a conexão com o banco falhe, o callback de erro será chamado e a variável já estará setada.
+		 *  A variável abaixo é setada pois caso a conexão com o banco falhe, o callback de erro será chamado e a variável já estará setada.
 		 *  Caso a conexão seja feita com sucesso, a variavel é removida.
 		 */
 		self::$conErrors[$database] = true;
@@ -196,11 +198,34 @@ class DB {
 	}
 
 	/**
+	 *  \brief Desabilita o report de erros
+	 *
+	 *  \return DB
+	 */
+	public function disableReportError() {
+		$this->report_error = false;
+		return $this;
+	}
+
+	/**
+	 *  \brief Habilita o report de erros
+	 *
+	 *  \return DB
+	 */
+	public function enableReportError() {
+		$this->report_error = true;
+		return $this;
+	}
+
+	/**
 	 *	\brief Reporta a ocorrência de erro para o Webmaster
 	 *
 	 *	Método para alerta de erros. Também envia e-mails com informações sobre o erro e grava-o em um arquivo de Log.
 	 */
 	private function report_error($msg, PDOException $exception=NULL) {
+		if(!$this->report_error) {
+			return;
+		}
 		// [pt-br] Lê as configurações de acesso ao banco de dados
 		$conf = Kernel::get_conf('db', self::$DB[$this->database]['dbName']);
 
@@ -213,25 +238,25 @@ class DB {
 		$errorInfo = ($this->SQLRes ? $this->SQLRes->errorInfo() : $this->dataConnect->errorInfo());
 
 		$htmlError = '
-			  <tr>
+			<tr>
 				<td style="background-color:#66C; color:#FFF; font-weight:bold; padding-left:10px; padding:3px 2px" colspan="2">Dados do banco</td>
-			  </tr>
-			  <tr>
+			</tr>
+			<tr>
 				<td valign="top"><label style="font-weight:bold">Host:</label></td>
 				<td>'.$conf['host_name'].'</td>
-			  </tr>
-			  <tr style="background:#efefef">
+			</tr>
+			<tr style="background:#efefef">
 				<td valign="top"><label style="font-weight:bold">User:</label></td>
 				<td><span style="background:#efefef">' . (isset($conf['user_name']) ? $conf['user_name'] : 'não informado') . '</span></td>
-			  </tr>
-			  <tr>
+			</tr>
+			<tr>
 				<td valign="top"><label style="font-weight:bold">Pass:</label></td>
 				<td>' . (isset($conf['password']) ? $conf['password'] : 'não informado') . '</td>
-			  </tr>
-			  <tr>
+			</tr>
+			<tr>
 				<td valign="top"><label style="font-weight:bold">DB:</label></td>
 				<td><span style="background:#efefef">' . (isset($conf['database']) ? $conf['database'] : 'não informado') . '</span></td>
-			  </tr>
+			</tr>
 		';
 		unset($sqlError);
 

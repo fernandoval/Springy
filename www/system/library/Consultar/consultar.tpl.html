@@ -1,0 +1,184 @@
+{strip}
+<script type="text/javascript" src="{files_static_version type='js' file='calendario'}"></script>
+<script type="text/javascript">
+        Consultar.urlAtualAjax = '{$urlAtualAjax}';
+        Consultar.urlAtual = '{$urlAtual}';
+		Consultar.cookieName = '{$cookieName}';
+		
+		{if $mensagem}
+		document.observe('dom:loaded', function () {
+			Consultar.show_message('{$mensagem}', 'sucesso');
+		});
+		{/if}
+		solicitarFatura = function (url) {
+			var alertWindow = new ModalAlert({ frame:  FRAME_TOP });
+
+			alertWindow.addButton({ 'typeFunction': 'ok', 'type': 'button', 'value': 'ok', 'cssClass': 'ok', 'action': function () {
+				if (FRAME_TOP.$('IhdAltDataSolicitacaoFatura').value) {
+					if (!$('formLibsConsultar').down('input[name="ihdDataSolicitacaoFatura"]')) {
+						$('formLibsConsultar').insert('<input type="hidden" name="ihdDataSolicitacaoFatura" />');
+					}
+
+					var ipt = $('formLibsConsultar').down('input[name="ihdDataSolicitacaoFatura"]');
+					ipt.value = FRAME_TOP.$('IhdAltDataSolicitacaoFatura').value;
+
+					this.alertWindow.hide();
+
+					Consultar.confirma_post({
+						title: 'Confirmação',
+						message: 'Deseja realmente solicitar fatura para as ofertas solicitadas para a data "' + ipt.value + '"?',
+						url: this.url
+					});
+				}
+			}.bind({ 'alertWindow': alertWindow, 'url': url })});
+			
+			var date = new Date();
+			date.setDate(date.getDate()+1);
+
+			tomorrowDay = date.getDate();
+			tomorrowMonth = date.getMonth();
+			tomorrowYear = date.getFullYear();
+		 	todayYear = new Date().getFullYear();
+			
+			alertWindow.show('Data para faturar', 'Informe a data para faturar: <input type="text" id="IhdAltDataSolicitacaoFatura" name="IhdAltDataSolicitacaoFatura" size="11" maxlength="10" />', ['ok', 'cancel'], 'cancel');
+			var calend = new Calendario({
+			    input: FRAME_TOP.$('IhdAltDataSolicitacaoFatura'),
+			    anoAtual: todayYear,
+				dateMinSelectable: { d:tomorrowDay, m:tomorrowMonth, y:tomorrowYear }
+			});
+			
+		};
+		
+		baixaOP = function (url) {
+			var alertWindow = new ModalAlert({ frame:  FRAME_TOP });
+
+			alertWindow.addButton({ 'typeFunction': 'ok', 'type': 'button', 'value': 'ok', 'cssClass': 'ok', 'action': function () {
+				if (FRAME_TOP.$('IhdAltDataBaixaOP').value) {
+					if (!$('formLibsConsultar').down('input[name="IhdDataBaixaOP"]')) {
+						$('formLibsConsultar').insert('<input type="hidden" name="IhdDataBaixaOP" />');
+					}
+
+					var ipt = $('formLibsConsultar').down('input[name="IhdDataBaixaOP"]');
+					ipt.value = FRAME_TOP.$('IhdAltDataBaixaOP').value;
+
+					this.alertWindow.hide();
+
+					Consultar.confirma_post({
+						title: 'Confirmação',
+						message: 'Deseja realmente dar baixa nas ops selecionadas para a data "' + ipt.value + '"?',
+						url: this.url
+					});
+				}
+			}.bind({ 'alertWindow': alertWindow, 'url': url })});
+			
+			var date = new Date();
+			date.setDate(date.getDate()+1);
+
+			tomorrowDay = date.getDate();
+			tomorrowMonth = date.getMonth();
+			tomorrowYear = date.getFullYear();
+		 	todayYear = new Date().getFullYear();
+			
+			alertWindow.show('Data para baixa', 'Informe a data para baixa: <input type="text" id="IhdAltDataBaixaOP" name="IhdAltDataBaixaOP" size="11" maxlength="10" />', ['ok', 'cancel'], 'cancel');
+			var calend = new Calendario({
+			    input: FRAME_TOP.$('IhdAltDataBaixaOP'),
+			    anoAtual: todayYear,
+				dateMinSelectable: { d:tomorrowDay, m:tomorrowMonth, y:tomorrowYear }
+			});
+			
+		};
+		
+    </script>
+	<form action="javascript:;" onsubmit="Consultar.request_ajax();return false;" method="post" id="formLibsConsultar" class="{if $cssSelecionado}form-{$cssSelecionado}{elseif $gridCSS}{$gridCSS}{/if}">
+        <input type="hidden" name="pag" value="" id="ConsultarPag" />{* paginação atual *}
+        <div id="consultarTopo" style="width:{$widthTable}">
+            {if $adm_titulo}
+            <div class="titulo">{$adm_titulo}</div>
+            {/if}
+
+            <div id="mensagem_sucesso" style="display:none"><div>{$mensagem}</div></div>
+
+            {if $title}
+            <div class="extra_form_title">
+                {$title}
+            </div>
+            {/if}
+
+            {if $bt_novo || $bt_excluir || $extraToolbar || $bt_csv || $filtro}
+            <div class="toolbar">
+                {if $extraToolbar}
+                    {foreach from=$extraToolbar item=toolbar name=forExtra}
+                        <a href="{if $toolbar.href}{$toolbar.href}{else}javascript:;{/if}"
+                        {if $toolbar.icon}class="icon" style="background-image:url({$urlIMG}/consultar/{$toolbar.icon})"{/if}
+                        {if $toolbar.hs}
+							onclick="hs.lang.titulo='{$toolbar.label}';
+							return hs.htmlExpand(this, { 
+								objectType: 'iframe' 
+								{if $toolbar.hs.minWidth}, minWidth: {$toolbar.hs.minWidth}{/if}
+								{if $toolbar.hs.minHeight}, minHeight: {$toolbar.hs.minHeight}{/if}
+								{if $toolbar.hs.width}, width: {$toolbar.hs.width}{/if}
+								{if $toolbar.hs.height}, height: {$toolbar.hs.height}{/if}
+								{if $toolbar.hs.maxHeight}, maxHeight: {$toolbar.hs.maxHeight}{/if}
+								{if $toolbar.hs.maxHeight}, maxHeight: {$toolbar.hs.maxHeight}{/if}
+							})"
+						{/if}
+                        {if $toolbar.onclick}onclick="{$toolbar.onclick}"{/if}
+                        {if $toolbar.hint}title="{$toolbar.hint}"{/if}
+                        {if $toolbar.postScript}onclick="Consultar.confirma_post({
+                            title : '{$toolbar.postScript.title|addslashes}',
+                            message : '{$toolbar.postScript.message|addslashes}',
+                            url: '{$toolbar.postScript.url}'
+                        });"
+                        {/if}
+                        {if !$toolbar.hs && !$toolbar.onclick && !$toolbar.postScript}
+                        	onclick="FRAME_TOP.loading[ IFRAME_ID ].show();"
+                        {/if}>{$toolbar.label}</a>
+                        {if $toolbar.script}
+                        <script type="text/javascript">
+                            {$toolbar.script}
+                        </script>
+                        {/if}
+                    {/foreach}
+                {/if}
+
+                {if $bt_csv}
+                    <script type="text/javascript">
+                        Consultar.dadosCSV = {$bt_csv};
+                    </script>
+                    <a href="javascript:;"class="icon toolbar_csv" onclick="Consultar.csv();">Download CSV</a>
+                {/if}
+
+                {if $filtro}
+                <a href="javascript:;" class="icon toolbar_buscar{if $filtro.opened} opened{/if}" id="btBuscar" onclick="Consultar.openCloseFiltro()"><img src="{$urlIMG}/sisainen/buscar-2.png" alt="" border="0" /></a>
+                {/if}
+            </div>
+            {/if}
+
+            {if $filtro}
+            <div id="FilterTable"{if !$filterOpened} style="display:none"{/if}>
+                <div class="margin">
+                    {include file="`$filtro.tpl`.tpl.html"}
+                    <div class="frmBts">
+                        <a class="bt" href="javascript:;" onclick="Consultar.pagina_submit(1);"><img src="{$urlIMG}/sisainen/buscar.png" alt="" /></a>
+                        <a class="bt" href="javascript:;" onclick="Consultar.clearFiltro();"><img src="{$urlIMG}/sisainen/remover-filtros.png" alt="" /></a>
+                    </div>
+                </div>
+                <div class="collapse_up" onclick="Consultar.openCloseFiltro()"><img src="{$urlIMG}/consultar/icon_collapse_up.png" /></div>
+            </div>
+            {/if}
+            {if $extraFormTpl}
+            <div id="extra_form">
+               {include file="`$extraFormTpl`.tpl.html"}
+            </div>
+            {/if}
+            
+           	{if $results}
+            <table cellspacing="0" cellpadding="0" style="width:{$widthTable}" class="libsConsultarTbl" id="theadFly"></table>
+            {/if}
+		</div>
+
+        <div id="libsConsultar" style="width:{$widthTable}">
+            {include file='consultar_body.tpl.html'}
+        </div>
+    </form>
+{/strip}

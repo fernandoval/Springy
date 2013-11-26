@@ -8,7 +8,7 @@
  *
  *	\brief		Classe para tratamento de erros
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.2.7
+ *	\version	1.3.9
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
@@ -177,7 +177,7 @@ class Errors extends Kernel {
 					  </tr>
 					  <tr style="background:#efefef">
 						<td style="padding:3px 2px"><label style="font-weight:bold">Reverso:</label></td>
-						<td style="padding:3px 2px">'.gethostbyaddr(Strings::get_real_remote_addr()).'</td>
+						<td style="padding:3px 2px">'. (Strings::get_real_remote_addr() ? gethostbyaddr(Strings::get_real_remote_addr()) : 'sem ip') .'</td>
 					  </tr>
 					  <tr>
 						<td style="padding:3px 2px"><label style="font-weight:bold">Browser:</label></td>
@@ -210,7 +210,6 @@ class Errors extends Kernel {
 
 		// Envia a mensagem de erro para o webmaster
 		if (!in_array($errorType, array(404, 503)) && parent::get_conf('mail', 'errors_go_to') && !parent::get_conf('system','debug')) {
-
 			$db = new DB;
 			if (DB::hasConnection()) {
 				$db->execute('SELECT 1 FROM system_error WHERE error_code = ?', array($errorId));
@@ -224,7 +223,7 @@ class Errors extends Kernel {
 			unset($db);
 
 			if (!isset($naoMandaEmail)) {
-				$msg = preg_replace('/\<a href="javascript\:\;" onclick="var obj=\$\((.*?)\)\.toggle\(\)" style="color:#06c; margin:3px 0"\>ver argumentos passados a função\<\/a\>/', '<span style="font-weight:bold; color:#06c; margin:3px 0">Argumentos da Função:</span>', $msg);
+				$msg = preg_replace('/\<a href="javascript\:\;" onclick="var obj=\$\(\#(.*?)\)\.toggle\(\)" style="color:#06c; margin:3px 0"\>ver argumentos passados a função\<\/a\>/', '<span style="font-weight:bold; color:#06c; margin:3px 0">Argumentos da Função:</span>', $msg);
 				$msg = preg_replace('/ style="display:none"/', '', $msg);
 
 				$email = new Mail;
@@ -267,7 +266,15 @@ class Errors extends Kernel {
 		$offset = ($pag - 1) * $nPorPagina;
 
 		$db = new DB;
-		$db->execute('SELECT SQL_CALC_FOUND_ROWS qtd, ultima_ocorrencia, detalhes FROM system_error LIMIT ?, ?', array($offset, $nPorPagina));
+		$order_column = URI::get_param('orderBy')?:'ultima_ocorrencia';
+		$order_type = URI::get_param('sort')?:'ASC';
+		$db->execute(
+			"SELECT SQL_CALC_FOUND_ROWS qtd, ultima_ocorrencia, detalhes\n" .
+			"  FROM system_error\n" .
+			" ORDER BY $order_column $order_type\n".
+			" LIMIT ?, ?",
+			array($offset, $nPorPagina)
+		);
 
 		$retorno = array();
 
@@ -290,6 +297,11 @@ class Errors extends Kernel {
 		$paginacao->setSiteLink(array('_system_bug_'));
 
 		$tpl->assign('paginacao', $paginacao->parse());
+		$tpl->assign('orders', array(
+			'error_code' => URI::build_url(array('_system_bug_')),
+			'qtd' => URI::build_url(array('_system_bug_')),
+			'ultima_ocorrencia' => URI::build_url(array('_system_bug_'))
+		));
 		unset($paginacao, $registros);
 
 		$tpl->assign('errors', $retorno);

@@ -8,7 +8,7 @@
  *
  *	\brief		Classe para tratamento de strings em formato UTF-8
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.2.1
+ *	\version	1.3.2
  *  \author		Fernando Val  - fernando.val@gmail.com
  *	\ingroup	framework
  */
@@ -19,20 +19,9 @@ class Strings_UTF8 extends Strings {
 	 *	\brief Troca caracteres acentuados por não acentuado
 	 */
 	public static function remove_accented_chars($txt) {
-		$txt = preg_replace('/[áàâãåäªÁÀÂÄÃª]/u', 'a', $txt);
-		$txt = preg_replace('/[éèêëÉÈÊË]/u',      'e', $txt);
-		$txt = preg_replace('/[íìîïÍÌÎÏ]/u',      'i', $txt);
-		$txt = preg_replace('/[óòôõöºÓÒÔÕÖº]/u',  'o', $txt);
-		$txt = preg_replace('/[úùûüÚÙÛÜµ]/u',     'u', $txt);
-		$txt = preg_replace('/[ñÑ]/u',            'n', $txt);
-		$txt = preg_replace('/[çÇ]/u',            'c', $txt);
-		$txt = preg_replace('/[ÿ¥]/u',            'y', $txt);
-		$txt = preg_replace('/[¹]/u',             '1', $txt);
-		$txt = preg_replace('/[²]/u',             '2', $txt);
-		$txt = preg_replace('/[³]/u',             '3', $txt);
-		$txt = preg_replace('/[Ææ]/u',           'ae', $txt);
 		$txt = preg_replace('/[Øø]/u',            '0', $txt);
 		$txt = preg_replace('/[†°¢£§•¶ß®©™´¨≠±≤≥∂∑∏π∫Ω]/u', '', $txt);
+		$txt = iconv('utf-8', 'us-ascii//TRANSLIT', $txt);
 
 		return $txt;
 	}

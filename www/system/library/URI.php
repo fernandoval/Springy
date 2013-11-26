@@ -8,7 +8,7 @@
  *
  *	\brief		Classe para tratamento de URI
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.8.15
+ *	\version	1.9.16
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
@@ -453,7 +453,15 @@ class URI extends Kernel {
 	public static function get_params() {
 		return self::$get_params;
 	}
-
+	
+	/**
+     *  \brief remove um parametro do _GET
+	 *	@param[in] $var String contendo o nome da variável a ser excluida
+     */
+    public static function remove_param($var) {
+		unset(self::$get_params[$var]);
+    }
+	
 	/**
 	 *	\brief Define o valor de um parâmetro
 	 *

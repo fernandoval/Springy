@@ -9,7 +9,7 @@
  *  http://www.fval.com.br
  *
  *	\brief		Script de inicialização da aplicação
- *  \version	1.7.0
+ *  \version	1.8.1
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *  \file
@@ -83,11 +83,36 @@ if (!spl_autoload_register('fwgv_autoload')) {
 }
 
 /**
- *	\brief Função de tratamento de erros para impedir que a classe de erros seja carregada desnecessariamente
+ *  \brief Classe Exception extendida do FW
+ */
+class FW_Exception extends Exception {
+    private $context = null;
+    public function __construct($code, $message, $file, $line, $context = null) {
+        parent::__construct($message, $code);
+        $this->file = $file;
+        $this->line = $line;
+        $this->context = $context;
+    }
+	public function getContext() {
+		return $this->context;
+	}
+};
+
+/**
+ *	\brief Função de tratamento de exceções
+ */
+function FW_ExceptionHandler($error) {
+	Errors::error_handler($error->getCode(), $error->getMessage(), $error->getFile(), $error->getLine(), (method_exists($error, 'getContext') ? $error->getContext() : null));
+}
+set_exception_handler('FW_ExceptionHandler');
+
+/**
+ *	\brief Função de tratamento de erros
  */
 error_reporting(E_ALL);
-function FW_ErrorHandler($errno, $errstr, $errfile, $errline, $localErro) {
-	Errors::error_handler($errno, $errstr, $errfile, $errline, $localErro);
+function FW_ErrorHandler($errno, $errstr, $errfile, $errline, $errContext) {
+	// Errors::error_handler($errno, $errstr, $errfile, $errline, $errContext);
+	throw new FW_Exception($errno, $errstr, $errfile, $errline, $errContext);
 }
 set_error_handler('FW_ErrorHandler');
 
