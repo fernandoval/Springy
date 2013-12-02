@@ -9,7 +9,7 @@
  *	\brief		Classe para acesso a banco de dados
  *	\note		Esta classe usa a PHP Data Object (PDO) para acesso a banco de dados
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.1.15
+ *	\version	1.2.16
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
@@ -179,11 +179,16 @@ class DB {
 	 *	@param $database chave de configuração do banco de dados.
 	 *		Default = 'default'
 	 */
-	public static function has_connection($database='default') {
+	public static function connected($database='default') {
 		return !isset(self::$conErrors[$database]) && isset(self::$DB[$database]) && self::$DB[$database]['con'];
 	}
+	/**
+	 *  \brief DEPRECATED - Use connected
+	 *  \deprecated
+	 *  \see connected
+	 */
 	public static function hasConnection($database='default') {
-		self::has_connection($database);
+		self::connected($database);
 	}
 
 	/**
@@ -202,9 +207,17 @@ class DB {
 	 *
 	 *  \return DB
 	 */
-	public function disableReportError() {
+	public function disable_report_error() {
 		$this->report_error = false;
 		return $this;
+	}
+	/**
+	 *  \brief DEPRECATED - Use disable_report_error
+	 *  \deprecated
+	 *  \see disable_report_error
+	 */
+	public function disableReportError() {
+		return $this->disable_report_error();
 	}
 
 	/**
@@ -212,9 +225,17 @@ class DB {
 	 *
 	 *  \return DB
 	 */
-	public function enableReportError() {
+	public function enable_report_error() {
 		$this->report_error = true;
 		return $this;
+	}
+	/**
+	 *  \brief DEPRECATED - Use enable_report_error
+	 *  \deprecated
+	 *  \see enable_report_error
+	 */
+	public function enableReportError() {
+		return $this->enable_report_error();
 	}
 
 	/**
@@ -283,11 +304,16 @@ class DB {
 	 *
 	 *	Como as transações podem utilzar varias classes e métodos, a transação será "estatica"
 	 */
-	public static function begintran($database='default') {
+	public static function begin_transaction($database='default') {
 		self::connect($database)->beginTransaction();
 	}
-	public static function begin_transaction($database='default') {
-		self::begintran($database);
+	/**
+	 *  \brief DEPRECATED - Use begin_transaction
+	 *  \deprecated
+	 *  \see begin_transaction
+	 */
+	public static function beginTransaction($database='default') {
+		self::begin_transaction($database);
 	}
 
 	/**
@@ -307,9 +333,6 @@ class DB {
 	public static function commit($database='default') {
 		self::connect($database)->commit();
 	}
-	public static function commit_transaction($database='default') {
-		self::commit($database);
-	}
 
 	/**
 	 *	\brief Cancela todas as transações ativas
@@ -327,6 +350,11 @@ class DB {
 			}
 		}
 	}
+	/**
+	 *  \brief DEPRECATED - Use rollback_all
+	 *  \deprecated
+	 *  \see rollback_all
+	 */
 	public static function transactionAllRollBack() {
 		self::rollback_all();
 	}
@@ -409,27 +437,23 @@ class DB {
 	}
 
 	/**
-	 *	\brief Pega o tipo do banco de dados
+	 *	\brief Pega o nome do driver do banco
 	 *
-	 *	@return Retorna o tipo do banco de dados atual
+	 *	\return Retorna uma string contendo o nome do driver do banco de dados atual
 	 */
-	public function getDatabase() {
-		switch ($this->dataConnect->databaseType) {
-			case 'postgres' :
-			case 'postgres7' :
-			case 'postgres8' :
-			case 'postgres64' :
-				return 'postgres';
-			case 'mssql' :
-			case 'mssqlnative' :
-			case 'mssqlpo':
-			case 'mssql_n':
-				return 'mysql';
-			break;
-		}
-		return false;
+	public function driver_name() {
+		return $this->dataConnect->getAttribute(PDO::ATTR_DRIVER_NAME);
 	}
 
+	/**
+	 *  \brief Pega algumas informações a respeito da versão do servidor
+	 *  
+	 *  \return Retorna um valor inteiro com a versão do servidor
+	 */
+	public function server_version() {
+		return $this->dataConnect->getAttribute(PDO::PDO::ATTR_SERVER_VERSION);
+	}
+	
 	/**
 	 *	\brief Retorna o valor do campo autoincremento do último INSERT
 	 */
@@ -441,22 +465,53 @@ class DB {
 	 *	\brief Retorna o número de linhas afetadas no último comando
 	 */
 	public function affected_rows() {
-		return $this->num_rows();
-	}
-
-	/**
-	 *	\brief Retorna o número de resultados de uma consulta
-	 */
-	public function num_rows() {
 		return $this->SQLRes->rowCount();
 	}
+	/**
+	 *  \brief DEPRECATED - Use affected_rows
+	 *  \deprecated
+	 *  \see affected_rows
+	 */
+	public function num_rows() {
+		return $this->affected_rows();
+	}
 
 	/**
-	 *	\brief Retorna o resultado de uma consulta
+	 *	\brief Retorna todas as linhas do resultado de uma consulta
 	 */
-	public function get_all($resultType=PDO::FETCH_ASSOC) {
+	public function fetch_all($resultType=PDO::FETCH_ASSOC) {
 		if ($this->SQLRes) {
 			return $this->SQLRes->fetchAll($resultType);
+		}
+
+		return false;
+	}
+	/**
+	 *  \brief DEPRECATED - Use fetch_all
+	 *  \deprecated
+	 *  \see fetch_all
+	 */
+	public function get_all($resultType=PDO::FETCH_ASSOC) {
+		return $this->fetch_all($resultType);
+	}
+
+	/**
+	 *	\brief Retorna o primeiro resultado do cursor de uma consulta
+	 */
+	public function fetch_first($resultType=PDO::FETCH_ASSOC) {
+		if ($this->SQLRes) {
+			return $this->SQLRes->fetch($resultType, PDO::FETCH_ORI_FIRST);
+		}
+
+		return false;
+	}
+
+	/**
+	 *	\brief Retorna o resultado anterior do cursor de uma consulta
+	 */
+	public function fetch_prev($resultType=PDO::FETCH_ASSOC) {
+		if ($this->SQLRes) {
+			return $this->SQLRes->fetch($resultType, PDO::FETCH_ORI_PRIOR);
 		}
 
 		return false;
@@ -468,6 +523,17 @@ class DB {
 	public function fetch_next($resultType=PDO::FETCH_ASSOC) {
 		if ($this->SQLRes) {
 			return $this->SQLRes->fetch($resultType);
+		}
+
+		return false;
+	}
+
+	/**
+	 *	\brief Retorna o último resultado do cursor de uma consulta
+	 */
+	public function fetch_last($resultType=PDO::FETCH_ASSOC) {
+		if ($this->SQLRes) {
+			return $this->SQLRes->fetch($resultType, PDO::FETCH_ORI_LAST);
 		}
 
 		return false;
@@ -593,6 +659,11 @@ class DB {
 		unset($res);
 		return mktime($hora[0], $hora[1], $hora[2], $data[1], $data[2], $data[0]);
     }
+	/**
+	 *  \brief DEPRECATED - Use mk_db_datetime
+	 *  \deprecated
+	 *  \see mk_db_datetime
+	 */
 	public static function dateToTime($dateTime) {
 		return self::mk_db_datetime($dateTime);
 	}
@@ -604,11 +675,16 @@ class DB {
 	 *  \param (string)$dataTimeStamp - data hora no format Y-m-d H:i:s
 	 *  \return Retorna uma string no formato '<dia> de <nome_do_mes>'.
 	 */
-	public static function deymonth_brazilian($dataTimeStamp) {
+	public static function lond_date_brazilian($dataTimeStamp) {
 		$dateTime = DB::mk_db_datetime($dataTimeStamp);
 		$mes = array('Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro');
 		return date('d', $dateTime) . ' de ' . $mes[date('m', $dateTime)];
     }
+	/**
+	 *  \brief DEPRECATED - Use lond_date_brazilian
+	 *  \deprecated
+	 *  \see lond_date_brazilian
+	 */
 	public static function dateToStr($dataTimeStamp) {
 		return self::lond_date_brazilian($dataTimeStamp);
 	}

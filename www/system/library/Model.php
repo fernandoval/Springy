@@ -8,12 +8,12 @@
  *  \brief		Classe Model para acesso a banco de dados
  *  \note		Essa classe extende a classe DB.
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	1.0.0
+ *  \version	1.1.1
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \ingroup	framework
- *  
+ *
  *  Esta classe deve ser utilizada como herança para as classes de acesso a banco.
- *  
+ *
  *  Utilize-a para diminuir a quantidade de métodos que sua classe precisará ter para consultas e manutenção em bancos de dados.
  */
 
@@ -53,7 +53,7 @@ class Model extends DB {
 	 */
 	function __construct($database=null, $filter=null) {
 		parent::__construct($database);
-		
+
 		if (is_array($filter)) {
 			$this->load($filter);
 		}
@@ -137,47 +137,79 @@ class Model extends DB {
 		}
 		else {
 			$this->execute('INSERT INTO `'.$this->tableName.'`('.implode(', ', $columns).($this->insertDateColumn ? ', `'.$this->insertDateColumn.'`' : "").') VALUES ('.rtrim(str_repeat('?,', count($values)),',').($this->insertDateColumn ? ', NOW()' : "").')', $values);
-			
+
 			if (!empty($this->primaryKey) && count($this->primaryKey) == 1 && empty($this->rows[0][$this->primaryKey[0]])) {
 				$this->rows[0][$this->primaryKey[0]] = $this->get_inserted_id();
 			}
 		}
-		
+
 		$this->changedColumns = array();
-		
+
 		return ($this->affected_rows() > 0);
 	}
-	
+
 	/**
 	 *  \brief Deleta o registro
-	 *  
-	 *  Promove a exclusão física ou lógica do registro
-	 *  
-	 *  \return Retorna TRUE se o registro foi deletado ou FALSE em caso contrário.
+	 *
+	 *  Promove a exclusão física ou lógica de registros
+	 *
+	 *  \param (array)$filter - filtro dos registros a serem deletados.
+	 *  	Se omitido (ou null), default, deleta o registro carregado na classe
+	 *  \return Retorna o número de linhas afetadas ou FALSE em caso contrário.
 	 */
-	public function delete() {
-		if (!$this->loaded) {
-			return false;
+	public function delete(array $filter=null) {
+		// Se está carregado e não foi passado um filtro, exclui o registro corrente
+		if ($this->loaded && is_null($filter)) {
+			// Abandona se a chave primária não estiver definida
+			if (!$this->isPrimaryKeyDefined()) {
+				return false;
+			}
+
+			// Monta a chave primária
+			$pk = array();
+			foreach($this->primaryKey as $column) {
+				$pk[] = '`'.$column.'` = ?';
+				$values[] = $this->rows[0][$column];
+			}
+
+			// Faz a exclusão lógica ou física do registro
+			if (!empty($this->deletedColumn)) {
+				array_unshift($values, 1);
+				$this->execute('UPDATE `'.$this->tableName.'` SET `'.$this->deletedColumn.'` = ? WHERE '.implode(' AND ', $pk), $values);
+			} else {
+				$this->execute('DELETE FROM `'.$this->tableName.'` WHERE '.implode(' AND ', $pk), $values);
+			}
 		}
-		
-		if (!$this->isPrimaryKeyDefined()) {
-			return false;
+		else {
+			$where = array();
+			$params = array();
+
+			// Monta o conjunto de filtros personalizado da classe herdeira
+			if (!$this->filter($filter, $where, $params)) {
+				return false;
+			}
+
+			// Abandona caso não hajam filtros
+			if (empty($where)) {
+				return false;
+			}
+
+			// Se há uma coluna de exclusão lógica definida, adiciona-a ao conjunto de filtros
+			if ($this->deletedColumn) {
+				$where[] = '`'.$this->deletedColumn.'` = ?';
+				$params[] = 0;
+			}
+
+			// Faz a exclusão lógica ou física do(s) registro(s)
+			if (!empty($this->deletedColumn)) {
+				array_unshift($params, 1);
+				$this->execute('UPDATE `'.$this->tableName.'` SET `'.$this->deletedColumn.'` = ? WHERE '.implode(' AND ', $where), $params);
+			} else {
+				$this->execute('DELETE FROM `'.$this->tableName.'` WHERE '.implode(' AND ', $where), $params);
+			}
 		}
-		
-		$pk = array();
-		foreach($this->primaryKey as $column) {
-			$pk[] = '`'.$column.'` = ?';
-			$values[] = $this->rows[0][$column];
-		}
-		
-		if (!empty($this->deletedColumn)) {
-			array_unshift($values, 1);
-			$this->execute('UPDATE `'.$this->tableName.'` SET `'.$this->deletedColumn.'` = ? WHERE '.implode(' AND ', $pk), $values);
-		} else {
-			$this->execute('DELETE FROM `'.$this->tableName.'` WHERE '.implode(' AND ', $pk), $values);
-		}
-		
-		return ($this->affected_rows() > 0);
+
+		return $this->affected_rows();
 	}
 
 	/**
@@ -242,30 +274,35 @@ class Model extends DB {
 			$filter = $this->rows[0];
 		}
 
+		// Abandona caso não nenhum filtro tenha sido definido (evita retornar toda a tabela como resultado)
 		if (empty($filter)) {
 			return false;
 		}
-		
+
+		// Monta o conjunto de colunas da busca
 		if (is_array($this->tableColumns)) {
 			$columns = implode(', ', $this->tableColumns);
 		} else {
 			$columns = $this->tableColumns;
 		}
 
-		$sql = 'SELECT SQL_CALC_FOUND_ROWS '.$columns.' FROM `'.$this->tableName.'` WHERE ';
+		$sql = 'SELECT '.($this->driver_name() == 'mysql' ? 'SQL_CALC_FOUND_ROWS ' : "").$columns.' FROM `'.$this->tableName.'` WHERE ';
 		unset($columns);
 		$where = array();
 		$orderby = array();
 		$params = array();
 
+		// Monta o conjunto de filtros personalizado da classe herdeira
 		if (!$this->filter($filter, $where, $params)) {
 			return false;
 		}
 
+		// Abandona caso não hajam filtros
 		if (empty($where)) {
 			return false;
 		}
 
+		// Se há uma coluna de exclusão lógica definida, adiciona-a ao conjunto de filtros
 		if ($this->deletedColumn) {
 			$where[] = '`'.$this->deletedColumn.'` = ?';
 			if (isset($filter[$this->deletedColumn])) {
@@ -276,8 +313,8 @@ class Model extends DB {
 		}
 
 		$sql .= implode(' AND ', $where);
-		unset($where);
 
+		// Monta a ordenação do resultado de busca
 		if (!empty($orderby)) {
 			foreach($orderby as $column => $direction) {
 				if (in_array($column, array($this->orderColumns)) && in_array($direction, array('ASC', 'DESC'))) {
@@ -290,23 +327,37 @@ class Model extends DB {
 			}
 		}
 
+		// Monta o limitador de registros
 		if ($limit) {
 			$sql .= ' LIMIT ?, ?';
 			$params[] = $offset;
 			$params[] = $limit;
 		}
 
+		// Limpa as propriedades da classe
 		$this->changedColumns = array();
 		$this->loaded = false;
-		
-		// $db = new DB;
-		$this->execute($sql, $params);
-		unset($sql, $params);
-		$this->rows = $this->get_all();
 
-		$this->execute('SELECT FOUND_ROWS() AS total');
-		$columns = $this->fetch_next();
-		$this->dbNumRows = (int)$columns['total'];
+		// Efetua a busca
+		$this->execute($sql, $params);
+		$this->rows = $this->get_all();
+		unset($sql);
+
+		// Faz a contagem de registros do filtro apenas se foi definido um limitador de resultador
+		if ($limit) {
+			if ($this->driver_name() == 'mysql') {
+				$this->execute('SELECT FOUND_ROWS() AS `found_rows`');
+			} else {
+				array_pop($params);
+				array_pop($params);
+				$this->execute('SELECT COUNT(0) AS `found_rows` FROM `'.$this->tableName.'` WHERE '.implode(' AND ', $where), $params);
+			}
+			$columns = $this->fetch_next();
+			$this->dbNumRows = (int)$columns['found_rows'];
+		} else {
+			$this->dbNumRows = count($this->rows);
+		}
+		unset($where, $params);
 
 		return true;
 	}
