@@ -9,7 +9,7 @@
  *	\brief		Classe para acesso a banco de dados
  *	\note		Esta classe usa a PHP Data Object (PDO) para acesso a banco de dados
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.3.17
+ *	\version	1.3.18
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
@@ -83,7 +83,7 @@ class DB {
 		}
 
 		// Lê as configurações de acesso ao banco de dados
-		$conf = Kernel::getConf('db', $database);
+		$conf = Configuration::get('db', $database);
 
 		// Verifica se o servidor é um pool (round robin)
 		if ($conf['database_type'] == 'pool' && is_array($conf['host_name'])) {
@@ -141,7 +141,7 @@ class DB {
 	 */
 	private function _round_robin($database, $dbconf) {
 		// Lê as configurações de controle de round robin
-		$rr = Kernel::getConf('db', 'round_robin');
+		$rr = Configuration::get('db', 'round_robin');
 
 		// Efetua controle de round robin por Memcached
 		if ($rr['type'] == 'memcached') {
@@ -241,7 +241,7 @@ class DB {
 			return;
 		}
 		// [pt-br] Lê as configurações de acesso ao banco de dados
-		$conf = Kernel::getConf('db', self::$DB[$this->database]['dbName']);
+		$conf = Configuration::get('db', self::$DB[$this->database]['dbName']);
 
 		if (isset($this->LastQuery)) {
 			$sqlError = '<pre>' . htmlentities((is_object($this->LastQuery) ? $this->LastQuery->__toString() : $this->LastQuery)) . '</pre><br /> Parametros:<br />' . Kernel::print_rc($this->LastValues, true);
@@ -405,8 +405,8 @@ class DB {
 			$this->reportError('Can\'t execute query.');
 		}
 
-		if (self::$db_debug || Kernel::getConf('system', 'sql_debug')) {
-			$conf = Kernel::getConf('db', self::$DB[$this->database]['dbName']);
+		if (self::$db_debug || Configuration::get('system', 'sql_debug')) {
+			$conf = Configuration::get('db', self::$DB[$this->database]['dbName']);
 
 			Kernel::debug(
 				'<pre>' .

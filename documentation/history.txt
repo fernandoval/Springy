@@ -15,6 +15,8 @@ Framework Update History
 
 ------------------------------------------------------------------------------------ --- -- -
 1.4.0
+	- Criação da classe Configuration;
+	- Removidos métodos de configuração do sistema do Kernel;
 	- Normalização do nome dos métodos das bibliotecas para o padrão lowerCamelCase http://pt.wikipedia.org/wiki/CamelCase (veja o documento de migração "migrando para versão 1.4.txt");
 	- Unificação de métodos de leitura e escrita num método misto;
 	- Melhorias na documentação;

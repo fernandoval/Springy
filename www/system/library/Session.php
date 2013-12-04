@@ -7,12 +7,12 @@
  *
  *	\brief		Classe para tratamento de sessão
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.3.11
+ *	\version	1.4.12
  *  \author		Fernando Val  - fernando.val@gmail.com
  *	\ingroup	framework
  */
 
-class Session extends Kernel {
+class Session {
 	/// Flag de controle de sessão iniciada
 	private static $started = false;
 	/// ID da sessão
@@ -41,13 +41,13 @@ class Session extends Kernel {
 		if (self::$started) return true;
 
 		// Carrega as configurações de tratamento de sesssão
-		self::$type = parent::getConf('session', 'type');
-		self::$server = parent::getConf('session', 'server_addr');
-		self::$port = parent::getConf('session', 'server_port');
-		self::$session_table = parent::getConf('session', 'table_name');
-		self::$id_column = parent::getConf('session', 'id_column');
-		self::$value_column = parent::getConf('session', 'value_column');
-		self::$update_column = parent::getConf('session', 'update_column');
+		self::$type = Configuration::get('session', 'type');
+		self::$server = Configuration::get('session', 'server_addr');
+		self::$port = Configuration::get('session', 'server_port');
+		self::$session_table = Configuration::get('session', 'table_name');
+		self::$id_column = Configuration::get('session', 'id_column');
+		self::$value_column = Configuration::get('session', 'value_column');
+		self::$update_column = Configuration::get('session', 'update_column');
 
 		if (!is_null($name)) {
 			session_name($name);
@@ -73,12 +73,12 @@ class Session extends Kernel {
 					self::$id = md5(uniqid(mt_rand(), true));
 				}
 			}
-			Cookie::set(session_name(), self::$id, 0, '/', parent::getConf('session', 'master_domain'), false, false);
+			Cookie::set(session_name(), self::$id, 0, '/', Configuration::get('session', 'master_domain'), false, false);
 
 			if (self::$type == 'db') {
 				// Expira as sessões antigas
 				$db = new DB();
-				$exp = parent::getConf('session', 'expires');
+				$exp = Configuration::get('session', 'expires');
 				if ($exp == 0) $exp = 86400;
 				$db->execute('DELETE FROM '.self::$session_table.' WHERE '.self::$update_column.' <= ?', array(date('Y-m-d H:i:s', time() - ($exp * 60))));
 
@@ -106,7 +106,7 @@ class Session extends Kernel {
 
 			self::$started = true;
 		} else {
-			session_set_cookie_params(0, '/', parent::getConf('session', 'master_domain'), false, false);
+			session_set_cookie_params(0, '/', Configuration::get('session', 'master_domain'), false, false);
 			self::$started = session_start();
 			self::$data = isset($_SESSION['_ffw_'])?$_SESSION['_ffw_']:array();
 			self::$id = session_id();
@@ -132,7 +132,7 @@ class Session extends Kernel {
 		} elseif (self::$type == 'memcached') {
 			$mc = new Memcached();
 			$mc->addServer(self::$server, self::$port);
-			$mc->set('session_'.self::$id, self::$data, parent::getConf('session', 'expires') * 60);
+			$mc->set('session_'.self::$id, self::$data, Configuration::get('session', 'expires') * 60);
 		}
 	}
 

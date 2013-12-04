@@ -7,7 +7,7 @@
  *
  *	\brief		Classe para cliente SOAP
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.0.6
+ *	\version	1.1.7
  *  \author		Fernando Val  - fernando.val@gmail.com
  *	\ingroup	framework
  */
@@ -15,7 +15,7 @@
 if (!class_exists('SoapClient')) require_once dirname( __FILE__) . DIRECTORY_SEPARATOR . 'NuSOAP' . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'nusoap.php';
 
 
-class SOAP_Client extends Kernel {
+class SOAP_Client {
 	/// Classe utilizada internamente
 	private $classUsed = NULL;
 	/// Objeto SOAP client interno
@@ -34,12 +34,12 @@ class SOAP_Client extends Kernel {
 		if (class_exists('SoapClient')) {
 			$this->classUsed = 'SoapClient';
 
-			if (parent::getConf('system', 'proxyhost')) $options['proxy_host'] = parent::getConf('system', 'proxyhost');
-			if (parent::getConf('system', 'proxyport')) $options['proxy_port'] = parent::getConf('system', 'proxyport');
-			if (parent::getConf('system', 'proxyusername')) $options['proxy_login'] = parent::getConf('system', 'proxyusername');
-			if (parent::getConf('system', 'proxypassword')) $options['proxy_password'] = parent::getConf('system', 'proxypassword');
+			if (Configuration::get('system', 'proxyhost')) $options['proxy_host'] = Configuration::get('system', 'proxyhost');
+			if (Configuration::get('system', 'proxyport')) $options['proxy_port'] = Configuration::get('system', 'proxyport');
+			if (Configuration::get('system', 'proxyusername')) $options['proxy_login'] = Configuration::get('system', 'proxyusername');
+			if (Configuration::get('system', 'proxypassword')) $options['proxy_password'] = Configuration::get('system', 'proxypassword');
 			if (empty($options['connection_timeout'])) {
-				$options['connection_timeout'] = (parent::getConf('soap', 'timeout')) ? parent::getConf('soap', 'timeout') : 20;
+				$options['connection_timeout'] = (Configuration::get('soap', 'timeout')) ? Configuration::get('soap', 'timeout') : 20;
 			}
 			ini_set('default_socket_timeout', $options['connection_timeout']);
 
@@ -74,7 +74,7 @@ class SOAP_Client extends Kernel {
 		}
 		else {
 			$this->classUsed = 'NuSOAP';
-			$this->client = new nusoap_client($endpoint, $wsdl, parent::getConf('soap', 'proxyhost'), parent::getConf('soap', 'proxyport'), parent::getConf('soap', 'proxyusername'), parent::getConf('soap', 'proxypassword'));
+			$this->client = new nusoap_client($endpoint, $wsdl, Configuration::get('soap', 'proxyhost'), Configuration::get('soap', 'proxyport'), Configuration::get('soap', 'proxyusername'), Configuration::get('soap', 'proxypassword'));
 
 			// Pega o erro, caso tenha havido
 			if ($this->client->getError()) {
@@ -83,7 +83,7 @@ class SOAP_Client extends Kernel {
 			}
 
 			$this->client->useHTTPPersistentConnection();
-			$this->client->setUseCurl(parent::getConf('soap', 'useCURL'));
+			$this->client->setUseCurl(Configuration::get('soap', 'useCURL'));
 		}
 
 		return true;

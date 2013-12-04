@@ -6,14 +6,14 @@
  *
  *	\warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
- *	\version 0.2.3
+ *	\version 0.3.4
  *
  *	\brief Classe para conexão SOAP
  */
 
 require_once dirname( __FILE__) . DIRECTORY_SEPARATOR . 'NuSOAP' . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'nusoap.php';
 
-class SOAP extends Kernel {
+class SOAP {
 	/// Objeto NuSOAP
 	private $client = NULL;
 	/// Configuração: endereço do host de proxy
@@ -30,10 +30,10 @@ class SOAP extends Kernel {
 	 */
 	function __construct($endpoint='', $wsdl=false) {
 		// Pega os dados de proxy da configuração
-		$this->proxyhost     = parent::getConf('soap', 'proxyhost');
-		$this->proxyport     = parent::getConf('soap', 'proxyport');
-		$this->proxyusername = parent::getConf('soap', 'proxyusername');
-		$this->proxypassword = parent::getConf('soap', 'proxypassword');
+		$this->proxyhost     = Configuration::get('soap', 'proxyhost');
+		$this->proxyport     = Configuration::get('soap', 'proxyport');
+		$this->proxyusername = Configuration::get('soap', 'proxyusername');
+		$this->proxypassword = Configuration::get('soap', 'proxypassword');
 	}
 
 	/**

@@ -54,8 +54,8 @@ class Global_Controller {
  */
 function files_static_version($params, $smarty) {
 	if ($params['type'] == 'js') {
-		return URI::buildURL(array('js'), array(), isset($_SERVER['HTTPS']), 'static') . '/' . $params['file'] . '__' . filemtime(Kernel::getConf('system', 'js_path') . DIRECTORY_SEPARATOR . $params['file'] . '.js') . '.js';
+		return URI::buildURL(array('js'), array(), isset($_SERVER['HTTPS']), 'static') . '/' . $params['file'] . '__' . filemtime(Configuration::get('system', 'js_path') . DIRECTORY_SEPARATOR . $params['file'] . '.js') . '.js';
 	} else {
-		return URI::buildURL(array('css'), array(), isset($_SERVER['HTTPS']), 'static') . '/' .$params['file'] . '__' . filemtime(Kernel::getConf('system', 'css_path') . DIRECTORY_SEPARATOR . $params['file'] . '.css') . '.css';
+		return URI::buildURL(array('css'), array(), isset($_SERVER['HTTPS']), 'static') . '/' .$params['file'] . '__' . filemtime(Configuration::get('system', 'css_path') . DIRECTORY_SEPARATOR . $params['file'] . '.css') . '.css';
 	}
 }

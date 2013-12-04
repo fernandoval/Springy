@@ -8,7 +8,7 @@
  *
  *	\brief		Classe para envio de email
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.4.7
+ *	\version	1.4.8
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
@@ -16,7 +16,7 @@
 
 require_once dirname( __FILE__) . DIRECTORY_SEPARATOR . 'MimeMessage' . DIRECTORY_SEPARATOR . 'email_message.php';
 
-class Mail extends Kernel {
+class Mail {
 	private $message_obj = NULL;
 	private $html_part = NULL;
 	private $text_part = NULL;
@@ -30,44 +30,44 @@ class Mail extends Kernel {
 	 *	\brief Construtor da classe
 	 */
 	function __construct() {
-		if (parent::getConf('mail', 'method') == 'smtp') {
+		if (Configuration::get('mail', 'method') == 'smtp') {
 			error_reporting(E_ALL^E_NOTICE);
 			restore_error_handler();
 
 			require_once dirname( __FILE__) . DIRECTORY_SEPARATOR . 'MimeMessage' . DIRECTORY_SEPARATOR . 'smtp_message.php';
 			require_once dirname( __FILE__) . DIRECTORY_SEPARATOR . 'Smtp' . DIRECTORY_SEPARATOR . 'smtp.php';
 
-			if (parent::getConf('mail', 'ssl') || parent::getConf('mail', 'starttls')) {
+			if (Configuration::get('mail', 'ssl') || Configuration::get('mail', 'starttls')) {
 				require_once dirname( __FILE__) . DIRECTORY_SEPARATOR . 'Sasl' . DIRECTORY_SEPARATOR . 'sasl.php';
 			}
 
 			$this->message_obj = new smtp_message_class;
 
-			$this->message_obj->localhost = parent::getConf('mail', 'workstation');
-			$this->message_obj->smtp_host = parent::getConf('mail', 'host');
-			$this->message_obj->smtp_port = parent::getConf('mail', 'port');
-			$this->message_obj->smtp_ssl = parent::getConf('mail', 'ssl');
-			$this->message_obj->smtp_start_tls = parent::getConf('mail', 'starttls');
-			$this->message_obj->smtp_direct_delivery = parent::getConf('mail', 'direct_delivery');
-			$this->message_obj->smtp_exclude_address = parent::getConf('mail', 'exclude_address');
-			$this->message_obj->smtp_user = parent::getConf('mail', 'user');
-			$this->message_obj->smtp_realm = parent::getConf('mail', 'realm');
-			$this->message_obj->smtp_workstation = parent::getConf('mail', 'workstation');
-			$this->message_obj->smtp_password = parent::getConf('mail', 'pass');
-			$this->message_obj->smtp_pop3_auth_host = parent::getConf('mail', 'auth_host');
-			$this->message_obj->smtp_debug = parent::getConf('mail', 'debug');
-			$this->message_obj->smtp_html_debug = parent::getConf('mail', 'html_debug');
+			$this->message_obj->localhost = Configuration::get('mail', 'workstation');
+			$this->message_obj->smtp_host = Configuration::get('mail', 'host');
+			$this->message_obj->smtp_port = Configuration::get('mail', 'port');
+			$this->message_obj->smtp_ssl = Configuration::get('mail', 'ssl');
+			$this->message_obj->smtp_start_tls = Configuration::get('mail', 'starttls');
+			$this->message_obj->smtp_direct_delivery = Configuration::get('mail', 'direct_delivery');
+			$this->message_obj->smtp_exclude_address = Configuration::get('mail', 'exclude_address');
+			$this->message_obj->smtp_user = Configuration::get('mail', 'user');
+			$this->message_obj->smtp_realm = Configuration::get('mail', 'realm');
+			$this->message_obj->smtp_workstation = Configuration::get('mail', 'workstation');
+			$this->message_obj->smtp_password = Configuration::get('mail', 'pass');
+			$this->message_obj->smtp_pop3_auth_host = Configuration::get('mail', 'auth_host');
+			$this->message_obj->smtp_debug = Configuration::get('mail', 'debug');
+			$this->message_obj->smtp_html_debug = Configuration::get('mail', 'html_debug');
 
 
-			if (parent::getConf('system', 'proxyhost')) {
-				$this->message_obj->smtp_http_proxy_host_name = parent::getConf('system', 'proxyhost');
-				$this->message_obj->smtp_http_proxy_host_port = parent::getConf('system', 'proxyport');
-				//$this->message_obj-> = parent::getConf('system', 'proxyusername');
-				//$this->message_obj-> = parent::getConf('system', 'proxypassword');
+			if (Configuration::get('system', 'proxyhost')) {
+				$this->message_obj->smtp_http_proxy_host_name = Configuration::get('system', 'proxyhost');
+				$this->message_obj->smtp_http_proxy_host_port = Configuration::get('system', 'proxyport');
+				//$this->message_obj-> = Configuration::get('system', 'proxyusername');
+				//$this->message_obj-> = Configuration::get('system', 'proxypassword');
 			}
 
 
-		} elseif (parent::getConf('mail', 'method') == 'sendmail') {
+		} elseif (Configuration::get('mail', 'method') == 'sendmail') {
 			require_once dirname( __FILE__) . DIRECTORY_SEPARATOR . 'MimeMessage' . DIRECTORY_SEPARATOR . 'sendmail_message.php';
 
 			$this->message_obj = new sendmail_message_class;
@@ -78,10 +78,10 @@ class Mail extends Kernel {
 		} else {
 			$this->message_obj = new email_message_class;
 
-			$this->message_obj->localhost = parent::getConf('mail', 'workstation');
+			$this->message_obj->localhost = Configuration::get('mail', 'workstation');
 		}
 
-		$this->setEmailHeader('Errors-To', Kernel::getConf('mail', 'errors_go_to'), Kernel::getConf('mail', 'errors_go_to'));
+		$this->setEmailHeader('Errors-To', Configuration::get('mail', 'errors_go_to'), Configuration::get('mail', 'errors_go_to'));
 	}
 
 	/**
@@ -113,8 +113,8 @@ class Mail extends Kernel {
 	 */
 	public function to($email, $name='') {
 		// Verifica se há a entrada forçando o envio de todos os emails para um destinatário específico
-		if (Kernel::getConf('mail', 'mails_go_to')) {
-			$email = Kernel::getConf('mail', 'mails_go_to');
+		if (Configuration::get('mail', 'mails_go_to')) {
+			$email = Configuration::get('mail', 'mails_go_to');
 			$name = '';
 		}
 
@@ -196,7 +196,7 @@ class Mail extends Kernel {
 	 *	\brief Envia a mensagem
 	 */
 	public function send() {
-		if (parent::getConf('mail', 'method') == 'sendmail') {
+		if (Configuration::get('mail', 'method') == 'sendmail') {
 			$error = $this->message_obj->Mail($this->mail_to, $this->mail_subject, $this->text_message, '', '');
 		} else {
 			$error = $this->message_obj->Send();

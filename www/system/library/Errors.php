@@ -8,13 +8,13 @@
  *
  *	\brief		Classe para tratamento de erros
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.4.10
+ *	\version	1.4.11
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
  */
 
-class Errors extends Kernel {
+class Errors {
 	public static function ajax($errorType, $msg='') {
 		self::errorHandler(E_USER_ERROR, $msg, '', '', '', $errorType);
 	}
@@ -167,11 +167,11 @@ class Errors extends Kernel {
 					  </tr>
 					  <tr>
 						<td valign="top" style="padding:3px 2px"><label style="font-weight:bold">Debug:</label></td>
-						<td style="padding:3px 2px"><table width="100%"><tr><td style="font-family:Arial, Helvetica, sans-serif; font-size:12px; padding:3px 2px">'.parent::getDebugContent().'</td></tr></table></td>
+						<td style="padding:3px 2px"><table width="100%"><tr><td style="font-family:Arial, Helvetica, sans-serif; font-size:12px; padding:3px 2px">'.Kernel::getDebugContent().'</td></tr></table></td>
 					  </tr>
 					  <tr style="background:#efefef">
 						<td valign="top" style="padding:3px 2px"><label style="font-weight:bold">Info:</label></td>
-						<td style="padding:3px 2px"><table width="100%"><tr><td style="padding:3px 2px">'.parent::makeDebugBacktrace().'</td></tr></table></td>
+						<td style="padding:3px 2px"><table width="100%"><tr><td style="padding:3px 2px">'.Kernel::makeDebugBacktrace().'</td></tr></table></td>
 					  </tr>
 					  <tr>
 						<td colspan="2" style="background-color:#66C; color:#FFF; font-weight:bold; padding-left:10px; padding:3px 2px">IP</td>
@@ -198,19 +198,19 @@ class Errors extends Kernel {
 					  </tr>
 					  <tr>
 						<td valign="top" style="padding:3px 2px"><label style="font-weight:bold">_POST</label></td>
-						<td style="padding:3px 2px">'.parent::print_rc($_POST, true).'</td>
+						<td style="padding:3px 2px">'.Kernel::print_rc($_POST, true).'</td>
 					  </tr>
 					  <tr>
 						<td valign="top" style="padding:3px 2px"><label style="font-weight:bold">_GET</label></td>
-						<td style="padding:3px 2px">'.parent::print_rc($_GET, true).'</td>
+						<td style="padding:3px 2px">'.Kernel::print_rc($_GET, true).'</td>
 					  </tr>
 					  <tr>
 						<td valign="top" style="padding:3px 2px"><label style="font-weight:bold">_COOKIE</label></td>
-						<td style="padding:3px 2px">'.parent::print_rc($_COOKIE, true).'</td>
+						<td style="padding:3px 2px">'.Kernel::print_rc($_COOKIE, true).'</td>
 					  </tr>
 					  <tr>
 						<td valign="top" style="padding:3px 2px"><label style="font-weight:bold">_SESSION</label></td>
-						<td style="padding:3px 2px">'.parent::print_rc(Session::getAll(), true).'</td>
+						<td style="padding:3px 2px">'.Kernel::print_rc(Session::getAll(), true).'</td>
 					  </tr>
 					</table>
 				</td>
@@ -218,7 +218,7 @@ class Errors extends Kernel {
 			</table>';
 
 		// Envia a mensagem de erro para o webmaster
-		if (!in_array($errorType, array(404, 503)) && parent::getConf('mail', 'errors_go_to') && !parent::getConf('system','debug')) {
+		if (!in_array($errorType, array(404, 503)) && Configuration::get('mail', 'errors_go_to') && !Configuration::get('system','debug')) {
 			$db = new DB;
 			if (DB::hasConnection()) {
 				$db->execute('SELECT 1 FROM system_error WHERE error_code = ?', array($errorId));
@@ -236,8 +236,8 @@ class Errors extends Kernel {
 				$msg = preg_replace('/ style="display:none"/', '', $msg);
 
 				$email = new Mail;
-				$email->to(parent::getConf('mail', 'errors_go_to'));
-				$email->from(parent::getConf('mail', 'errors_go_to'));
+				$email->to(Configuration::get('mail', 'errors_go_to'));
+				$email->from(Configuration::get('mail', 'errors_go_to'));
 				$email->subject('Erro em ' . $GLOBALS['SYSTEM']['SYSTEM_NAME'] . ' (release: "' . $GLOBALS['SYSTEM']['SYSTEM_VERSION'] . '" | ambiente: "' . ($GLOBALS['SYSTEM']['ACTIVE_ENVIRONMENT'] ? $GLOBALS['SYSTEM']['ACTIVE_ENVIRONMENT'] : $_SERVER['HTTP_HOST']) . '")' . ' - ' . ((isset($_SERVER) && isset($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : ""));
 				$email->body($msg);
 				$email->send();
@@ -323,7 +323,7 @@ class Errors extends Kernel {
 	 */
 	public static function printHtml($errorType, $msg) {
 		// Verifica se a saída do erro não é em ajax ou json
-		//if (!parent::getConf('system', 'ajax') || !in_array('Content-type: application/json; charset=' . $GLOBALS['SYSTEM']['CHARSET'], headers_list())) {
+		//if (!Configuration::get('system', 'ajax') || !in_array('Content-type: application/json; charset=' . $GLOBALS['SYSTEM']['CHARSET'], headers_list())) {
 		if (!URI::isAjaxRequest()) {
 			if (ob_get_contents()) {
 				ob_clean();
@@ -338,7 +338,7 @@ class Errors extends Kernel {
 			$tpl->assign('urlIMG', URI::buildURL(array('images'), array(), isset($_SERVER['HTTPS']), 'static'));
 			$tpl->assign('urlSWF', URI::buildURL(array('swf'), array(), isset($_SERVER['HTTPS']), 'static'));
 
-			$tpl->assign('errorDebug', (parent::getConf('system', 'debug') ? $msg : ''));
+			$tpl->assign('errorDebug', (Configuration::get('system', 'debug') ? $msg : ''));
 
 			$tpl->display();
 			unset($tpl);

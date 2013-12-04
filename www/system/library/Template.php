@@ -8,7 +8,7 @@
  *
  *	\brief		Classe de tratamento de templates
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	3.1.2
+ *	\version	3.1.3
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
@@ -34,7 +34,7 @@ class Template {
 	 */
 	public function __construct($tpl=NULL) {
 		// Verifica o sub-dir
-		if (is_dir(Kernel::getConf('template', 'template_path') . DIRECTORY_SEPARATOR . URI::currentPage())) {
+		if (is_dir(Configuration::get('template', 'template_path') . DIRECTORY_SEPARATOR . URI::currentPage())) {
 			$path = URI::currentPage();
 		} else {
 			$path = 'default';
@@ -43,20 +43,20 @@ class Template {
 		// Inicializa a classe de template
 		$this->tplObj = new Smarty;
 
-		$this->setCacheDir( Kernel::getConf('template', 'template_cached_path') );
+		$this->setCacheDir( Configuration::get('template', 'template_cached_path') );
 
-		$this->setTemplateDir( Kernel::getConf('template', 'template_path') );
-		$this->setCompileDir( Kernel::getConf('template', 'compiled_template_path') );
-		$this->setConfigDir( Kernel::getConf('template', 'template_config_path') );
+		$this->setTemplateDir( Configuration::get('template', 'template_path') );
+		$this->setCompileDir( Configuration::get('template', 'compiled_template_path') );
+		$this->setConfigDir( Configuration::get('template', 'template_config_path') );
 
 		if ($tpl) {
 			$this->setTemplate($tpl);
 		}
 
 		// Iniciliza as variáveis padrão de template
-		if (Kernel::getConf('uri', 'common_urls')) {
-			if (!Kernel::getConf('uri', 'register_method_set_common_urls')) {
-				foreach(Kernel::getConf('uri', 'common_urls') as $var => $value) {
+		if (Configuration::get('uri', 'common_urls')) {
+			if (!Configuration::get('uri', 'register_method_set_common_urls')) {
+				foreach(Configuration::get('uri', 'common_urls') as $var => $value) {
 					if (isset($value[2])) {
 						$this->assign($var, URI::buildURL($value[0], $value[1], $value[2]));
 					} else if (isset($value[1])) {
@@ -65,8 +65,8 @@ class Template {
 						$this->assign($var, URI::buildURL($value[0]));
 					}
 				}
-			} else if (Kernel::getConf('uri', 'register_method_set_common_urls')) {
-				$toCall = Kernel::getConf('uri', 'register_method_set_common_urls');
+			} else if (Configuration::get('uri', 'register_method_set_common_urls')) {
+				$toCall = Configuration::get('uri', 'register_method_set_common_urls');
 				if ($toCall['static']) {
 					if (!isset($toCall['method'])) {
 						throw new Exception('You need to determine which method will be executed.', 500);
@@ -139,7 +139,7 @@ class Template {
 			$this->templateName = URI::getControllerClass();
 
 			// Monta o caminho do diretório do arquivo de template
-			$path = Kernel::getConf('template', 'template_path') . (empty($relative_path_page) ? '' : DIRECTORY_SEPARATOR) . $relative_path_page;
+			$path = Configuration::get('template', 'template_path') . (empty($relative_path_page) ? '' : DIRECTORY_SEPARATOR) . $relative_path_page;
 
 			// Verifica se existe o diretório e dentro dele um template com o nome da página e
 			// havendo, usa como caminho relativo adicionao. Se não houver, limpa o caminho relativo.
@@ -150,9 +150,9 @@ class Template {
 			}
 
 			// Ajusta os caminhos de template
-			$this->setTemplateDir( Kernel::getConf('template', 'template_path') . $relative_path);
-			$this->setCompileDir( Kernel::getConf('template', 'compiled_template_path') . $relative_path);
-			$this->setConfigDir( Kernel::getConf('template', 'template_config_path'));
+			$this->setTemplateDir( Configuration::get('template', 'template_path') . $relative_path);
+			$this->setCompileDir( Configuration::get('template', 'compiled_template_path') . $relative_path);
+			$this->setConfigDir( Configuration::get('template', 'template_config_path'));
 		}
 
 		// Se o arquivo de template não existir, exibe erro 404
@@ -239,7 +239,7 @@ class Template {
 			$compile = substr($compile, 0, strrpos('/', $compile));
 		}
 		
-		$this->setCompileDir( Kernel::getConf('template', 'compiled_template_path') . $compile );
+		$this->setCompileDir( Configuration::get('template', 'compiled_template_path') . $compile );
 	}
 
 	/**

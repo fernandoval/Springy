@@ -8,7 +8,7 @@
  *
  *	\brief		Classe para tratamento de URI
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.10.17
+ *	\version	1.10.18
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
@@ -101,9 +101,9 @@ class URI extends Kernel {
 
 		// Verifica se altera o diretório de controladoras para o HOST
 		if ($url = (isset($_SERVER) && isset($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : "") {
-			foreach (parent::getConf('uri', 'host_controller_path') as $host => $root) {
+			foreach (Configuration::get('uri', 'host_controller_path') as $host => $root) {
 				if ($url == $host) {
-					parent::controllerRoot($root);
+					Kernel::controllerRoot($root);
 					break;
 				}
 			}
@@ -116,7 +116,7 @@ class URI extends Kernel {
 			$val = trim($val);
 
 			if ($val != '') {
-				if ($SegNum < parent::getConf('uri', 'ignored_segments'))
+				if ($SegNum < Configuration::get('uri', 'ignored_segments'))
 					self::$ignored_segments[] = $val;
 				else
 					$Segments[] = $val;
@@ -125,12 +125,12 @@ class URI extends Kernel {
 		}
 
 		// Redireciona URIs terminadas em / para evitar conteúdo duplicado de SEO?
-		if (parent::getConf('uri', 'redirect_last_slash') && substr(self::$uri_string, -1) == '/' && !(parent::getConf('uri', 'force_slash_on_index') && empty($Segments))) {
+		if (Configuration::get('uri', 'redirect_last_slash') && substr(self::$uri_string, -1) == '/' && !(Configuration::get('uri', 'force_slash_on_index') && empty($Segments))) {
 			if (isset($_GET['SUPERVAR'])) unset($_GET['SUPERVAR']);
 			self::redirect(self::buildURL(explode('/', trim(self::$uri_string, '/')), empty($_GET) ? array() : $_GET, false, 'dynamic', false), 301);
 		}
 		// Redireciona se for acesso à página inicial e a URI não terminar em / para mesma URL terminada com /
-		elseif (self::$uri_string && substr(self::$uri_string, -1) != '/' && parent::getConf('uri', 'force_slash_on_index') && empty($Segments)) {
+		elseif (self::$uri_string && substr(self::$uri_string, -1) != '/' && Configuration::get('uri', 'force_slash_on_index') && empty($Segments)) {
 			if (isset($_GET['SUPERVAR'])) unset($_GET['SUPERVAR']);
 			self::redirect(self::buildURL(array_merge(explode('/', trim(self::$uri_string, '/')), array('/')), empty($_GET) ? array() : $_GET, false, 'dynamic', false), 301);
 		}
@@ -161,7 +161,7 @@ class URI extends Kernel {
 		$controller = null;
 
 		// Procura a controller correta e corrige a página atual se necessário
-		$path = $GLOBALS['SYSTEM']['CONTROLER_PATH'] . (count(parent::controllerRoot()) ? DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, parent::controllerRoot()) : "");
+		$path = $GLOBALS['SYSTEM']['CONTROLER_PATH'] . (count(Kernel::controllerRoot()) ? DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, Kernel::controllerRoot()) : "");
 		$segment = 0;
 		while (self::getSegment($segment, false)) {
 			$path .= DIRECTORY_SEPARATOR . self::getSegment($segment, false);
@@ -203,11 +203,11 @@ class URI extends Kernel {
 
 		// Varre as rotas alternativas de controladoras
 		if (is_null($controller)) {
-			$routes = parent::getConf('uri', 'routes');
+			$routes = Configuration::get('uri', 'routes');
 			if (is_array($routes)) {
 				foreach ($routes as $key => $data) {
 					if (preg_match('/^'.$key.'$/', $UriString)) {
-						$controller = $GLOBALS['SYSTEM']['CONTROLER_PATH'] . (parent::controllerRoot() ? DIRECTORY_SEPARATOR . parent::controllerRoot() : "") . DIRECTORY_SEPARATOR . $data['controller'] . '.page.php';
+						$controller = $GLOBALS['SYSTEM']['CONTROLER_PATH'] . (Kernel::controllerRoot() ? DIRECTORY_SEPARATOR . Kernel::controllerRoot() : "") . DIRECTORY_SEPARATOR . $data['controller'] . '.page.php';
 						self::_set_class_controller($data['controller']);
 						self::setCurrentPage($data['segment']);
 						break;
@@ -222,7 +222,7 @@ class URI extends Kernel {
 
 		// Varre os redirecionamentos
 		if (is_null($controller)) {
-			$redirects = parent::getConf('uri', 'redirects');
+			$redirects = Configuration::get('uri', 'redirects');
 			if (is_array($redirects)) {
 				foreach ($redirects as $key => $data) {
 					if (preg_match('/^'.$key.'$/', $UriString)) {
@@ -241,9 +241,9 @@ class URI extends Kernel {
 	 *	\brief Valida a quantidade de segmentos da URI conforme a controladora
 	 */
 	public static function validateURI() {
-		$ctrl = trim(str_replace(DIRECTORY_SEPARATOR, '/', (parent::controllerRoot() ? implode(DIRECTORY_SEPARATOR, parent::controllerRoot()) : "")) . '/' . self::getControllerClass(), '/');
+		$ctrl = trim(str_replace(DIRECTORY_SEPARATOR, '/', (Kernel::controllerRoot() ? implode(DIRECTORY_SEPARATOR, Kernel::controllerRoot()) : "")) . '/' . self::getControllerClass(), '/');
 
-		if ($pc = parent::getConf('uri', 'prevalidate_controller')) {
+		if ($pc = Configuration::get('uri', 'prevalidate_controller')) {
 			if (isset($pc[$ctrl . '/' . self::getSegment(0)])) {
 				$ctrl .= '/' . self::getSegment(0);
 			}
@@ -313,7 +313,7 @@ class URI extends Kernel {
 	 *	\return Uma string contendo o caminho relativo à página atual
 	 */
 	public static function relativePathPage($consider_controller_root=FALSE) {
-		$path = (count(parent::controllerRoot()) && $consider_controller_root? implode(DIRECTORY_SEPARATOR, parent::controllerRoot()) : "");
+		$path = (count(Kernel::controllerRoot()) && $consider_controller_root? implode(DIRECTORY_SEPARATOR, Kernel::controllerRoot()) : "");
 		for ($i = 0; $i < self::$segment_page; $i++) {
 			$path .= (empty($path) ? "" : DIRECTORY_SEPARATOR) . self::getSegment($i, false);
 		}
@@ -357,7 +357,7 @@ class URI extends Kernel {
 			$segment_num += (1 + self::$segment_page);
 		}
 		if ($consider_controller_root) {
-			$segment_num -= count(parent::controllerRoot());
+			$segment_num -= count(Kernel::controllerRoot());
 		}
 		if (array_key_exists($segment_num, self::$segments)) {
 			return self::$segments[ $segment_num ];
@@ -485,10 +485,10 @@ class URI extends Kernel {
 			$segments = array_merge(self::$ignored_segments, is_array($segments) ? $segments : array($segments));
 		}
 
-		$url = str_replace('//', '/', parent::getConf('uri', 'system_root') . '/');
+		$url = str_replace('//', '/', Configuration::get('uri', 'system_root') . '/');
 
 		// Se rewrite de URL está desligado e não está sendo forçado, acrescenta ? à URL
-		if (parent::getConf('system', 'rewrite_url') === false && $forceRewrite === false) {
+		if (Configuration::get('system', 'rewrite_url') === false && $forceRewrite === false) {
 			$url .= '?';
 		}
 
@@ -501,8 +501,8 @@ class URI extends Kernel {
 		}
 		$url .= $uri;
 
-		/*if (parent::getConf('system', 'ext_file_url')) {
-			$url .= parent::getConf('system', 'ext_file_url');
+		/*if (Configuration::get('system', 'ext_file_url')) {
+			$url .= Configuration::get('system', 'ext_file_url');
 		}*/
 
 		// Monta os parâmetros a serem passados por GET
@@ -520,7 +520,7 @@ class URI extends Kernel {
 	private static function _host($host='dynamic') {
 		if (preg_match('|^(.+):\/\/(.+)|i', $host)) {
 			return $host;
-		} elseif ($host = parent::getConf('uri', $host)) {
+		} elseif ($host = Configuration::get('uri', $host)) {
 			if (preg_match('|^(.+):\/\/(.+)|i', $host)) {
 				return $host;
 			}

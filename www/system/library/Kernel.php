@@ -8,7 +8,7 @@
  *
  *	\brief		Cerne do framework
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.5.25
+ *	\version	1.5.27
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
@@ -82,7 +82,7 @@ class Kernel {
 	 *	\return void
 	 */
 	public static function debugPrint() {
-		if (!defined('STDIN') && self::getConf('system', 'debug') == true && !self::getConf('system', 'sys_ajax')) {
+		if (!defined('STDIN') && Configuration::get('system', 'debug') == true && !Configuration::get('system', 'sys_ajax')) {
 			$size = memory_get_peak_usage(true);
 			$unit = array('b', 'KB', 'MB', 'GB', 'TB', 'PB');
 			$memoria = round($size / pow(1024, ($i = floor(log($size,1024)))), 2) . ' ' . $unit[$i];
@@ -233,85 +233,6 @@ class Kernel {
 			$tr++;
 		}
 		return $saida . '</ul>';
-	}
-
-	/**
-	 *	\brief Pega o conteúdo de um registro de configuração
-	 *
-	 *	\param[in] (string) $local - nome do arquivo de configuração
-	 *	\param[in] (string) $var - registro desejado
-	 *	\return se o registro existir, retorna seu valor, caso contrário retorna NULL
-	 */
-	public static function getConf($local, $var) {
-		if (!isset(self::$confs[$local])) {
-			self::loadConf($local);
-		}
-		return (isset(self::$confs[$local][$var]) ? self::$confs[$local][$var] : NULL);
-	}
-
-	/**
-	 *	\brief Altera o valor de uma entrada de configuração
-	 *
-	 *	\param[in] (string) $local - nome do arquivo de configuração
-	 *	\param[in] (string) $val - nome da entrada de configuração
-	 *	\param[in] (variant) $valor - novo valor da entrada de configuração
-	 *	\return void
-	 */
-	public static function setConf($local, $var, $value) {
-		self::$confs[$local][$var] = $value;
-	}
-
-	/**
-	 *	\brief Carrega um arquivo de configuração
-	 *
-	 *	\param[in] (string) $local - nome do arquivo de configuração
-	 *	\return \c true se tiver carregado o arquivo de configuração ou \c false em caso contrário
-	 */
-	public static function loadConf($local) {
-		$config_file = $GLOBALS['SYSTEM']['CONFIG_PATH'] . DIRECTORY_SEPARATOR . $local . '.conf.php';
-
-		if (file_exists($config_file)) {
-			$conf = array();
-
-			require_once $config_file;
-
-			if (empty($GLOBALS['SYSTEM']['ACTIVE_ENVIRONMENT'])) {
-				$arr_env = array();
-
-				if (isset($_SERVER['HTTP_HOST'])) {
-
-					foreach($conf as $dominio => $values) {
-						if (preg_match('/^' . $dominio . '$/', $_SERVER['HTTP_HOST'])) {
-							$arr_env = array_merge($arr_env, $values);
-						}
-					}
-
-					if (isset($conf[ $_SERVER['HTTP_HOST'] ])) {
-						$arr_env = array_merge($conf[ $_SERVER['HTTP_HOST'] ], $arr_env);
-					}
-				}
-			} else {
-				$arr_env = isset($conf[$GLOBALS['SYSTEM']['ACTIVE_ENVIRONMENT']]) ? $conf[$GLOBALS['SYSTEM']['ACTIVE_ENVIRONMENT']] : array();
-			}
-
-			self::$confs[ $local ] = array_merge((isset($conf['default']) ? $conf['default'] : array()), $arr_env);
-
-			if (empty(self::$confs[ $local ])) {
-				/**
-				* Seta self::$confs[ $local ] como NULL para evitar futuros erros no sistema
-				*/
-			   self::$confs[ $local ] = array();
-			   Errors::displayError(500, 'Faltando entrada para o domínio "' . $_SERVER['HTTP_HOST'] . '" para a conf "' . $local . '"');
-		   }
-
-			unset($conf);
-
-			return true;
-		} else {
-			Errors::displayError(500, 'Faltando conf "' . $local . '"');
-		}
-
-		return false;
 	}
 
 	/**

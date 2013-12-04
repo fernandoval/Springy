@@ -7,7 +7,7 @@
  *
  *	\brief		Classe de construção e tratamento de objetos JSON
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	0.1.1
+ *	\version	0.1.2
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
  */
@@ -17,7 +17,7 @@ class JSON {
 	private $headerStatus = 200;
 
 	public function __construct() {
-		Kernel::setConf('system', 'ajax', true);
+		Configuration::set('system', 'ajax', true);
 		header('Content-type: application/json; charset=' . $GLOBALS['SYSTEM']['CHARSET'], true, $this->headerStatus);
 	}
 
@@ -65,7 +65,7 @@ class JSON {
 	 *  \brief Imprime o objeto JSON
 	 */
 	public function printJ($andDie=true) {
-		if (Kernel::getConf('system', 'debug')) {
+		if (Configuration::get('system', 'debug')) {
 			$this->dados['debug'] = Kernel::getDebugContent();
 		}
 

@@ -9,7 +9,7 @@
  *  http://www.fval.com.br
  *
  *	\brief		Script de inicialização da aplicação
- *  \version	1.8.2
+ *  \version	1.8.10
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *  \file
@@ -123,7 +123,7 @@ ob_start();
 // Envia o content-type e o charset
 header('Content-Type: text/html; charset='.$GLOBALS['SYSTEM']['CHARSET'], true);
 // Envia o cache-control
-header('Cache-Control: '.Kernel::getConf('system', 'cache-control'), true);
+header('Cache-Control: '.Configuration::get('system', 'cache-control'), true);
 
 //ini_set('zlib.output_compression', 'on');
 ini_set('mbstring.internal_encoding', $GLOBALS['SYSTEM']['CHARSET']);
@@ -134,8 +134,8 @@ ini_set('date.timezone', $GLOBALS['SYSTEM']['TIMEZONE']);
 $controller = URI::parseURI();
 
 // Verifica se o acesso ao sistema necessita de autenticação
-if (is_array(Kernel::getConf('system', 'authentication'))) {
-	$auth = Kernel::getConf('system', 'authentication');
+if (is_array(Configuration::get('system', 'authentication'))) {
+	$auth = Configuration::get('system', 'authentication');
 	if (isset($auth['user']) && isset($auth['pass'])) {
 		if (!Cookie::get('__sys_auth__')) {
 			if (!isset($_SERVER['PHP_AUTH_USER']) || !isset($_SERVER['PHP_AUTH_PW']) || $_SERVER['PHP_AUTH_USER'] != $auth['user'] || $_SERVER['PHP_AUTH_PW'] != $auth['pass']) {
@@ -149,45 +149,45 @@ if (is_array(Kernel::getConf('system', 'authentication'))) {
 }
 
 // Verifica se o usuário desenvolvedor está acessando
-if (Kernel::getConf('system', 'developer_user') && Kernel::getConf('system', 'developer_pass')) {
-	if (URI::_GET( Kernel::getConf('system', 'developer_user') ) == Kernel::getConf('system', 'developer_pass')) {
+if (Configuration::get('system', 'developer_user') && Configuration::get('system', 'developer_pass')) {
+	if (URI::_GET( Configuration::get('system', 'developer_user') ) == Configuration::get('system', 'developer_pass')) {
 		Cookie::set('_developer', true);
 		/**
 		 * A var $_SystemDeveloperOn é setada pois, quando o site tá em manutenção e é passado o user e pass para que o desenvolvedor veja o site,
 		 * devido ao uso de Cookies, o site só aparece quando dá um refresh
 		 */
 		$_SystemDeveloperOn = true;
-	} else if (URI::_GET( Kernel::getConf('system', 'developer_user') ) == 'off') {
+	} else if (URI::_GET( Configuration::get('system', 'developer_user') ) == 'off') {
 		Cookie::delete('_developer');
 	}
 }
 
 if (Cookie::exists('_developer') || isset($_SystemDeveloperOn)) {
-	Kernel::setConf('system', 'maintenance', false);
-	Kernel::setConf('system', 'debug', true);
+	Configuration::set('system', 'maintenance', false);
+	Configuration::set('system', 'debug', true);
 }
 
 // apenas se o debug estiver ligado, verifica se o DBA (modo de exibição de SQLs) está ligado
-if (Kernel::getConf('system', 'debug') && Kernel::getConf('system', 'dba_user')) {
-	if (URI::_GET( Kernel::getConf('system', 'dba_user') ) == Kernel::getConf('system', 'developer_pass')) {
+if (Configuration::get('system', 'debug') && Configuration::get('system', 'dba_user')) {
+	if (URI::_GET( Configuration::get('system', 'dba_user') ) == Configuration::get('system', 'developer_pass')) {
 		Cookie::set('_dba', true);
-	} else if (URI::_GET( Kernel::getConf('system', 'dba_user') ) == 'off') {
+	} else if (URI::_GET( Configuration::get('system', 'dba_user') ) == 'off') {
 		Cookie::delete('_dba');
 	}
 
 	if (Cookie::exists('_dba')) {
-		Kernel::setConf('system', 'sql_debug', true);
+		Configuration::set('system', 'sql_debug', true);
 	}
 }
 
-if (Kernel::getConf('system', 'debug')) {
+if (Configuration::get('system', 'debug')) {
 	ini_set('display_errors', 1);
 } else {
 	ini_set('display_errors', 0);
 }
 
 // [pt-br] Verifica se o sistema está em manutenção
-if (Kernel::getConf('system', 'maintenance')) {
+if (Configuration::get('system', 'maintenance')) {
 	Errors::displayError(503, 'The system is under maintenance');
 }
 
@@ -250,7 +250,7 @@ if (!is_null($controller)) {
 				$pg = 1;
 			}
 
-			$articles_per_page = Kernel::getConf('cms', 'articles_per_page');
+			$articles_per_page = Configuration::get('cms', 'articles_per_page');
 
 			CMS::loadCategoryToTemplate();
 			CMS::loadArticlesToTemplate(($pg - 1) * $articles_per_page, $articles_per_page);
@@ -269,7 +269,7 @@ if (!is_null($controller)) {
 				exit;
 			} else if (in_array($Page, array('_system_bug_', '_system_bug_solved_'))) {
 				// Verifica se o acesso ao sistema necessita de autenticação
-				$auth = Kernel::getConf('system', 'bug_authentication');
+				$auth = Configuration::get('system', 'bug_authentication');
 				if (!empty($auth['user']) && !empty($auth['pass'])) {
 					if (!Cookie::get('__sys_bug_auth__')) {
 						if (!isset($_SERVER['PHP_AUTH_USER']) || !isset($_SERVER['PHP_AUTH_PW']) || $_SERVER['PHP_AUTH_USER'] != $auth['user'] || $_SERVER['PHP_AUTH_PW'] != $auth['pass']) {
