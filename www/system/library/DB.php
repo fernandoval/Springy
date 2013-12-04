@@ -9,7 +9,7 @@
  *	\brief		Classe para acesso a banco de dados
  *	\note		Esta classe usa a PHP Data Object (PDO) para acesso a banco de dados
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.2.16
+ *	\version	1.3.17
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
@@ -22,6 +22,10 @@ class DB {
 	private $SQLRes = NULL;
 	/// Último comando executado
 	private $LastQuery = '';
+	/// Código do erro ocorrido no execute
+	private $LastStatmentErrorCode = null;
+	/// Informações do erro ocorrido no execute
+	private $LastStatmentErrorInfo = null;
 	/// Contador de comandos SQL executados
 	private static $sqlNum = 0;
 	/// Recurso de conexão atual
@@ -79,7 +83,7 @@ class DB {
 		}
 
 		// Lê as configurações de acesso ao banco de dados
-		$conf = Kernel::get_conf('db', $database);
+		$conf = Kernel::getConf('db', $database);
 
 		// Verifica se o servidor é um pool (round robin)
 		if ($conf['database_type'] == 'pool' && is_array($conf['host_name'])) {
@@ -102,20 +106,25 @@ class DB {
 		self::$conErrors[$database] = true;
 
 		if (!$conf['host_name'] || !$conf['database']) {
-			$this->report_error('HostName / DataBase not defined.');
+			$this->reportError('HostName / DataBase not defined.');
 		}
 
 		//	a instância de conexão é estática, para nao criar uma nova a cada nova instãncia da classe
-		self::$DB[$database] = array(
-			'con' => new PDO(
-				$conf['database_type'] . ':host=' . $conf['host_name'] . ';dbname=' . $conf['database'],
-				$conf['user_name'],
-				$conf['password'],
-				$pdoConf
-			),
-			'dbName' => $database
-		);
-		unset($pdoConf, self::$conErrors[$database]);
+		try {
+			self::$DB[$database] = array(
+				'con' => new PDO(
+					$conf['database_type'] . ':host=' . $conf['host_name'] . ';dbname=' . $conf['database'],
+					$conf['user_name'],
+					$conf['password'],
+					$pdoConf
+				),
+				'dbName' => $database
+			);
+			unset($pdoConf, self::$conErrors[$database]);
+		} catch(PDOException $error) {
+			var_dump($error);
+			Errors::errorHandler((int)$error->getCode(), $error->getMessage(), $error->getFile(), $error->getLine(), null);
+		}
 
 		return self::$DB[$database]['con'];
 	}
@@ -132,7 +141,7 @@ class DB {
 	 */
 	private function _round_robin($database, $dbconf) {
 		// Lê as configurações de controle de round robin
-		$rr = Kernel::get_conf('db', 'round_robin');
+		$rr = Kernel::getConf('db', 'round_robin');
 
 		// Efetua controle de round robin por Memcached
 		if ($rr['type'] == 'memcached') {
@@ -207,17 +216,9 @@ class DB {
 	 *
 	 *  \return DB
 	 */
-	public function disable_report_error() {
+	public function disableReportError() {
 		$this->report_error = false;
 		return $this;
-	}
-	/**
-	 *  \brief DEPRECATED - Use disable_report_error
-	 *  \deprecated
-	 *  \see disable_report_error
-	 */
-	public function disableReportError() {
-		return $this->disable_report_error();
 	}
 
 	/**
@@ -225,17 +226,9 @@ class DB {
 	 *
 	 *  \return DB
 	 */
-	public function enable_report_error() {
+	public function enableReportError() {
 		$this->report_error = true;
 		return $this;
-	}
-	/**
-	 *  \brief DEPRECATED - Use enable_report_error
-	 *  \deprecated
-	 *  \see enable_report_error
-	 */
-	public function enableReportError() {
-		return $this->enable_report_error();
 	}
 
 	/**
@@ -243,12 +236,12 @@ class DB {
 	 *
 	 *	Método para alerta de erros. Também envia e-mails com informações sobre o erro e grava-o em um arquivo de Log.
 	 */
-	private function report_error($msg, PDOException $exception=NULL) {
+	private function reportError($msg, PDOException $exception=NULL) {
 		if(!$this->report_error) {
 			return;
 		}
 		// [pt-br] Lê as configurações de acesso ao banco de dados
-		$conf = Kernel::get_conf('db', self::$DB[$this->database]['dbName']);
+		$conf = Kernel::getConf('db', self::$DB[$this->database]['dbName']);
 
 		if (isset($this->LastQuery)) {
 			$sqlError = '<pre>' . htmlentities((is_object($this->LastQuery) ? $this->LastQuery->__toString() : $this->LastQuery)) . '</pre><br /> Parametros:<br />' . Kernel::print_rc($this->LastValues, true);
@@ -281,7 +274,7 @@ class DB {
 		';
 		unset($sqlError);
 
-		Errors::send_report(
+		Errors::sendReport(
 			'<span style="color:#FF0000">' . $msg . '</span> - ' . '(' . $errorInfo[1] . ') ' . $errorInfo[2] . ($exception ? '<br />' . $exception->getMessage() : '') . '<br /><pre>' . $this->LastQuery . '</pre><br />Valores: ' . Kernel::print_rc($this->LastValues, true),
 			500,
 			hash('crc32', $msg . $errorInfo[1] . $this->LastQuery), // error id
@@ -304,16 +297,8 @@ class DB {
 	 *
 	 *	Como as transações podem utilzar varias classes e métodos, a transação será "estatica"
 	 */
-	public static function begin_transaction($database='default') {
-		self::connect($database)->beginTransaction();
-	}
-	/**
-	 *  \brief DEPRECATED - Use begin_transaction
-	 *  \deprecated
-	 *  \see begin_transaction
-	 */
 	public static function beginTransaction($database='default') {
-		self::begin_transaction($database);
+		self::connect($database)->beginTransaction();
 	}
 
 	/**
@@ -321,7 +306,7 @@ class DB {
 	 *
 	 *	Como as transações podem utilzar varias classes e métodos, a transação será "estatica"
 	 */
-	public static function rollback($database='default') {
+	public static function rollBack($database='default') {
 		self::connect($database)->rollBack();
 	}
 
@@ -341,7 +326,7 @@ class DB {
 	 *
 	 *	Como as transações podem utilzar varias classes e métodos, a transação será "estatica"
 	 */
-	public static function rollback_all() {
+	public static function rollBackAll() {
 		foreach (self::$DB as $db => $v) {
 			if ($v['con']->inTransaction()) {
 				Kernel::debug('DB ' . $db . ' rollback start');
@@ -351,12 +336,12 @@ class DB {
 		}
 	}
 	/**
-	 *  \brief DEPRECATED - Use rollback_all
+	 *  \brief DEPRECATED - Use rollBackAll()
 	 *  \deprecated
-	 *  \see rollback_all
+	 *  \see rollBackAll
 	 */
 	public static function transactionAllRollBack() {
-		self::rollback_all();
+		self::rollBackAll();
 	}
 
 	/**
@@ -365,6 +350,8 @@ class DB {
 	 *	@param[in] $sql Comando SQL a ser executado
 	 */
 	public function execute($sql, array $where_v=array()) {
+		$this->LastStatmentErrorCode = null;
+		$this->LastStatmentErrorInfo = null;
 		self::$sqlNum++;
 
 		$this->LastQuery = $sql;
@@ -379,7 +366,9 @@ class DB {
 		$sql = NULL;
 
 		if (($this->SQLRes = $this->dataConnect->prepare($this->LastQuery)) === false) {
-			$this->report_error('Can\'t prepare query.');
+			$this->LastStatmentErrorCode = $this->SQLRes->errorCode();
+			$this->LastStatmentErrorInfo = $this->SQLRes->errorInfo();
+			$this->reportError('Can\'t prepare query.');
 		}
 
 		if (count($this->LastValues)) {
@@ -411,17 +400,19 @@ class DB {
 		}
 
 		if ($this->SQLRes->execute() === false) {
-			$this->report_error('Can\'t execute query.');
+			$this->LastStatmentErrorCode = $this->SQLRes->errorCode();
+			$this->LastStatmentErrorInfo = $this->SQLRes->errorInfo();
+			$this->reportError('Can\'t execute query.');
 		}
 
-		if (self::$db_debug || Kernel::get_conf('system', 'sql_debug')) {
-			$conf = Kernel::get_conf('db', self::$DB[$this->database]['dbName']);
+		if (self::$db_debug || Kernel::getConf('system', 'sql_debug')) {
+			$conf = Kernel::getConf('db', self::$DB[$this->database]['dbName']);
 
 			Kernel::debug(
 				'<pre>' .
 					$this->LastQuery .
 				'</pre><br />Valores: ' . Kernel::print_rc($this->LastValues, true) . '<br />' .
-				'Affected Rows: ' . $this->affected_rows() . '<br />' .
+				'Affected Rows: ' . $this->affectedRows() . '<br />' .
 				'DB: ' . (isset($conf['database']) ? $conf['database'] : 'não informado')
 			, 'SQL #'  . self::$sqlNum, false);
 		}
@@ -432,45 +423,75 @@ class DB {
 	/**
 	 *	\brief Retorna o último comando executado
 	 */
-	public function last_query() {
+	public function lastQuery() {
 		return $this->LastQuery;
 	}
+	
+	/**
+	 *  \brief Retorna uma string com o código do último erro ocorrido com a instância do banco
+	 */
+	public function errorCode() {
+		return $this->dataConnect->errorCode();
+	}
 
+	/**
+	 *  \brief Retorna um array com informações do último erro ocorrido com a instãncia do banco
+	 */
+	public function errorInfo() {
+		return $this->dataConnect->errorInfo();
+	}
+	
+	/**
+	 *  \brief Retorna uma string com o código do erro ocorrido com o último \c execute
+	 *  \see execute
+	 */
+	public function lastStatmentErrorCode() {
+		return $this->LastStatmentErrorCode;
+	}
+
+	/**
+	 *  \brief Retorna um array com informações do erro ocorrido com o último \c execute
+	 *  \see execute
+	 */
+	public function lastStatmentErrorInfo() {
+		return $this->LastStatmentErrorInfo;
+	}
+	
 	/**
 	 *	\brief Pega o nome do driver do banco
 	 *
 	 *	\return Retorna uma string contendo o nome do driver do banco de dados atual
 	 */
-	public function driver_name() {
+	public function driverName() {
 		return $this->dataConnect->getAttribute(PDO::ATTR_DRIVER_NAME);
 	}
 
 	/**
 	 *  \brief Pega algumas informações a respeito da versão do servidor
-	 *  
+	 *
 	 *  \return Retorna um valor inteiro com a versão do servidor
 	 */
-	public function server_version() {
-		return $this->dataConnect->getAttribute(PDO::PDO::ATTR_SERVER_VERSION);
+	public function serverVersion() {
+		return $this->dataConnect->getAttribute(PDO::ATTR_SERVER_VERSION);
 	}
-	
+
 	/**
 	 *	\brief Retorna o valor do campo autoincremento do último INSERT
 	 */
-	public function get_inserted_id($indice='') {
+	public function lastInsertedId($indice='') {
 		return $this->dataConnect->lastInsertId( ((!$indice && $this->LastQuery instanceof DBInsert) ? $this->LastQuery->getTable() . '_id_seq' : $indice) );
 	}
 
 	/**
 	 *	\brief Retorna o número de linhas afetadas no último comando
 	 */
-	public function affected_rows() {
+	public function affectedRows() {
 		return $this->SQLRes->rowCount();
 	}
 	/**
-	 *  \brief DEPRECATED - Use affected_rows
+	 *  \brief DEPRECATED - Use affectedRows()
 	 *  \deprecated
-	 *  \see affected_rows
+	 *  \see affectedRows
 	 */
 	public function num_rows() {
 		return $this->affected_rows();
@@ -479,7 +500,7 @@ class DB {
 	/**
 	 *	\brief Retorna todas as linhas do resultado de uma consulta
 	 */
-	public function fetch_all($resultType=PDO::FETCH_ASSOC) {
+	public function fetchAll($resultType=PDO::FETCH_ASSOC) {
 		if ($this->SQLRes) {
 			return $this->SQLRes->fetchAll($resultType);
 		}
@@ -492,13 +513,13 @@ class DB {
 	 *  \see fetch_all
 	 */
 	public function get_all($resultType=PDO::FETCH_ASSOC) {
-		return $this->fetch_all($resultType);
+		return $this->fetchAll($resultType);
 	}
 
 	/**
 	 *	\brief Retorna o primeiro resultado do cursor de uma consulta
 	 */
-	public function fetch_first($resultType=PDO::FETCH_ASSOC) {
+	public function fetchFirst($resultType=PDO::FETCH_ASSOC) {
 		if ($this->SQLRes) {
 			return $this->SQLRes->fetch($resultType, PDO::FETCH_ORI_FIRST);
 		}
@@ -509,7 +530,7 @@ class DB {
 	/**
 	 *	\brief Retorna o resultado anterior do cursor de uma consulta
 	 */
-	public function fetch_prev($resultType=PDO::FETCH_ASSOC) {
+	public function fetchPrev($resultType=PDO::FETCH_ASSOC) {
 		if ($this->SQLRes) {
 			return $this->SQLRes->fetch($resultType, PDO::FETCH_ORI_PRIOR);
 		}
@@ -520,7 +541,7 @@ class DB {
 	/**
 	 *	\brief Retorna o próximo resultado de uma consulta
 	 */
-	public function fetch_next($resultType=PDO::FETCH_ASSOC) {
+	public function fetchNext($resultType=PDO::FETCH_ASSOC) {
 		if ($this->SQLRes) {
 			return $this->SQLRes->fetch($resultType);
 		}
@@ -531,7 +552,7 @@ class DB {
 	/**
 	 *	\brief Retorna o último resultado do cursor de uma consulta
 	 */
-	public function fetch_last($resultType=PDO::FETCH_ASSOC) {
+	public function fetchLast($resultType=PDO::FETCH_ASSOC) {
 		if ($this->SQLRes) {
 			return $this->SQLRes->fetch($resultType, PDO::FETCH_ORI_LAST);
 		}
@@ -542,12 +563,12 @@ class DB {
 	/**
 	 *	\brief Retorna o valor de uma coluna do último registro pego por fetch_next
 	 */
-	public function get_column($var=0) {
+	public function getColumn($var=0) {
 		if ($this->SQLRes && is_numeric($var)) {
 			return $this->SQLRes->fetchColumn($var);
 		}
 
-		$this->report_error($var . ' is not defined in select (remember, it\'s a case sensitive) or $data is empty.');
+		$this->reportError($var . ' is not defined in select (remember, it\'s a case sensitive) or $data is empty.');
 
 		return false;
 	}
@@ -560,7 +581,7 @@ class DB {
 	 *
 	 *	@return Retorna a data no formato universal (Y-m-d) concatenada da hora no formato universal (H:n:s), se o $flgtime for TRUE.
 	 */
-	public static function cast_date_br_to_db($datetime, $flgtime=false) {
+	public static function castCateBrToDb($datetime, $flgtime=false) {
 		if (preg_match('/^([0-9]{2})\/([0-9]{2})\/([0-9]{4})/', $datetime, $res)) {
 			$date = array($res[1], $res[2], $res[3]);
 		} else {
@@ -594,7 +615,7 @@ class DB {
 	 *
 	 *	@return Retorna a data no formato brasileiro (d/m/Y) concatenada da hora no formato brasileiro 24h (H:n:s), se o $flgtime for TRUE.
 	 */
-	public static function cast_date_db_to_br($datetime, $flgtime=false, $sec=false) {
+	public static function castDateDbToBr($datetime, $flgtime=false, $sec=false) {
 		if (preg_match('/^([0-9]{4})-([0-9]{2})-([0-9]{2})/', $datetime, $res)) {
 			$date = array($res[1], $res[2], $res[3]);
 		} else {
@@ -621,12 +642,12 @@ class DB {
 
 	/**
 	 *  \brief Converte em UNIX timestamp o valor data + hora no formato universal
-	 *  
+	 *
 	 *  \param (string)$dateTime - data hora no format Y-m-d H:i:s
-	 *  
+	 *
 	 *  \return Retorna o valor UNIX timestamp
 	 */
-	public static function mk_db_datetime($dateTime) {
+	public static function makeDbDateTime($dateTime) {
 		if (preg_match('/^([0-9]{4})-([0-9]{2})-([0-9]{2})/', $dateTime, $res)) {
 			$data = array(
 				$res[1],
@@ -660,32 +681,32 @@ class DB {
 		return mktime($hora[0], $hora[1], $hora[2], $data[1], $data[2], $data[0]);
     }
 	/**
-	 *  \brief DEPRECATED - Use mk_db_datetime
+	 *  \brief DEPRECATED - Use makeDbDateTime()
 	 *  \deprecated
-	 *  \see mk_db_datetime
+	 *  \see makeDbDateTime
 	 */
 	public static function dateToTime($dateTime) {
-		return self::mk_db_datetime($dateTime);
+		return self::makeDbDateTime($dateTime);
 	}
 
 	/**
 	 *  \brief Converte um valor datetime do banco em string de data brasileira
-	 *  
+	 *
 	 *  \note Verificar real necessidade de manutenção desse método
 	 *  \param (string)$dataTimeStamp - data hora no format Y-m-d H:i:s
 	 *  \return Retorna uma string no formato '<dia> de <nome_do_mes>'.
 	 */
-	public static function lond_date_brazilian($dataTimeStamp) {
+	public static function londBrazilianDate($dataTimeStamp) {
 		$dateTime = DB::mk_db_datetime($dataTimeStamp);
 		$mes = array('Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro');
 		return date('d', $dateTime) . ' de ' . $mes[date('m', $dateTime)];
     }
 	/**
-	 *  \brief DEPRECATED - Use lond_date_brazilian
+	 *  \brief DEPRECATED - Use londBrazilianDate()
 	 *  \deprecated
-	 *  \see lond_date_brazilian
+	 *  \see londBrazilianDate
 	 */
 	public static function dateToStr($dataTimeStamp) {
-		return self::lond_date_brazilian($dataTimeStamp);
+		return self::londBrazilianDate($dataTimeStamp);
 	}
 }

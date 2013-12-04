@@ -29,6 +29,8 @@
  *  
  *  Entradas de configuração:
  *  - \c controller_path - Caminho do diretório de scripts de controle (controllers)
+ *  - \c css_path - Caminho do diretório dos arquivos CSS
+ *  - \c js_path - Caminho do diretório dos arquivos JavaScript
  *  - \c debug - Define se debug está ativo
  *  - \c maintenance - Define se está em manutenção
  *  - \c admin_maintenance - Define se o ADMIN está em manutenção
@@ -46,7 +48,9 @@ $conf['default'] = array(
 	'developer_user'  => '',
 	'developer_pass'  => '',
 	'dba_user'        => '',
-	'controller_path' => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'controllers'
+	'controller_path' => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'controllers',
+	'css_path'        => $GLOBALS['SYSTEM']['ROOT_PATH'] . DIRECTORY_SEPARATOR . 'css',
+	'js_path'         => $GLOBALS['SYSTEM']['ROOT_PATH'] . DIRECTORY_SEPARATOR . 'js'
 );
 
 /// Configurações para o ambiente de Desenvolvimento

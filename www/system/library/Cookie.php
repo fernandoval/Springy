@@ -8,7 +8,7 @@
  *
  *	\brief		Classe para tratamento de cookies
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.0.1
+ *	\version	1.0.2
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *  \todo		Implementar correção no método delete.
@@ -67,7 +67,9 @@ class Cookie extends Kernel {
 		}
 	}
 	/**
-	 *	\brief Alias for delete() function
+	 *  \brief Alias for delete() function
+	 *  \deprecated
+	 *  \see delete
 	 */
 	public static function del($key) {
 		self::delete($key);

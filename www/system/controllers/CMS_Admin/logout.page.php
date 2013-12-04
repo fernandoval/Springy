@@ -14,7 +14,7 @@
 		1.0.0
 
 	Script version:
-		0.1.0
+		0.1.1
 
 	This script:
 		Script de logout da área de administração do CMS
@@ -23,16 +23,16 @@
 class Logout_Controller {
 	function __construct() {
 		if (!CMS::logged_in_user()) {
-			URI::redirect('/'.URI::relative_path_page().'/login');
+			URI::redirect('/'.URI::relativePathPage().'/login');
 			return false;
 		}
 
 		if (CMS::logout_user()) {
-			URI::redirect('/'.URI::relative_path_page().'/login');
+			URI::redirect('/'.URI::relativePathPage().'/login');
 			return true;
 		}
 
-		Errors::display_error(500, 'Can not logout');
+		Errors::displayError(500, 'Can not logout');
 	}
 }
 ?>

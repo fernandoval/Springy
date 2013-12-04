@@ -8,7 +8,7 @@
  *
  *	\brief		Classe para tratamento de URI
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.9.16
+ *	\version	1.10.17
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
@@ -75,11 +75,18 @@ class URI extends Kernel {
 	}
 
 	/**
+	 *	\brief Define o nome da classe da controller
+	 */
+	private static function _set_class_controller($classname) {
+		self::$class_controller = $classname;
+	}
+
+	/**
 	 *	\brief Lê a URLs (em modo re-write) e transforma em variáveis $_GET
 	 *
 	 *	\note Este método não retorna valor
 	 */
-	public static function parse_uri() {
+	public static function parseURI() {
 		if (isset($_SERVER) && isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'HEAD' && !isset($_SERVER['HTTP_HOST'])) {
 			header('Pragma: no-cache');
 			header('Expires: 0');
@@ -94,9 +101,9 @@ class URI extends Kernel {
 
 		// Verifica se altera o diretório de controladoras para o HOST
 		if ($url = (isset($_SERVER) && isset($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : "") {
-			foreach (parent::get_conf('uri', 'host_controller_path') as $host => $root) {
+			foreach (parent::getConf('uri', 'host_controller_path') as $host => $root) {
 				if ($url == $host) {
-					parent::set_controller_root($root);
+					parent::controllerRoot($root);
 					break;
 				}
 			}
@@ -109,7 +116,7 @@ class URI extends Kernel {
 			$val = trim($val);
 
 			if ($val != '') {
-				if ($SegNum < parent::get_conf('uri', 'ignored_segments'))
+				if ($SegNum < parent::getConf('uri', 'ignored_segments'))
 					self::$ignored_segments[] = $val;
 				else
 					$Segments[] = $val;
@@ -118,14 +125,14 @@ class URI extends Kernel {
 		}
 
 		// Redireciona URIs terminadas em / para evitar conteúdo duplicado de SEO?
-		if (parent::get_conf('uri', 'redirect_last_slash') && substr(self::$uri_string, -1) == '/' && !(parent::get_conf('uri', 'force_slash_on_index') && empty($Segments))) {
+		if (parent::getConf('uri', 'redirect_last_slash') && substr(self::$uri_string, -1) == '/' && !(parent::getConf('uri', 'force_slash_on_index') && empty($Segments))) {
 			if (isset($_GET['SUPERVAR'])) unset($_GET['SUPERVAR']);
-			self::redirect(self::build_url(explode('/', trim(self::$uri_string, '/')), empty($_GET) ? array() : $_GET, false, 'dynamic', false), 301);
+			self::redirect(self::buildURL(explode('/', trim(self::$uri_string, '/')), empty($_GET) ? array() : $_GET, false, 'dynamic', false), 301);
 		}
 		// Redireciona se for acesso à página inicial e a URI não terminar em / para mesma URL terminada com /
-		elseif (self::$uri_string && substr(self::$uri_string, -1) != '/' && parent::get_conf('uri', 'force_slash_on_index') && empty($Segments)) {
+		elseif (self::$uri_string && substr(self::$uri_string, -1) != '/' && parent::getConf('uri', 'force_slash_on_index') && empty($Segments)) {
 			if (isset($_GET['SUPERVAR'])) unset($_GET['SUPERVAR']);
-			self::redirect(self::build_url(array_merge(explode('/', trim(self::$uri_string, '/')), array('/')), empty($_GET) ? array() : $_GET, false, 'dynamic', false), 301);
+			self::redirect(self::buildURL(array_merge(explode('/', trim(self::$uri_string, '/')), array('/')), empty($_GET) ? array() : $_GET, false, 'dynamic', false), 301);
 		}
 
 		// Se nenhum segmento foi encontrado, define o segmento 'index'
@@ -154,23 +161,23 @@ class URI extends Kernel {
 		$controller = null;
 
 		// Procura a controller correta e corrige a página atual se necessário
-		$path = $GLOBALS['SYSTEM']['CONTROLER_PATH'] . (count(parent::get_controller_root()) ? DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, parent::get_controller_root()) : "");
+		$path = $GLOBALS['SYSTEM']['CONTROLER_PATH'] . (count(parent::controllerRoot()) ? DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, parent::controllerRoot()) : "");
 		$segment = 0;
-		while (self::get_segment($segment, false)) {
-			$path .= DIRECTORY_SEPARATOR . self::get_segment($segment, false);
+		while (self::getSegment($segment, false)) {
+			$path .= DIRECTORY_SEPARATOR . self::getSegment($segment, false);
 			$file = $path . '.page.php';
 			if (file_exists($file)) {
 				$controller = $file;
-				self::set_current_page($segment);
-				self::_set_class_controller(self::current_page());
+				self::setCurrentPage($segment);
+				self::_set_class_controller(self::currentPage());
 				break;
-			} elseif (is_dir($path) && (!self::get_segment($segment + 1, false))) {
+			} elseif (is_dir($path) && (!self::getSegment($segment + 1, false))) {
 				$file = $path . DIRECTORY_SEPARATOR . 'index.page.php';
 				if (file_exists($file)) {
 					$controller = $file;
-					self::add_segment('index');
-					self::set_current_page($segment + 1);
-					self::_set_class_controller(self::current_page());
+					self::addSegment('index');
+					self::setCurrentPage($segment + 1);
+					self::_set_class_controller(self::currentPage());
 					break;
 				}
 			} elseif (is_dir($path)) {
@@ -189,20 +196,20 @@ class URI extends Kernel {
 		// Verifica se nenhuma controladora foi localizada, mas há uma elegível
 		if (is_null($controller) && isset($possible_controller)) {
 			$controller = $possible_controller;
-			self::insert_segment($possible_segment_num, $possible_segment_name);
-			self::set_current_page($possible_segment_num);
-			self::_set_class_controller(self::current_page());
+			self::insertSegment($possible_segment_num, $possible_segment_name);
+			self::setCurrentPage($possible_segment_num);
+			self::_set_class_controller(self::currentPage());
 		}
 
 		// Varre as rotas alternativas de controladoras
 		if (is_null($controller)) {
-			$routes = parent::get_conf('uri', 'routes');
+			$routes = parent::getConf('uri', 'routes');
 			if (is_array($routes)) {
 				foreach ($routes as $key => $data) {
 					if (preg_match('/^'.$key.'$/', $UriString)) {
-						$controller = $GLOBALS['SYSTEM']['CONTROLER_PATH'] . (parent::get_controller_root() ? DIRECTORY_SEPARATOR . parent::get_controller_root() : "") . DIRECTORY_SEPARATOR . $data['controller'] . '.page.php';
+						$controller = $GLOBALS['SYSTEM']['CONTROLER_PATH'] . (parent::controllerRoot() ? DIRECTORY_SEPARATOR . parent::controllerRoot() : "") . DIRECTORY_SEPARATOR . $data['controller'] . '.page.php';
 						self::_set_class_controller($data['controller']);
-						self::set_current_page($data['segment']);
+						self::setCurrentPage($data['segment']);
 						break;
 					}
 				}
@@ -211,15 +218,15 @@ class URI extends Kernel {
 		}
 
 		// define o namespace do controller em relação a raiz da pasta de controlers
-		self::set_controller_namespace($controller);
+		self::controllerNamespace($controller);
 
 		// Varre os redirecionamentos
 		if (is_null($controller)) {
-			$redirects = parent::get_conf('uri', 'redirects');
+			$redirects = parent::getConf('uri', 'redirects');
 			if (is_array($redirects)) {
 				foreach ($redirects as $key => $data) {
 					if (preg_match('/^'.$key.'$/', $UriString)) {
-						self::redirect(URI::build_url($data['segments'], $data['get'], $data['force_rewrite'], $data['host']), $data['type']);
+						self::redirect(self::buildURL($data['segments'], $data['get'], $data['force_rewrite'], $data['host']), $data['type']);
 						break;
 					}
 				}
@@ -233,12 +240,12 @@ class URI extends Kernel {
 	/**
 	 *	\brief Valida a quantidade de segmentos da URI conforme a controladora
 	 */
-	public static function validate_uri() {
-		$ctrl = trim(str_replace(DIRECTORY_SEPARATOR, '/', (parent::get_controller_root() ? implode(DIRECTORY_SEPARATOR, parent::get_controller_root()) : "")) . '/' . self::get_class_controller(), '/');
+	public static function validateURI() {
+		$ctrl = trim(str_replace(DIRECTORY_SEPARATOR, '/', (parent::controllerRoot() ? implode(DIRECTORY_SEPARATOR, parent::controllerRoot()) : "")) . '/' . self::getControllerClass(), '/');
 
-		if ($pc = parent::get_conf('uri', 'prevalidate_controller')) {
-			if (isset($pc[$ctrl . '/' . self::get_segment(0)])) {
-				$ctrl .= '/' . self::get_segment(0);
+		if ($pc = parent::getConf('uri', 'prevalidate_controller')) {
+			if (isset($pc[$ctrl . '/' . self::getSegment(0)])) {
+				$ctrl .= '/' . self::getSegment(0);
 			}
 
 			if (isset($pc[$ctrl]) && isset($pc[$ctrl]['command'])) {
@@ -250,7 +257,7 @@ class URI extends Kernel {
 				}
 				if (isset($pc[$ctrl]['validate'])) {
 					foreach ($pc[$ctrl]['validate'] as $idx => $expression) {
-						if (!preg_match($expression, self::get_segment($idx))) {
+						if (!preg_match($expression, self::getSegment($idx))) {
 							$action = $pc[$ctrl]['command'];
 						}
 					}
@@ -261,12 +268,12 @@ class URI extends Kernel {
 						while (count(self::$segments) - self::$segment_page - 1 > $pc[$ctrl]['segments']) {
 							array_pop(self::$segments);
 						}
-						self::redirect(self::build_url(self::$segments, empty($_GET) ? array() : $_GET), $action);
+						self::redirect(self::buildURL(self::$segments, empty($_GET) ? array() : $_GET), $action);
 						break;
 					case 404:
 					case 500:
 					case 503:
-						Errors::display_error($action);
+						Errors::displayError($action);
 						break;
 				}
 			}
@@ -274,18 +281,11 @@ class URI extends Kernel {
 	}
 
 	/**
-	 *	\brief Define o nome da classe da controller
-	 */
-	private static function _set_class_controller($classname) {
-		self::$class_controller = $classname;
-	}
-
-	/**
 	 *	\brief Retorna o nome da classe da controller
 	 *
 	 *	\return O nome da classe da controller
 	 */
-	public static function get_class_controller() {
+	public static function getControllerClass() {
 		return self::$class_controller;
 	}
 
@@ -294,7 +294,7 @@ class URI extends Kernel {
 	 *
 	 *	\return A string da URI
 	 */
-	public static function get_uri_string() {
+	public static function getURIString() {
 		return self::$uri_string;
 	}
 
@@ -303,8 +303,8 @@ class URI extends Kernel {
 	 *
 	 *	\return O segmento que representa a página atual
 	 */
-	public static function current_page() {
-		return self::get_segment(self::$segment_page, false);
+	public static function currentPage() {
+		return self::getSegment(self::$segment_page, false);
 	}
 
 	/**
@@ -312,10 +312,10 @@ class URI extends Kernel {
 	 *
 	 *	\return Uma string contendo o caminho relativo à página atual
 	 */
-	public static function relative_path_page($consider_controller_root=FALSE) {
-		$path = (count(parent::get_controller_root()) && $consider_controller_root? implode(DIRECTORY_SEPARATOR, parent::get_controller_root()) : "");
+	public static function relativePathPage($consider_controller_root=FALSE) {
+		$path = (count(parent::controllerRoot()) && $consider_controller_root? implode(DIRECTORY_SEPARATOR, parent::controllerRoot()) : "");
 		for ($i = 0; $i < self::$segment_page; $i++) {
-			$path .= (empty($path) ? "" : DIRECTORY_SEPARATOR) . self::get_segment($i, false);
+			$path .= (empty($path) ? "" : DIRECTORY_SEPARATOR) . self::getSegment($i, false);
 		}
 		return $path;
 	}
@@ -325,8 +325,8 @@ class URI extends Kernel {
 	 *
 	 *	\returns Uma string contendo a URI da página atual
 	 */
-	public static function current_page_uri() {
-		return trim(str_replace(DIRECTORY_SEPARATOR, '/', self::relative_path_page()) . '/' . self::current_page(), '/');
+	public static function currentPageURI() {
+		return trim(str_replace(DIRECTORY_SEPARATOR, '/', self::relativePathPage()) . '/' . self::currentPage(), '/');
 	}
 
 	/**
@@ -335,8 +335,8 @@ class URI extends Kernel {
 	 *	@param[in] $segment_num número relativo ao segmento da URI
 	 *	\return \c trus se definiu o segmento relativo à página atual e \c false em caso contrário
 	 */
-	public static function set_current_page($segment_num) {
-		if (self::get_segment($segment_num, false)) {
+	public static function setCurrentPage($segment_num) {
+		if (self::getSegment($segment_num, false)) {
 			self::$segment_page = $segment_num;
 			return true;
 		}
@@ -352,12 +352,12 @@ class URI extends Kernel {
 	 *		relativo ao segmento que determina a página atual. Default = true
 	 *	\return o valor do segmento ou \c false caso o segmento não exista
 	 */
-	public static function get_segment($segment_num, $relative_to_page=TRUE, $consider_controller_root=FALSE) {
+	public static function getSegment($segment_num, $relative_to_page=TRUE, $consider_controller_root=FALSE) {
 		if ($relative_to_page) {
 			$segment_num += (1 + self::$segment_page);
 		}
 		if ($consider_controller_root) {
-			$segment_num -= count(parent::get_controller_root());
+			$segment_num -= count(parent::controllerRoot());
 		}
 		if (array_key_exists($segment_num, self::$segments)) {
 			return self::$segments[ $segment_num ];
@@ -371,7 +371,7 @@ class URI extends Kernel {
 	 *	@param[in] $segment_num O número do segmento desejado
 	 *	\return o valor do segmento ignorado ou \c false caso o segmento não exista
 	 */
-	public static function get_ignored_segment($segment_num) {
+	public static function getIgnoredSegment($segment_num) {
 		if (array_key_exists($segment_num, self::$ignored_segments)) {
 			return self::$ignored_segments[ $segment_num ];
 		}
@@ -383,7 +383,7 @@ class URI extends Kernel {
 	 *
 	 *	\return um array contendo todos os segmentos
 	 */
-	public static function get_all_segments() {
+	public static function getAllSegments() {
 		return self::$segments;
 	}
 
@@ -392,7 +392,7 @@ class URI extends Kernel {
 	 *
 	 *	\return um array contendo todos os segmentos ignorados
 	 */
-	public static function get_all_ignored_segments() {
+	public static function getAllIgnoredSegments() {
 		return self::$ignored_segments;
 	}
 
@@ -402,7 +402,7 @@ class URI extends Kernel {
 	 *	@param[in] $segment String contendo o valor do segmento
 	 *	\return \c true se tiver sucesso e \c false em caso contrário
 	 */
-	public static function add_segment($segment) {
+	public static function addSegment($segment) {
 		if (trim($segment) != '') {
 			self::$segments[] = $segment;
 			return true;
@@ -417,7 +417,7 @@ class URI extends Kernel {
 	 *	@param[in] (string) $segment String contendo o valor do segmento
 	 *	\return \c true se tiver sucesso e \c false em caso contrário
 	 */
-	public static function insert_segment($position, $segment) {
+	public static function insertSegment($position, $segment) {
 		if (trim($segment) != '') {
 			array_splice(self::$segments, $position, 0, array($segment));
 			return true;
@@ -442,7 +442,7 @@ class URI extends Kernel {
 	 *	\brief get_param é um apelido para _GET
 	 *	\see _GET
 	 */
-	public static function get_param($var) {
+	public static function getParam($var) {
 		return self::_GET($var);
 	}
 
@@ -450,7 +450,7 @@ class URI extends Kernel {
 	 *	\brief retorna todo o _GET
 	 *	\see _GET
 	 */
-	public static function get_params() {
+	public static function getParams() {
 		return self::$get_params;
 	}
 	
@@ -458,7 +458,7 @@ class URI extends Kernel {
      *  \brief remove um parametro do _GET
 	 *	@param[in] $var String contendo o nome da variável a ser excluida
      */
-    public static function remove_param($var) {
+    public static function removeParam($var) {
 		unset(self::$get_params[$var]);
     }
 	
@@ -468,7 +468,7 @@ class URI extends Kernel {
 	 *	@param[in] $var String contendo o nome da variável a ser definida
 	 *	@param[in] $value O valor da variável
 	 */
-	public static function set_param( $var, $value ) {
+	public static function setParam($var, $value) {
 		self::$get_params[ $var ] = $value;
 	}
 
@@ -480,15 +480,15 @@ class URI extends Kernel {
 	 *	@param[in] $forceRewrite flag (true/false) que determina se o formato SEF deve ser forçado
 	 *	\return Uma \c string contendo a URL
 	 */
-	public static function build_url($segments=array(), $query=array(), $forceRewrite=false, $host='dynamic', $include_ignores_segments=true) {
+	public static function buildURL($segments=array(), $query=array(), $forceRewrite=false, $host='dynamic', $include_ignores_segments=true) {
 		if ($include_ignores_segments) {
 			$segments = array_merge(self::$ignored_segments, is_array($segments) ? $segments : array($segments));
 		}
 
-		$url = str_replace('//', '/', parent::get_conf('uri', 'system_root') . '/');
+		$url = str_replace('//', '/', parent::getConf('uri', 'system_root') . '/');
 
 		// Se rewrite de URL está desligado e não está sendo forçado, acrescenta ? à URL
-		if (parent::get_conf('system', 'rewrite_url') === false && $forceRewrite === false) {
+		if (parent::getConf('system', 'rewrite_url') === false && $forceRewrite === false) {
 			$url .= '?';
 		}
 
@@ -496,13 +496,13 @@ class URI extends Kernel {
 		$uri = '';
 		for ($i=0; $i < count($segments); $i++) {
 			if ($segments[ $i ] != 'index' && $segments[ $i ] != '') {
-				$uri .= (empty($uri) ? '' : '/') . self::slug_generator($segments[ $i ]);
+				$uri .= (empty($uri) ? '' : '/') . self::makeSlug($segments[ $i ]);
 			}
 		}
 		$url .= $uri;
 
-		/*if (parent::get_conf('system', 'ext_file_url')) {
-			$url .= parent::get_conf('system', 'ext_file_url');
+		/*if (parent::getConf('system', 'ext_file_url')) {
+			$url .= parent::getConf('system', 'ext_file_url');
 		}*/
 
 		// Monta os parâmetros a serem passados por GET
@@ -520,7 +520,7 @@ class URI extends Kernel {
 	private static function _host($host='dynamic') {
 		if (preg_match('|^(.+):\/\/(.+)|i', $host)) {
 			return $host;
-		} elseif ($host = parent::get_conf('uri', $host)) {
+		} elseif ($host = parent::getConf('uri', $host)) {
 			if (preg_match('|^(.+):\/\/(.+)|i', $host)) {
 				return $host;
 			}
@@ -580,13 +580,13 @@ class URI extends Kernel {
 	 *	@paran[in] (string)$space String que será usada para substituir os espaços em $txt. Utiliza '-' como padrão.
 	 *	\return Uma string com o slug
 	 */
-	public static function slug_generator($txt, $space='-') {
+	public static function makeSlug($txt, $space='-') {
 		$txt = mb_strtolower(trim($txt));
 
 		if (mb_check_encoding($txt, 'UTF-8')) {
-			$txt = Strings_UTF8::remove_accented_chars($txt);
+			$txt = Strings_UTF8::removeAccentedChars($txt);
 		} else {
-			$txt = Strings_ANSI::remove_accented_chars($txt);
+			$txt = Strings_ANSI::removeAccentedChars($txt);
 		}
 
 		$txt = mb_ereg_replace('[  ]+', ' ', $txt);
@@ -606,7 +606,7 @@ class URI extends Kernel {
 	 *
 	 *  @return (bool) Retorna true ou false
 	 */
-	public static function is_ajax_request() {
-		return ( ! empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest');
+	public static function isAjaxRequest() {
+		return (! empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest');
 	}
 }

@@ -23,7 +23,7 @@
 class Login_Controller {
 	function __construct() {
 		if (CMS::logged_in_user()) {
-			URI::redirect('/'.URI::relative_path_page());
+			URI::redirect('/'.URI::relativePathPage());
 			return false;
 		}
 
@@ -32,7 +32,7 @@ class Login_Controller {
 		$password = isset($_POST['password']) ? trim($_POST['password']) : '';
 		if (!empty($user) && !empty($password)) {
 			if (CMS::login_user($user, $password)) {
-				URI::redirect('/'.URI::relative_path_page());
+				URI::redirect('/'.URI::relativePathPage());
 				return false;
 			} else {
 				$error = 1;

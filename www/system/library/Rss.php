@@ -7,7 +7,7 @@
  *
  *	\brief		Classe para criação de XML de RSS
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.0.1
+ *	\version	1.1.2
  *  \author		Fernando Val  - fernando.val@gmail.com
  *	\ingroup	framework
  */
@@ -55,14 +55,14 @@ class Rss extends Kernel {
 	/**
 	 *	\brief
 	 */
-	public function description_html_synticated($value) {
+	public function descriptionHtmlSynticated($value) {
 		self::$rss->descriptionHtmlSyndicated = $value;
 	}
 
 	/**
 	 *	\brief Define a descrição do feed
 	 */
-	public function description_html_synticated($value) {
+	public function link($value) {
 		self::$rss->link = $value;
 	}
 
@@ -81,14 +81,14 @@ class Rss extends Kernel {
 	/**
 	 *	\brief Define o charset do feed
 	 */
-	public function set_encoding($value) {
+	public function setEncoding($value) {
 		self::$rss->encoding = $value;
 	}
 
 	/**
 	 *	\brief Adiciona um item ao feed
 	 */
-	public function add_item($title, $link, $description, $date, $category, $autor, $source='') {
+	public function addItem($title, $link, $description, $date, $category, $autor, $source='') {
 		$item = new FeedItem();
 		$item->title = html_entity_decode(htmlspecialchars($title));
 		$item->link  = $link;

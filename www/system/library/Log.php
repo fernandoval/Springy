@@ -7,7 +7,7 @@
  *
  *	\brief		Classe para geração de saídas em logs de eventos
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	0.9.3
+ *	\version	0.9.4
  *  \author		Fernando Val  - fernando.val@gmail.com
  *	\ingroup	framework
  */
@@ -29,11 +29,11 @@ class Log extends Kernel {
 	 */
 	public static function write($message, $type = 0, $destination = NULL) {
 		/// Pega o IP do usuário
-		$source_ip = Strings::get_real_remote_addr();
+		$source_ip = Strings::getRealRemoteAddr();
 		/// Pega a página onde ocorreu o evento
-		$url = URI::get_uri_string();
+		$url = URI::getURIString();
 
-		//$message = Strings::remove_accented_chars($message);
+		//$message = Strings::removeAccentedChars($message);
 
 		/// Monta a linha do evento
 		$evt_message = date('Y-m-d H:i:s') . ' ' . $source_ip . ' ' . $url . ' "' . $message . '"' . ($type == 3 ? "\n" : "");

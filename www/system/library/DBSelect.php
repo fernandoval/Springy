@@ -165,7 +165,7 @@ class DBSelect extends DBExpression {
 		
 		$sql .= ($this->inner ? $this->inner : '');
 		
-		/**if (Session::is_set('_developer')) {
+		/**if (Session::defined('_developer')) {
 			$sql .= (($this->conds instanceof DBWhere) ? 'WHERE ' . $this->conds . "\n" : '');
 		} else {*/
 			$sql .= (strlen($this->conds) ? 'WHERE ' . $this->conds . "\n" : '');

@@ -8,7 +8,7 @@
  *  \brief		Classe Model para acesso a banco de dados
  *  \note		Essa classe extende a classe DB.
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	1.1.1
+ *  \version	1.2.2
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \ingroup	framework
  *
@@ -138,14 +138,14 @@ class Model extends DB {
 		else {
 			$this->execute('INSERT INTO `'.$this->tableName.'`('.implode(', ', $columns).($this->insertDateColumn ? ', `'.$this->insertDateColumn.'`' : "").') VALUES ('.rtrim(str_repeat('?,', count($values)),',').($this->insertDateColumn ? ', NOW()' : "").')', $values);
 
-			if (!empty($this->primaryKey) && count($this->primaryKey) == 1 && empty($this->rows[0][$this->primaryKey[0]])) {
-				$this->rows[0][$this->primaryKey[0]] = $this->get_inserted_id();
+			if ($this->affectedRows() > 0 && $this->lastInsertedId() && !empty($this->primaryKey) && count($this->primaryKey) == 1 && empty($this->rows[0][$this->primaryKey[0]])) {
+				$this->rows[0][$this->primaryKey[0]] = $this->lastInsertedId();
 			}
 		}
 
 		$this->changedColumns = array();
 
-		return ($this->affected_rows() > 0);
+		return ($this->affectedRows() > 0);
 	}
 
 	/**
@@ -209,7 +209,7 @@ class Model extends DB {
 			}
 		}
 
-		return $this->affected_rows();
+		return $this->affectedRows();
 	}
 
 	/**
@@ -217,9 +217,9 @@ class Model extends DB {
 	 *
 	 *  \param (string)$column - Nome da coluna desejada ou null caso queira o array contendo a linha atual
 	 *
-	 *  \return Retorna o conteúdo da coluna passada, um array com as colunas do registro atual ou FALSE
+	 *  \return Retorna o conteúdo da coluna passada, um array com as colunas do registro atual ou NULL
 	 */
-	public function get(string $column=NULL) {
+	public function get($column=NULL) {
 		if (is_null($column)) {
 			return current($this->rows);
 		}
@@ -230,7 +230,7 @@ class Model extends DB {
 			}
 		}
 
-		return false;
+		return null;
 	}
 
 	/**
@@ -286,7 +286,7 @@ class Model extends DB {
 			$columns = $this->tableColumns;
 		}
 
-		$sql = 'SELECT '.($this->driver_name() == 'mysql' ? 'SQL_CALC_FOUND_ROWS ' : "").$columns.' FROM `'.$this->tableName.'` WHERE ';
+		$sql = 'SELECT '.($this->driverName() == 'mysql' ? 'SQL_CALC_FOUND_ROWS ' : "").$columns.' FROM `'.$this->tableName.'` WHERE ';
 		unset($columns);
 		$where = array();
 		$orderby = array();
@@ -340,19 +340,19 @@ class Model extends DB {
 
 		// Efetua a busca
 		$this->execute($sql, $params);
-		$this->rows = $this->get_all();
+		$this->rows = $this->fetchAll();
 		unset($sql);
 
 		// Faz a contagem de registros do filtro apenas se foi definido um limitador de resultador
 		if ($limit) {
-			if ($this->driver_name() == 'mysql') {
+			if ($this->driverName() == 'mysql') {
 				$this->execute('SELECT FOUND_ROWS() AS `found_rows`');
 			} else {
 				array_pop($params);
 				array_pop($params);
 				$this->execute('SELECT COUNT(0) AS `found_rows` FROM `'.$this->tableName.'` WHERE '.implode(' AND ', $where), $params);
 			}
-			$columns = $this->fetch_next();
+			$columns = $this->fetchNext();
 			$this->dbNumRows = (int)$columns['found_rows'];
 		} else {
 			$this->dbNumRows = count($this->rows);
@@ -412,7 +412,7 @@ class Model extends DB {
 	 *
 	 *  \return Retorna a quantidade de registros encntrados no banco de dados para a última busca efetuada.
 	 */
-	public function found_rows() {
+	public function foundRows() {
 		return $this->dbNumRows;
 	}
 }

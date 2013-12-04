@@ -8,7 +8,7 @@
  *
  *	\brief		Classe para envio de email
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.3.6
+ *	\version	1.4.7
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
@@ -30,44 +30,44 @@ class Mail extends Kernel {
 	 *	\brief Construtor da classe
 	 */
 	function __construct() {
-		if (parent::get_conf('mail', 'method') == 'smtp') {
+		if (parent::getConf('mail', 'method') == 'smtp') {
 			error_reporting(E_ALL^E_NOTICE);
 			restore_error_handler();
 
 			require_once dirname( __FILE__) . DIRECTORY_SEPARATOR . 'MimeMessage' . DIRECTORY_SEPARATOR . 'smtp_message.php';
 			require_once dirname( __FILE__) . DIRECTORY_SEPARATOR . 'Smtp' . DIRECTORY_SEPARATOR . 'smtp.php';
 
-			if (parent::get_conf('mail', 'ssl') || parent::get_conf('mail', 'starttls')) {
+			if (parent::getConf('mail', 'ssl') || parent::getConf('mail', 'starttls')) {
 				require_once dirname( __FILE__) . DIRECTORY_SEPARATOR . 'Sasl' . DIRECTORY_SEPARATOR . 'sasl.php';
 			}
 
 			$this->message_obj = new smtp_message_class;
 
-			$this->message_obj->localhost = parent::get_conf('mail', 'workstation');
-			$this->message_obj->smtp_host = parent::get_conf('mail', 'host');
-			$this->message_obj->smtp_port = parent::get_conf('mail', 'port');
-			$this->message_obj->smtp_ssl = parent::get_conf('mail', 'ssl');
-			$this->message_obj->smtp_start_tls = parent::get_conf('mail', 'starttls');
-			$this->message_obj->smtp_direct_delivery = parent::get_conf('mail', 'direct_delivery');
-			$this->message_obj->smtp_exclude_address = parent::get_conf('mail', 'exclude_address');
-			$this->message_obj->smtp_user = parent::get_conf('mail', 'user');
-			$this->message_obj->smtp_realm = parent::get_conf('mail', 'realm');
-			$this->message_obj->smtp_workstation = parent::get_conf('mail', 'workstation');
-			$this->message_obj->smtp_password = parent::get_conf('mail', 'pass');
-			$this->message_obj->smtp_pop3_auth_host = parent::get_conf('mail', 'auth_host');
-			$this->message_obj->smtp_debug = parent::get_conf('mail', 'debug');
-			$this->message_obj->smtp_html_debug = parent::get_conf('mail', 'html_debug');
+			$this->message_obj->localhost = parent::getConf('mail', 'workstation');
+			$this->message_obj->smtp_host = parent::getConf('mail', 'host');
+			$this->message_obj->smtp_port = parent::getConf('mail', 'port');
+			$this->message_obj->smtp_ssl = parent::getConf('mail', 'ssl');
+			$this->message_obj->smtp_start_tls = parent::getConf('mail', 'starttls');
+			$this->message_obj->smtp_direct_delivery = parent::getConf('mail', 'direct_delivery');
+			$this->message_obj->smtp_exclude_address = parent::getConf('mail', 'exclude_address');
+			$this->message_obj->smtp_user = parent::getConf('mail', 'user');
+			$this->message_obj->smtp_realm = parent::getConf('mail', 'realm');
+			$this->message_obj->smtp_workstation = parent::getConf('mail', 'workstation');
+			$this->message_obj->smtp_password = parent::getConf('mail', 'pass');
+			$this->message_obj->smtp_pop3_auth_host = parent::getConf('mail', 'auth_host');
+			$this->message_obj->smtp_debug = parent::getConf('mail', 'debug');
+			$this->message_obj->smtp_html_debug = parent::getConf('mail', 'html_debug');
 
 
-			if (parent::get_conf('system', 'proxyhost')) {
-				$this->message_obj->smtp_http_proxy_host_name = parent::get_conf('system', 'proxyhost');
-				$this->message_obj->smtp_http_proxy_host_port = parent::get_conf('system', 'proxyport');
-				//$this->message_obj-> = parent::get_conf('system', 'proxyusername');
-				//$this->message_obj-> = parent::get_conf('system', 'proxypassword');
+			if (parent::getConf('system', 'proxyhost')) {
+				$this->message_obj->smtp_http_proxy_host_name = parent::getConf('system', 'proxyhost');
+				$this->message_obj->smtp_http_proxy_host_port = parent::getConf('system', 'proxyport');
+				//$this->message_obj-> = parent::getConf('system', 'proxyusername');
+				//$this->message_obj-> = parent::getConf('system', 'proxypassword');
 			}
 
 
-		} elseif (parent::get_conf('mail', 'method') == 'sendmail') {
+		} elseif (parent::getConf('mail', 'method') == 'sendmail') {
 			require_once dirname( __FILE__) . DIRECTORY_SEPARATOR . 'MimeMessage' . DIRECTORY_SEPARATOR . 'sendmail_message.php';
 
 			$this->message_obj = new sendmail_message_class;
@@ -78,23 +78,23 @@ class Mail extends Kernel {
 		} else {
 			$this->message_obj = new email_message_class;
 
-			$this->message_obj->localhost = parent::get_conf('mail', 'workstation');
+			$this->message_obj->localhost = parent::getConf('mail', 'workstation');
 		}
 
-		$this->set_email_header('Errors-To', Kernel::get_conf('mail', 'errors_go_to'), Kernel::get_conf('mail', 'errors_go_to'));
+		$this->setEmailHeader('Errors-To', Kernel::getConf('mail', 'errors_go_to'), Kernel::getConf('mail', 'errors_go_to'));
 	}
 
 	/**
 	 *	\brief Define o valor de um item de cabeçalho
 	 */
-	public function set_header($header, $value) {
+	public function setHeader($header, $value) {
 		$this->message_obj->SetEncodedHeader($header, $value, $GLOBALS['SYSTEM']['CHARSET']);
 	}
 
 	/**
 	 *	\brief Define o valor de um item de cabeçalho
 	 */
-	public function set_email_header($header, $email, $name='') {
+	public function setEmailHeader($header, $email, $name='') {
 		if (is_array($email)) {
 			$this->message_obj->SetMultipleEncodedEmailHeader($header, $email, $GLOBALS['SYSTEM']['CHARSET']);
 		} else {
@@ -113,12 +113,12 @@ class Mail extends Kernel {
 	 */
 	public function to($email, $name='') {
 		// Verifica se há a entrada forçando o envio de todos os emails para um destinatário específico
-		if (Kernel::get_conf('mail', 'mails_go_to')) {
-			$email = Kernel::get_conf('mail', 'mails_go_to');
+		if (Kernel::getConf('mail', 'mails_go_to')) {
+			$email = Kernel::getConf('mail', 'mails_go_to');
 			$name = '';
 		}
 
-		$this->set_email_header('To', $email, $name);
+		$this->setEmailHeader('To', $email, $name);
 
 		if (is_array($email)) {
 			reset($email);
@@ -132,29 +132,29 @@ class Mail extends Kernel {
 	 *	\brief Define o valor do campo Cc
 	 */
 	public function cc($email, $name='') {
-		$this->set_email_header('Cc', $email, $name);
+		$this->setEmailHeader('Cc', $email, $name);
 	}
 
 	/**
 	 *	\brief Define o valor do campo Bcc
 	 */
 	public function bcc($email, $name='') {
-		$this->set_email_header('Bcc', $email, $name);
+		$this->setEmailHeader('Bcc', $email, $name);
 	}
 
 	/**
 	 *	\brief Define o valor do campo From
 	 */
 	public function from($email, $name='') {
-		$this->set_email_header('From', $email, $name);
-		$this->set_header('Sender', $email, $name);
+		$this->setEmailHeader('From', $email, $name);
+		$this->setHeader('Sender', $email, $name);
 	}
 
 	/**
 	 *	\brief Define o valor do campo Subject
 	 */
 	public function subject($subject) {
-		$this->set_header('Subject', $subject);
+		$this->setHeader('Subject', $subject);
 		$this->mail_subject = $subject;
 	}
 
@@ -182,7 +182,7 @@ class Mail extends Kernel {
 	/**
 	 *	\brief Adiciona um anexo ao e-mail
 	 */
-	public function add_attach($attach){
+	public function addAttach($attach){
 		$file['FileName'] = $attach['tmp_name'];
 		$file['Name'] = $attach['name'];
 		$file['Content-Type'] = $attach['type'];
@@ -196,7 +196,7 @@ class Mail extends Kernel {
 	 *	\brief Envia a mensagem
 	 */
 	public function send() {
-		if (parent::get_conf('mail', 'method') == 'sendmail') {
+		if (parent::getConf('mail', 'method') == 'sendmail') {
 			$error = $this->message_obj->Mail($this->mail_to, $this->mail_subject, $this->text_message, '', '');
 		} else {
 			$error = $this->message_obj->Send();
@@ -216,7 +216,7 @@ class Mail extends Kernel {
 	 *	@param[in] (string) $textmessage - mensagem em formato texto puro
 	 *	@return Retorna true se a mensagem foi enviada com sucesso ou a mensagem de erro
 	 */
-	public function send_message($from, $from_name, $mailto, $to_name, $subject, $htmlmessage, $textmessage) {
+	public function sendMessage($from, $from_name, $mailto, $to_name, $subject, $htmlmessage, $textmessage) {
 		$this->from($from, $from_name);
 		$this->to($mailto, $to_name);
 		$this->subject($subject);

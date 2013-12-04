@@ -8,7 +8,7 @@
  *
  *	\brief		Classe de tratamento de templates
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	3.1.1
+ *	\version	3.1.2
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
@@ -34,8 +34,8 @@ class Template {
 	 */
 	public function __construct($tpl=NULL) {
 		// Verifica o sub-dir
-		if (is_dir(Kernel::get_conf('template', 'template_path') . DIRECTORY_SEPARATOR . URI::current_page())) {
-			$path = URI::current_page();
+		if (is_dir(Kernel::getConf('template', 'template_path') . DIRECTORY_SEPARATOR . URI::currentPage())) {
+			$path = URI::currentPage();
 		} else {
 			$path = 'default';
 		}
@@ -43,30 +43,30 @@ class Template {
 		// Inicializa a classe de template
 		$this->tplObj = new Smarty;
 
-		$this->setCacheDir( Kernel::get_conf('template', 'template_cached_path') );
+		$this->setCacheDir( Kernel::getConf('template', 'template_cached_path') );
 
-		$this->setTemplateDir( Kernel::get_conf('template', 'template_path') );
-		$this->setCompileDir( Kernel::get_conf('template', 'compiled_template_path') );
-		$this->setConfigDir( Kernel::get_conf('template', 'template_config_path') );
+		$this->setTemplateDir( Kernel::getConf('template', 'template_path') );
+		$this->setCompileDir( Kernel::getConf('template', 'compiled_template_path') );
+		$this->setConfigDir( Kernel::getConf('template', 'template_config_path') );
 
 		if ($tpl) {
 			$this->setTemplate($tpl);
 		}
 
 		// Iniciliza as variáveis padrão de template
-		if (Kernel::get_conf('uri', 'common_urls')) {
-			if (!Kernel::get_conf('uri', 'register_method_set_common_urls')) {
-				foreach(Kernel::get_conf('uri', 'common_urls') as $var => $value) {
+		if (Kernel::getConf('uri', 'common_urls')) {
+			if (!Kernel::getConf('uri', 'register_method_set_common_urls')) {
+				foreach(Kernel::getConf('uri', 'common_urls') as $var => $value) {
 					if (isset($value[2])) {
-						$this->assign($var, URI::build_url($value[0], $value[1], $value[2]));
+						$this->assign($var, URI::buildURL($value[0], $value[1], $value[2]));
 					} else if (isset($value[1])) {
-						$this->assign($var, URI::build_url($value[0], $value[1]));
+						$this->assign($var, URI::buildURL($value[0], $value[1]));
 					} else {
-						$this->assign($var, URI::build_url($value[0]));
+						$this->assign($var, URI::buildURL($value[0]));
 					}
 				}
-			} else if (Kernel::get_conf('uri', 'register_method_set_common_urls')) {
-				$toCall = Kernel::get_conf('uri', 'register_method_set_common_urls');
+			} else if (Kernel::getConf('uri', 'register_method_set_common_urls')) {
+				$toCall = Kernel::getConf('uri', 'register_method_set_common_urls');
 				if ($toCall['static']) {
 					if (!isset($toCall['method'])) {
 						throw new Exception('You need to determine which method will be executed.', 500);
@@ -85,12 +85,12 @@ class Template {
 		/*
 		 * Cria uma variável no template cujo o valor é o endereço da raiz do site.
 		 */
-		$this->assign('HOST', URI::build_url());
+		$this->assign('HOST', URI::buildURL());
 
 		/*
 		 * Cria uma variável no template cujo o valor é o endereço da página atual.
 		 */
-		$this->assign('CURRENT_PAGE_URI', URI::current_page_uri());
+		$this->assign('CURRENT_PAGE_URI', URI::currentPageURI());
 
 		return true;
 	}
@@ -134,12 +134,12 @@ class Template {
 		// Se o nome do template não foi informado, define como sendo a página atual
 		if ($this->templateName === NULL) {
 			// Pega o caminha relativo da página atual
-			$relative_path_page = URI::relative_path_page(TRUE);
+			$relative_path_page = URI::relativePathPage(TRUE);
 
-			$this->templateName = URI::get_class_controller();
+			$this->templateName = URI::getControllerClass();
 
 			// Monta o caminho do diretório do arquivo de template
-			$path = Kernel::get_conf('template', 'template_path') . (empty($relative_path_page) ? '' : DIRECTORY_SEPARATOR) . $relative_path_page;
+			$path = Kernel::getConf('template', 'template_path') . (empty($relative_path_page) ? '' : DIRECTORY_SEPARATOR) . $relative_path_page;
 
 			// Verifica se existe o diretório e dentro dele um template com o nome da página e
 			// havendo, usa como caminho relativo adicionao. Se não houver, limpa o caminho relativo.
@@ -150,14 +150,14 @@ class Template {
 			}
 
 			// Ajusta os caminhos de template
-			$this->setTemplateDir( Kernel::get_conf('template', 'template_path') . $relative_path);
-			$this->setCompileDir( Kernel::get_conf('template', 'compiled_template_path') . $relative_path);
-			$this->setConfigDir( Kernel::get_conf('template', 'template_config_path'));
+			$this->setTemplateDir( Kernel::getConf('template', 'template_path') . $relative_path);
+			$this->setCompileDir( Kernel::getConf('template', 'compiled_template_path') . $relative_path);
+			$this->setConfigDir( Kernel::getConf('template', 'template_config_path'));
 		}
 
 		// Se o arquivo de template não existir, exibe erro 404
 		if (!$this->templateExists($this->templateName)) {
-			Errors::display_error(404, $this->templateName . Template::TPL_NAME_SUFIX);
+			Errors::displayError(404, $this->templateName . Template::TPL_NAME_SUFIX);
 		}
 
 		return true;
@@ -191,6 +191,11 @@ class Template {
 	public function fetch() {
 		$this->setAutoTemplatePaths();
 
+		// Carrega as variáveis CONSTANTES
+		$this->tplObj->assign('SYSTEM_NAME', $GLOBALS['SYSTEM']['SYSTEM_NAME']);
+		$this->tplObj->assign('SYSTEM_VERSION', $GLOBALS['SYSTEM']['SYSTEM_VERSION']);
+		$this->tplObj->assign('ACTIVE_ENVIRONMENT', $GLOBALS['SYSTEM']['ACTIVE_ENVIRONMENT']);
+		
 		//if (!$this->tplObj->caching) {
 			foreach (Template_Static::getDefaultVars() as $name => $value) {
 				$this->tplObj->assign($name, $value);
@@ -234,7 +239,7 @@ class Template {
 			$compile = substr($compile, 0, strrpos('/', $compile));
 		}
 		
-		$this->setCompileDir( Kernel::get_conf('template', 'compiled_template_path') . $compile );
+		$this->setCompileDir( Kernel::getConf('template', 'compiled_template_path') . $compile );
 	}
 
 	/**

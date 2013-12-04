@@ -9,7 +9,7 @@
  *  http://www.fval.com.br
  *
  *	\brief		Script de inicialização da aplicação
- *  \version	1.8.1
+ *  \version	1.8.2
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *  \file
@@ -32,7 +32,6 @@
  *  
  *  \ingroup framework
  */
-
 $FWGV_START_TIME = microtime(true); // Memoriza a hora do início do processamento
 
 // Carrega a configuração global do sistema
@@ -71,7 +70,7 @@ function fwgv_autoload($classe) {
 		// procura a classe nas Libarys
 		if (file_exists($GLOBALS['SYSTEM']['USER_CLASS_PATH'] . DIRECTORY_SEPARATOR . $nameSpace . DIRECTORY_SEPARATOR . $classe. '.php')) {
 			require_once $GLOBALS['SYSTEM']['USER_CLASS_PATH'] . DIRECTORY_SEPARATOR . $nameSpace . DIRECTORY_SEPARATOR . $classe . '.php';
-		} else if (file_exists($GLOBALS['SYSTEM']['USER_CLASS_PATH'] . DIRECTORY_SEPARATOR . $classe . '.php')) {
+		} elseif (file_exists($GLOBALS['SYSTEM']['USER_CLASS_PATH'] . DIRECTORY_SEPARATOR . $classe . '.php')) {
 			require_once $GLOBALS['SYSTEM']['USER_CLASS_PATH'] . DIRECTORY_SEPARATOR . $classe . '.php';
 		}
 	}
@@ -102,7 +101,7 @@ class FW_Exception extends Exception {
  *	\brief Função de tratamento de exceções
  */
 function FW_ExceptionHandler($error) {
-	Errors::error_handler($error->getCode(), $error->getMessage(), $error->getFile(), $error->getLine(), (method_exists($error, 'getContext') ? $error->getContext() : null));
+	Errors::errorHandler($error->getCode(), $error->getMessage(), $error->getFile(), $error->getLine(), (method_exists($error, 'getContext') ? $error->getContext() : null));
 }
 set_exception_handler('FW_ExceptionHandler');
 
@@ -111,8 +110,7 @@ set_exception_handler('FW_ExceptionHandler');
  */
 error_reporting(E_ALL);
 function FW_ErrorHandler($errno, $errstr, $errfile, $errline, $errContext) {
-	// Errors::error_handler($errno, $errstr, $errfile, $errline, $errContext);
-	throw new FW_Exception($errno, $errstr, $errfile, $errline, $errContext);
+	Errors::errorHandler($errno, $errstr, $errfile, $errline, $errContext);
 }
 set_error_handler('FW_ErrorHandler');
 
@@ -125,7 +123,7 @@ ob_start();
 // Envia o content-type e o charset
 header('Content-Type: text/html; charset='.$GLOBALS['SYSTEM']['CHARSET'], true);
 // Envia o cache-control
-header('Cache-Control: '.Kernel::get_conf('system', 'cache-control'), true);
+header('Cache-Control: '.Kernel::getConf('system', 'cache-control'), true);
 
 //ini_set('zlib.output_compression', 'on');
 ini_set('mbstring.internal_encoding', $GLOBALS['SYSTEM']['CHARSET']);
@@ -133,11 +131,11 @@ ini_set('default_charset', $GLOBALS['SYSTEM']['CHARSET']);
 ini_set('date.timezone', $GLOBALS['SYSTEM']['TIMEZONE']);
 
 // Resolve a URI e monta as variáveis internas
-$controller = URI::parse_uri();
+$controller = URI::parseURI();
 
 // Verifica se o acesso ao sistema necessita de autenticação
-if (is_array(Kernel::get_conf('system', 'authentication'))) {
-	$auth = Kernel::get_conf('system', 'authentication');
+if (is_array(Kernel::getConf('system', 'authentication'))) {
+	$auth = Kernel::getConf('system', 'authentication');
 	if (isset($auth['user']) && isset($auth['pass'])) {
 		if (!Cookie::get('__sys_auth__')) {
 			if (!isset($_SERVER['PHP_AUTH_USER']) || !isset($_SERVER['PHP_AUTH_PW']) || $_SERVER['PHP_AUTH_USER'] != $auth['user'] || $_SERVER['PHP_AUTH_PW'] != $auth['pass']) {
@@ -151,46 +149,46 @@ if (is_array(Kernel::get_conf('system', 'authentication'))) {
 }
 
 // Verifica se o usuário desenvolvedor está acessando
-if (Kernel::get_conf('system', 'developer_user') && Kernel::get_conf('system', 'developer_pass')) {
-	if (URI::_GET( Kernel::get_conf('system', 'developer_user') ) == Kernel::get_conf('system', 'developer_pass')) {
+if (Kernel::getConf('system', 'developer_user') && Kernel::getConf('system', 'developer_pass')) {
+	if (URI::_GET( Kernel::getConf('system', 'developer_user') ) == Kernel::getConf('system', 'developer_pass')) {
 		Cookie::set('_developer', true);
 		/**
 		 * A var $_SystemDeveloperOn é setada pois, quando o site tá em manutenção e é passado o user e pass para que o desenvolvedor veja o site,
 		 * devido ao uso de Cookies, o site só aparece quando dá um refresh
 		 */
 		$_SystemDeveloperOn = true;
-	} else if (URI::_GET( Kernel::get_conf('system', 'developer_user') ) == 'off') {
+	} else if (URI::_GET( Kernel::getConf('system', 'developer_user') ) == 'off') {
 		Cookie::delete('_developer');
 	}
 }
 
 if (Cookie::exists('_developer') || isset($_SystemDeveloperOn)) {
-	Kernel::set_conf('system', 'maintenance', false);
-	Kernel::set_conf('system', 'debug', true);
+	Kernel::setConf('system', 'maintenance', false);
+	Kernel::setConf('system', 'debug', true);
 }
 
 // apenas se o debug estiver ligado, verifica se o DBA (modo de exibição de SQLs) está ligado
-if (Kernel::get_conf('system', 'debug') && Kernel::get_conf('system', 'dba_user')) {
-	if (URI::_GET( Kernel::get_conf('system', 'dba_user') ) == Kernel::get_conf('system', 'developer_pass')) {
+if (Kernel::getConf('system', 'debug') && Kernel::getConf('system', 'dba_user')) {
+	if (URI::_GET( Kernel::getConf('system', 'dba_user') ) == Kernel::getConf('system', 'developer_pass')) {
 		Cookie::set('_dba', true);
-	} else if (URI::_GET( Kernel::get_conf('system', 'dba_user') ) == 'off') {
+	} else if (URI::_GET( Kernel::getConf('system', 'dba_user') ) == 'off') {
 		Cookie::delete('_dba');
 	}
 
 	if (Cookie::exists('_dba')) {
-		Kernel::set_conf('system', 'sql_debug', true);
+		Kernel::setConf('system', 'sql_debug', true);
 	}
 }
 
-if (Kernel::get_conf('system', 'debug')) {
+if (Kernel::getConf('system', 'debug')) {
 	ini_set('display_errors', 1);
 } else {
 	ini_set('display_errors', 0);
 }
 
 // [pt-br] Verifica se o sistema está em manutenção
-if (Kernel::get_conf('system', 'maintenance')) {
-	Errors::display_error(503, 'The system is under maintenance');
+if (Kernel::getConf('system', 'maintenance')) {
+	Errors::displayError(503, 'The system is under maintenance');
 }
 
 // Verifica se a controller _global existe
@@ -217,16 +215,16 @@ if (!is_null($controller)) {
 	unset($defaultFile);
 
 	// Valida a URI antes de carregar a controladora
-	URI::validate_uri();
+	URI::validateURI();
 
 	// Carrega a controladora
 	require_once($controller);
 
 	// Inicializa a controller
-	$ControllerClassName = str_replace('-', '_', URI::get_class_controller()) . '_Controller';
+	$ControllerClassName = str_replace('-', '_', URI::getControllerClass()) . '_Controller';
 	if (class_exists($ControllerClassName)) {
 		$PageController = new $ControllerClassName;
-		$PageMethod = str_replace('-', '_', URI::get_segment(0, true));
+		$PageMethod = str_replace('-', '_', URI::getSegment(0, true));
 
 		if ($PageMethod && method_exists($PageController, $PageMethod)) {
 			call_user_func(array($PageController, $PageMethod));
@@ -234,44 +232,44 @@ if (!is_null($controller)) {
 			call_user_func(array($PageController, '_default'));
 		}
 	} else {
-		Errors::display_error(404, 'No ' . $ControllerClassName . ' on ' . $controller);
+		Errors::displayError(404, 'No ' . $ControllerClassName . ' on ' . $controller);
 	}
 	unset($controller);
 } else {
 	// [pr-br] Se a aplicação usa o mini CMS, carrega o artigo para a memória
-	if ($GLOBALS['SYSTEM']['CMS'] && CMS::check_article_or_category()) {
+	if ($GLOBALS['SYSTEM']['CMS'] && CMS::checkArticleOrCategory()) {
 		$tpl = new Template;
 
-		if (CMS::article_is_loaded()) {
-			CMS::load_article_to_template();
-		} elseif (CMS::category_is_loaded()) {
-			if (($pg = URI::get_segment(0, true)) && is_numeric($pg)) {
-				$pg = (int)URI::get_segment(0, true);
+		if (CMS::isArticleLoaded()) {
+			CMS::loadArticleToTemplate();
+		} elseif (CMS::isCategoryLoaded()) {
+			if (($pg = URI::getSegment(0, true)) && is_numeric($pg)) {
+				$pg = (int)URI::getSegment(0, true);
 				if ($pg < 1) $pg = 1;
 			} else {
 				$pg = 1;
 			}
 
-			$articles_per_page = Kernel::get_conf('cms', 'articles_per_page');
+			$articles_per_page = Kernel::getConf('cms', 'articles_per_page');
 
-			CMS::load_category_to_template();
-			CMS::load_articles_to_template(($pg - 1) * $articles_per_page, $articles_per_page);
+			CMS::loadCategoryToTemplate();
+			CMS::loadArticlesToTemplate(($pg - 1) * $articles_per_page, $articles_per_page);
 		}
 
-		if (!$tpl->templateExists(URI::get_class_controller()) && $tpl->templateExists('_template')) {
+		if (!$tpl->templateExists(URI::getControllerClass()) && $tpl->templateExists('_template')) {
 			$tpl->setTemplate('_template');
 		}
 	} else {
-		if ($Page = URI::get_segment(0, false)) {
+		if ($Page = URI::getSegment(0, false)) {
 			if ($Page == 'framework' || $Page == 'about' || $Page == 'copyright' || $Page == 'credits' || $Page == 'fval' || $Page == '_') {
-				Kernel::print_copyright();
+				Kernel::printCopyright();
 			} else if ($Page == '_pi_') {
 				phpinfo();
 				ob_end_flush();
 				exit;
 			} else if (in_array($Page, array('_system_bug_', '_system_bug_solved_'))) {
 				// Verifica se o acesso ao sistema necessita de autenticação
-				$auth = Kernel::get_conf('system', 'bug_authentication');
+				$auth = Kernel::getConf('system', 'bug_authentication');
 				if (!empty($auth['user']) && !empty($auth['pass'])) {
 					if (!Cookie::get('__sys_bug_auth__')) {
 						if (!isset($_SERVER['PHP_AUTH_USER']) || !isset($_SERVER['PHP_AUTH_PW']) || $_SERVER['PHP_AUTH_USER'] != $auth['user'] || $_SERVER['PHP_AUTH_PW'] != $auth['pass']) {
@@ -285,14 +283,14 @@ if (!is_null($controller)) {
 
 				if ($Page == '_system_bug_') {
 					Errors::bugList();
-				} else if ($Page == '_system_bug_solved_' && preg_match('/^[0-9a-z]{8}$/', URI::get_segment(1, false))) {
-					Errors::bugSolved(URI::get_segment(1, false));
+				} else if ($Page == '_system_bug_solved_' && preg_match('/^[0-9a-z]{8}$/', URI::getSegment(1, false))) {
+					Errors::bugSolved(URI::getSegment(1, false));
 				}
 			}
 		}
 
 		// Nenhuma controller definida e não está usando CMS ou não há artigo correspondente
-		Errors::display_error(404, URI::relative_path_page() . '/' . URI::current_page());
+		Errors::displayError(404, URI::relativePathPage() . '/' . URI::currentPage());
 	}
 }
 
@@ -302,6 +300,6 @@ if (isset($tpl)) {
 }
 
 // se tiver algum debug, utiliza-o
-Kernel::debug_print();
+Kernel::debugPrint();
 
 ob_end_flush();

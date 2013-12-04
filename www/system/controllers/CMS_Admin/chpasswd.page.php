@@ -14,7 +14,7 @@
 		1.0.0
 
 	Script version:
-		0.1.0
+		0.1.1
 
 	This script:
 		Script para alteração de senha
@@ -23,7 +23,7 @@
 class Chpasswd_Controller {
 	function __construct() {
 		if (!CMS::logged_in_user()) {
-			URI::redirect('/'.URI::relative_path_page().'/login');
+			URI::redirect('/'.URI::relativePathPage().'/login');
 			return false;
 		}
 
@@ -44,7 +44,7 @@ class Chpasswd_Controller {
 			} else {
 				$user = CMS::logged_in_user();
 				Kernel::debug($user);
-				if (CMS::update_user_by_id($user['user_id'], '', trim($_POST['password']))) {
+				if (CMS::updateUserById($user['user_id'], '', trim($_POST['password']))) {
 					Template::assign('Success', 'Senha alterada com sucesso');
 				}
 			}

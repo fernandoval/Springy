@@ -1,8 +1,8 @@
 FVAL PHP Framework for Web Applications
 
-Copyright (C) 2007-2012 FVAL - Consultoria e Informática Ltda.
-Copyright (C) 2007-2012 Fernando Val
-Copyright (C) 2009-2012 Lucas Cardozo
+Copyright (C) 2007-2013 FVAL - Consultoria e Informática Ltda.
+Copyright (C) 2007-2013 Fernando Val
+Copyright (C) 2009-2013 Lucas Cardozo
 
 http://www.fval.com.br
 
@@ -14,8 +14,60 @@ Developer team:
 Framework Update History
 
 ------------------------------------------------------------------------------------ --- -- -
+1.4.0
+	- Normalização do nome dos métodos das bibliotecas para o padrão lowerCamelCase http://pt.wikipedia.org/wiki/CamelCase (veja o documento de migração "migrando para versão 1.4.txt");
+	- Unificação de métodos de leitura e escrita num método misto;
+	- Melhorias na documentação;
+	- Melhorias de consistência e correções de bugs.
+
+1.3.16
+	- Inclusão da biblioteca Model, para construção de modelos de acesso a banco;
+	- Inclusão do framework de frontend Bootstrap;
+	- Melhorias e documentação dos arquivos de configuração.
+
+1.3.15
+	- Ajustes para trabalhar com jQuery.
+
+1.3.14
+	- Atualização do Smarty.
+
+1.3.13
+	- Inclusão do front-end Bootstrap.
+
+1.3.12
+	- Diretório scripts renomeado para apenas 'js'.
+
+1.3.11
+	- Migração para o framework Javascript jQuery e depreciação do framework Javascript Prototype.
+
+1.3.9
+	- Depreciação da adoDB.
+
+1.3.0 a 1.3.8
+	- Alteração da classe DB para usar PDO.
+
+1.2.9
+	- Implementação do recurso de variáveis padrão em templates;
+	- Inclusão da configuração 'PROJECT_VERSION' no sistema (sysconf.php);
+	- Inclusão do método validate_uri na biblioteca URI;
+	- Correção de bug no método make_debug_backtrace da biblioteca Kernel;
+	- Correção de bug no método parse_uri da biblioteca URI;
+	- Atualização da classe MimeMessage.
+
+1.2.8
+	- Implementação do recurso de redirecionamento e redirada de URL terminado em / para evitar duplicidade de conteúdo para SEO;
+	- Inclusão do método add_attach na biblioteca Mail;
+	- Melhoria no método mobile_device_detect da biblioteca Kernel;
+	- Correção de bug na biblioteca Pagination;
+	- Correção de bug na biblioteca Mail;
+	- Outras pequenas melhorias e correções de bug.
+
+1.2.7
+	- Implementação do recurso de ter um host carregando as controladoras a partir de um subdiretório;
+	- Inclusão do recurso de anexos na biblioteca Mail.php.
+
 1.2.6.19
-	- Corrigido bug do redirecionamento 302 do método redirect da classe URI.
+	- Corrigido bug do redirecionamento 302 do método redirect da biblioteca URI.
 
 1.2.6.18
 	- Adicionado controle sobre o header HTTP/1.0 Cache-Control;
@@ -28,8 +80,8 @@ Framework Update History
 	- Melhorias no método "copyright" do framework.
 
 1.2.3
-	- Inclusão da classe SOAP_Client;
-	- Início do desenvolvimento da classe SOAP_Server;
+	- Inclusão da biblioteca SOAP_Client;
+	- Início do desenvolvimento da biblioteca SOAP_Server;
 	- Implementação de possibilidade de sessão em banco de dados e Memcached.
 
 1.2.2
@@ -37,8 +89,8 @@ Framework Update History
 
 1.2.1c
 	- Modificada a forma de armazenamento interno das variáveis defaul de template;
-	- Adicionado método assign_default_var() à classe Template para adição de variáveis de template;
-	- Adicionado método get_default_var() à classe Template para pegar valores de variáveis de template.
+	- Adicionado método assign_default_var() à biblioteca Template para adição de variáveis de template;
+	- Adicionado método get_default_var() à biblioteca Template para pegar valores de variáveis de template.
 
 1.2.1b
 	- Classe NuSOAP atualizada para a versão 0.9.5.
@@ -46,7 +98,7 @@ Framework Update History
 1.2.1
 	- Adicionado uri /_pi_ que mostra as configurações do PHP - phpinfo();
 	- Correções no sistema de debug;
-	- Melhorias no classe de paginação.
+	- Melhorias na biblioteca Pagination.
 
 1.2.0c
 	- Removida tag de fechamento de código PHP de todas as classes da biblioteca, index e configurações.
@@ -57,8 +109,8 @@ Framework Update History
 1.2.0
 	- Adicionada classe para criação de arquivos Excel;
 	- Atualização da Smarty para a versão 3;
-	- Atualização da classe Template para a versão 3 da Smarty;
-	- Adicionada função para vefiricar se string está codificada como UTF-8 na classe Strings;
+	- Atualização da biblioteca Template para a versão 3 da Smarty;
+	- Adicionada função para vefiricar se string está codificada como UTF-8 na biblioteca Strings;
 	- Substituída utilização da função mb_ereg_replate por preg_replace nas subclasses Strings_UTF8 e Strings_ANSI.
 
 1.1.0

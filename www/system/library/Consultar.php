@@ -84,8 +84,8 @@ class Grid extends Pagination {
 
 		parent::__construct();
 
-		$this->uri_param = URI::get_all_segments();
-		$this->uri_get   = URI::get_params();
+		$this->uri_param = URI::getAllSegments();
+		$this->uri_get   = URI::getParams();
 		unset($this->uri_get['cAjax']);
 
 		if (isset($_POST[$this->postFilterVarName])) {
@@ -102,7 +102,7 @@ class Grid extends Pagination {
 			$this->order = $_POST[$this->postOrderVarName];
 		}
 
-		$this->cookieName = md5(implode('', URI::get_all_segments()));
+		$this->cookieName = md5(implode('', URI::getAllSegments()));
 	}
 
 	/**

@@ -8,7 +8,7 @@
  *
  *	\brief		Classe com métodos para diversos tipos de tratamento e validação de dados string
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	0.3.5
+ *	\version	0.4.6
  *  \author		Fernando Val  - fernando.val@gmail.com
  *	\ingroup	framework
  */
@@ -23,7 +23,7 @@ class Strings extends Kernel {
 	 *
 	 *	In order to check if a string is encoded correctly in utf-8, I suggest the following function, that implements the RFC3629 better than mb_check_encoding()
 	 */
-	public static function check_utf8($str) {
+	public static function checkUTF8($str) {
 		$len = strlen($str);
 		for($i = 0; $i < $len; $i++){
 			$c = ord($str[$i]);
@@ -49,11 +49,11 @@ class Strings extends Kernel {
 	 *	\brief Verifica se um endereço de email
 	 *
 	 *	@param String $email - email a ser validado
-	 *	@param Boolean $checkdns - determina se a existência do domínio do email deve ser verificado
+	 *	@param Boolean $checkDNS - determina se a existência do domínio do email deve ser verificado
 	 */
-	public static function check_email_address($email, $checkdns=true) {
+	public static function validateEmailAddress($email, $checkDNS=true) {
 		if (preg_match('/^[a-z0-9_\-]+(\.[a-z0-9_\-]+)*@([a-z0-9_\.\-]*[a-z0-9_\-]+\.[a-z]{2,4})$/i', $email, $res)) {
-			return $checkdns ? checkdnsrr($res[2]) : true;
+			return $checkDNS ? checkdnsrr($res[2]) : true;
 		}
 		return false;
 	}
@@ -61,7 +61,7 @@ class Strings extends Kernel {
 	/**
 	 *	\brief Verifica se é um slug válido
 	 */
-	public static function check_valid_slug($txt) {
+	public static function validateSlug($txt) {
 		return preg_match('/^[a-z0-9-]+$/', $txt);
 	}
 
@@ -73,7 +73,7 @@ class Strings extends Kernel {
 	 *	@param Int $min - Tamanho mínimo esperado para o texto (default=3).
 	 *	@param Int $max - Tamanho máximo que o texto pode ter. Se deixar em branco permite textos de tamanho infinito.
 	 */
-	public static function check_valid_text(&$txt, $min=3, $max=false) {
+	public static function validateText(&$txt, $min=3, $max=false) {
 		$txt = trim(strip_tags($txt));
 		$len = strlen($txt);
 		return (!empty($txt) && ($len >= $min) && (!$max || ($max && $len <= $max)));
@@ -82,7 +82,7 @@ class Strings extends Kernel {
 	/**
 	 *	\brief Retorna o endereço IP remoto real
 	 */
-	public static function get_real_remote_addr() {
+	public static function getRealRemoteAddr() {
 		// Pega o IP que vem por trás de proxies
 		// $ApacheHeader = apache_request_headers();
 		// if (!empty($_SERVER['HTTP_X_FORWARDED_FOR']) || !empty($ApacheHeader['X-Forwarded-For']))
@@ -136,7 +136,7 @@ class Strings extends Kernel {
 	 *	@param String $ip - endereço ip
 	 *	@return Retorna um valor inteiro
 	 */
-	public static function ipv4_to_number($ip) {
+	public static function ipv4ToNumber($ip) {
 		// Sepada os octetos do IP
 		$m = explode('.', $ip);
 		if (count($m) < 4) {
@@ -150,12 +150,12 @@ class Strings extends Kernel {
 	/**
 	 *	\brief Troca caracteres acentuados por não acentuado
 	 */
-	public static function remove_accented_chars($txt) {
-		if ((function_exists('mb_check_encoding') && mb_check_encoding($txt, 'UTF-8')) || self::check_utf8($txt)) {
-			return Strings_UTF8::remove_accented_chars($txt);
+	public static function removeAccentedChars($txt) {
+		if ((function_exists('mb_check_encoding') && mb_check_encoding($txt, 'UTF-8')) || self::checkUTF8($txt)) {
+			return Strings_UTF8::removeAccentedChars($txt);
 		}
 
-		return Strings_ANSI::remove_accented_chars($txt);
+		return Strings_ANSI::removeAccentedChars($txt);
 	}
 
 	/* As funções abaixo ainda estão em processo de migração para o framework e não devem ser utilizadas */
@@ -223,7 +223,7 @@ class Strings extends Kernel {
 	}
 
 	public static function generate_form_id($to) {
-		$id = md5($to) . md5(Session::get_session_id()) . md5(uniqid(rand(), true));
+		$id = md5($to) . md5(Session::getId()) . md5(uniqid(rand(), true));
 		Session::set('_FORM_CAPTCHA_' . strtoupper($to), $id);
 		return base64_encode($id);
 	}
@@ -356,8 +356,7 @@ class Strings extends Kernel {
 	 * @param string $url
 	 * @return bool true||false
 	 */
-	public static function validarMaps( $url )
-	{
+	public static function validarMaps( $url ) {
 		$domin = "";
 		$urls = explode("/", $url);
 

@@ -7,7 +7,7 @@
  *
  *	\brief		Classe para tratamento de sessão
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.2.10
+ *	\version	1.3.11
  *  \author		Fernando Val  - fernando.val@gmail.com
  *	\ingroup	framework
  */
@@ -41,13 +41,13 @@ class Session extends Kernel {
 		if (self::$started) return true;
 
 		// Carrega as configurações de tratamento de sesssão
-		self::$type = parent::get_conf('session', 'type');
-		self::$server = parent::get_conf('session', 'server_addr');
-		self::$port = parent::get_conf('session', 'server_port');
-		self::$session_table = parent::get_conf('session', 'table_name');
-		self::$id_column = parent::get_conf('session', 'id_column');
-		self::$value_column = parent::get_conf('session', 'value_column');
-		self::$update_column = parent::get_conf('session', 'update_column');
+		self::$type = parent::getConf('session', 'type');
+		self::$server = parent::getConf('session', 'server_addr');
+		self::$port = parent::getConf('session', 'server_port');
+		self::$session_table = parent::getConf('session', 'table_name');
+		self::$id_column = parent::getConf('session', 'id_column');
+		self::$value_column = parent::getConf('session', 'value_column');
+		self::$update_column = parent::getConf('session', 'update_column');
 
 		if (!is_null($name)) {
 			session_name($name);
@@ -73,19 +73,19 @@ class Session extends Kernel {
 					self::$id = md5(uniqid(mt_rand(), true));
 				}
 			}
-			Cookie::set(session_name(), self::$id, 0, '/', parent::get_conf('session', 'master_domain'), false, false);
+			Cookie::set(session_name(), self::$id, 0, '/', parent::getConf('session', 'master_domain'), false, false);
 
 			if (self::$type == 'db') {
 				// Expira as sessões antigas
 				$db = new DB();
-				$exp = parent::get_conf('session', 'expires');
+				$exp = parent::getConf('session', 'expires');
 				if ($exp == 0) $exp = 86400;
 				$db->execute('DELETE FROM '.self::$session_table.' WHERE '.self::$update_column.' <= ?', array(date('Y-m-d H:i:s', time() - ($exp * 60))));
 
 				// Carrega a sessão do banco
 				$db->execute('SELECT '.self::$value_column.' FROM '.self::$session_table.' WHERE '.self::$id_column.' = ?', array(self::$id));
-				if ($db->num_rows()) {
-					$res = $db->fetch_next();
+				if ($db->affectedRows()) {
+					$res = $db->fetchNext();
 					self::$data = unserialize($res[self::$value_column]);
 				} else {
 					$sql = 'INSERT INTO '.self::$session_table.'('.self::$id_column.','.self::$value_column.','.self::$update_column.')'
@@ -106,7 +106,7 @@ class Session extends Kernel {
 
 			self::$started = true;
 		} else {
-			session_set_cookie_params(0, '/', parent::get_conf('session', 'master_domain'), false, false);
+			session_set_cookie_params(0, '/', parent::getConf('session', 'master_domain'), false, false);
 			self::$started = session_start();
 			self::$data = isset($_SESSION['_ffw_'])?$_SESSION['_ffw_']:array();
 			self::$id = session_id();
@@ -132,11 +132,14 @@ class Session extends Kernel {
 		} elseif (self::$type == 'memcached') {
 			$mc = new Memcached();
 			$mc->addServer(self::$server, self::$port);
-			$mc->set('session_'.self::$id, self::$data, parent::get_conf('session', 'expires') * 60);
+			$mc->set('session_'.self::$id, self::$data, parent::getConf('session', 'expires') * 60);
 		}
 	}
 
-	public static function set_session_id($id) {
+	/**
+	 *  \brief Define o id da sessão
+	 */
+	public static function setSessionId($id) {
 		self::$id = $id;
 		if (self::$type != 'db') {
 			session_id($id);
@@ -146,7 +149,7 @@ class Session extends Kernel {
 	/**
 	 *	\brief Informa se a variável de sessão está definida
 	 */
-	public static function is_set($var) {
+	public static function defined($var) {
 		self::start();
 		return isset(self::$data[$var]);
 	}
@@ -184,7 +187,7 @@ class Session extends Kernel {
 	 *
 	 *	\return retorna \c array() se tiver sucesso ou \c NULL se não houver sessão
 	 */
-	public static function get_all() {
+	public static function getAll() {
 		self::start();
 		// if (isset($_SESSION['_ffw_'])) {
 			// return $_SESSION['_ffw_'];
@@ -201,7 +204,7 @@ class Session extends Kernel {
 	 *
 	 *	\return retorna o ID da sessão ativa
 	 */
-	public static function get_session_id() {
+	public static function getId() {
 		self::start();
 		// return session_id();
 		return self::$id;

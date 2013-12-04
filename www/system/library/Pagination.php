@@ -8,7 +8,7 @@
  *	\brief		A single pagination class
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
  *	\link		http://www.fval.com.br/
- *	\version	2.2.2
+ *	\version	2.2.3
  *	\author		Fernando Val <fernando.val@gmail.com>
  *	\ingroup	framework
  *
@@ -129,9 +129,9 @@ class Pagination {
 	public function setSiteLink($link, $qs=array()) {
 		if (is_array($link)) {
 			if (isset($_SERVER['HTTPS'])) {
-				$this->siteLink = str_replace(urlencode($this->tagLink), $this->tagLink, URI::build_url($link, array_merge($qs, array('pag' => $this->tagLink)), true, 'secure'));
+				$this->siteLink = str_replace(urlencode($this->tagLink), $this->tagLink, URI::buildURL($link, array_merge($qs, array('pag' => $this->tagLink)), true, 'secure'));
 			} else {
-				$this->siteLink = str_replace(urlencode($this->tagLink), $this->tagLink, URI::build_url($link, array_merge($qs, array('pag' => $this->tagLink))));
+				$this->siteLink = str_replace(urlencode($this->tagLink), $this->tagLink, URI::buildURL($link, array_merge($qs, array('pag' => $this->tagLink))));
 			}
 		} else {
 			$this->siteLink = $link;

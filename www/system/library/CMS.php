@@ -7,7 +7,7 @@
  *
  *	\brief		Classe do Mini CMS
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	0.1.1
+ *	\version	0.2.2
  *  \author		Fernando Val  - fernando.val@gmail.com
  *	\ingroup	framework
  */
@@ -21,7 +21,7 @@ class CMS extends Kernel {
 	 *
 	 *	\return \c true se um artigo foi carregado pra memória e \c false em caso contrário
 	 */
-	public static function article_is_loaded() {
+	public static function isArticleLoaded() {
 		return (self::$article_data != NULL);
 	}
 
@@ -30,7 +30,7 @@ class CMS extends Kernel {
 	 *
 	 *	\return \c true se uma categoria foi carregada pra memória e \c false em caso contrário
 	 */
-	public static function category_is_loaded() {
+	public static function isCategoryLoaded() {
 		return (self::$category_data != NULL);
 	}
 
@@ -41,8 +41,8 @@ class CMS extends Kernel {
 	 *
 	 *	\return o valor da coluna selecionada
 	 */
-	public static function get_article_data($col='category_id') {
-		if (self::category_is_loaded() && isset(self::$category_data[$col])) {
+	public static function getArticleData($col='category_id') {
+		if (self::isCategoryLoaded() && isset(self::$category_data[$col])) {
 			return self::$category_data[$col];
 		}
 
@@ -56,23 +56,23 @@ class CMS extends Kernel {
 	 *
 	 *	\return \c true se carregou o artigo/categoria pra memória e \c false em caso contrário
 	 */
-	public static function check_article_or_category($slug='') {
-		$slug = (empty($slug) ? URI::current_page() : $slug);
+	public static function checkArticleOrCategory($slug='') {
+		$slug = (empty($slug) ? URI::currentPage() : $slug);
 
 		DB::connect();
 
 		// Busca um artigo a partir do slug
-		if ($article = self::get_article_by_slug($slug, true)) {
+		if ($article = self::getArticleBySlug($slug, true)) {
 			self::$article_data = $article;
 			return true;
 		}
 
 		// Busca por uma categoria, já que não há um artigo com o slug da página
-		if (DB::execute('SELECT `category_id`, `title`, `slug`, `dt_update` FROM `cms_categories` WHERE `slug` = '.DB::escape_str($slug)) && DB::num_rows() > 0) {
-			if (self::$category_data = DB::fetch_next()) {
-				if ($slug = URI::get_segment(0, true)) {
+		if (DB::execute('SELECT `category_id`, `title`, `slug`, `dt_update` FROM `cms_categories` WHERE `slug` = '.DB::escape_str($slug)) && DB::affectedRows() > 0) {
+			if (self::$category_data = DB::fetchNext()) {
+				if ($slug = URI::getSegment(0, true)) {
 					if (DB::execute('SELECT a.`article_id`, a.`title`, a.`slug`, a.`subtitle`, a.`text`, a.`author`, a.`dt_creation`, a.`dt_update`, c.`category_id`, c.`title` AS category_title, c.`slug` AS category_slug FROM `cms_articles` a LEFT OUTER JOIN `cms_categories` c ON c.`category_id` = a.`category_id` AND c.`category_id` = '.self::$category_data['category_id'].' WHERE a.`published` = 1 AND a.`slug` = '.DB::escape_str($slug).' ORDER BY a.`dt_creation` DESC') && DB::num_rows() > 0) {
-						if (self::$article_data = DB::fetch_next()) {
+						if (self::$article_data = DB::fetchNext()) {
 							return true;
 						} else {
 							return false;
@@ -101,7 +101,7 @@ class CMS extends Kernel {
 	 *	\return um \c array com os dados do artigo caso o encontre ou \c false se não encontrar um
 	 *		artigo correspondete a chave informada
 	 */
-	public static function get_article($article_key, $key='article_id', $published=true) {
+	public static function getArticle($article_key, $key='article_id', $published=true) {
 		DB::connect();
 
 		switch ($key) {
@@ -123,8 +123,8 @@ class CMS extends Kernel {
 		$query .= ' LEFT OUTER JOIN `cms_categories` c ON c.`category_id` = a.`category_id`';
 		$query .= ' WHERE '.$where.($published?' AND a.`published` = 1':'');
 
-		if (DB::execute($query) && DB::num_rows() > 0) {
-			return DB::fetch_next();
+		if (DB::execute($query) && $reg = DB::fetchNext()) {
+			return $reg;
 		}
 
 		return false;
@@ -139,17 +139,17 @@ class CMS extends Kernel {
 	 *	\return a quantidade de registros afetados se tiver êxito na execução do método ou
 	 *		\c false se não tiver sucesso
 	 */
-	public static function delete_article($article_id, &$error='') {
+	public static function deleteArticle($article_id, &$error='') {
 		if (!is_numeric($article_id)) {
-			$error = 'Invalid method call CMS::delete_article(): article_id is not numeric';
-			Errors::display_error(500, $error);
+			$error = 'Invalid method call CMS::deleteArticle(): article_id is not numeric';
+			Errors::displayError(500, $error);
 			return false;
 		}
 
 		$sql = 'DELETE FROM `cms_articles` WHERE `article_id` = '.(int)$article_id;
 		DB::connect();
 		if (DB::execute($sql)) {
-			return DB::affected_rows();
+			return DB::affectedRows();
 		}
 
 		return false;
@@ -163,7 +163,7 @@ class CMS extends Kernel {
 	 *
 	 *	\return 
 	 */
-	public static function insert_article($data, &$error='') {
+	public static function insertArticle($data, &$error='') {
 		$data['title']       = empty($data['title']) ? 'Untitled' : trim($data['title']);
 		$data['slug']        = empty($data['slug']) ? $data['title'] : trim($data['slug']);
 		$data['subtitle']    = empty($data['subtitle']) ? '' : trim($data['subtitle']);
@@ -172,7 +172,7 @@ class CMS extends Kernel {
 		$data['category_id'] = empty($data['category_id']) ? 0 : (int)$data['category_id'];
 		$data['published']   = empty($data['published']) ? 0 : (int)$data['published'];
 
-		return self::update_article(0, $data, $error);
+		return self::updateArticle(0, $data, $error);
 	}
 
 	/**
@@ -184,10 +184,10 @@ class CMS extends Kernel {
 	 *
 	 *	\return a quantidade de registros afetados ou \c false se houver erro
 	 */
-	public static function update_article($article_id, $data, &$error='') {
+	public static function updateArticle($article_id, $data, &$error='') {
 		if (!is_numeric($article_id)) {
-			$error = 'Invalid method call CMS::update_article(): article_id is not numeric';
-			Errors::display_error(500, $error);
+			$error = 'Invalid method call CMS::updateArticle(): article_id is not numeric';
+			Errors::displayError(500, $error);
 			return false;
 		}
 		$article_id = (int)$article_id;
@@ -199,17 +199,17 @@ class CMS extends Kernel {
 			$data['slug'] = $data['title'];
 		}
 		if (isset($data['slug'])) {
-			$data['slug'] = URI::slug_generator($data['slug']);
+			$data['slug'] = URI::makeSlug($data['slug']);
 
 			if (empty($data['slug'])) {
-				$error = 'Invalid method call CMS::update_article(): empty slug';
-				Errors::display_error(500, $error);
+				$error = 'Invalid method call CMS::updateArticle(): empty slug';
+				Errors::displayError(500, $error);
 				return false;
 			}
 
 			$slug = $data['slug'];
 			$counter = ($article_id == 0) ? 1 : $article_id;
-			while (($article = self::get_article_by_slug($data['slug'], false)) && ((int)$article['article_id'] != $article_id)) {
+			while (($article = self::getArticleBySlug($data['slug'], false)) && ((int)$article['article_id'] != $article_id)) {
 				$data['slug'] = $slug . '-' . $counter;
 				$counter++;
 			}
@@ -239,8 +239,8 @@ class CMS extends Kernel {
 						case 'title':
 						case 'slug':
 						case 'text':
-							$error = 'Invalid method call CMS::update_article(): '.$field.' not defined';
-							Errors::display_error(500, $error);
+							$error = 'Invalid method call CMS::updateArticle(): '.$field.' not defined';
+							Errors::displayError(500, $error);
 							return false;
 						case 'dt_creation':
 							$valuelist .= (empty($valuelist)?'':',').'NOW()';
@@ -280,15 +280,15 @@ class CMS extends Kernel {
 			}
 
 			if (empty($update)) {
-				$error = 'Invalid method call CMS::update_article(): no columns to be updated';
-				Errors::display_error(500, $error);
+				$error = 'Invalid method call CMS::updateArticle(): no columns to be updated';
+				Errors::displayError(500, $error);
 				return false;
 			}
 
 			$sql = 'UPDATE `cms_articles` SET '.$update.' WHERE `article_id` = '.$article_id;
 		}
 		if (DB::execute($sql)) {
-			return DB::affected_rows();
+			return DB::affectedRows();
 		}
 
 		return false;
@@ -305,8 +305,8 @@ class CMS extends Kernel {
 	 *
 	 *	\see get_article
 	 */
-	public static function get_article_by_id($article_key, $published=true) {
-		return self::get_article((int)$article_key, 'article_id', $published);
+	public static function getArticleById($article_key, $published=true) {
+		return self::getArticle((int)$article_key, 'article_id', $published);
 	}
 
 	/**
@@ -320,8 +320,8 @@ class CMS extends Kernel {
 	 *
 	 *	\see get_article
 	 */
-	public static function get_article_by_slug($slug, $published=true) {
-		return self::get_article($slug, 'slug', $published);
+	public static function getArticleBySlug($slug, $published=true) {
+		return self::getArticle($slug, 'slug', $published);
 	}
 
 	/**
@@ -343,7 +343,7 @@ class CMS extends Kernel {
 	 *
 	 *	\return um array com a lista de artigos encontrados ou false caso encontre erro
 	 */
-	public static function get_articles($category_id=NULL, $published=true, $order_by='dt_creation', $order_sort='DESC', $start=0, $limit=10, &$count=0) {
+	public static function getArticles($category_id=NULL, $published=true, $order_by='dt_creation', $order_sort='DESC', $start=0, $limit=10, &$count=0) {
 		$query = 'SELECT SQL_CALC_FOUND_ROWS a.`article_id`, a.`title`, a.`slug`, a.`subtitle`, a.`text`, a.`author`, a.`published`, a.`dt_creation`, a.`dt_update`, c.`category_id`, c.`title` AS category_title, c.`slug` AS category_slug';
 		$query .= ' FROM `cms_categories` c';
 		$query .= ' RIGHT OUTER JOIN `cms_articles` a ON a.`category_id` = c.`category_id`';
@@ -359,12 +359,12 @@ class CMS extends Kernel {
 		DB::connect();
 		if (DB::execute($query)) {
 			$articles = array();
-			while ($article_data = DB::fetch_next()) {
+			while ($article_data = DB::fetchNext()) {
 				$articles[] = $article_data;
 			}
 
 			DB::execute('SELECT FOUND_ROWS() AS qtd');
-			$data = DB::fetch_next();
+			$data = DB::fetchNext();
 			$count = (int)$data['qtd'];
 
 			return $articles;
@@ -392,8 +392,8 @@ class CMS extends Kernel {
 	 *
 	 *	\see get_articles
 	 */
-	public static function get_articles_by_category($category_id=NULL, $published=true, $order='ASC', $start=0, $limit=10, &$count=0) {
-		return self::get_articles($category_id, $published, 'c.`category_id`', $order, $start, $limit, $count);
+	public static function getArticlesByCategory($category_id=NULL, $published=true, $order='ASC', $start=0, $limit=10, &$count=0) {
+		return self::getArticles($category_id, $published, 'c.`category_id`', $order, $start, $limit, $count);
 	}
 
 	/**
@@ -413,8 +413,8 @@ class CMS extends Kernel {
 	 *
 	 *	\see get_articles
 	 */
-	public static function get_last_articles($category_id=NULL, $published=true, $start=0, $limit=10, &$count=0) {
-		return self::get_articles($category_id, $published, 'a.`dt_creation`', 'DESC', $start, $limit, $count);
+	public static function getLastArticles($category_id=NULL, $published=true, $start=0, $limit=10, &$count=0) {
+		return self::getArticles($category_id, $published, 'a.`dt_creation`', 'DESC', $start, $limit, $count);
 	}
 
 	/*  ================================================================================ === == =
@@ -431,7 +431,7 @@ class CMS extends Kernel {
 	 *	\return um \c array com os dados da categoria, caso encontre ou \c false caso não encontre
 	 *		uma categoria
 	 */
-	public static function get_category($category_key, $key='category_id', $published=false) {
+	public static function getCategory($category_key, $key='category_id', $published=false) {
 		DB::connect();
 
 		switch ($key) {
@@ -452,8 +452,8 @@ class CMS extends Kernel {
 		$query .= ' FROM `cms_categories` c';
 		$query .= ' WHERE '.$where/*.($published?' AND c.`published` = 1':'')*/;
 
-		if (DB::execute($query) && DB::num_rows() > 0) {
-			return DB::fetch_next();
+		if (DB::execute($query) && $res = DB::fetchNext()) {
+			return $res;
 		}
 
 		return false;
@@ -468,17 +468,17 @@ class CMS extends Kernel {
 	 *	\return a quantidade de registros afetados se tiver êxito na execução do método ou
 	 *		\c false se não tiver sucesso
 	 */
-	public static function delete_category($category_id, &$error='') {
+	public static function deleteCategory($category_id, &$error='') {
 		if (!is_numeric($category_id)) {
-			$error = 'Invalid method call CMS::delete_category(): category_id is not numeric';
-			Errors::display_error(500, $error);
+			$error = 'Invalid method call CMS::deleteCategory(): category_id is not numeric';
+			Errors::displayError(500, $error);
 			return false;
 		}
 
 		$sql = 'DELETE FROM `cms_categories` WHERE `category_id` = '.(int)$category_id;
 		DB::connect();
 		if (DB::execute($sql)) {
-			return DB::affected_rows();
+			return DB::affectedRows();
 		}
 
 		return false;
@@ -492,12 +492,12 @@ class CMS extends Kernel {
 	 *
 	 *	\return 
 	 */
-	public static function insert_category($data, &$error='') {
+	public static function insertCategory($data, &$error='') {
 		$data['title']       = empty($data['title']) ? 'Untitled' : trim($data['title']);
 		$data['slug']        = empty($data['slug']) ? $data['title'] : trim($data['slug']);
 		$data['published']   = empty($data['published']) ? 0 : (int)$data['published'];
 
-		return self::update_category(0, $data, $error);
+		return self::updateCategory(0, $data, $error);
 	}
 
 	/**
@@ -509,10 +509,10 @@ class CMS extends Kernel {
 	 *
 	 *	\return a quantidade de registros afetados ou \c false se houver erro
 	 */
-	public static function update_category($category_id, $data, &$error='') {
+	public static function updateCategory($category_id, $data, &$error='') {
 		if (!is_numeric($category_id)) {
-			$error = 'Invalid method call CMS::update_category(): category_id is not numeric';
-			Errors::display_error(500, $error);
+			$error = 'Invalid method call CMS::updateCategory(): category_id is not numeric';
+			Errors::displayError(500, $error);
 			return false;
 		}
 		$category_id = (int)$category_id;
@@ -524,17 +524,17 @@ class CMS extends Kernel {
 			$data['slug'] = $data['title'];
 		}
 		if (isset($data['slug'])) {
-			$data['slug'] = URI::slug_generator($data['slug']);
+			$data['slug'] = URI::makeSlug($data['slug']);
 
 			if (empty($data['slug'])) {
-				$error = 'Invalid method call CMS::update_category(): empty slug';
-				Errors::display_error(500, $error);
+				$error = 'Invalid method call CMS::updateCategory(): empty slug';
+				Errors::displayError(500, $error);
 				return false;
 			}
 
 			$slug = $data['slug'];
 			$counter = ($category_id == 0) ? 1 : $category_id;
-			while (($article = self::get_category_by_slug($data['slug'], false)) && ((int)$article['category_id'] != $category_id)) {
+			while (($article = self::getCategoryBySlug($data['slug'], false)) && ((int)$article['category_id'] != $category_id)) {
 				$data['slug'] = $slug . '-' . $counter;
 				$counter++;
 			}
@@ -562,8 +562,8 @@ class CMS extends Kernel {
 					switch ($field) {
 						case 'title':
 						case 'slug':
-							$error = 'Invalid method call CMS::update_category(): '.$field.' not defined';
-							Errors::display_error(500, $error);
+							$error = 'Invalid method call CMS::updateCategory(): '.$field.' not defined';
+							Errors::displayError(500, $error);
 							return false;
 						case 'published':
 							$data[$field] = 0;
@@ -595,15 +595,15 @@ class CMS extends Kernel {
 			}
 
 			if (empty($update)) {
-				$error = 'Invalid method call CMS::update_article(): no columns to be updated';
-				Errors::display_error(500, $error);
+				$error = 'Invalid method call CMS::updateArticle(): no columns to be updated';
+				Errors::displayError(500, $error);
 				return false;
 			}
 
 			$sql = 'UPDATE `cms_categories` SET '.$update.' WHERE `category_id` = '.$category_id;
 		}
 		if (DB::execute($sql)) {
-			return DB::affected_rows();
+			return DB::affectedRows();
 		}
 
 		return false;
@@ -620,8 +620,8 @@ class CMS extends Kernel {
 	 *
 	 *	\see get_category
 	 */
-	public static function get_category_by_id($category_key, $published=true) {
-		return self::get_category((int)$category_key, 'category_id', $published);
+	public static function getCategoryById($category_key, $published=true) {
+		return self::getCategory((int)$category_key, 'category_id', $published);
 	}
 
 	/**
@@ -635,8 +635,8 @@ class CMS extends Kernel {
 	 *
 	 *	\see get_category
 	 */
-	public static function get_category_by_slug($slug, $published=true) {
-		return self::get_category($slug, 'slug', $published);
+	public static function getCategoryBySlug($slug, $published=true) {
+		return self::getCategory($slug, 'slug', $published);
 	}
 
 	/**
@@ -656,7 +656,7 @@ class CMS extends Kernel {
 	 *
 	 *	\return um array com a lista de categorias encontradas ou false caso encontre erro
 	 */
-	public static function get_categories($published=true, $order_by='title', $order_sort='ASC', $start=0, $limit=10, &$count=0) {
+	public static function getCategories($published=true, $order_by='title', $order_sort='ASC', $start=0, $limit=10, &$count=0) {
 		$query = 'SELECT SQL_CALC_FOUND_ROWS `category_id`, `title`, `slug`, `dt_update`';
 		$query .= ' FROM `cms_categories`';
 		/*if ($published) {
@@ -670,12 +670,12 @@ class CMS extends Kernel {
 		DB::connect();
 		if (DB::execute($query)) {
 			$categories = array();
-			while ($category_data = DB::fetch_next()) {
+			while ($category_data = DB::fetchNext()) {
 				$categories[] = $category_data;
 			}
 
 			DB::execute('SELECT FOUND_ROWS() AS qtd');
-			$data = DB::fetch_next();
+			$data = DB::fetchNext();
 			$count = (int)$data['qtd'];
 
 			return $categories;
@@ -692,8 +692,8 @@ class CMS extends Kernel {
 	 *
 	 *	\return \c true se tiver uma categoria em memória e \c false em caso contrário
 	 */
-	public static function load_category_to_template() {
-		if (self::category_is_loaded()) {
+	public static function loadCategoryToTemplate() {
+		if (self::isCategoryLoaded()) {
 			if (!$tpl = new Templateed()) {
 				$tpl = new Template();
 			}
@@ -715,8 +715,8 @@ class CMS extends Kernel {
 	 *
 	 *	\return \c true se tiver um artigo em memória e \c false em caso contrário
 	 */
-	public static function load_article_to_template() {
-		if (self::article_is_loaded()) {
+	public static function loadArticleToTemplate() {
+		if (self::isArticleLoaded()) {
 			if (!$tpl = new Templateed()) {
 				$tpl = new Template();
 			}
@@ -750,9 +750,9 @@ class CMS extends Kernel {
 	 *	\return \c true se tiver uma categoria em memória e houverem artigos para esta categoria
 	 *		ou \c false em caso contrário
 	 */
-	public static function load_articles_to_template($start=0, $limit=10) {
-		if (self::category_is_loaded()) {
-			if ($articles = self::get_last_articles(self::$category_data['category_id'], true, $start, $limit, $count)) {
+	public static function loadArticlesToTemplate($start=0, $limit=10) {
+		if (self::isCategoryLoaded()) {
+			if ($articles = self::getLastArticles(self::$category_data['category_id'], true, $start, $limit, $count)) {
 				if (!$tpl = new Templateed()) {
 					$tpl = new Template();
 				}
@@ -783,7 +783,7 @@ class CMS extends Kernel {
 	 *
 	 *	\return um \c array com os dados do usuário, caso encontre ou \c false em caso contrário
 	 */
-	private static function get_user($user_key, $key='user_id', $pass='') {
+	private static function getUser($user_key, $key='user_id', $pass='') {
 		DB::connect();
 
 		switch ($key) {
@@ -804,8 +804,8 @@ class CMS extends Kernel {
 				return false;
 		}
 
-		if (DB::execute('SELECT `user_id`, `login`, `name`, `email`, `dt_update` FROM `cms_users` WHERE '.$where) && DB::num_rows() > 0) {
-			return DB::fetch_next();
+		if (DB::execute('SELECT `user_id`, `login`, `name`, `email`, `dt_update` FROM `cms_users` WHERE '.$where) && $res = DB::fetchNext()) {
+			return $res;
 		}
 
 		return false;
@@ -814,7 +814,7 @@ class CMS extends Kernel {
 	/**
 	 *	\brief Atualiza os dados de um determinado usuário
 	 */
-	private static function update_user($data, $user_key, $key='user_id') {
+	private static function updateUser($data, $user_key, $key='user_id') {
 		DB::connect();
 
 		switch ($key) {
@@ -852,7 +852,7 @@ class CMS extends Kernel {
 			return false;
 		}
 
-		if (DB::execute('UPDATE `cms_users` SET '.$update.' WHERE '.$where) && DB::affected_rows() > 0) {
+		if (DB::execute('UPDATE `cms_users` SET '.$update.' WHERE '.$where) && DB::affectedRows() > 0) {
 			return true;
 		}
 
@@ -862,7 +862,7 @@ class CMS extends Kernel {
 	/**
 	 *	\brief Retorna um array estrutura com os dados de um usuário
 	 */
-	private static function set_user_array($login='', $password='', $name='', $email='') {
+	private static function setUserArray($login='', $password='', $name='', $email='') {
 		$data = array();
 		if (!empty($login)) $data['login'] = $login;
 		if (!empty($password)) $data['password'] = $password;
@@ -874,29 +874,29 @@ class CMS extends Kernel {
 	/**
 	 *	\brief Retorna os dados de um usuário dado o seu id
 	 */
-	public static function get_user_by_id($user_id) {
-		return self::get_user((int)$user_id, 'user_id');
+	public static function getUserById($user_id) {
+		return self::getUser((int)$user_id, 'user_id');
 	}
 
 	/**
 	 *	\brief Retorna os dados de um usuário dado o seu login
 	 */
-	public static function get_user_by_login($user_login, $pass='') {
-		return self::get_user($user_login, 'login', $pass);
+	public static function getUserByLogin($user_login, $pass='') {
+		return self::getUser($user_login, 'login', $pass);
 	}
 
 	/**
 	 *	\brief Atualiza os dados de um usuário dado o seu id
 	 */
-	public static function update_user_by_id($user_id, $login='', $password='', $name='', $email='') {
-		return self::update_user(self::set_user_array($login, $password, $name, $email), $user_id, 'user_id');
+	public static function updateUserById($user_id, $login='', $password='', $name='', $email='') {
+		return self::updateUser(self::setUserArray($login, $password, $name, $email), $user_id, 'user_id');
 	}
 
 	/**
 	 *	\brief Verifica se há um usuário logado
 	 */
 	public static function logged_in_user() {
-		if (!Session::is_set('_cms_user')) {
+		if (!Session::defined('_cms_user')) {
 			return false;
 		}
 
@@ -907,11 +907,11 @@ class CMS extends Kernel {
 	 *	\brief Faz o logon de um usuário
 	 */
 	public static function login_user($login, $password) {
-		if (Session::is_set('_cms_user')) {
+		if (Session::defined('_cms_user')) {
 			return false;
 		}
 
-		if ($user = self::get_user_by_login($login, $password)) {
+		if ($user = self::getUserByLogin($login, $password)) {
 			Session::set('_cms_user', $user);
 		}
 
@@ -922,7 +922,7 @@ class CMS extends Kernel {
 	 *	\brief Faz o logoff do usuário
 	 */
 	public static function logout_user() {
-		if (!Session::is_set('_cms_user')) {
+		if (!Session::defined('_cms_user')) {
 			return false;
 		}
 

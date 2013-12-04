@@ -25,7 +25,7 @@
 class Index_Controller {
 	function __construct() {
 		if (!CMS::logged_in_user()) {
-			URI::redirect('/' . URI::relative_path_page() . '/login');
+			URI::redirect('/' . URI::relativePathPage() . '/login');
 
 			return false;
 		}

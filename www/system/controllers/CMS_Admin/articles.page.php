@@ -14,7 +14,7 @@
 		1.0.0
 
 	Script version:
-		0.1.2
+		0.1.3
 
 	This script:
 		Script de administração de artigos
@@ -23,7 +23,7 @@
 class Articles_Controller {
 	function __construct() {
 		if (!CMS::logged_in_user()) {
-			URI::redirect('/'.URI::relative_path_page().'/login');
+			URI::redirect('/'.URI::relativePathPage().'/login');
 			return false;
 		}
 
@@ -31,44 +31,44 @@ class Articles_Controller {
 	}
 
 	function _default() {
-		if (($pg = URI::get_segment(0, true)) && is_numeric($pg)) {
-			$pg = (int)URI::get_segment(0, true);
+		if (($pg = URI::getSegment(0, true)) && is_numeric($pg)) {
+			$pg = (int)URI::getSegment(0, true);
 			if ($pg < 1) $pg = 1;
 		} else {
 			$pg = 1;
 		}
 
-		if ($articles = CMS::get_articles_by_category(NULL, false, 'ASC', ($pg - 1) * 20, 20, $qtde)) {
+		if ($articles = CMS::getArticlesByCategory(NULL, false, 'ASC', ($pg - 1) * 20, 20, $qtde)) {
 			Template::assign('CMS_ArticleList', $articles);
 
 			$pagination = new Pagination;
-			$pagination->setSiteLink('/'.URI::relative_path_page().'/articles/[page]');
+			$pagination->setSiteLink('/'.URI::relativePathPage().'/articles/[page]');
 			$pagination->CalculateNumPages($qtde, 20);
 			Template::assign('Pagination', $pagination->parse($pg));
 		}
 	}
 
 	function edit() {
-		if (($id = URI::get_segment(1, true)) && is_numeric($id) && ($article = CMS::get_article_by_id($id, false))) {
+		if (($id = URI::getSegment(1, true)) && is_numeric($id) && ($article = CMS::getArticleById($id, false))) {
 			if (!empty($_POST)) {
 				if (empty($_POST['published'])) $_POST['published'] = 0;
-				if (CMS::update_article($id, $_POST, $error) !== false) {
-					URI::redirect('/'.URI::relative_path_page().'/articles');
+				if (CMS::updateArticle($id, $_POST, $error) !== false) {
+					URI::redirect('/'.URI::relativePathPage().'/articles');
 					return false;
 				}
 				die('error: '.$error);
 			}
 			Template::assign('CMS_Article', $article);
-			Template::assign('CMS_Categories', CMS::get_categories(true, 'title', 'ASC', 0, 0));
+			Template::assign('CMS_Categories', CMS::getCategories(true, 'title', 'ASC', 0, 0));
 		} else {
-			Errors::display_error(404, 'Not found');
+			Errors::displayError(404, 'Not found');
 		}
 	}
 
 	function add() {
 		if (!empty($_POST)) {
-			if (CMS::insert_article($_POST, $error) !== false) {
-				URI::redirect('/'.URI::relative_path_page().'/articles');
+			if (CMS::insertArticle($_POST, $error) !== false) {
+				URI::redirect('/'.URI::relativePathPage().'/articles');
 				return false;
 			}
 			die('error: '.$error);
@@ -76,19 +76,19 @@ class Articles_Controller {
 			$article = array('article_id' => 0, 'published' => '1');
 		}
 		Template::assign('CMS_Article', $article);
-		Template::assign('CMS_Categories', CMS::get_categories(true, 'title', 'ASC', 0, 0));
+		Template::assign('CMS_Categories', CMS::getCategories(true, 'title', 'ASC', 0, 0));
 	}
 
 	function delete() {
-		if (($id = URI::get_segment(1, true)) && is_numeric($id) && ($article = CMS::get_article_by_id($id, false))) {
-			if (CMS::delete_article($id, $error) !== false) {
-				URI::redirect('/'.URI::relative_path_page().'/articles');
+		if (($id = URI::getSegment(1, true)) && is_numeric($id) && ($article = CMS::getArticleById($id, false))) {
+			if (CMS::deleteArticle($id, $error) !== false) {
+				URI::redirect('/'.URI::relativePathPage().'/articles');
 				return false;
 			}
 
 			$this->_default();
 		} else {
-			Errors::display_error(404, 'Not found');
+			Errors::displayError(404, 'Not found');
 		}
 	}
 }

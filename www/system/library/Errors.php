@@ -8,7 +8,7 @@
  *
  *	\brief		Classe para tratamento de erros
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.3.9
+ *	\version	1.4.10
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
@@ -16,21 +16,21 @@
 
 class Errors extends Kernel {
 	public static function ajax($errorType, $msg='') {
-		self::error_handler(E_USER_ERROR, $msg, '', '', '', $errorType);
+		self::errorHandler(E_USER_ERROR, $msg, '', '', '', $errorType);
 	}
 
 	/**
 	 *	\brief Encerra o processamento e dá saída na página de erro HTML
 	 */
-	public static function display_error($errorType, $msg='') {
+	public static function displayError($errorType, $msg='') {
 		$debug = debug_backtrace();
-		self::error_handler(E_USER_ERROR, $msg, $debug[0]['file'], $debug[0]['line'], '', $errorType);
+		self::errorHandler(E_USER_ERROR, $msg, $debug[0]['file'], $debug[0]['line'], '', $errorType);
 	}
 
 	/**
 	 *	\brief Trata um erro ocorrido no sistema e encerra seu funcionamento
 	 */
-	public static function error_handler($errno, $errstr, $errfile, $errline, $localErro, $errorType=500) {
+	public static function errorHandler($errno, $errstr, $errfile, $errline, $localErro, $errorType=500) {
 		if (
 			strpos($errfile, 'template') !== false || strpos($errfile, 'Smarty') !== false
 			|| strpos($errstr, 'filemtime') !== false
@@ -38,7 +38,7 @@ class Errors extends Kernel {
 			return;
 		}
 
-		DB::rollback_all();
+		DB::rollBackAll();
 
 		switch ($errno) {
 			case E_ERROR:
@@ -77,13 +77,22 @@ class Errors extends Kernel {
 			case E_STRICT:
 				$printError = 'Fatal Error';
 			break;
+			case 1044:
+				$printError = 'Access Denied to Database';
+			break;
+			case E_DEPRECATED:
+			case E_USER_DEPRECATED:
+				$printError = 'Deprecated Function';
+			break;
 			case E_RECOVERABLE_ERROR:
+				$printError = 'Fatal Error';
+			break;
 			default:
-				return false;
+				$printError = 'Unknown Error';
 			break;
 		}
 
-		self::send_report(
+		self::sendReport(
 			'<span style="color:#FF0000">'.$printError.'</span>'.($errstr ? ': <em>'.$errstr.'</em>':'').($errfile ?' in <strong>'.$errfile.'</strong> on line <strong>'.$errline.'</strong>' : ''),
 			$errorType,
 			hash('crc32', $errno . $errfile . $errline) /// error id
@@ -95,9 +104,9 @@ class Errors extends Kernel {
 	/**
 	 *	\brief Monta a mensagem de erro com dados de backtrace, se aplicável
 	 */
-	public static function send_report($msg, $errorType, $errorId, $adictionalInfo='') {
+	public static function sendReport($msg, $errorType, $errorId, $adictionalInfo='') {
 		$getParams = array();
-		foreach (URI::get_params() as $var => $value) {
+		foreach (URI::getParams() as $var => $value) {
 			$getParams[] = $var.'='.$value;
 		}
 
@@ -109,7 +118,7 @@ class Errors extends Kernel {
 				<td style="padding:3px 2px">'.$msg.'</td>
 			  </tr>
 			  <tr>
-				<td style="padding:3px 2px"><strong>Error ID:</strong> '.$errorId.' (<a href="'.URI::build_url(array('_system_bug_solved_', $errorId)).'">marcar bug como resolvido</a>)</td>
+				<td style="padding:3px 2px"><strong>Error ID:</strong> '.$errorId.' (<a href="'.URI::buildURL(array('_system_bug_solved_', $errorId)).'">marcar bug como resolvido</a>)</td>
 			  </tr>
 			  <tr style="color:#000; display:none" class="bugList">
 				<td style="padding:3px 2px"><strong>Número de ocorrencias:</strong> [n_ocorrencias] | <strong>Última ocorrência:</strong> [ultima_ocorrencia] (<a href="javascript:;">mais informações</a>)</td>
@@ -154,15 +163,15 @@ class Errors extends Kernel {
 					  </tr>
 					  <tr style="background:#efefef">
 						<td style="padding:3px 2px"><label style="font-weight:bold">URL:</label></td>
-						<td style="padding:3px 2px">'.URI::get_uri_string().'?'.implode('&', $getParams).'</td>
+						<td style="padding:3px 2px">'.URI::getURIString().'?'.implode('&', $getParams).'</td>
 					  </tr>
 					  <tr>
 						<td valign="top" style="padding:3px 2px"><label style="font-weight:bold">Debug:</label></td>
-						<td style="padding:3px 2px"><table width="100%"><tr><td style="font-family:Arial, Helvetica, sans-serif; font-size:12px; padding:3px 2px">'.parent::get_debug().'</td></tr></table></td>
+						<td style="padding:3px 2px"><table width="100%"><tr><td style="font-family:Arial, Helvetica, sans-serif; font-size:12px; padding:3px 2px">'.parent::getDebugContent().'</td></tr></table></td>
 					  </tr>
 					  <tr style="background:#efefef">
 						<td valign="top" style="padding:3px 2px"><label style="font-weight:bold">Info:</label></td>
-						<td style="padding:3px 2px"><table width="100%"><tr><td style="padding:3px 2px">'.parent::make_debug_backtrace().'</td></tr></table></td>
+						<td style="padding:3px 2px"><table width="100%"><tr><td style="padding:3px 2px">'.parent::makeDebugBacktrace().'</td></tr></table></td>
 					  </tr>
 					  <tr>
 						<td colspan="2" style="background-color:#66C; color:#FFF; font-weight:bold; padding-left:10px; padding:3px 2px">IP</td>
@@ -173,11 +182,11 @@ class Errors extends Kernel {
 					  </tr>
 					  <tr style="background:#efefef">
 						<td style="padding:3px 2px"><label style="font-weight:bold">IP:</label></td>
-						<td style="padding:3px 2px">'.Strings::get_real_remote_addr().'</td>
+						<td style="padding:3px 2px">'.Strings::getRealRemoteAddr().'</td>
 					  </tr>
 					  <tr style="background:#efefef">
 						<td style="padding:3px 2px"><label style="font-weight:bold">Reverso:</label></td>
-						<td style="padding:3px 2px">'. (Strings::get_real_remote_addr() ? gethostbyaddr(Strings::get_real_remote_addr()) : 'sem ip') .'</td>
+						<td style="padding:3px 2px">'. (Strings::getRealRemoteAddr() ? gethostbyaddr(Strings::getRealRemoteAddr()) : 'sem ip') .'</td>
 					  </tr>
 					  <tr>
 						<td style="padding:3px 2px"><label style="font-weight:bold">Browser:</label></td>
@@ -201,7 +210,7 @@ class Errors extends Kernel {
 					  </tr>
 					  <tr>
 						<td valign="top" style="padding:3px 2px"><label style="font-weight:bold">_SESSION</label></td>
-						<td style="padding:3px 2px">'.parent::print_rc(Session::get_all(), true).'</td>
+						<td style="padding:3px 2px">'.parent::print_rc(Session::getAll(), true).'</td>
 					  </tr>
 					</table>
 				</td>
@@ -209,12 +218,12 @@ class Errors extends Kernel {
 			</table>';
 
 		// Envia a mensagem de erro para o webmaster
-		if (!in_array($errorType, array(404, 503)) && parent::get_conf('mail', 'errors_go_to') && !parent::get_conf('system','debug')) {
+		if (!in_array($errorType, array(404, 503)) && parent::getConf('mail', 'errors_go_to') && !parent::getConf('system','debug')) {
 			$db = new DB;
 			if (DB::hasConnection()) {
 				$db->execute('SELECT 1 FROM system_error WHERE error_code = ?', array($errorId));
 
-				if ($db->num_rows()) {
+				if ($db->affectedRows()) {
 					$naoMandaEmail = true;
 				}
 
@@ -227,16 +236,16 @@ class Errors extends Kernel {
 				$msg = preg_replace('/ style="display:none"/', '', $msg);
 
 				$email = new Mail;
-				$email->to(parent::get_conf('mail', 'errors_go_to'));
-				$email->from(parent::get_conf('mail', 'errors_go_to'));
-				$email->subject('Erro em ' . $GLOBALS['SYSTEM']['SITE_NAME'] . ' (release: "' . $GLOBALS['SYSTEM']['PROJECT_VERSION'] . '" | ambiente: "' . ($GLOBALS['SYSTEM']['ACTIVE_ENVIRONMENT'] ? $GLOBALS['SYSTEM']['ACTIVE_ENVIRONMENT'] : $_SERVER['HTTP_HOST']) . '")' . ' - ' . ((isset($_SERVER) && isset($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : ""));
+				$email->to(parent::getConf('mail', 'errors_go_to'));
+				$email->from(parent::getConf('mail', 'errors_go_to'));
+				$email->subject('Erro em ' . $GLOBALS['SYSTEM']['SYSTEM_NAME'] . ' (release: "' . $GLOBALS['SYSTEM']['SYSTEM_VERSION'] . '" | ambiente: "' . ($GLOBALS['SYSTEM']['ACTIVE_ENVIRONMENT'] ? $GLOBALS['SYSTEM']['ACTIVE_ENVIRONMENT'] : $_SERVER['HTTP_HOST']) . '")' . ' - ' . ((isset($_SERVER) && isset($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : ""));
 				$email->body($msg);
 				$email->send();
 				unset($email);
 			}
 		}
 
-		self::print_html($errorType, $msg);
+		self::printHtml($errorType, $msg);
 	}
 
 	/**
@@ -248,7 +257,7 @@ class Errors extends Kernel {
 			$db->execute('DELETE FROM system_error WHERE error_code = ?', array($errorId));
 		}
 		unset($db);
-		die('Bug <strong>' . URI::get_segment(1, false) . '</strong> marcado como resolvido.');
+		die('Bug <strong>' . URI::getSegment(1, false) . '</strong> marcado como resolvido.');
 	}
 
 	/**
@@ -266,8 +275,8 @@ class Errors extends Kernel {
 		$offset = ($pag - 1) * $nPorPagina;
 
 		$db = new DB;
-		$order_column = URI::get_param('orderBy')?:'ultima_ocorrencia';
-		$order_type = URI::get_param('sort')?:'ASC';
+		$order_column = URI::getParam('orderBy')?:'ultima_ocorrencia';
+		$order_type = URI::getParam('sort')?:'ASC';
 		$db->execute(
 			"SELECT SQL_CALC_FOUND_ROWS qtd, ultima_ocorrencia, detalhes\n" .
 			"  FROM system_error\n" .
@@ -278,7 +287,7 @@ class Errors extends Kernel {
 
 		$retorno = array();
 
-		while ($res = $db->fetch_next()) {
+		while ($res = $db->fetchNext()) {
 			$res['detalhes'] = preg_replace('/<tr style="color:#000; display:none" class="bugList">/', '<tr class="bugList">', $res['detalhes']);
 			$res['detalhes'] = preg_replace('/<tr class="hideMoreInfo">/', '<tr style="color:#000; display:none">', $res['detalhes']);
 			$res['detalhes'] = str_replace('[ultima_ocorrencia]', DB::leData($res['ultima_ocorrencia'], true, true), $res['detalhes']);
@@ -288,7 +297,7 @@ class Errors extends Kernel {
 		}
 
 		$db->execute('SELECT FOUND_ROWS() AS total');
-		$res = $db->fetch_next();
+		$res = $db->fetchNext();
 
 		$paginacao = new Pagination();
 		$paginacao->setRowsPerPage($nPorPagina);
@@ -298,9 +307,9 @@ class Errors extends Kernel {
 
 		$tpl->assign('paginacao', $paginacao->parse());
 		$tpl->assign('orders', array(
-			'error_code' => URI::build_url(array('_system_bug_')),
-			'qtd' => URI::build_url(array('_system_bug_')),
-			'ultima_ocorrencia' => URI::build_url(array('_system_bug_'))
+			'error_code' => URI::buildURL(array('_system_bug_')),
+			'qtd' => URI::buildURL(array('_system_bug_')),
+			'ultima_ocorrencia' => URI::buildURL(array('_system_bug_'))
 		));
 		unset($paginacao, $registros);
 
@@ -312,10 +321,10 @@ class Errors extends Kernel {
 	/**
 	 *	\brief Imprime a mensagem de erro
 	 */
-	public static function print_html($errorType, $msg) {
+	public static function printHtml($errorType, $msg) {
 		// Verifica se a saída do erro não é em ajax ou json
-		//if (!parent::get_conf('system', 'ajax') || !in_array('Content-type: application/json; charset=' . $GLOBALS['SYSTEM']['CHARSET'], headers_list())) {
-		if (!URI::is_ajax_request()) {
+		//if (!parent::getConf('system', 'ajax') || !in_array('Content-type: application/json; charset=' . $GLOBALS['SYSTEM']['CHARSET'], headers_list())) {
+		if (!URI::isAjaxRequest()) {
 			if (ob_get_contents()) {
 				ob_clean();
 			}
@@ -324,12 +333,12 @@ class Errors extends Kernel {
 
 			header('Content-type: text/html; charset=UTF-8', true, $errorType);
 
-			$tpl->assign('urlJS',  URI::build_url(array('scripts'), array(), isset($_SERVER['HTTPS']), 'static'));
-			$tpl->assign('urlCSS', URI::build_url(array('css'), array(), isset($_SERVER['HTTPS']), 'static'));
-			$tpl->assign('urlIMG', URI::build_url(array('images'), array(), isset($_SERVER['HTTPS']), 'static'));
-			$tpl->assign('urlSWF', URI::build_url(array('swf'), array(), isset($_SERVER['HTTPS']), 'static'));
+			$tpl->assign('urlJS',  URI::buildURL(array('scripts'), array(), isset($_SERVER['HTTPS']), 'static'));
+			$tpl->assign('urlCSS', URI::buildURL(array('css'), array(), isset($_SERVER['HTTPS']), 'static'));
+			$tpl->assign('urlIMG', URI::buildURL(array('images'), array(), isset($_SERVER['HTTPS']), 'static'));
+			$tpl->assign('urlSWF', URI::buildURL(array('swf'), array(), isset($_SERVER['HTTPS']), 'static'));
 
-			$tpl->assign('errorDebug', (parent::get_conf('system', 'debug') ? $msg : ''));
+			$tpl->assign('errorDebug', (parent::getConf('system', 'debug') ? $msg : ''));
 
 			$tpl->display();
 			unset($tpl);

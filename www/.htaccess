@@ -16,5 +16,5 @@ RewriteRule ^$ /_Main.php?%{QUERY_STRING} [L]
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteCond %{REQUEST_URI}	!\.(gif|jpe?g|css|js|png|swf)$ [NC]
+RewriteCond %{REQUEST_URI}	!\.(gif|jpe?g|css|js|png|swf|ico)$ [NC]
 RewriteRule ^(.*?)$ /_Main.php?SUPERVAR=$1&%{QUERY_STRING} [L]

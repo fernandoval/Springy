@@ -8,7 +8,7 @@
  *	\brief		Classe para construção de arquivos no formato Microsoft(R) Excel(R)
  *	\note		Classe baseada no trabalho de Harish Chauhan de 31/12/2004
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	0.2.2
+ *	\version	0.3.3
  *  \author		Fernando Val  - fernando.val@gmail.com
  *	\ingroup	framework
  */
@@ -59,14 +59,14 @@ class Excel {
 	/**
 	 *	\brief Retorna o cC3digo do último erro
 	 */
-	public function get_error() {
+	public function getError() {
 		return $this->error;
 	}
 
 	/**
 	 *	\brief Retorna uma mensagem texto do último erro
 	 */
-	public function get_error_message() {
+	public function getErrorMessage() {
 		$message = "";
 		switch ($this->error) {
 			case self::ERR_ANOTHER_FILE_OPENED :
@@ -219,7 +219,7 @@ class Excel {
 	/**
 	 *	\brief Escreve uma linha de título e define os tipos das colunas
 	 */
-    public function write_header($columns) {
+    public function writeHeader($columns) {
 		if (is_null($this->fp)) {
 			$this->error = self::ERR_NO_FILE_OPENED;
 			return false;
@@ -252,7 +252,7 @@ class Excel {
      *	@Params : $line_arr: An valid array
      *	@Return : Void
      */
-    public function write_line($line_arr) {
+    public function writeLine($line_arr) {
 		if (is_null($this->fp)) {
 			$this->error = self::ERR_NO_FILE_OPENED;
 			return false;
@@ -275,7 +275,7 @@ class Excel {
 	 *	\brief Abre uma nova linha na tabela
      *	@Return : Void
      */
-    public function open_row() {
+    public function openRow() {
 		if (is_null($this->fp)){
 			$this->error = self::ERR_NO_FILE_OPENED;
 			return false;
@@ -293,7 +293,7 @@ class Excel {
      *	\brief Fecha uma linha
      *	@Return : Void
      */
-    public function close_row() {
+    public function closeRow() {
 		if (is_null($this->fp)){
 			$this->error = self::ERR_NO_FILE_OPENED;
 			return false;
@@ -311,7 +311,7 @@ class Excel {
      *	@Params : $value : Coloumn Value
      *	@Return : Void
      */
-    public function add_col($value, $column=NULL) {
+    public function addCol($value, $column=NULL) {
 		if (is_null($this->fp)){
 			$this->error = self::ERR_NO_FILE_OPENED;
 			return false;

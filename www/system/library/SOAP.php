@@ -6,7 +6,7 @@
  *
  *	\warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
- *	\version 0.1.2
+ *	\version 0.2.3
  *
  *	\brief Classe para conexão SOAP
  */
@@ -30,16 +30,16 @@ class SOAP extends Kernel {
 	 */
 	function __construct($endpoint='', $wsdl=false) {
 		// Pega os dados de proxy da configuração
-		$this->proxyhost     = parent::get_conf('soap', 'proxyhost');
-		$this->proxyport     = parent::get_conf('soap', 'proxyport');
-		$this->proxyusername = parent::get_conf('soap', 'proxyusername');
-		$this->proxypassword = parent::get_conf('soap', 'proxypassword');
+		$this->proxyhost     = parent::getConf('soap', 'proxyhost');
+		$this->proxyport     = parent::getConf('soap', 'proxyport');
+		$this->proxyusername = parent::getConf('soap', 'proxyusername');
+		$this->proxypassword = parent::getConf('soap', 'proxypassword');
 	}
 
 	/**
 	 *	\brief Construtor da classe cliente
 	 */
-	function client_create($endpoint='', $wsdl=false) {
+	function clientCreate($endpoint='', $wsdl=false) {
 		// Cria o cliente de SOAP
 		$this->client = new nusoap_client($endpoint, $wsdl, $this->proxyhost, $this->proxyport, $this->proxyusername, $this->proxypassword);
 
@@ -58,21 +58,21 @@ class SOAP extends Kernel {
 	/**
 	 *	\brief Pega o último erro
 	 */
-	function get_client_error() {
+	function getClientError() {
 		return $this->client->getError();
 	}
 
 	/**
 	 *	\brief Pega o resultado do debug
 	 */
-	function get_client_debug() {
+	function getClientDebug() {
 		return $this->client->getDebug();
 	}
 
 	/**
 	 *	\brief Faz uma chamada SOAP
 	 */
-	public function client_call(&$result, $operation, $params=array(), $namespace='http://tempuri.org', $soapAction='', $headers=false, $rpcParams=NULL, $style='rpc', $use='encoded') {
+	public function clientCall(&$result, $operation, $params=array(), $namespace='http://tempuri.org', $soapAction='', $headers=false, $rpcParams=NULL, $style='rpc', $use='encoded') {
 		$result = $this->client->call($operation, $params, $namespace, $soapAction, $headers, $rpcParams, $style, $use);
 		if ($this->client->fault) {
 			return false;
@@ -90,7 +90,7 @@ class SOAP extends Kernel {
 	 *	\brief Define se tenta usar conexão cURL se possível
 	 *	@param[in] bool $useCURL: Tenta usar conexão cURL?
 	 */
-	public function set_client_use_curl($useCURL) {
+	public function setClientUseCurl($useCURL) {
 		$this->client->setUseCurl($useCURL);
 	}
 

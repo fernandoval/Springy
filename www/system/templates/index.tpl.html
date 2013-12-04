@@ -1,9 +1,12 @@
 {strip}
 <html>
 	<head>
-		<title>Your System Demo</title>
+		<title>{$SYSTEM_NAME} ({$SYSTEM_VERSION})</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<script type="text/javascript" src="/scripts/jquery.js"></script>
+		{* Essa é uma boa forma de carregar arquivos estáticos como JS e CSS. Usando esse plugin de template, os arquivos serão recarregados quando você escrever novas versões deles *}
+		<script type="text/javascript" src="{files_static_version type='js' file='jquery'}"></script>
+		{* Esse formato também é eficiente, mas seus arquivos serão cacheados pelo navegador do usuário e você terá problema quando publicar uma nova versão deles *}
+		{* <script type="text/javascript" src="{$urlJS}/jquery.js"></script> *}
 	</head>
 	<body>
 		<div style="text-align:center">

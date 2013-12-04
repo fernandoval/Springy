@@ -8,7 +8,7 @@
  *
  *	\brief		Cerne do framework
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.4.24
+ *	\version	1.5.25
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
@@ -16,7 +16,7 @@
 
 class Kernel {
 	/// Versão do framework
-	const VERSION = '1.3.16';
+	const VERSION = '1.4.0';
 	/// Array interno com dados de configuração
 	private static $confs = array();
 	/// Array com informações de debug
@@ -32,17 +32,15 @@ class Kernel {
 
 
 	/**
-	 *	\brief Pega o root de controladoras
+	 *  \brief Pega ou seta o root de controladoras
+	 *  \param (array)$controller_root - ae definido, altera o root de controladoras
+	 *  \return Retorna um array contendo o root de controladoras
 	 */
-	public static function get_controller_root() {
+	public static function controllerRoot($controller_root=null) {
+		if (!is_null($controller_root)) {
+			self::$controller_root = $controller_root;
+		}
 		return self::$controller_root;
-	}
-
-	/**
-	 *	\brief Seta o root de controladoras
-	 */
-	public static function set_controller_root($controller_root) {
-		return self::$controller_root = $controller_root;
 	}
 
 	/**
@@ -50,21 +48,13 @@ class Kernel {
 	 *
 	 *	\param string $controller
 	 */
-	public static function set_controller_namespace($controller) {
-		if(file_exists($controller)) {
+	public static function controllerNamespace($controller=null) {
+		if(!is_null($controller) && file_exists($controller)) {
 			$controller  = pathinfo($controller);
 			$controller = str_replace($GLOBALS['SYSTEM']['CONTROLER_PATH'], '', $controller['dirname']);
 			$controller = str_replace(DIRECTORY_SEPARATOR, '/', $controller);
 			self::$controller_namespace = trim($controller, DIRECTORY_SEPARATOR);
 		}
-	}
-
-	/**
-	 *	\brief Retorna o namespace do controller
-	 *
-	 *	\return string
-	 */
-	public static function get_controller_namespace() {
 		return self::$controller_namespace;
 	}
 
@@ -91,8 +81,8 @@ class Kernel {
 	 *
 	 *	\return void
 	 */
-	public static function debug_print() {
-		if (!defined('STDIN') && self::get_conf('system', 'debug') == true && !self::get_conf('system', 'sys_ajax')) {
+	public static function debugPrint() {
+		if (!defined('STDIN') && self::getConf('system', 'debug') == true && !self::getConf('system', 'sys_ajax')) {
 			$size = memory_get_peak_usage(true);
 			$unit = array('b', 'KB', 'MB', 'GB', 'TB', 'PB');
 			$memoria = round($size / pow(1024, ($i = floor(log($size,1024)))), 2) . ' ' . $unit[$i];
@@ -118,7 +108,7 @@ class Kernel {
 									'<a class="close" href="javascript:;">Fechar</a>' .
 								'</div>' .
 								'<div class="debug_info_area">' .
-								self::get_debug() .
+								self::getDebugContent() .
 								'</div>' .
 							 '</div>' .
 							 '<div class="debug_box_3 close">DEBUG</div>' .
@@ -128,7 +118,7 @@ class Kernel {
 			if (preg_match('/<body(.*?)>/', $conteudo)) {
 				echo preg_replace('/<body(.*?)>/', '<body\\1>' . $htmlDebug, $conteudo);
 			} else {
-				echo preg_replace('/^(.*?)$/', '<script type="text/javascript" src="'.URI::build_url(array('scripts'), array(), true, 'static').'/jquery.js"></script>' . $htmlDebug . '\\1', $conteudo);
+				echo preg_replace('/^(.*?)$/', '<script type="text/javascript" src="'.URI::buildURL(array('scripts'), array(), true, 'static').'/jquery.js"></script>' . $htmlDebug . '\\1', $conteudo);
 			}
 		}
 	}
@@ -138,7 +128,7 @@ class Kernel {
 	 *
 	 *	\return Retorna uma string contendo os dados capturados em debug
 	 */
-	public static function get_debug() {
+	public static function getDebugContent() {
 		$return = array();
 		foreach(self::$debug as $debug) {
 			$id      = 'debug_' . str_replace('.', '', current(explode(' ', microtime())));
@@ -156,7 +146,7 @@ class Kernel {
 					<td width="50%" valign="top"> ' . ($debug[2] ? self::print_rc($debug[3]) : $debug[3]) . '</td>
 					<td width="50%" valign="top">
 						<a href="javascript:;" onclick="var obj=$(\'#' . $id . '\').toggle()">Debug BackTrace</a>
-						<div id="' . $id . '" style="display:none">' . self::make_debug_backtrace($debug[4]) . '</div></td>
+						<div id="' . $id . '" style="display:none">' . self::makeDebugBacktrace($debug[4]) . '</div></td>
 				  </tr>
 				</table>
 			</div>
@@ -192,7 +182,7 @@ class Kernel {
 	 *
 	 *	\param[in] (array) $debug array com o backtrace gerado
 	 */
-	public static function make_debug_backtrace($debug = null) {
+	public static function makeDebugBacktrace($debug = null) {
 		if(!is_array($debug)) {
 			$debug = debug_backtrace();
 		}
@@ -252,9 +242,9 @@ class Kernel {
 	 *	\param[in] (string) $var - registro desejado
 	 *	\return se o registro existir, retorna seu valor, caso contrário retorna NULL
 	 */
-	public static function get_conf($local, $var) {
+	public static function getConf($local, $var) {
 		if (!isset(self::$confs[$local])) {
-			self::load_conf($local);
+			self::loadConf($local);
 		}
 		return (isset(self::$confs[$local][$var]) ? self::$confs[$local][$var] : NULL);
 	}
@@ -267,7 +257,7 @@ class Kernel {
 	 *	\param[in] (variant) $valor - novo valor da entrada de configuração
 	 *	\return void
 	 */
-	public static function set_conf($local, $var, $value) {
+	public static function setConf($local, $var, $value) {
 		self::$confs[$local][$var] = $value;
 	}
 
@@ -277,7 +267,7 @@ class Kernel {
 	 *	\param[in] (string) $local - nome do arquivo de configuração
 	 *	\return \c true se tiver carregado o arquivo de configuração ou \c false em caso contrário
 	 */
-	public static function load_conf($local) {
+	public static function loadConf($local) {
 		$config_file = $GLOBALS['SYSTEM']['CONFIG_PATH'] . DIRECTORY_SEPARATOR . $local . '.conf.php';
 
 		if (file_exists($config_file)) {
@@ -311,14 +301,14 @@ class Kernel {
 				* Seta self::$confs[ $local ] como NULL para evitar futuros erros no sistema
 				*/
 			   self::$confs[ $local ] = array();
-			   Errors::display_error(500, 'Faltando entrada para o domínio "' . $_SERVER['HTTP_HOST'] . '" para a conf "' . $local . '"');
+			   Errors::displayError(500, 'Faltando entrada para o domínio "' . $_SERVER['HTTP_HOST'] . '" para a conf "' . $local . '"');
 		   }
 
 			unset($conf);
 
 			return true;
 		} else {
-			Errors::display_error(500, 'Faltando conf "' . $local . '"');
+			Errors::displayError(500, 'Faltando conf "' . $local . '"');
 		}
 
 		return false;
@@ -374,7 +364,7 @@ class Kernel {
 	/**
 	 *	\brief Verifica se o usuário está usando um browser de dispositivo móvel
 	 */
-	private static function mobile_device_detect() {
+	private static function mobileDeviceDetect() {
 		// Define que não é um dispositivo móvel até que seja provado o contrário
 		self::$mobile = false;
 		// Define que não é um dispositivo móvel até que seja provado o contrário
@@ -461,9 +451,9 @@ class Kernel {
 	/**
 	 *	\brief Informa se o usuário está usando um dispositivo móvel
 	 */
-	public static function get_mobile_device() {
+	public static function getMobileDevice() {
 		if (self::$mobile === NULL) {
-			self::mobile_device_detect();
+			self::mobileDeviceDetect();
 		}
 		return (self::$mobile) ? (self::$mobile_device) : (self::$mobile);
 	}
@@ -471,7 +461,7 @@ class Kernel {
 	/**
 	 *	\brief Copyright do Framework
 	 */
-	public static function print_copyright() {
+	public static function printCopyright() {
 		if (ob_get_contents()) {
 			ob_clean();
 		}

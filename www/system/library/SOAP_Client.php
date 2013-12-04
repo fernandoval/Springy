@@ -7,7 +7,7 @@
  *
  *	\brief		Classe para cliente SOAP
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	0.5.5
+ *	\version	1.0.6
  *  \author		Fernando Val  - fernando.val@gmail.com
  *	\ingroup	framework
  */
@@ -34,12 +34,12 @@ class SOAP_Client extends Kernel {
 		if (class_exists('SoapClient')) {
 			$this->classUsed = 'SoapClient';
 
-			if (parent::get_conf('system', 'proxyhost')) $options['proxy_host'] = parent::get_conf('system', 'proxyhost');
-			if (parent::get_conf('system', 'proxyport')) $options['proxy_port'] = parent::get_conf('system', 'proxyport');
-			if (parent::get_conf('system', 'proxyusername')) $options['proxy_login'] = parent::get_conf('system', 'proxyusername');
-			if (parent::get_conf('system', 'proxypassword')) $options['proxy_password'] = parent::get_conf('system', 'proxypassword');
+			if (parent::getConf('system', 'proxyhost')) $options['proxy_host'] = parent::getConf('system', 'proxyhost');
+			if (parent::getConf('system', 'proxyport')) $options['proxy_port'] = parent::getConf('system', 'proxyport');
+			if (parent::getConf('system', 'proxyusername')) $options['proxy_login'] = parent::getConf('system', 'proxyusername');
+			if (parent::getConf('system', 'proxypassword')) $options['proxy_password'] = parent::getConf('system', 'proxypassword');
 			if (empty($options['connection_timeout'])) {
-				$options['connection_timeout'] = (parent::get_conf('soap', 'timeout')) ? parent::get_conf('soap', 'timeout') : 20;
+				$options['connection_timeout'] = (parent::getConf('soap', 'timeout')) ? parent::getConf('soap', 'timeout') : 20;
 			}
 			ini_set('default_socket_timeout', $options['connection_timeout']);
 
@@ -74,7 +74,7 @@ class SOAP_Client extends Kernel {
 		}
 		else {
 			$this->classUsed = 'NuSOAP';
-			$this->client = new nusoap_client($endpoint, $wsdl, parent::get_conf('soap', 'proxyhost'), parent::get_conf('soap', 'proxyport'), parent::get_conf('soap', 'proxyusername'), parent::get_conf('soap', 'proxypassword'));
+			$this->client = new nusoap_client($endpoint, $wsdl, parent::getConf('soap', 'proxyhost'), parent::getConf('soap', 'proxyport'), parent::getConf('soap', 'proxyusername'), parent::getConf('soap', 'proxypassword'));
 
 			// Pega o erro, caso tenha havido
 			if ($this->client->getError()) {
@@ -83,7 +83,7 @@ class SOAP_Client extends Kernel {
 			}
 
 			$this->client->useHTTPPersistentConnection();
-			$this->client->setUseCurl(parent::get_conf('soap', 'useCURL'));
+			$this->client->setUseCurl(parent::getConf('soap', 'useCURL'));
 		}
 
 		return true;
@@ -143,7 +143,7 @@ class SOAP_Client extends Kernel {
 	/**
 	 *	\brief Retorna a última requisição
 	 */
-	public function get_last_request() {
+	public function getLastRequest() {
 		if ($this->classUsed == 'SoapClient') {
 			return $this->client->__getLastRequest();
 		}
@@ -153,7 +153,7 @@ class SOAP_Client extends Kernel {
 	/**
 	 *	\brief Retorna a última resposta
 	 */
-	public function get_last_response() {
+	public function getLastResponse() {
 		if ($this->classUsed == 'SoapClient') {
 			return $this->client->__getLastResponse();
 		}
@@ -165,7 +165,7 @@ class SOAP_Client extends Kernel {
 	 *
 	 *	@return Retorna o último erro de execução do método SOAP
 	 */
-	function get_error() {
+	function getError() {
 		return $this->error;
 	}
 
@@ -174,7 +174,7 @@ class SOAP_Client extends Kernel {
 	 *
 	 *	Funciona apenas com NuSOAP
 	 */
-	function get_debug_text() {
+	function getDebugText() {
 		if ($this->classUsed == 'SoapClient') {
 			return "";
 		}
@@ -188,7 +188,7 @@ class SOAP_Client extends Kernel {
 	 *
 	 *	@param[in] bool $useCURL: Tenta usar conexão cURL?
 	 */
-	public function set_use_curl($useCURL) {
+	public function setUseCURL($useCURL) {
 		if ($this->classUsed == 'SoapClient') {
 			return false;
 		}
@@ -200,7 +200,7 @@ class SOAP_Client extends Kernel {
 	 *
 	 *	Funciona apenas com NuSOAP
 	 */
-	public function set_debug_level($level) {
+	public function setDebugLevel($level) {
 		if ($this->classUsed == 'SoapClient') {
 			return false;
 		}
@@ -226,7 +226,7 @@ class SOAP_Client extends Kernel {
 	 *	Funciona apenas com NuSOAP
 	 *
 	 */
-	public function set_soap_encoding($encoding) {
+	public function setSOAPEncoding($encoding) {
 		if ($this->classUsed == 'SoapClient') {
 			return false;
 		}
