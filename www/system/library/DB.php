@@ -9,7 +9,7 @@
  *	\brief		Classe para acesso a banco de dados
  *	\note		Esta classe usa a PHP Data Object (PDO) para acesso a banco de dados
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.3.18
+ *	\version	1.3.19
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
@@ -23,9 +23,9 @@ class DB {
 	/// Último comando executado
 	private $LastQuery = '';
 	/// Código do erro ocorrido no execute
-	private $LastStatmentErrorCode = null;
+	private $sqlErrorCode = null;
 	/// Informações do erro ocorrido no execute
-	private $LastStatmentErrorInfo = null;
+	private $sqlErrorInfo = null;
 	/// Contador de comandos SQL executados
 	private static $sqlNum = 0;
 	/// Recurso de conexão atual
@@ -350,8 +350,8 @@ class DB {
 	 *	@param[in] $sql Comando SQL a ser executado
 	 */
 	public function execute($sql, array $where_v=array()) {
-		$this->LastStatmentErrorCode = null;
-		$this->LastStatmentErrorInfo = null;
+		$this->sqlErrorCode = null;
+		$this->sqlErrorInfo = null;
 		self::$sqlNum++;
 
 		$this->LastQuery = $sql;
@@ -366,9 +366,10 @@ class DB {
 		$sql = NULL;
 
 		if (($this->SQLRes = $this->dataConnect->prepare($this->LastQuery)) === false) {
-			$this->LastStatmentErrorCode = $this->SQLRes->errorCode();
-			$this->LastStatmentErrorInfo = $this->SQLRes->errorInfo();
+			$this->sqlErrorCode = $this->SQLRes->errorCode();
+			$this->sqlErrorInfo = $this->SQLRes->errorInfo();
 			$this->reportError('Can\'t prepare query.');
+			return false;
 		}
 
 		if (count($this->LastValues)) {
@@ -400,9 +401,10 @@ class DB {
 		}
 
 		if ($this->SQLRes->execute() === false) {
-			$this->LastStatmentErrorCode = $this->SQLRes->errorCode();
-			$this->LastStatmentErrorInfo = $this->SQLRes->errorInfo();
+			$this->sqlErrorCode = $this->SQLRes->errorCode();
+			$this->sqlErrorInfo = $this->SQLRes->errorInfo();
 			$this->reportError('Can\'t execute query.');
+			return false;
 		}
 
 		if (self::$db_debug || Configuration::get('system', 'sql_debug')) {
@@ -445,16 +447,16 @@ class DB {
 	 *  \brief Retorna uma string com o código do erro ocorrido com o último \c execute
 	 *  \see execute
 	 */
-	public function lastStatmentErrorCode() {
-		return $this->LastStatmentErrorCode;
+	public function statmentErrorCode() {
+		return $this->sqlErrorCode;
 	}
 
 	/**
 	 *  \brief Retorna um array com informações do erro ocorrido com o último \c execute
 	 *  \see execute
 	 */
-	public function lastStatmentErrorInfo() {
-		return $this->LastStatmentErrorInfo;
+	public function statmentErrorInfo() {
+		return $this->sqlErrorInfo;
 	}
 	
 	/**
