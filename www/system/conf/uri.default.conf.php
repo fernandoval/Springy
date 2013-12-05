@@ -5,18 +5,42 @@
  *  \warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
  *	\copyright	Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.\n
- *  \addtogroup	config
  */
 /**@{*/
 
 /**
- *  \addtogroup uricfg Configurações da classe de tratamento de URI/URL
+ *  \defgroup uricfg Configurações da classe de tratamento de URI/URL
+ *  \ingroup config
+ *  
+ *  As entradas de configuração dos arquivos \c uri, são utilizadas pela classe URI, sendo que as entradas previamente definidas não podem ser omitidas
+ *  sob risco de dano à aplicação.
+ *  
+ *  Você poderá adicionar entradas personalizadas de sua aplicação.
  *  
  *  Exemplo de código PHP de como usar a entrada \c 'register_method_set_common_urls':
- *
- *	$conf['default']['register_method_set_common_urls'] = array('class' => 'Urls', 'method' => 'setCommon', 'static' => true) // executa: Urls::setCommon();
- *	$conf['default']['register_method_set_common_urls'] = array('class' => 'Urls', 'method' => 'setCommon', 'static' => false) // executa: (new Urls())->setCommon();
- *	$conf['default']['register_method_set_common_urls'] = array('class' => 'Urls', 'static' => false) // executa: new Urls();
+ *  
+ *  \code{.php}
+ *  $conf = array(
+ *      'register_method_set_common_urls' => array(
+ *          'class' => 'Url1',
+ *          'method' => 'setCommon',
+ *          'static' => true
+ *      ), // executa: Url1::setCommon()
+ *  );
+ *  $conf = array(
+ *      'register_method_set_common_urls' => array(
+ *          'class' => 'Urls',
+ *          'method' => 'setCommon',
+ *          'static' => false
+ *      ), // executa: (new Urls())->setCommon()
+ *  );
+ *  $conf = array(
+ *      'register_method_set_common_urls' => array(
+ *          'class' => 'Urls',
+ *          'static' => false
+ *      ), // executa: new Urls()
+ *  );
+ *  \endcode
  *
  *  Entradas de configuração:
  *  - 'routes' - Array contendo rotas de controladoras. Útil para utilizar mais de uma URL apontando para mesma controladora.
@@ -35,6 +59,21 @@
  *  - 'dynamic' - Host do conteúdo dinãmico do site. Ex.: 'http://www.seusite.com'
  *  - 'static' - Host do conteúdo estático do site. Ex.: 'http://cdn.seusite.com'
  *  - 'secure' - Host segudo do site. Ex.: 'https://www.seusite.com'
+ *  
+ *  \see config
+ *  @{
+ *  @}
+ */
+
+/**
+ *  \defgroup uricfg_default Configurações da classe de tratamento de URI/URL para todos os ambientes
+ *  \ingroup uricfg
+ *  
+ *  As entradas colocadas nesse arquivo serão aplicadas a todos os ambientes do sistema.
+ *  
+ *  Veja \link uricfg Configurações da classe de tratamento de URI/URL \endlink para entender as entradas de configuração possíveis.
+ *  
+ *  \see uricfg
  */
 /**@{*/
 
@@ -58,5 +97,4 @@ $conf = array(
 	'ignored_segments'                => 0
 );
 
-/**@}*/
 /**@}*/

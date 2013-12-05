@@ -7,14 +7,14 @@
  *
  *	\brief		Classe para criação de XML de RSS
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.1.2
+ *	\version	1.2.3
  *  \author		Fernando Val  - fernando.val@gmail.com
  *	\ingroup	framework
  */
 
 require_once dirname( __FILE__) . DIRECTORY_SEPARATOR . 'feedcreator' . DIRECTORY_SEPARATOR . 'feedcreator.class.php';
 
-class Rss extends Kernel {
+class Rss {
 	private static $rss = NULL;
 	private static $image = NULL;
 

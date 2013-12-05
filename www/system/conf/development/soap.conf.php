@@ -5,16 +5,20 @@
  *  \warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
  *	\copyright	Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.\n
- *  \addtogroup	config
  */
-/**@{*/
 
 /**
- *  \addtogroup soapcfg Configurações da classe SOAP
+ *  \defgroup soapcfg_development Configurações da classe SOAP para o ambiente 'development'
+ *  \ingroup soapcfg
  *  
- *  Entradas de configuração:
- *	- \c useCURL - determina se o modo CURL deve ser usado
- *	- \c timeout - determina o timeout em segundos
+ *  As entradas colocadas nesse arquivo serão aplicadas apenas ao ambiente 'development'.
+ *  
+ *  Seu sistema pode não possuir esse ambiente, então use-o como modelo para criação do arquivo de
+ *  parâmetros de configuração para os ambientes que seu sistema possua.
+ *  
+ *  Veja \link dbcfg Configurações de acesso a banco de dados \endlink para entender as entradas de configuração possíveis.
+ *  
+ *  \see soapcfg
  **/
 /**@{*/
 
@@ -24,5 +28,4 @@ $conf = array (
 	'timeout' => 15
 );
 
-/**@}*/
 /**@}*/

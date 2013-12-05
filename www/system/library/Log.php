@@ -7,12 +7,12 @@
  *
  *	\brief		Classe para geração de saídas em logs de eventos
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	0.9.4
+ *	\version	0.10.10
  *  \author		Fernando Val  - fernando.val@gmail.com
  *	\ingroup	framework
  */
 
-class Log extends Kernel {
+class Log {
 	/**
 	 *	\brief Escreve uma informação no log
 	 *

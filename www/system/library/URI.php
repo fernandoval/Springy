@@ -8,13 +8,13 @@
  *
  *	\brief		Classe para tratamento de URI
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.10.18
+ *	\version	1.11.19
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
  */
 
-class URI extends Kernel {
+class URI {
 	/// String da URI
 	private static $uri_string = '';
 	/// Array dos segmentos da URI

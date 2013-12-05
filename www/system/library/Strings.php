@@ -8,12 +8,12 @@
  *
  *	\brief		Classe com métodos para diversos tipos de tratamento e validação de dados string
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	0.4.6
+ *	\version	0.5.7
  *  \author		Fernando Val  - fernando.val@gmail.com
  *	\ingroup	framework
  */
 
-class Strings extends Kernel {
+class Strings {
 	/**
 	 *	\brief Verifica se uma string está codificada em UTF-8
 	 *

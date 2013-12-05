@@ -8,7 +8,7 @@
  *
  *	\brief		Classe para tratamento de cookies
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.0.2
+ *	\version	1.1.3
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *  \todo		Implementar correção no método delete.
@@ -16,7 +16,7 @@
  *	\ingroup	framework
  */
 
-class Cookie extends Kernel {
+class Cookie {
 	// [en-us] Reserved session keys
 	private static $_reserved = array();
 

@@ -7,12 +7,12 @@
  *
  *	\brief		Classe do Mini CMS
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	0.2.2
+ *	\version	0.3.3
  *  \author		Fernando Val  - fernando.val@gmail.com
  *	\ingroup	framework
  */
 
-class CMS extends Kernel {
+class CMS {
 	private static $category_data = NULL;
 	private static $article_data = NULL;
 

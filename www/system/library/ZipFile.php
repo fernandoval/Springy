@@ -7,7 +7,7 @@
  *
  *	\brief		Classe para geração de arquivos ZIP
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	0.1.3
+ *	\version	0.2.4
  *	\ingroup	framework
  *
  *	Esta classe foi baseada no excelente trabalho de Pascal Rehfeldt.\n
@@ -20,7 +20,7 @@
  *	You can use ZIPlib to add different resources to a ZIP file.
  */
 
-class ZipFile extends Kernel {
+class ZipFile {
 	/// Nome do arquivo de saída
 	private $output_filename = 'archive.zip';
 	private $datasec         = array();

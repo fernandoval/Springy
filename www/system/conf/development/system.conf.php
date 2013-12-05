@@ -5,43 +5,22 @@
  *  \warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
  *	\copyright	Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.\n
- *  \addtogroup	config
  */
-/**@{*/
 
 /**
- *  \addtogroup systemcfg Configurações do cerne
+ *  \defgroup systemcfg_development Configurações do cerne para o ambiente \c 'development'
+ *  \ingroup systemcfg
  *  
- *  Os parâmetros \c developer_user e \c developer_pass informam qual parametro deverá ser passado para ligar o modo debug em servidores que não são de desenvolvimento
- *  deveserá ser usado da seguinte forma:
+ *  As entradas colocadas nesse arquivo serão aplicadas apenas ao ambiente 'development'.
  *  
- *  www.meusite.com.br/?{$developer_user}={$developer_pass}
+ *  Seu sistema pode não possuir esse ambiente, então use-o como modelo para criação do arquivo de
+ *  parâmetros de configuração para os ambientes que seu sistema possua.
  *  
- *  para desligar o debug use:
- *  www.meusite.com.br/?{$developer_user}=off
+ *  Veja \link systemcfg Configurações do cerne \endlink para entender as entradas de configuração possíveis.
  *  
- *  O parâmetro \c dba_user habilita o debug de SQLs exibindo TODOS os SQLs executados na página.
- *  Para ligar este modo, primeiro deve-se habilitar o modo desenvolvedor usando o #developer_user#
- *  ex.: www.meusite.com.br/?{$developer_user}={$developer_pass}&{$dba_user}
- *  
- *  Para desligar:
- *  www.meusite.com.br/?{$dba_user}=off
- *  
- *  Entradas de configuração:
- *  - \c controller_path - Caminho do diretório de scripts de controle (controllers)
- *  - \c css_path - Caminho do diretório dos arquivos CSS
- *  - \c js_path - Caminho do diretório dos arquivos JavaScript
- *  - \c debug - Define se debug está ativo
- *  - \c maintenance - Define se está em manutenção
- *  - \c admin_maintenance - Define se o ADMIN está em manutenção
- *  - \c rewrite_url - Define se rewrite de URL está ativo
- *  - \c cache - Define se o cache está ligado
- *  - \c cache-control - Define o header HTTP/1.1 Cache-Control
- *  - \c authentication - Define o acesso autenticado por HTTP
- *    - Esse parâmetro de configuração espera um valor \c false ou um \c array no seguinte formato:
- *      array('user' => 'usuario', 'pass' => 'senha')
+ *  \see systemcfg
  */
-/*@{*/
+/**@{*/
 
 /// Configurações para o ambiente de Desenvolvimento
 $conf = array(
@@ -54,5 +33,4 @@ $conf = array(
 	'authentication'    => array()
 );
 
-/**@}*/
 /**@}*/
