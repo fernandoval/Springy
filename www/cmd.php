@@ -1,12 +1,16 @@
 <?php
 /** \file
  *  FVAL PHP Framework for Web Applications
- *
- *  \warning Este arquivo é parte integrante do framework e não pode ser omitido
- *
- *  \version 1.2.0
+ *  
+ *	\copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.\n
+ *	\copyright Copyright (c) 2007-2013 Fernando Val\n
+ *	\copyright Copyright (c) 2009-2013 Lucas Cardozo
  *
  *	\brief Script de execução via shell para crontab
+ *  \warning Este arquivo é parte integrante do framework e não pode ser omitido
+ *  \version 1.2.3
+ *  \author		Fernando Val  - fernando.val@gmail.com
+ *  \ingroup framework
  */
 
 if (!defined('STDIN') || empty($argc)) {

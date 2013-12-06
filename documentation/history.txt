@@ -1,6 +1,6 @@
 FVAL PHP Framework for Web Applications
 
-Copyright (C) 2007-2013 FVAL - Consultoria e Inform·tica Ltda.
+Copyright (C) 2007-2013 FVAL - Consultoria e Inform√°tica Ltda.
 Copyright (C) 2007-2013 Fernando Val
 Copyright (C) 2009-2013 Lucas Cardozo
 
@@ -15,131 +15,131 @@ Framework Update History
 
 ------------------------------------------------------------------------------------ --- -- -
 1.4.0
-	- CriaÁ„o da classe Configuration;
-	- Removidos mÈtodos de configuraÁ„o do sistema do Kernel;
-	- NormalizaÁ„o do nome dos mÈtodos das bibliotecas para o padr„o lowerCamelCase http://pt.wikipedia.org/wiki/CamelCase (veja o documento de migraÁ„o "migrando para vers„o 1.4.txt");
-	- UnificaÁ„o de mÈtodos de leitura e escrita num mÈtodo misto;
-	- Melhorias na documentaÁ„o;
-	- Melhorias de consistÍncia e correÁıes de bugs.
+	- Cria√ß√£o da classe Configuration;
+	- Removidos m√©todos de configura√ß√£o do sistema do Kernel;
+	- Normaliza√ß√£o do nome dos m√©todos das bibliotecas para o padr√£o lowerCamelCase http://pt.wikipedia.org/wiki/CamelCase (veja o documento de migra√ß√£o "migrando para vers√£o 1.4.txt");
+	- Unifica√ß√£o de m√©todos de leitura e escrita num m√©todo misto;
+	- Melhorias na documenta√ß√£o;
+	- Melhorias de consist√™ncia e corre√ß√µes de bugs.
 
 1.3.16
-	- Inclus„o da biblioteca Model, para construÁ„o de modelos de acesso a banco;
-	- Inclus„o do framework de frontend Bootstrap;
-	- Melhorias e documentaÁ„o dos arquivos de configuraÁ„o.
+	- Inclus√£o da biblioteca Model, para constru√ß√£o de modelos de acesso a banco;
+	- Inclus√£o do framework de frontend Bootstrap;
+	- Melhorias e documenta√ß√£o dos arquivos de configura√ß√£o.
 
 1.3.15
 	- Ajustes para trabalhar com jQuery.
 
 1.3.14
-	- AtualizaÁ„o do Smarty.
+	- Atualiza√ß√£o do Smarty.
 
 1.3.13
-	- Inclus„o do front-end Bootstrap.
+	- Inclus√£o do front-end Bootstrap.
 
 1.3.12
-	- DiretÛrio scripts renomeado para apenas 'js'.
+	- Diret√≥rio scripts renomeado para apenas 'js'.
 
 1.3.11
-	- MigraÁ„o para o framework Javascript jQuery e depreciaÁ„o do framework Javascript Prototype.
+	- Migra√ß√£o para o framework Javascript jQuery e deprecia√ß√£o do framework Javascript Prototype.
 
 1.3.9
-	- DepreciaÁ„o da adoDB.
+	- Deprecia√ß√£o da adoDB.
 
 1.3.0 a 1.3.8
-	- AlteraÁ„o da classe DB para usar PDO.
+	- Altera√ß√£o da classe DB para usar PDO.
 
 1.2.9
-	- ImplementaÁ„o do recurso de vari·veis padr„o em templates;
-	- Inclus„o da configuraÁ„o 'PROJECT_VERSION' no sistema (sysconf.php);
-	- Inclus„o do mÈtodo validate_uri na biblioteca URI;
-	- CorreÁ„o de bug no mÈtodo make_debug_backtrace da biblioteca Kernel;
-	- CorreÁ„o de bug no mÈtodo parse_uri da biblioteca URI;
-	- AtualizaÁ„o da classe MimeMessage.
+	- Implementa√ß√£o do recurso de vari√°veis padr√£o em templates;
+	- Inclus√£o da configura√ß√£o 'PROJECT_VERSION' no sistema (sysconf.php);
+	- Inclus√£o do m√©todo validate_uri na biblioteca URI;
+	- Corre√ß√£o de bug no m√©todo make_debug_backtrace da biblioteca Kernel;
+	- Corre√ß√£o de bug no m√©todo parse_uri da biblioteca URI;
+	- Atualiza√ß√£o da classe MimeMessage.
 
 1.2.8
-	- ImplementaÁ„o do recurso de redirecionamento e redirada de URL terminado em / para evitar duplicidade de conte˙do para SEO;
-	- Inclus„o do mÈtodo add_attach na biblioteca Mail;
-	- Melhoria no mÈtodo mobile_device_detect da biblioteca Kernel;
-	- CorreÁ„o de bug na biblioteca Pagination;
-	- CorreÁ„o de bug na biblioteca Mail;
-	- Outras pequenas melhorias e correÁıes de bug.
+	- Implementa√ß√£o do recurso de redirecionamento e redirada de URL terminado em / para evitar duplicidade de conte√∫do para SEO;
+	- Inclus√£o do m√©todo add_attach na biblioteca Mail;
+	- Melhoria no m√©todo mobile_device_detect da biblioteca Kernel;
+	- Corre√ß√£o de bug na biblioteca Pagination;
+	- Corre√ß√£o de bug na biblioteca Mail;
+	- Outras pequenas melhorias e corre√ß√µes de bug.
 
 1.2.7
-	- ImplementaÁ„o do recurso de ter um host carregando as controladoras a partir de um subdiretÛrio;
-	- Inclus„o do recurso de anexos na biblioteca Mail.php.
+	- Implementa√ß√£o do recurso de ter um host carregando as controladoras a partir de um subdiret√≥rio;
+	- Inclus√£o do recurso de anexos na biblioteca Mail.php.
 
 1.2.6.19
-	- Corrigido bug do redirecionamento 302 do mÈtodo redirect da biblioteca URI.
+	- Corrigido bug do redirecionamento 302 do m√©todo redirect da biblioteca URI.
 
 1.2.6.18
 	- Adicionado controle sobre o header HTTP/1.0 Cache-Control;
-	- Corrigido validaÁ„o feita pelo mÈtodo data da biblioteca Strings.
+	- Corrigido valida√ß√£o feita pelo m√©todo data da biblioteca Strings.
 
 1.2.5
-	- Adicionado mecanismo de acesso restrito por ambiente, configur·vel na 'system'.
+	- Adicionado mecanismo de acesso restrito por ambiente, configur√°vel na 'system'.
 
 1.2.4
-	- Melhorias no mÈtodo "copyright" do framework.
+	- Melhorias no m√©todo "copyright" do framework.
 
 1.2.3
-	- Inclus„o da biblioteca SOAP_Client;
-	- InÌcio do desenvolvimento da biblioteca SOAP_Server;
-	- ImplementaÁ„o de possibilidade de sess„o em banco de dados e Memcached.
+	- Inclus√£o da biblioteca SOAP_Client;
+	- In√≠cio do desenvolvimento da biblioteca SOAP_Server;
+	- Implementa√ß√£o de possibilidade de sess√£o em banco de dados e Memcached.
 
 1.2.2
-	- Melhorias nos mÈtodos de debug.
+	- Melhorias nos m√©todos de debug.
 
 1.2.1c
-	- Modificada a forma de armazenamento interno das vari·veis defaul de template;
-	- Adicionado mÈtodo assign_default_var() ‡ biblioteca Template para adiÁ„o de vari·veis de template;
-	- Adicionado mÈtodo get_default_var() ‡ biblioteca Template para pegar valores de vari·veis de template.
+	- Modificada a forma de armazenamento interno das vari√°veis defaul de template;
+	- Adicionado m√©todo assign_default_var() √† biblioteca Template para adi√ß√£o de vari√°veis de template;
+	- Adicionado m√©todo get_default_var() √† biblioteca Template para pegar valores de vari√°veis de template.
 
 1.2.1b
-	- Classe NuSOAP atualizada para a vers„o 0.9.5.
+	- Classe NuSOAP atualizada para a vers√£o 0.9.5.
 
 1.2.1
-	- Adicionado uri /_pi_ que mostra as configuraÁıes do PHP - phpinfo();
-	- CorreÁıes no sistema de debug;
+	- Adicionado uri /_pi_ que mostra as configura√ß√µes do PHP - phpinfo();
+	- Corre√ß√µes no sistema de debug;
 	- Melhorias na biblioteca Pagination.
 
 1.2.0c
-	- Removida tag de fechamento de cÛdigo PHP de todas as classes da biblioteca, index e configuraÁıes.
+	- Removida tag de fechamento de c√≥digo PHP de todas as classes da biblioteca, index e configura√ß√µes.
 
 1.2.0b
-	- Removida tag de fechamento de cÛdigo PHP de algumas das classes da biblioteca.
+	- Removida tag de fechamento de c√≥digo PHP de algumas das classes da biblioteca.
 
 1.2.0
-	- Adicionada classe para criaÁ„o de arquivos Excel;
-	- AtualizaÁ„o da Smarty para a vers„o 3;
-	- AtualizaÁ„o da biblioteca Template para a vers„o 3 da Smarty;
-	- Adicionada funÁ„o para vefiricar se string est· codificada como UTF-8 na biblioteca Strings;
-	- SubstituÌda utilizaÁ„o da funÁ„o mb_ereg_replate por preg_replace nas subclasses Strings_UTF8 e Strings_ANSI.
+	- Adicionada classe para cria√ß√£o de arquivos Excel;
+	- Atualiza√ß√£o da Smarty para a vers√£o 3;
+	- Atualiza√ß√£o da biblioteca Template para a vers√£o 3 da Smarty;
+	- Adicionada fun√ß√£o para vefiricar se string est√° codificada como UTF-8 na biblioteca Strings;
+	- Substitu√≠da utiliza√ß√£o da fun√ß√£o mb_ereg_replate por preg_replace nas subclasses Strings_UTF8 e Strings_ANSI.
 
 1.1.0
-	- Adicionado mÈtodo de crÈditos do framework;
+	- Adicionado m√©todo de cr√©ditos do framework;
 	- Melhorias no sistema de debug;
-	- MÈtodo de busca da controller movido da index.php para o URI::parse_uri;
-	- Implementado conceito de configuraÁ„o default;
+	- M√©todo de busca da controller movido da index.php para o URI::parse_uri;
+	- Implementado conceito de configura√ß√£o default;
 	- Implementado sistema de rotas alternativas para controllers.
 
 1.0.1.5
 	- Classe MimeMessage atualizada.
 
 1.0.1.4
-	- Inclus„o da configuraÁ„o de timezone.
+	- Inclus√£o da configura√ß√£o de timezone.
 
 1.0.1.3
-	- Inclus„o das seguintes constantes de template:
+	- Inclus√£o das seguintes constantes de template:
 		$HOST - string com a URL do host
-		$CURRENT_PAGE_URI - string com a URI da p·gina atual
+		$CURRENT_PAGE_URI - string com a URI da p√°gina atual
 
 1.0.1.2
-	- Inclus„o da biblioteca Javascript jQuery v1.4.2 <http://jquery.com/> no pacote do framework;
-	- Componente TinyMCE editor atualizado para a vers„o 3.3.8.
+	- Inclus√£o da biblioteca Javascript jQuery v1.4.2 <http://jquery.com/> no pacote do framework;
+	- Componente TinyMCE editor atualizado para a vers√£o 3.3.8.
 
 1.0.1
 	- Atualizadas as classes Smarty e ADODB;
-	- DiretÛrio system movido para dentro de www por padr„o.
+	- Diret√≥rio system movido para dentro de www por padr√£o.
 
 1.0.0
-	- Vers„o inicial do framework confeccionada por Fernando Val com auxÌlio de Lucas Cardozo
+	- Vers√£o inicial do framework confeccionada por Fernando Val com aux√≠lio de Lucas Cardozo

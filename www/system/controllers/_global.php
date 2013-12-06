@@ -1,26 +1,17 @@
 <?php
 /**	\file
- * 	\brief		Controladora global de inicilização da aplicação
+ *  \brief		Controladora global de inicilização da aplicação
  *
  *	Essa classe sempre é construída, independente da controladora chamada.
  *
- *	\copyright	Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.
  *	\ingroup	controllers
- *
- *	\mainpage
- *
- *	<b>FVAL PHP Framework for Web Applications</b>
- *  
- *  Este framework de PHP foi construído com base no conceito MVC, para ser simples e de fácil utilização.
- *  
- *  Modelado para ser leve, rápido e robusto, com ferramentas para facilitar a equipe de desenvolvimento.
+ *	\copyright	Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.
+ *  \author		Fernando Val  - fernando.val@gmail.com
  */
 
 class Global_Controller {
 	public function __construct() {
-		/*
-		 *  Como exemplo, variáveis globais de template são inicializadas para entendimento da usabilidade desse hook de controladora
-		 */
+		//  Como exemplo, variáveis globais de template são inicializadas para entendimento da usabilidade desse hook de controladora
 	
 		// Informa para o template se o site está com SSL
 		Template_Static::assignDefaultVar('HTTPS',  isset($_SERVER['HTTPS']));
