@@ -1,8 +1,8 @@
 {strip}
 	{if $results}
-    	<div id="consultarGridHead"></div>
-        <div id="consultarGrid">
-            <table cellspacing="0" cellpadding="0" style="width:{$widthTable}" class="libsConsultarTbl">
+    	<div id="tableGridGridHead"></div>
+        <div id="tableGridGrid">
+            <table cellspacing="0" cellpadding="0" style="width:{$widthTable}" class="tableGridTbl">
               <thead>
                 <tr>
                   {if $showCheckBox}
@@ -12,19 +12,19 @@
                     <th valign="middle"{if $coluna.align} align="{$coluna.align}"{/if} nowrap="nowrap">
                     <div class="flHead" style="{if $coluna.align}text-align:{$coluna.align};{/if}">
                         {if $coluna.sum}
-                            <a href="javascript:;" onclick="Consultar.sum(this, '{$coluna.sum}')" class="sum" title="Somar esta coluna"></a>
+                            <a href="javascript:;" onclick="TableGrid.sum(this, '{$coluna.sum}')" class="sum" title="Somar esta coluna"></a>
                         {/if}
                         
                         {if $coluna.orderBy}
                             <input type="hidden" id="order_{$coluna.orderBy}" name="order[{$coluna.orderBy}]" value="{$coluna.orderType}" />
                             
-                            <a href="javascript:;" orderby="{$coluna.orderBy}" class="consultarOrderAction">
+                            <a href="javascript:;" orderby="{$coluna.orderBy}" class="tableGridOrderAction">
                                 {$coluna.label}
                             </a>
                             
                             {* se tiver ordenando por essa coluna, imprime uma setinha indicativa *}
-                            <a href="javascript:;" class="consultarOrderRemove consultarOrder" title="Remover ordenação"{if !$coluna.showRmvOrder} style="display:none"{/if}></a>
-                            <a href="javascript:;" class="{if !$coluna.orderType}consultarOrderCanDo{else}{$coluna.orderType}{/if} consultarOrderAction consultarOrderType consultarOrder"></a>
+                            <a href="javascript:;" class="tableGridOrderRemove tableGridOrder" title="Remover ordenação"{if !$coluna.showRmvOrder} style="display:none"{/if}></a>
+                            <a href="javascript:;" class="{if !$coluna.orderType}tableGridOrderCanDo{else}{$coluna.orderType}{/if} tableGridOrderAction tableGridOrderType tableGridOrder"></a>
                         {else}
                             {$coluna.label}
                         {/if}
@@ -44,7 +44,7 @@
                     <th valign="middle"{if $coluna.align} align="{$coluna.align}"{/if}{if $coluna.width} style="width:{$coluna.width}"{/if} nowrap="nowrap" class="flHeadHide">
                     	<div class="flHeadHide">
                         {if $coluna.sum}
-                            <a href="javascript:;" onclick="Consultar.sum(this, '{$coluna.sum}')" class="sum" title="Somar esta coluna"></a>
+                            <a href="javascript:;" onclick="tableGrid.sum(this, '{$coluna.sum}')" class="sum" title="Somar esta coluna"></a>
                         {/if}
                         
                         {if $coluna.orderBy}
@@ -54,7 +54,7 @@
                             
                             {* se tiver ordenando por essa coluna, imprime uma setinha indicativa *}
                             <a href="javascript:;" class="" title="Remover ordenação"{if !$coluna.showRmvOrder} style="display:none"{/if}></a>
-                            <a href="javascript:;" class="{$coluna.orderType} consultarOrderAction consultarOrderType "{if !$coluna.showRmvOrder} style="display:none"{/if}></a>
+                            <a href="javascript:;" class="{$coluna.orderType} tableGridOrderAction tableGridOrderType "{if !$coluna.showRmvOrder} style="display:none"{/if}></a>
                         {else}
                             {$coluna.label}
                         {/if}
@@ -72,14 +72,14 @@
                 <tr id="tr_{$id}">
                     {if $showCheckBox}
                         <td style="width:15px">
-                            <input type="checkbox" name="ids[]" id="consultar_checbox_{$id}" value="{$id}" onclick="Consultar.checkInput($(this))" />
+                            <input type="checkbox" name="ids[]" id="tablegrid_checbox_{$id}" value="{$id}" onclick="TableGrid.checkInput($(this))" />
                             <input type="hidden" name="displayedIds[]" value="{$id}" />
                         </td>
                     {/if}
                     
                     {foreach $colunas as $keyColuna => $coluna}
                         {$valor = $result.columns[$keyColuna]}
-                        <td class="dados"{if $coluna.align} align="{$coluna.align}"{/if}{if $showCheckBox} onclick="Consultar.checkInput($(this).up('tr').down('input'), true)"{/if} style="{if $coluna.width}width:{$coluna.width};{/if}{if $result.style[$keyColuna]}{$result.style[$keyColuna]}{/if}">
+                        <td class="dados"{if $coluna.align} align="{$coluna.align}"{/if}{if $showCheckBox} onclick="TableGrid.checkInput($(this).up('tr').down('input'), true)"{/if} style="{if $coluna.width}width:{$coluna.width};{/if}{if $result.style[$keyColuna]}{$result.style[$keyColuna]}{/if}">
                             <div>
                     	{if $coluna.editable}
                        		<input type="{$coluna.editable.type}" name="{$coluna.editable.name}[{$id}]" value="{$valor}" style="width:98%" />
@@ -132,7 +132,7 @@
                                 href="{if $action.href}{$action.href}{else}javascript:;{/if}"
                                 
                                 {if $action.ajax}
-                                    {$action.onckick="Consultar.action_ajax({
+                                    {$action.onckick="TableGrid.action_ajax({
 										to: '{$action.ajax.to}',
 										msgConfirmacao: '{$action.ajax.msgConfirmacao|addslashes}',
 										{if $result.ajax.reload}reload: true{/if}
@@ -164,7 +164,7 @@
                     </td>
                     {/if}
                 </tr>
-                {if $result.checked}<script type="text/javascript">Consultar.checkInput($('sisainen_checbox_{$id}'), true);</script>{/if}
+                {if $result.checked}<script type="text/javascript">TableGrid.checkInput($('sisainen_checbox_{$id}'), true);</script>{/if}
               {/foreach}
               </tbody>
             </table>
