@@ -2,21 +2,28 @@
 /**	\file
  *  FVAL PHP Framework for Web Applications
  *
- *  \copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.\n
- *  \copyright Copyright (c) 2007-2013 Fernando Val\n
+ *  \copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.
+ *  \copyright Copyright (c) 2007-2013 Fernando Val
  *
  *  \brief		Classe Model para acesso a banco de dados
  *  \note		Essa classe extende a classe DB.
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	1.2.2
+ *  \version	1.3.3
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \ingroup	framework
+ */
+
+namespace FW;
+
+/**
+ *  \brief Classe Model para acesso a banco de dados
+ *  
+ *  Esta classe extende a classe DB.
  *
  *  Esta classe deve ser utilizada como herança para as classes de acesso a banco.
  *
  *  Utilize-a para diminuir a quantidade de métodos que sua classe precisará ter para consultas e manutenção em bancos de dados.
  */
-
 class Model extends DB {
 	/**
 	 *  Atributos da classe

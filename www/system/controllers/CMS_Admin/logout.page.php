@@ -22,17 +22,17 @@
 
 class Logout_Controller {
 	function __construct() {
-		if (!CMS::logged_in_user()) {
-			URI::redirect('/'.URI::relativePathPage().'/login');
+		if (!FW\CMS::logged_in_user()) {
+			FW\URI::redirect('/'.FW\URI::relativePathPage().'/login');
 			return false;
 		}
 
-		if (CMS::logout_user()) {
-			URI::redirect('/'.URI::relativePathPage().'/login');
+		if (FW\CMS::logout_user()) {
+			FW\URI::redirect('/'.FW\URI::relativePathPage().'/login');
 			return true;
 		}
 
-		Errors::displayError(500, 'Can not logout');
+		FW\Errors::displayError(500, 'Can not logout');
 	}
 }
 ?>

@@ -2,13 +2,13 @@
 /**	\file
  *	FVAL PHP Framework for Web Applications
  *
- *	\copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.\n
- *	\copyright Copyright (c) 2007-2013 Fernando Val\n
+ *	\copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.
+ *	\copyright Copyright (c) 2007-2013 Fernando Val
  *	\copyright Copyright (c) 2009-2013 Lucas Cardozo
  *
  *	\brief		Classe para pegar arquivos de toda uma árvore de diretórios
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	0.1.1
+ *	\version	0.2.2
  *  \author		Fernando Val  - fernando.val@gmail.com
  *	\ingroup	framework
  *
@@ -40,6 +40,12 @@
  *	http://www.phpclasses.org/browse.html/package/1025.html
  */
 
+namespace FW;
+
+/**
+ *  \brief Classe para pegar arquivos de toda uma árvore de diretórios
+ *	\author (c) Ilya Nemihin
+ */
 class DeepDir extends Kernel {
 	private $dir   = NULL;
 	private $files = NULL;

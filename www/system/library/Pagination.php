@@ -2,16 +2,22 @@
 /**	\file
  *	FVAL PHP Framework for Web Applications
  *
- *	\copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.\n
- *	\copyright Copyright (c) 2007-2013 Fernando Val\n
+ *	\copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.
+ *	\copyright Copyright (c) 2007-2013 Fernando Val
  *
  *	\brief		A single pagination class
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
  *	\link		http://www.fval.com.br/
- *	\version	2.2.3
+ *	\version	2.3.4
  *	\author		Fernando Val <fernando.val@gmail.com>
  *	\ingroup	framework
- *
+ */
+
+namespace FW;
+
+/**
+ *  \brief		A single pagination class
+ *  
  *	\b License:		[pt-BR] : Esta classe é Open Source e distribuida sob a licença GPL.\n
  *					[en-US] : This class is Open Source and distributed under GPL license.
  *
@@ -63,9 +69,7 @@
  *					$rowsperpage = 10;
  *					$ultima_pag = $Pagination->CalculateNumPages((int)$reg[0], $rowsperpage);
  *					print $Pagination->Parse($curr_page, $ultima_pag);
- *
  */
-
 class Pagination {
     /// Array contendo os links das página / page link array
     private $PagesLink = array();

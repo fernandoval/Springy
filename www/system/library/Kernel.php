@@ -1,22 +1,29 @@
 <?php
 /**	\file
- *	FVAL PHP Framework for Web Applications
+ *  FVAL PHP Framework for Web Applications
  *
- *	\copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.\n
- *	\copyright Copyright (c) 2007-2013 Fernando Val\n
- *	\copyright Copyright (c) 2009-2013 Lucas Cardozo
+ *  \copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.
+ *  \copyright Copyright (c) 2007-2013 Fernando Val
+ *  \copyright Copyright (c) 2009-2013 Lucas Cardozo
  *
- *	\brief		Cerne do framework
- *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.5.27
+ *  \brief		Script da classe cerne do framework
+ *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
+ *  \version	1.6.28
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
- *	\ingroup	framework
+ *  \ingroup	framework
  */
 
+namespace FW;
+
+/**
+ *  \brief Classe cerne do framework
+ *  
+ *  Esta classe é estática e invocada automaticamente pelo framework.
+ */
 class Kernel {
 	/// Versão do framework
-	const VERSION = '1.4.0';
+	const VERSION = '2.0.0';
 	/// Array interno com dados de configuração
 	private static $confs = array();
 	/// Array com informações de debug
@@ -33,6 +40,7 @@ class Kernel {
 
 	/**
 	 *  \brief Pega ou seta o root de controladoras
+	 *  
 	 *  \param (array)$controller_root - ae definido, altera o root de controladoras
 	 *  \return Retorna um array contendo o root de controladoras
 	 */
@@ -114,7 +122,7 @@ class Kernel {
 							 '<div class="debug_box_3 close">DEBUG</div>' .
 						'</div>' .
 						'<!-------------------- fim   do código de debug -------------------->';
-			
+
 			if (preg_match('/<body(.*?)>/', $conteudo)) {
 				echo preg_replace('/<body(.*?)>/', '<body\\1>' . $htmlDebug, $conteudo);
 			} else {
@@ -283,7 +291,19 @@ class Kernel {
     }
 
 	/**
-	 *	\brief Verifica se o usuário está usando um browser de dispositivo móvel
+	 *  \brief Verifica se o usuário está usando um browser de dispositivo móvel
+	 *  
+	 *  Esse método está depreciado e será removido na versão 2.1.
+	 *  
+	 *  Use o método FW\Browser\OS::isMobile
+	 *  
+	 *  Este método verifica se o navegador do usuário é de um dispositivo móvel.
+	 *  A partir da versão 2.0 foi adiciona o conjunto de classes Browser, mais completa,
+	 *  e que permite verificar mais dados do navegador e sistema operacional.
+	 *  Veja as classes Browser\OS, Browser\Browser e Browser\Language.
+	 *  
+	 *  \deprecated
+	 *  \see FW\Browser\OS::isMobile
 	 */
 	private static function mobileDeviceDetect() {
 		// Define que não é um dispositivo móvel até que seja provado o contrário
@@ -295,10 +315,10 @@ class Kernel {
 		if(!isset($_SERVER['HTTP_USER_AGENT'])){
 			return self::$mobile;
 		}
-		
+
 		// Pega o valor do USER AGENT
 		$user_agent = $_SERVER['HTTP_USER_AGENT'];
-		
+
 		switch (true) {
 			// iPad
 			case (preg_match('/ipad/i',$user_agent));

@@ -2,16 +2,21 @@
 /**	\file
  *	FVAL PHP Framework for Web Applications
  *
- *	\copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.\n
+ *	\copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.
  *	\copyright Copyright (c) 2009-2013 Lucas Cardozo
  *
  *	\brief		Classe stática para tratamento JSON
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.0.0
+ *	\version	1.1.1
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
  */
 
+namespace FW;
+
+/**
+ *  \brief Classe stática para tratamento JSON
+ */
 class JSON_Static {
 	private static $defaultVars = array();
 

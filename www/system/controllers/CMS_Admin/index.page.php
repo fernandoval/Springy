@@ -24,13 +24,13 @@
 
 class Index_Controller {
 	function __construct() {
-		if (!CMS::logged_in_user()) {
-			URI::redirect('/' . URI::relativePathPage() . '/login');
+		if (!FW\CMS::logged_in_user()) {
+			FW\URI::redirect('/' . FW\URI::relativePathPage() . '/login');
 
 			return false;
 		}
 
-		Template::start();
+		FW\Template::start();
 	}
 }
 ?>

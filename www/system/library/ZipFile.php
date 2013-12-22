@@ -1,25 +1,33 @@
 <?php
 /**	\file
- *	FVAL PHP Framework for Web Applications
+ *  FVAL PHP Framework for Web Applications
  *
- *	\copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.\n
- *	\copyright Copyright (c) 2007-2013 Fernando Val\n
+ *  \copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.\n
+ *  \copyright Copyright (c) 2007-2013 Fernando Val\n
  *
- *	\brief		Classe para geração de arquivos ZIP
- *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	0.2.4
- *	\ingroup	framework
- *
- *	Esta classe foi baseada no excelente trabalho de Pascal Rehfeldt.\n
- *	Conversão para PHP 5, melhorias, documentação e adaptação por Fernando Val.
- *
- *	\author (c) 2003 by Pascal Rehfeldt with changes by Fernando Val
- *	\author Pascal@Pascal-Rehfeldt.com
- *	\author Under license GNU General Public License (Version 2, June 1991)
- *
- *	You can use ZIPlib to add different resources to a ZIP file.
+ *  \brief		Classe para geração de arquivos ZIP
+ *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
+ *  \version	0.3.5
+ *  \author		(c) 2003 by Pascal Rehfeldt with changes by Fernando Val
+ *  \author		Pascal@Pascal-Rehfeldt.com, under license GNU General Public License (Version 2, June 1991)
+ *  \ingroup	framework
  */
 
+namespace FW;
+
+/**
+ *  \brief Classe para geração de arquivos ZIP
+ *
+ *  Esta classe foi baseada no excelente trabalho de Pascal Rehfeldt.\n
+ *  Conversão para PHP 5, melhorias, documentação e adaptação por Fernando Val.
+ *
+ *  \copyright (c) 2003 by Pascal Rehfeldt with changes by Fernando Val
+ *  \copyright Under license GNU General Public License (Version 2, June 1991)
+ *  \author Pascal@Pascal-Rehfeldt.com
+ *  \author Fernando Val
+ *
+ *  You can use ZIPlib to add different resources to a ZIP file.
+ */
 class ZipFile {
 	/// Nome do arquivo de saída
 	private $output_filename = 'archive.zip';

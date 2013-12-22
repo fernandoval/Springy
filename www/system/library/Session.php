@@ -2,16 +2,23 @@
 /**	\file
  *	FVAL PHP Framework for Web Applications
  *
- *	\copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.\n
- *	\copyright Copyright (c) 2007-2013 Fernando Val\n
+ *	\copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.
+ *	\copyright Copyright (c) 2007-2013 Fernando Val
  *
  *	\brief		Classe para tratamento de sessão
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.4.12
+ *	\version	1.5.13
  *  \author		Fernando Val  - fernando.val@gmail.com
  *	\ingroup	framework
  */
 
+namespace FW;
+
+/**
+ *  \brief Classe para tratamento de sessão
+ *  
+ *  Esta classe é estática e invocada automaticamente pelo framework.
+ */
 class Session {
 	/// Flag de controle de sessão iniciada
 	private static $started = false;
@@ -101,7 +108,7 @@ class Session {
 					self::$data = array();
 				}
 			}
-			register_shutdown_function(array('Session', '_save_db_session')); 
+			register_shutdown_function(array('\FW\Session', '_save_db_session')); 
 			// self::_save_db_session();
 
 			self::$started = true;

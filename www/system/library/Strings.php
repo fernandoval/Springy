@@ -2,17 +2,22 @@
 /**	\file
  *	FVAL PHP Framework for Web Applications
  *
- *	\copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.\n
- *	\copyright Copyright (c) 2007-2013 Fernando Val\n
+ *	\copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.
+ *	\copyright Copyright (c) 2007-2013 Fernando Val
  *	\copyright Copyright (c) 2009-2013 Lucas Cardozo
  *
  *	\brief		Classe com métodos para diversos tipos de tratamento e validação de dados string
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	0.5.7
+ *	\version	0.6.8
  *  \author		Fernando Val  - fernando.val@gmail.com
  *	\ingroup	framework
  */
 
+namespace FW;
+
+/**
+ *  \brief Classe com métodos para diversos tipos de tratamento e validação de dados string
+ */
 class Strings {
 	/**
 	 *	\brief Verifica se uma string está codificada em UTF-8

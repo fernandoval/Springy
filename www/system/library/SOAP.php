@@ -1,18 +1,26 @@
 <?php
-/**
- *	FVAL PHP Framework for Web Applications\n
- *	Copyright (c) 2007-2011 FVAL Consultoria e Informática Ltda.\n
- *	Copyright (c) 2007-2011 Fernando Val
+/** \file
+ *  FVAL PHP Framework for Web Applications
+ *  
+ *  \copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.
+ *  \copyright Copyright (c) 2007-2013 Fernando Val
  *
- *	\warning Este arquivo é parte integrante do framework e não pode ser omitido
- *
- *	\version 0.3.4
- *
- *	\brief Classe para conexão SOAP
+ *	\brief		Classe para conexão SOAP
+ *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
+ *	\version	0.4.5
+ *  \author		Fernando Val  - fernando.val@gmail.com
+ *  \ingroup	framework
  */
+
+namespace FW;
 
 require_once dirname( __FILE__) . DIRECTORY_SEPARATOR . 'NuSOAP' . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'nusoap.php';
 
+/**
+ *  \brief Classe para conexão SOAP
+ *  
+ *  \warning Esta classe ainda está sendo desenvolvida e é experimental. Não a utilize.
+ */
 class SOAP {
 	/// Objeto NuSOAP
 	private $client = NULL;
@@ -41,7 +49,7 @@ class SOAP {
 	 */
 	function clientCreate($endpoint='', $wsdl=false) {
 		// Cria o cliente de SOAP
-		$this->client = new nusoap_client($endpoint, $wsdl, $this->proxyhost, $this->proxyport, $this->proxyusername, $this->proxypassword);
+		$this->client = new \nusoap_client($endpoint, $wsdl, $this->proxyhost, $this->proxyport, $this->proxyusername, $this->proxypassword);
 
 		// Pega o erro, caso tenha havido
 		$err = $this->client->getError();
@@ -98,7 +106,7 @@ class SOAP {
 	 *	\brief For creating serializable abstractions of native PHP types.
 	 */
 	public function soapval($name='soapval', $type, $value=-1, $element_ns=false, $type_ns=false, $attributes=false) {
-		return new soapval($name, $type, $value, $element_ns, $type_ns, $attributes);
+		return new \soapval($name, $type, $value, $element_ns, $type_ns, $attributes);
 	}
 	
 	/**

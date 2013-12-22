@@ -2,20 +2,25 @@
 /**	\file
  *	FVAL PHP Framework for Web Applications
  *
- *	\copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.\n
- *	\copyright Copyright (c) 2007-2013 Fernando Val\n
- *	\copyright Copyright (c) 2009-2013 Lucas Cardozo
+ *	\copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.
+ *	\copyright Copyright (c) 2007-2013 Fernando Val
  *
  *	\brief		Classe para servidor SOAP
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	0.1.0
+ *	\version	0.2.2
  *  \author		Fernando Val  - fernando.val@gmail.com
- *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
  */
 
+namespace FW;
+
 if (!class_exists('SoapServer')) require_once dirname( __FILE__) . DIRECTORY_SEPARATOR . 'NuSOAP' . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'nusoap.php';
 
+/**
+ *  \brief Classe para servidor SOAP
+ *  
+ *  \warning Esta classe ainda está em estágio experimental.
+ */
 class SOAP_Server extends Kernel {
 	/// Classe utilizada internamente
 	private $classUsed = NULL;
@@ -32,7 +37,7 @@ class SOAP_Server extends Kernel {
 		if (class_exists('SoapServer')) {
 			$this->classUsed = 'SoapServer';
 
-			$this->server = new SoapServer($endpoint, $options);
+			$this->server = new \SoapServer($endpoint, $options);
 		} else {
 			return false;
 		}

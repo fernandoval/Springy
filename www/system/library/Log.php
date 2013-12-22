@@ -2,16 +2,21 @@
 /**	\file
  *	FVAL PHP Framework for Web Applications
  *
- *	\copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.\n
- *	\copyright Copyright (c) 2007-2013 Fernando Val\n
+ *	\copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.
+ *	\copyright Copyright (c) 2007-2013 Fernando Val
  *
  *	\brief		Classe para geração de saídas em logs de eventos
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	0.10.10
+ *	\version	0.11.11
  *  \author		Fernando Val  - fernando.val@gmail.com
  *	\ingroup	framework
  */
 
+namespace FW;
+
+/**
+ *  \brief Classe para geração de saídas em logs de eventos
+ */
 class Log {
 	/**
 	 *	\brief Escreve uma informação no log

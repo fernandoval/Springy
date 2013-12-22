@@ -22,12 +22,12 @@
 
 class Chpasswd_Controller {
 	function __construct() {
-		if (!CMS::logged_in_user()) {
-			URI::redirect('/'.URI::relativePathPage().'/login');
+		if (!FW\CMS::logged_in_user()) {
+			FW\URI::redirect('/'.FW\URI::relativePathPage().'/login');
 			return false;
 		}
 
-		Template::start();
+		FW\Template::start();
 	}
 
 	function _default() {
@@ -42,14 +42,14 @@ class Chpasswd_Controller {
 			} elseif (strlen(trim($_POST['password'])) == 0) {
 				$Error = 'Você não pode definir uma senha contendo apenas espaços.';
 			} else {
-				$user = CMS::logged_in_user();
-				Kernel::debug($user);
-				if (CMS::updateUserById($user['user_id'], '', trim($_POST['password']))) {
-					Template::assign('Success', 'Senha alterada com sucesso');
+				$user = FW\CMS::logged_in_user();
+				FW\Kernel::debug($user);
+				if (FW\CMS::updateUserById($user['user_id'], '', trim($_POST['password']))) {
+					FW\Template::assign('Success', 'Senha alterada com sucesso');
 				}
 			}
 		}
-		Template::assign('Error', $Error);
+		FW\Template::assign('Error', $Error);
 	}
 }
 ?>

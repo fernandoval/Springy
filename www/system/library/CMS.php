@@ -2,16 +2,21 @@
 /**	\file
  *	FVAL PHP Framework for Web Applications
  *
- *	\copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.\n
- *	\copyright Copyright (c) 2007-2013 Fernando Val\n
+ *	\copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.
+ *	\copyright Copyright (c) 2007-2013 Fernando Val
  *
- *	\brief		Classe do Mini CMS
+ *	\brief		Script da classe do Mini CMS
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	0.3.3
+ *	\version	0.4.4
  *  \author		Fernando Val  - fernando.val@gmail.com
  *	\ingroup	framework
  */
 
+namespace FW;
+
+/**
+ *  \brief Classe do Mini CMS
+ */
 class CMS {
 	private static $category_data = NULL;
 	private static $article_data = NULL;

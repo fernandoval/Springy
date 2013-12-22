@@ -8,11 +8,16 @@
  *
  *	\brief		Classe estática para tratamento de templates
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.0.0
+ *	\version	1.1.1
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
  */
 
+namespace FW;
+
+/**
+ *  \brief Classe estática para tratamento de templates
+ */
 class Template_Static {
 	private static $defaultVars = array();
 	private static $defaultFuncs = array();

@@ -7,12 +7,22 @@ Copyright (C) 2009-2013 Lucas Cardozo
 http://www.fval.com.br
 
 
-Migrando para a Versão 1.4 ou posteior do framework
----------------------------------------------------
+Migrando para a Versão 2.0.0 de versões anteriores
+--------------------------------------------------
 
-A principal mudança da versão 1.4 foi a alteração dos nomes dos métodos para o padrão lowerCamelCase. Dessa forma, todos os método contendo underscore (_) entre nas palavras que compunham o nome do método, devem ser alterados para seua novos nomes. Na maioria dos casos, basta remover o underscore e colocar o método no formado lowerCamelCase.
+A maior mudança ocorrida da versão 1.4.0 para a versão 2.0.0 é que foi instituído o conceito de namespace no framework e todas as classes da biblioteca passaram a pertencer ao namespamce FW.
 
-Para os métodos que foram renomeados, veja a relação abaixo:
+Dessa forma, todas as chamadas às classes da biblioteca do framework devem ser precedidas por \FW\.
+
+Exemplo:
+
+$controllerRoot = \FW\Kernel::controllerRoot();
+
+
+Migrando para a Versão 1.4.0 de versões anteriores
+--------------------------------------------------
+
+A principal mudança na versão 1.4.0 foi a alteração dos nomes dos métodos das classes, que foram padronizados em lowerCamelCase. Dessa forma, todos os método contendo underscore (_) entre nas palavras que compunham o nome do método, devem ser alterados para seua novos nomes. Na maioria dos casos, basta remover o underscore e colocar o método no formado lowerCamelCase. Para os métodos que foram renomeados, veja a relação abaixo:
 
 Kernel::get_controller_root()                 ----> Kernel::controllerRoot()
 Kernel::set_controller_root($novoValor)       ----> Kernel::controllerRoot($novoValor)

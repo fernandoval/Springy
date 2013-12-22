@@ -2,20 +2,26 @@
 /**	\file
  *	FVAL PHP Framework for Web Applications
  *
- *	\copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.\n
- *	\copyright Copyright (c) 2007-2013 Fernando Val\n
+ *	\copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.
+ *	\copyright Copyright (c) 2007-2013 Fernando Val
  *	\copyright Copyright (c) 2009-2013 Lucas Cardozo
  *
- *	\brief		Classe para tratamento de cookies
+ *	\brief		Script da classe para tratamento de cookies
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.1.3
+ *	\version	1.2.4
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
- *  \todo		Implementar correção no método delete.
- *  			Foi detectado que o método delete não deleta de fato, é necessário, após expirar a chave, setar seu valor para vazio.
  *	\ingroup	framework
  */
 
+namespace FW;
+
+/**
+ *  \brief Classe para tratamento de cookies
+ *  
+ *  \todo		Implementar correção no método delete.
+ *  			Foi detectado que o método delete não deleta de fato, é necessário, após expirar a chave, setar seu valor para vazio.
+ */
 class Cookie {
 	// [en-us] Reserved session keys
 	private static $_reserved = array();

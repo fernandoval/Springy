@@ -2,17 +2,22 @@
 /**	\file
  *	FVAL PHP Framework for Web Applications
  *
- *	\copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.\n
- *	\copyright Copyright (c) 2007-2013 Fernando Val\n
+ *	\copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.
+ *	\copyright Copyright (c) 2007-2013 Fernando Val
  *
  *	\brief		Classe para construção de arquivos no formato Microsoft(R) Excel(R)
  *	\note		Classe baseada no trabalho de Harish Chauhan de 31/12/2004
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	0.3.3
+ *	\version	0.4.4
  *  \author		Fernando Val  - fernando.val@gmail.com
  *	\ingroup	framework
  */
 
+namespace FW;
+
+/**
+ *  \brief Classe para construção de arquivos no formato Microsoft(R) Excel(R)
+ */
 class Excel {
 	// Handle do arquivo aberto
 	private $fp = NULL;

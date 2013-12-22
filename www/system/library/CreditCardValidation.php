@@ -6,13 +6,15 @@
  *	\copyright Copyright (c) 2007-2013 Fernando Val\n
  *
  *	\brief		Classe de validação de número de cartão de crédito
- *	\version	1.0.1
+ *	\version	1.1.2
  *  \author		Daniel Convissor <danielc@analysisandsolutions.com>
  *  \author		Fernando Val <fernando.val@gmail.com>
  *  \author		Mauricio Bastos <mbastos@gmail.com>
  *	\ingroup	framework
  */
  
+namespace FW;
+
 /**
  * Credit Card Validation Solution, PHP Edition.
  *

@@ -2,19 +2,23 @@
 /**	\file
  *	FVAL PHP Framework for Web Applications
  *
- *	\copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.\n
- *	\copyright Copyright (c) 2007-2013 Fernando Val\n
+ *	\copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.
+ *	\copyright Copyright (c) 2007-2013 Fernando Val
  *
  *	\brief		Classe para cliente SOAP
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.1.7
+ *	\version	1.2.8
  *  \author		Fernando Val  - fernando.val@gmail.com
  *	\ingroup	framework
  */
 
+namespace FW;
+
 if (!class_exists('SoapClient')) require_once dirname( __FILE__) . DIRECTORY_SEPARATOR . 'NuSOAP' . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'nusoap.php';
 
-
+/**
+ *  \brief Classe para cliente SOAP
+ */
 class SOAP_Client {
 	/// Classe utilizada internamente
 	private $classUsed = NULL;
@@ -58,7 +62,7 @@ class SOAP_Client {
 					unset($options['Password']);
 				}
 
-				$this->client = new SoapClient($endpoint, $options);
+				$this->client = new \SoapClient($endpoint, $options);
 
 				if (isset($objSoapVarWSSEHeader)) {
 					$this->client->__setSoapHeaders(array($objSoapVarWSSEHeader));
@@ -74,7 +78,7 @@ class SOAP_Client {
 		}
 		else {
 			$this->classUsed = 'NuSOAP';
-			$this->client = new nusoap_client($endpoint, $wsdl, Configuration::get('soap', 'proxyhost'), Configuration::get('soap', 'proxyport'), Configuration::get('soap', 'proxyusername'), Configuration::get('soap', 'proxypassword'));
+			$this->client = new \nusoap_client($endpoint, $wsdl, Configuration::get('soap', 'proxyhost'), Configuration::get('soap', 'proxyport'), Configuration::get('soap', 'proxyusername'), Configuration::get('soap', 'proxypassword'));
 
 			// Pega o erro, caso tenha havido
 			if ($this->client->getError()) {
@@ -217,7 +221,7 @@ class SOAP_Client {
 		if ($this->classUsed == 'SoapClient') {
 			return false;
 		}
-		return new soapval($name, $type, $value, $element_ns, $type_ns, $attributes);
+		return new \soapval($name, $type, $value, $element_ns, $type_ns, $attributes);
 	}
 
 	/**
@@ -254,15 +258,15 @@ class WsseAuthHeader extends SoapHeader {
 		}
 
 		$auth = new stdClass();
-		$auth->Username = new SoapVar($user, XSD_STRING, NULL, $this->wss_ns, NULL, $this->wss_ns);
-		$auth->Password = new SoapVar($pass, XSD_STRING, NULL, $this->wss_ns, NULL, $this->wss_ns);
+		$auth->Username = new \SoapVar($user, \XSD_STRING, NULL, $this->wss_ns, NULL, $this->wss_ns);
+		$auth->Password = new \SoapVar($pass, \XSD_STRING, NULL, $this->wss_ns, NULL, $this->wss_ns);
 
 		$username_token = new stdClass();
-		$username_token->UsernameToken = new SoapVar($auth, SOAP_ENC_OBJECT, NULL, $this->wss_ns, 'UsernameToken', $this->wss_ns);
+		$username_token->UsernameToken = new \SoapVar($auth, \SOAP_ENC_OBJECT, NULL, $this->wss_ns, 'UsernameToken', $this->wss_ns);
 
-		$security_sv = new SoapVar(
-			new SoapVar($username_token, SOAP_ENC_OBJECT, NULL, $this->wss_ns, 'UsernameToken', $this->wss_ns),
-			SOAP_ENC_OBJECT, NULL, $this->wss_ns, 'Security', $this->wss_ns);
+		$security_sv = new \SoapVar(
+			new \SoapVar($username_token, \SOAP_ENC_OBJECT, NULL, $this->wss_ns, 'UsernameToken', $this->wss_ns),
+			\SOAP_ENC_OBJECT, NULL, $this->wss_ns, 'Security', $this->wss_ns);
 		parent::__construct($this->wss_ns, 'Security', $security_sv, true);
 	}
 }

@@ -2,20 +2,25 @@
 /**	\file
  *	FVAL PHP Framework for Web Applications
  *
- *	\copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.\n
- *	\copyright Copyright (c) 2007-2013 Fernando Val\n
+ *	\copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.
+ *	\copyright Copyright (c) 2007-2013 Fernando Val
  *	\copyright Copyright (c) 2009-2013 Lucas Cardozo
  *
  *	\brief		Classe para envio de email
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.4.8
+ *	\version	1.5.9
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
  */
 
+namespace FW;
+
 require_once dirname( __FILE__) . DIRECTORY_SEPARATOR . 'MimeMessage' . DIRECTORY_SEPARATOR . 'email_message.php';
 
+/**
+ *  \brief Classe para envio de email
+ */
 class Mail {
 	private $message_obj = NULL;
 	private $html_part = NULL;
@@ -41,7 +46,7 @@ class Mail {
 				require_once dirname( __FILE__) . DIRECTORY_SEPARATOR . 'Sasl' . DIRECTORY_SEPARATOR . 'sasl.php';
 			}
 
-			$this->message_obj = new smtp_message_class;
+			$this->message_obj = new \smtp_message_class;
 
 			$this->message_obj->localhost = Configuration::get('mail', 'workstation');
 			$this->message_obj->smtp_host = Configuration::get('mail', 'host');
@@ -70,13 +75,13 @@ class Mail {
 		} elseif (Configuration::get('mail', 'method') == 'sendmail') {
 			require_once dirname( __FILE__) . DIRECTORY_SEPARATOR . 'MimeMessage' . DIRECTORY_SEPARATOR . 'sendmail_message.php';
 
-			$this->message_obj = new sendmail_message_class;
+			$this->message_obj = new \sendmail_message_class;
 
-			$this->message_obj->delivery_mode = SENDMAIL_DELIVERY_DEFAULT;
-			$this->message_obj->bulk_mail_delivery_mode = SENDMAIL_DELIVERY_QUEUE;
+			$this->message_obj->delivery_mode = \SENDMAIL_DELIVERY_DEFAULT;
+			$this->message_obj->bulk_mail_delivery_mode = \SENDMAIL_DELIVERY_QUEUE;
 			$this->message_obj->sendmail_arguments = '';
 		} else {
-			$this->message_obj = new email_message_class;
+			$this->message_obj = new \email_message_class;
 
 			$this->message_obj->localhost = Configuration::get('mail', 'workstation');
 		}

@@ -2,18 +2,23 @@
 /**	\file
  *	FVAL PHP Framework for Web Applications
  *
- *	\copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.\n
- *	\copyright Copyright (c) 2007-2013 Fernando Val\n
+ *	\copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.
+ *	\copyright Copyright (c) 2007-2013 Fernando Val
  *
  *	\brief		Classe para criação de XML de RSS
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.2.3
+ *	\version	1.3.4
  *  \author		Fernando Val  - fernando.val@gmail.com
  *	\ingroup	framework
  */
 
+namespace FW;
+
 require_once dirname( __FILE__) . DIRECTORY_SEPARATOR . 'feedcreator' . DIRECTORY_SEPARATOR . 'feedcreator.class.php';
 
+/**
+ *  \brief Classe para criação de XML de RSS
+ */
 class Rss {
 	private static $rss = NULL;
 	private static $image = NULL;
@@ -22,7 +27,7 @@ class Rss {
 	 *	\brief Construtor da classe
 	 */
 	function __construct($title='', $desc='', $link='', $syndcationURL='') {
-		self::$rss = new UniversalFeedCreator();
+		self::$rss = new \UniversalFeedCreator();
 		self::$rss->useCached();
 		self::$rss->link = (empty($link) ? 'http://'.$_SERVER['HTTP_HOST'] : $link);
 		self::$rss->syndicationURL = (empty($syndcationURL) ? 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF'] : $syndcationURL);
@@ -70,7 +75,7 @@ class Rss {
 	 *	\brief Define a imagem do feed
 	 */
 	public function image($imageUrl, $link, $title='', $description='') {
-		$image = new FeedImage();
+		$image = new \FeedImage();
 		$image->title = $title;
 		$image->url = $imageUrl;
 		$image->link = $link;
@@ -89,7 +94,7 @@ class Rss {
 	 *	\brief Adiciona um item ao feed
 	 */
 	public function addItem($title, $link, $description, $date, $category, $autor, $source='') {
-		$item = new FeedItem();
+		$item = new \FeedItem();
 		$item->title = html_entity_decode(htmlspecialchars($title));
 		$item->link  = $link;
 		$item->description = html_entity_decode($description);

@@ -22,8 +22,8 @@
 
 class Login_Controller {
 	function __construct() {
-		if (CMS::logged_in_user()) {
-			URI::redirect('/'.URI::relativePathPage());
+		if (FW\CMS::logged_in_user()) {
+			FW\URI::redirect('/'.FW\URI::relativePathPage());
 			return false;
 		}
 
@@ -31,16 +31,16 @@ class Login_Controller {
 		$user = isset($_POST['user']) ? trim($_POST['user']) : '';
 		$password = isset($_POST['password']) ? trim($_POST['password']) : '';
 		if (!empty($user) && !empty($password)) {
-			if (CMS::login_user($user, $password)) {
-				URI::redirect('/'.URI::relativePathPage());
+			if (FW\CMS::login_user($user, $password)) {
+				FW\URI::redirect('/'.FW\URI::relativePathPage());
 				return false;
 			} else {
 				$error = 1;
 			}
 		}
 
-		Template::start();
-		Template::assign('CMS_LoginError', $error);
+		FW\Template::start();
+		FW\Template::assign('CMS_LoginError', $error);
 	}
 }
 ?>

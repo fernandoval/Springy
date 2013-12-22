@@ -6,15 +6,23 @@
  *	\copyright Copyright (c) 2007-2013 Fernando Val\n
  *	\copyright Copyright (c) 2009-2013 Lucas Cardozo
  *
- *	\brief		Classe para acesso a banco de dados
- *	\note		Esta classe usa a PHP Data Object (PDO) para acesso a banco de dados
+ *	\brief		Script da classe de acesso a banco de dados
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.3.19
+ *	\version	1.4.20
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
  */
 
+namespace FW;
+
+/**
+ *  \brief Classe para acesso a banco de dados
+ *  
+ *  Esta classe é dinâmica, porém alguns de seus controles são estáticos.
+ *  
+ *	\note		Esta classe usa a PHP Data Object (PDO) para acesso a banco de dados
+ */
 class DB {
 	/// Guarda os IDs de conexão com os SGBDs
 	private static $DB = array();
@@ -92,11 +100,11 @@ class DB {
 
 		$pdoConf = array();
 		if ($conf['database_type'] == 'mysql') {
-			$pdoConf[PDO::MYSQL_ATTR_INIT_COMMAND] = 'SET NAMES \'UTF8\'';
+			$pdoConf[\PDO::MYSQL_ATTR_INIT_COMMAND] = 'SET NAMES \'UTF8\'';
 		}
 
 		if ($conf['persistent']) {
-			$pdoConf[ PDO::ATTR_PERSISTENT ] = true;
+			$pdoConf[ \PDO::ATTR_PERSISTENT ] = true;
 		}
 
 		/*
@@ -112,7 +120,7 @@ class DB {
 		//	a instância de conexão é estática, para nao criar uma nova a cada nova instãncia da classe
 		try {
 			self::$DB[$database] = array(
-				'con' => new PDO(
+				'con' => new \PDO(
 					$conf['database_type'] . ':host=' . $conf['host_name'] . ';dbname=' . $conf['database'],
 					$conf['user_name'],
 					$conf['password'],
@@ -121,7 +129,7 @@ class DB {
 				'dbName' => $database
 			);
 			unset($pdoConf, self::$conErrors[$database]);
-		} catch(PDOException $error) {
+		} catch(\PDOException $error) {
 			var_dump($error);
 			Errors::errorHandler((int)$error->getCode(), $error->getMessage(), $error->getFile(), $error->getLine(), null);
 		}
@@ -236,7 +244,7 @@ class DB {
 	 *
 	 *	Método para alerta de erros. Também envia e-mails com informações sobre o erro e grava-o em um arquivo de Log.
 	 */
-	private function reportError($msg, PDOException $exception=NULL) {
+	private function reportError($msg, \PDOException $exception=NULL) {
 		if(!$this->report_error) {
 			return;
 		}
@@ -378,16 +386,16 @@ class DB {
 			foreach($this->LastValues as $key => $where) {
 				switch(gettype($where)) {
 					case 'boolean' :
-						$param = PDO::PARAM_BOOL;
+						$param = \PDO::PARAM_BOOL;
 					break;
 					case 'integer' :
-						$param = PDO::PARAM_INT;
+						$param = \PDO::PARAM_INT;
 					break;
 					case 'NULL' :
-						$param = PDO::PARAM_NULL;
+						$param = \PDO::PARAM_NULL;
 					break;
 					default :
-						$param = PDO::PARAM_STR;
+						$param = \PDO::PARAM_STR;
 					break;
 				}
 
@@ -465,7 +473,7 @@ class DB {
 	 *	\return Retorna uma string contendo o nome do driver do banco de dados atual
 	 */
 	public function driverName() {
-		return $this->dataConnect->getAttribute(PDO::ATTR_DRIVER_NAME);
+		return $this->dataConnect->getAttribute(\PDO::ATTR_DRIVER_NAME);
 	}
 
 	/**
@@ -474,7 +482,7 @@ class DB {
 	 *  \return Retorna um valor inteiro com a versão do servidor
 	 */
 	public function serverVersion() {
-		return $this->dataConnect->getAttribute(PDO::ATTR_SERVER_VERSION);
+		return $this->dataConnect->getAttribute(\PDO::ATTR_SERVER_VERSION);
 	}
 
 	/**
@@ -502,7 +510,7 @@ class DB {
 	/**
 	 *	\brief Retorna todas as linhas do resultado de uma consulta
 	 */
-	public function fetchAll($resultType=PDO::FETCH_ASSOC) {
+	public function fetchAll($resultType=\PDO::FETCH_ASSOC) {
 		if ($this->SQLRes) {
 			return $this->SQLRes->fetchAll($resultType);
 		}
@@ -514,16 +522,16 @@ class DB {
 	 *  \deprecated
 	 *  \see fetch_all
 	 */
-	public function get_all($resultType=PDO::FETCH_ASSOC) {
+	public function get_all($resultType=\PDO::FETCH_ASSOC) {
 		return $this->fetchAll($resultType);
 	}
 
 	/**
 	 *	\brief Retorna o primeiro resultado do cursor de uma consulta
 	 */
-	public function fetchFirst($resultType=PDO::FETCH_ASSOC) {
+	public function fetchFirst($resultType=\PDO::FETCH_ASSOC) {
 		if ($this->SQLRes) {
-			return $this->SQLRes->fetch($resultType, PDO::FETCH_ORI_FIRST);
+			return $this->SQLRes->fetch($resultType, \PDO::FETCH_ORI_FIRST);
 		}
 
 		return false;
@@ -532,9 +540,9 @@ class DB {
 	/**
 	 *	\brief Retorna o resultado anterior do cursor de uma consulta
 	 */
-	public function fetchPrev($resultType=PDO::FETCH_ASSOC) {
+	public function fetchPrev($resultType=\PDO::FETCH_ASSOC) {
 		if ($this->SQLRes) {
-			return $this->SQLRes->fetch($resultType, PDO::FETCH_ORI_PRIOR);
+			return $this->SQLRes->fetch($resultType, \PDO::FETCH_ORI_PRIOR);
 		}
 
 		return false;
@@ -543,7 +551,7 @@ class DB {
 	/**
 	 *	\brief Retorna o próximo resultado de uma consulta
 	 */
-	public function fetchNext($resultType=PDO::FETCH_ASSOC) {
+	public function fetchNext($resultType=\PDO::FETCH_ASSOC) {
 		if ($this->SQLRes) {
 			return $this->SQLRes->fetch($resultType);
 		}
@@ -554,9 +562,9 @@ class DB {
 	/**
 	 *	\brief Retorna o último resultado do cursor de uma consulta
 	 */
-	public function fetchLast($resultType=PDO::FETCH_ASSOC) {
+	public function fetchLast($resultType=\PDO::FETCH_ASSOC) {
 		if ($this->SQLRes) {
-			return $this->SQLRes->fetch($resultType, PDO::FETCH_ORI_LAST);
+			return $this->SQLRes->fetch($resultType, \PDO::FETCH_ORI_LAST);
 		}
 
 		return false;

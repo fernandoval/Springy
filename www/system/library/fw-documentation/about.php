@@ -3,7 +3,7 @@
  *  
  *  ## FVAL PHP Framework
  *  
- *  \version 1.4.0
+ *  \version 2.0.0
  *  
  *  http://framework.fval.net.br
  *  
@@ -22,7 +22,7 @@
  *  O FVAL PHP Framework for Web Applications foi projetado para ser um framework de desenvolvimentos de aplicações web em PHP no formato MVC.
  *  
  *  
- *  \sevtion howmvcworks O sistema MVC deste framework:
+ *  \section howmvcworks O sistema MVC deste framework:
  *  
  *  Os models (modelos) nada mais são que classes para tratamento de dados ou funções genéricas ou de uso comum que não fazem parte do cerne do framework. Nesse framework os models são tratados simplesmento como "classes proprietárias" e ficam armazenadas no diterório de classes proprietárias (ver estrutura de diretórios). O framework possui uma classe de tratamento de bancos da qual você poderá herdar suas classes para tratamento de tabelas em banco, simplesmente crie suas classes extendendo a classe Model.
  *  
@@ -121,4 +121,15 @@
  *  
  *  Veja o arquivo history.txt contido no diretório de documentação
  *  \verbinclude history.txt
+ *  
+ *  \namespace  FW
+ *  \brief		Biblioteca de classes do framework
+ *  
  */
+namespace FW;
+
+/**
+ *  \namespace  FW.Browser
+ *  \brief		Biblioteca de classes PHP-Browser de Gabriel Bull
+ */
+namespace FW\Browser;

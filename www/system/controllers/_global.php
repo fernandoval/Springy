@@ -14,27 +14,27 @@ class Global_Controller {
 		//  Como exemplo, variáveis globais de template são inicializadas para entendimento da usabilidade desse hook de controladora
 	
 		// Informa para o template se o site está com SSL
-		Template_Static::assignDefaultVar('HTTPS',  isset($_SERVER['HTTPS']));
-		Template_Static::assignDefaultVar('isMobileDevice', Kernel::getMobileDevice());
+		FW\Template_Static::assignDefaultVar('HTTPS',  isset($_SERVER['HTTPS']));
+		FW\Template_Static::assignDefaultVar('isMobileDevice', FW\Browser\OS::isMobile());
 
 		// Inicializa as URLs estáticas
-		Template_Static::assignDefaultVar('urlJS',  URI::buildURL(array('js'), array(), true, 'static'));
-		Template_Static::assignDefaultVar('urlCSS', URI::buildURL(array('css'), array(), true, 'static'));
-		Template_Static::assignDefaultVar('urlIMG', URI::buildURL(array('images'), array(), true, 'static'));
-		Template_Static::assignDefaultVar('urlSWF', URI::buildURL(array('swf'), array(), true, 'static'));
+		FW\Template_Static::assignDefaultVar('urlJS',  FW\URI::buildURL(array('js'), array(), true, 'static'));
+		FW\Template_Static::assignDefaultVar('urlCSS', FW\URI::buildURL(array('css'), array(), true, 'static'));
+		FW\Template_Static::assignDefaultVar('urlIMG', FW\URI::buildURL(array('images'), array(), true, 'static'));
+		FW\Template_Static::assignDefaultVar('urlSWF', FW\URI::buildURL(array('swf'), array(), true, 'static'));
 
 		// Inicializa o controle de versões de arquivos estáticos
-		Template_Static::registerDefaultPlugin('function', 'files_static_version', 'files_static_version');
+		FW\Template_Static::registerDefaultPlugin('function', 'files_static_version', 'files_static_version');
 
 		// Inicializa as URLs do site
-		Template_Static::assignDefaultVar('urlMain', URI::buildURL(array('')));
-		Template_Static::assignDefaultVar('urlLogin', URI::buildURL(array('login'), array(), true, 'secure'));
-		Template_Static::assignDefaultVar('urlLogut', URI::buildURL(array('logout'), array(), true, 'secure'));
+		FW\Template_Static::assignDefaultVar('urlMain', FW\URI::buildURL(array('')));
+		FW\Template_Static::assignDefaultVar('urlLogin', FW\URI::buildURL(array('login'), array(), true, 'secure'));
+		FW\Template_Static::assignDefaultVar('urlLogut', FW\URI::buildURL(array('logout'), array(), true, 'secure'));
 
 		// conta o número de parêmetros _GET na URL
-		Template_Static::assignDefaultVar('numParamURL',count(URI::getParams()));
+		FW\Template_Static::assignDefaultVar('numParamURL',count(FW\URI::getParams()));
 		// pegando a URL atual sem paramêtros para passar a tag canonical do google
-		Template_Static::assignDefaultVar('urlCurrentURL', URI::buildURL(URI::getAllSegments(), array(), true));
+		FW\Template_Static::assignDefaultVar('urlCurrentURL', FW\URI::buildURL(FW\URI::getAllSegments(), array(), true));
 	}
 }
 
@@ -45,8 +45,8 @@ class Global_Controller {
  */
 function files_static_version($params, $smarty) {
 	if ($params['type'] == 'js') {
-		return URI::buildURL(array('js'), array(), isset($_SERVER['HTTPS']), 'static') . '/' . $params['file'] . '__' . filemtime(Configuration::get('system', 'js_path') . DIRECTORY_SEPARATOR . $params['file'] . '.js') . '.js';
+		return FW\URI::buildURL(array('js'), array(), isset($_SERVER['HTTPS']), 'static') . '/' . $params['file'] . '__' . filemtime(FW\Configuration::get('system', 'js_path') . DIRECTORY_SEPARATOR . $params['file'] . '.js') . '.js';
 	} else {
-		return URI::buildURL(array('css'), array(), isset($_SERVER['HTTPS']), 'static') . '/' .$params['file'] . '__' . filemtime(Configuration::get('system', 'css_path') . DIRECTORY_SEPARATOR . $params['file'] . '.css') . '.css';
+		return FW\URI::buildURL(array('css'), array(), isset($_SERVER['HTTPS']), 'static') . '/' .$params['file'] . '__' . filemtime(FW\Configuration::get('system', 'css_path') . DIRECTORY_SEPARATOR . $params['file'] . '.css') . '.css';
 	}
 }

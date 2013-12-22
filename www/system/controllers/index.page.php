@@ -26,11 +26,11 @@ class Index_Controller {
 	function _default() {
 		$date = date('F j, Y');
 		
-		Kernel::debug('Exemplo de debug 1');
-		Kernel::debug('Exemplo de debug 2', 'Exemplo com título');
-		Kernel::debug('Exemplo de debug 3', 'Título do Exemplo 3', false, false);
+		FW\Kernel::debug('Exemplo de debug 1');
+		FW\Kernel::debug('Exemplo de debug 2', 'Exemplo com título');
+		FW\Kernel::debug('Exemplo de debug 3', 'Título do Exemplo 3', false, false);
 
-		$tpl = new Template;
+		$tpl = new FW\Template;
 		$tpl->assign('date', $date);
 		$tpl->display();
 	}

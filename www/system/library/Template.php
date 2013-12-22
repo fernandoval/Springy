@@ -2,20 +2,27 @@
 /**	\file
  *	FVAL PHP Framework for Web Applications
  *
- *	\copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.\n
- *	\copyright Copyright (c) 2007-2013 Fernando Val\n
+ *	\copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.
+ *	\copyright Copyright (c) 2007-2013 Fernando Val
  *	\copyright Copyright (c) 2009-2013 Lucas Cardozo
  *
  *	\brief		Classe de tratamento de templates
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	3.1.3
+ *	\version	3.2.4
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
  */
 
+namespace FW;
+
 require_once 'Smarty' . DIRECTORY_SEPARATOR . 'Smarty.class.php';
 
+/**
+ *  \brief Classe de tratamento de templates
+ *  
+ *  \note Esta classe utiliza internamente a classe Smarty. Não utilize a classe Smarty diretamente.
+ */
 class Template {
 	const TPL_NAME_SUFIX = '.tpl.html';
 
@@ -41,7 +48,7 @@ class Template {
 		}
 
 		// Inicializa a classe de template
-		$this->tplObj = new Smarty;
+		$this->tplObj = new \Smarty;
 
 		$this->setCacheDir( Configuration::get('template', 'template_cached_path') );
 
@@ -178,7 +185,7 @@ class Template {
 	 * @
 	 */
 	public function setCaching($value='current') {
-		$this->tplObj->setCaching( $value != 'current' ? Smarty::CACHING_LIFETIME_SAVED : Smarty::CACHING_LIFETIME_CURRENT);
+		$this->tplObj->setCaching( $value != 'current' ? \Smarty::CACHING_LIFETIME_SAVED : \Smarty::CACHING_LIFETIME_CURRENT);
 	}
 
 	public function setCacheLifetime($seconds) {
