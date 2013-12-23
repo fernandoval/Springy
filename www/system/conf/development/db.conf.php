@@ -24,6 +24,11 @@
 
 /// Configurações para o ambiente de Desenvolvimento
 $conf = array(
+	'round_robin' => array(
+		'type' => 'file',
+		'server_addr' => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'templates_c',
+		'server_port' => 11211
+	),
 	'default' => array(
 		'database_type' => 'mysql',
 		'host_name'     => '',

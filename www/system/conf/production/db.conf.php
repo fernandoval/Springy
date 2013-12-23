@@ -24,6 +24,11 @@
 
 /// Configurações para o ambiente de Produção
 $conf = array(
+	'round_robin' => array(
+		'type' => 'memcached',
+		'server_addr' => 'youmemcachedserver.localnetwork',
+		'server_port' => 11211
+	),
 	'default' => array(
 		'database_type' => 'mysql',
 		'host_name'     => '',
