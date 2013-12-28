@@ -8,7 +8,7 @@
  *  \brief		Classe Model para acesso a banco de dados
  *  \note		Essa classe extende a classe DB.
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	1.3.3
+ *  \version	1.3.4
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \ingroup	framework
  */
@@ -388,12 +388,15 @@ class Model extends DB {
 	}
 
 	/**
-	 *  \brief Move o ponteiro para o próximo registro e retorna o registro
+	 *  \brief Retorna o registro corrente e move o ponteiro para o próximo registro.
 	 *
-	 *  \return Retorna o próximo registro ou FALSE caso não haja mais registros.
+	 *  \return Retorna o próximo registro da fila ou FALSE caso não haja mais registros.
 	 */
 	public function next() {
-		return next($this->rows);
+		if ($r = each($this->rows)) {
+			return $r['value'];
+		}
+		return false;
 	}
 
 	/**
@@ -405,6 +408,15 @@ class Model extends DB {
 		return end($this->rows);
 	}
 
+	/**
+	 *  \brief Retorna todos os dados de uma determinada coluna
+	 *  
+	 *  \return Retorna um array de valores de uma determinada coluna do resultset.
+	 */
+	public function getAllColumn($column) {
+		return array_column($this->rows, $column);
+	}
+	
 	/**
 	 *  \brief Dá o número de registros carregados em memória
 	 *
