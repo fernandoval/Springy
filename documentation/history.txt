@@ -14,6 +14,8 @@ Developer team:
 Framework Update History
 
 ------------------------------------------------------------------------------------ --- -- -
+2.1.0
+	- Adicionado recurso de cache de consultas de banco em memcached.
 2.0.0
 	- Criação do namespace FW.
 1.4.0

@@ -31,7 +31,7 @@ $conf = array(
 	),
 	'cache' => array(
 		'type' => 'off',
-		'server_addr' => 'youmemcachedserver.localnetwork',
+		'server_addr' => '127.0.0.1',
 		'server_port' => 11211
 	),
 	'default' => array(
