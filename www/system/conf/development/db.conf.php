@@ -29,6 +29,11 @@ $conf = array(
 		'server_addr' => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'templates_c',
 		'server_port' => 11211
 	),
+	'cache' => array(
+		'type' => 'off',
+		'server_addr' => 'youmemcachedserver.localnetwork',
+		'server_port' => 11211
+	),
 	'default' => array(
 		'database_type' => 'mysql',
 		'host_name'     => '',

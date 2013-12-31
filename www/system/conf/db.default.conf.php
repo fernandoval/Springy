@@ -39,6 +39,11 @@
  *  \li \c round_robin > server_addr - Endereço do servidor memcached ou caminho do arquivo de controle
  *  \li \c round_robin > server_port - Porta do servidor memcached
  *  
+ *  \c Entradas da configuração de cache de consulta em memcached:
+ *  \li \c cache > type - Tipo de sistema de cache (off | memcached)
+ *  \li \c cache > server_addr - Endereço do servidor memcached ou caminho do arquivo de controle
+ *  \li \c cache > server_port - Porta do servidor memcached
+ *  
  *  \see config
  *  @{
  *  @}

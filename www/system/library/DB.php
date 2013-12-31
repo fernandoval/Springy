@@ -8,7 +8,7 @@
  *
  *	\brief		Script da classe de acesso a banco de dados
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.4.20
+ *	\version	1.5.21
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
@@ -28,6 +28,10 @@ class DB {
 	private static $DB = array();
 	/// SQL Resource
 	private $SQLRes = NULL;
+	/// Tempo em segundos da validade do cache
+	private $cacheExpires = null;
+	/// Cache dos registros
+	private $cacheStatement = null;
 	/// Último comando executado
 	private $LastQuery = '';
 	/// Código do erro ocorrido no execute
@@ -52,10 +56,13 @@ class DB {
 	 *
 	 *  Cria uma instância da classe a inicializa a conexão com o banco de dados
 	 *
-	 *  @param $database chave de configuração do banco de dados.
-	 *	  Default = 'default'
+	 *  \param $database chave de configuração do banco de dados.
+	 *    Default = 'default'
+	 *  \param $cache_expires tempo em segundo de cacheamento de consultas.
+	 *    Default = null (sem cache)
 	 */
-	public function __construct($database='default') {
+	public function __construct($database='default', $cache_expires=null) {
+		$this->cacheExpires = $cache_expires;
 		$this->database = $database;
 		$this->dataConnect = $this->connect($this->database);
 	}
@@ -353,16 +360,24 @@ class DB {
 	}
 
 	/**
-	 *	Executa uma consulta no banco de dados
+	 *  Executa uma consulta no banco de dados
 	 *
-	 *	@param[in] $sql Comando SQL a ser executado
+	 *  \param $sql String contendo comando SQL a ser executado
+	 *  \param $where_v array contendo parâmetros para execução do comando
+	 *  \param $cache_expires tempo em segundos para cacheamento da consulta.
+	 *    Default = null (sem cache)
 	 */
-	public function execute($sql, array $where_v=array()) {
+	public function execute($sql, array $where_v=array(), $cache_expires=null) {
 		$this->sqlErrorCode = null;
 		$this->sqlErrorInfo = null;
 		self::$sqlNum++;
 
-		$this->LastQuery = $sql;
+		// Verifica se está sendo usado o recurso de contagem de linhas encontrados da última consulta do MySQL e cria um comando único
+		if ((is_int($this->cacheExpires) || is_int($cache_expires)) && strtoupper(substr(ltrim($sql), 0, 19)) == 'SELECT FOUND_ROWS()' && strtoupper(substr(ltrim($this->LastQuery), 0, 7)) == 'SELECT ') {
+			$this->LastQuery = $sql . '; /* ' . md5(implode('//', array_merge(array($this->LastQuery), $this->LastValues))) . ' */';
+		} else {
+			$this->LastQuery = $sql;
+		}
 
 		if (($sql instanceof DBSelect) || ($sql instanceof DBInsert) || ($sql instanceof DBUpdate) || ($sql instanceof DBDelete)) {
 			$this->LastValues = $sql->getAllValues();
@@ -373,46 +388,90 @@ class DB {
 
 		$sql = NULL;
 
-		if (($this->SQLRes = $this->dataConnect->prepare($this->LastQuery)) === false) {
-			$this->sqlErrorCode = $this->SQLRes->errorCode();
-			$this->sqlErrorInfo = $this->SQLRes->errorInfo();
-			$this->reportError('Can\'t prepare query.');
-			return false;
-		}
-
-		if (count($this->LastValues)) {
-			$numeric = 0;
-
-			foreach($this->LastValues as $key => $where) {
-				switch(gettype($where)) {
-					case 'boolean' :
-						$param = \PDO::PARAM_BOOL;
-					break;
-					case 'integer' :
-						$param = \PDO::PARAM_INT;
-					break;
-					case 'NULL' :
-						$param = \PDO::PARAM_NULL;
-					break;
-					default :
-						$param = \PDO::PARAM_STR;
-					break;
-				}
-
-				if (is_numeric($key)) {
-					$this->SQLRes->bindValue(++$numeric, $where, $param);
-				} else {
-					$this->SQLRes->bindValue(':' . $key, $where, $param);
+		// Recupera a configuração de cache
+		$dbcache = (Configuration::get('db', 'cache'));
+		// Limpa o que estiver em memória e tiver sido carregado de cache
+		$this->cacheStatement = null;
+		// Configuração de cache está ligada?
+		if (is_array($this->LastValues) && is_array($dbcache) && isset($dbcache['type']) && $dbcache['type'] == 'memcached') {
+			$cacheKey = md5(implode('//', array_merge(array($this->LastQuery), $this->LastValues)));
+			$this->SQLRes = null;
+			// O comando é um SELECT e é para guardar em cache?
+			if ((is_int($this->cacheExpires) || is_int($cache_expires)) && strtoupper(substr(ltrim($this->LastQuery), 0, 7)) == 'SELECT ') {
+				try {
+					$mc = new \Memcached();
+					$mc->addServer($dbcache['server_addr'], $dbcache['server_port']);
+					if ($sql = $mc->get('cacheDB_'.$cacheKey)) {
+						$this->cacheStatement = $sql;
+					}
+					unset($mc);
+				} catch (Exception $e) {
+					$this->cacheStatement = null;
 				}
 			}
-			unset($key, $where, $param, $numeric);
 		}
+		
+		// Se o resultado não foi pego do cache, consulta o banco
+		if (is_null($this->cacheStatement)) {
+			if (($this->SQLRes = $this->dataConnect->prepare($this->LastQuery)) === false) {
+				$this->sqlErrorCode = $this->SQLRes->errorCode();
+				$this->sqlErrorInfo = $this->SQLRes->errorInfo();
+				$this->reportError('Can\'t prepare query.');
+				return false;
+			}
 
-		if ($this->SQLRes->execute() === false) {
-			$this->sqlErrorCode = $this->SQLRes->errorCode();
-			$this->sqlErrorInfo = $this->SQLRes->errorInfo();
-			$this->reportError('Can\'t execute query.');
-			return false;
+			if (count($this->LastValues)) {
+				$numeric = 0;
+
+				foreach($this->LastValues as $key => $where) {
+					switch(gettype($where)) {
+						case 'boolean' :
+							$param = \PDO::PARAM_BOOL;
+						break;
+						case 'integer' :
+							$param = \PDO::PARAM_INT;
+						break;
+						case 'NULL' :
+							$param = \PDO::PARAM_NULL;
+						break;
+						default :
+							$param = \PDO::PARAM_STR;
+						break;
+					}
+
+					if (is_numeric($key)) {
+						$this->SQLRes->bindValue(++$numeric, $where, $param);
+					} else {
+						$this->SQLRes->bindValue(':' . $key, $where, $param);
+					}
+				}
+				unset($key, $where, $param, $numeric);
+			}
+
+			if ($this->SQLRes->execute() === false) {
+				$this->sqlErrorCode = $this->SQLRes->errorCode();
+				$this->sqlErrorInfo = $this->SQLRes->errorInfo();
+				$this->reportError('Can\'t execute query.');
+				return false;
+			}
+			
+			// Configuração de cache está ligada?
+			if (is_array($dbcache) && isset($dbcache['type']) && $dbcache['type'] == 'memcached') {
+				// O comando é um SELECT e é para guardar em cache?
+				if ((is_int($this->cacheExpires) || is_int($cache_expires)) && strtoupper(substr(ltrim($this->LastQuery), 0, 7)) == 'SELECT ') {
+					try {
+						$mc = new \Memcached();
+						$mc->addServer($dbcache['server_addr'], $dbcache['server_port']);
+						$this->cacheStatement = $this->get_all();
+						$mc->set('cacheDB_'.$cacheKey, $this->cacheStatement, min(is_int($cache_expires)?$cache_expires:86400, is_int($this->cacheExpires)?$this->cacheExpires:86400));
+						unset($mc);
+						$this->SQLRes->closeCursor();
+						$this->SQLRes = NULL;
+					} catch (Exception $e) {
+						Kernel::debug($this->LastQuery, 'Erro: ' . $e->getMessage());
+					}
+				}
+			}
 		}
 
 		if (self::$db_debug || Configuration::get('system', 'sql_debug')) {
@@ -504,15 +563,22 @@ class DB {
 	 *  \see affectedRows
 	 */
 	public function num_rows() {
-		return $this->affected_rows();
+		if (is_null($this->cacheStatement)) {
+			return $this->affected_rows();
+		}
+		return count($this->cacheStatement);
 	}
 
 	/**
 	 *	\brief Retorna todas as linhas do resultado de uma consulta
 	 */
 	public function fetchAll($resultType=\PDO::FETCH_ASSOC) {
-		if ($this->SQLRes) {
-			return $this->SQLRes->fetchAll($resultType);
+		if (is_null($this->cacheStatement)) {
+			if ($this->SQLRes) {
+				return $this->SQLRes->fetchAll($resultType);
+			}
+		} else {
+			return $this->cacheStatement;
 		}
 
 		return false;
@@ -530,8 +596,12 @@ class DB {
 	 *	\brief Retorna o primeiro resultado do cursor de uma consulta
 	 */
 	public function fetchFirst($resultType=\PDO::FETCH_ASSOC) {
-		if ($this->SQLRes) {
-			return $this->SQLRes->fetch($resultType, \PDO::FETCH_ORI_FIRST);
+		if (is_null($this->cacheStatement)) {
+			if ($this->SQLRes) {
+				return $this->SQLRes->fetch($resultType, \PDO::FETCH_ORI_FIRST);
+			}
+		} else {
+			return reset($this->cacheStatement);
 		}
 
 		return false;
@@ -541,8 +611,12 @@ class DB {
 	 *	\brief Retorna o resultado anterior do cursor de uma consulta
 	 */
 	public function fetchPrev($resultType=\PDO::FETCH_ASSOC) {
-		if ($this->SQLRes) {
-			return $this->SQLRes->fetch($resultType, \PDO::FETCH_ORI_PRIOR);
+		if (is_null($this->cacheStatement)) {
+			if ($this->SQLRes) {
+				return $this->SQLRes->fetch($resultType, \PDO::FETCH_ORI_PRIOR);
+			}
+		} else {
+			return prev($this->cacheStatement);
 		}
 
 		return false;
@@ -552,8 +626,14 @@ class DB {
 	 *	\brief Retorna o próximo resultado de uma consulta
 	 */
 	public function fetchNext($resultType=\PDO::FETCH_ASSOC) {
-		if ($this->SQLRes) {
-			return $this->SQLRes->fetch($resultType);
+		if (is_null($this->cacheStatement)) {
+			if ($this->SQLRes) {
+				return $this->SQLRes->fetch($resultType);
+			}
+		} else {
+			if ($r = each($this->cacheStatement)) {
+				return $r['value'];
+			}
 		}
 
 		return false;
@@ -563,8 +643,12 @@ class DB {
 	 *	\brief Retorna o último resultado do cursor de uma consulta
 	 */
 	public function fetchLast($resultType=\PDO::FETCH_ASSOC) {
-		if ($this->SQLRes) {
-			return $this->SQLRes->fetch($resultType, \PDO::FETCH_ORI_LAST);
+		if (is_null($this->cacheStatement)) {
+			if ($this->SQLRes) {
+				return $this->SQLRes->fetch($resultType, \PDO::FETCH_ORI_LAST);
+			}
+		} else {
+			return end($this->cacheStatement);
 		}
 
 		return false;
@@ -574,8 +658,14 @@ class DB {
 	 *	\brief Retorna o valor de uma coluna do último registro pego por fetch_next
 	 */
 	public function getColumn($var=0) {
-		if ($this->SQLRes && is_numeric($var)) {
-			return $this->SQLRes->fetchColumn($var);
+		if (is_null($this->cacheStatement)) {
+			if ($this->SQLRes && is_numeric($var)) {
+				return $this->SQLRes->fetchColumn($var);
+			}
+		} else {
+			if ($r = each($this->cacheStatement)) {
+				return $r['value'][$var];
+			}
 		}
 
 		$this->reportError($var . ' is not defined in select (remember, it\'s a case sensitive) or $data is empty.');
