@@ -8,7 +8,7 @@
  *
  *  \brief		Script da classe cerne do framework
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	1.6.29
+ *  \version	1.6.30
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *  \ingroup	framework
@@ -461,7 +461,7 @@ class Kernel {
 		echo '</table>';
 
 		echo '<p><strong>Classes Inclusas nesse framework</strong></p><p>';
-		echo 'Smarty: the PHP compiling template engine v3.1.15 (c) 2008 New Digital Group, Inc.<br />';
+		echo 'Smarty: the PHP compiling template engine v3.1.16 (c) 2008 New Digital Group, Inc.<br />';
 		echo 'Sending e-mail messages via SMTP protocol v1.41 (c) 1999-2009 Manuel Lemos<br />';
 		echo 'MIME E-mail message composing and sending v1.92 (c) 1999-2004 Manuel Lemos<br />';
 		echo 'MIME E-mail message composing and sending using Sendmail v1.18 (c) 1999-2004 Manuel Lemos<br />';
