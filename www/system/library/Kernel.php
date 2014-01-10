@@ -8,7 +8,7 @@
  *
  *  \brief		Script da classe cerne do framework
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	1.6.30
+ *  \version	1.6.31
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *  \ingroup	framework
@@ -23,7 +23,7 @@ namespace FW;
  */
 class Kernel {
 	/// Versão do framework
-	const VERSION = '2.1.0';
+	const VERSION = '2.1.1';
 	/// Array interno com dados de configuração
 	private static $confs = array();
 	/// Array com informações de debug

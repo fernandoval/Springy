@@ -8,7 +8,7 @@
  *
  *	\brief		Script da classe de acesso a banco de dados
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.5.21
+ *	\version	1.6.22
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
@@ -160,7 +160,7 @@ class DB {
 
 		// Efetua controle de round robin por Memcached
 		if ($rr['type'] == 'memcached') {
-			$mc = new Memcached();
+			$mc = new \Memcached();
 			$mc->addServer($rr['server_addr'], $rr['server_port']);
 
 			// Define o próximo servidor do pool
@@ -448,6 +448,7 @@ class DB {
 				unset($key, $where, $param, $numeric);
 			}
 
+			$this->SQLRes->closeCursor();
 			if ($this->SQLRes->execute() === false) {
 				$this->sqlErrorCode = $this->SQLRes->errorCode();
 				$this->sqlErrorInfo = $this->SQLRes->errorInfo();

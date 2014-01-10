@@ -14,6 +14,8 @@ Developer team:
 Framework Update History
 
 ------------------------------------------------------------------------------------ --- -- -
+2.1.1
+	- Correção de bug na lib FW\DB.
 2.1.0
 	- Adicionado recurso de cache de consultas de banco em memcached.
 2.0.0
