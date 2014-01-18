@@ -1,8 +1,8 @@
 FVAL PHP Framework for Web Applications
 
-Copyright (C) 2007-2013 FVAL - Consultoria e Informática Ltda.
-Copyright (C) 2007-2013 Fernando Val
-Copyright (C) 2009-2013 Lucas Cardozo
+Copyright (C) 2007-2014 FVAL - Consultoria e Informática Ltda.
+Copyright (C) 2007-2014 Fernando Val
+Copyright (C) 2009-2014 Lucas Cardozo
 
 http://www.fval.com.br
 

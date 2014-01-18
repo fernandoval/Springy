@@ -2,8 +2,8 @@
 /**	\file
  *	FVAL PHP Framework for Web Applications
  *
- *	\copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.\n
- *	\copyright Copyright (c) 2007-2013 Fernando Val\n
+ *	\copyright Copyright (c) 2007-2014 FVAL Consultoria e Informática Ltda.\n
+ *	\copyright Copyright (c) 2007-2014 Fernando Val\n
  *
  *	\brief		Classe de validação de número de cartão de crédito
  *	\version	1.1.2

@@ -8,7 +8,7 @@
  *
  *	\brief		Classe de tratamento de templates
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	3.2.4
+ *	\version	3.3.5
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
@@ -20,14 +20,14 @@ require_once 'Smarty' . DIRECTORY_SEPARATOR . 'Smarty.class.php';
 
 /**
  *  \brief Classe de tratamento de templates
- *  
+ *
  *  \note Esta classe utiliza internamente a classe Smarty. Não utilize a classe Smarty diretamente.
  */
 class Template {
 	const TPL_NAME_SUFIX = '.tpl.html';
 
 	private $tplObj = NULL;
-	
+
 	private $templateName = NULL;
 
 	private $templateCacheId = NULL;
@@ -35,7 +35,7 @@ class Template {
 
 	private $templateVars = array();
 	private $templateFuncs = array();
-	
+
 	/**
 	 *	\brief Inicializa a classe de template
 	 */
@@ -49,6 +49,8 @@ class Template {
 
 		// Inicializa a classe de template
 		$this->tplObj = new \Smarty;
+
+		$this->tplObj->use_sub_dirs = Configuration::get('template', 'use_sub_dirs');
 
 		$this->setCacheDir( Configuration::get('template', 'template_cached_path') );
 
@@ -101,7 +103,7 @@ class Template {
 
 		return true;
 	}
-	
+
 	public function __destruct() {
 		unset($this->tplObj);
 	}
@@ -202,7 +204,7 @@ class Template {
 		$this->tplObj->assign('SYSTEM_NAME', $GLOBALS['SYSTEM']['SYSTEM_NAME']);
 		$this->tplObj->assign('SYSTEM_VERSION', $GLOBALS['SYSTEM']['SYSTEM_VERSION']);
 		$this->tplObj->assign('ACTIVE_ENVIRONMENT', $GLOBALS['SYSTEM']['ACTIVE_ENVIRONMENT']);
-		
+
 		//if (!$this->tplObj->caching) {
 			foreach (Template_Static::getDefaultVars() as $name => $value) {
 				$this->tplObj->assign($name, $value);
@@ -215,7 +217,7 @@ class Template {
 			foreach(Template_Static::getDefaultPlugins() as $func) {
 				$this->tplObj->registerPlugin($func[0], $func[1], $func[2], $func[3], $func[4]);
 			}
-			
+
 			foreach($this->templateFuncs as $func) {
 				$this->tplObj->registerPlugin($func[0], $func[1], $func[2], $func[3], $func[4]);
 			}
@@ -239,13 +241,13 @@ class Template {
 	 */
 	public function setTemplate($tpl) {
 		$this->templateName = ((is_array($tpl)) ? join(DIRECTORY_SEPARATOR, $tpl) : $tpl);
-		
+
 		$compile = '';
 		if (!is_null($tpl)) {
 			$compile = is_array($tpl) ? implode('/', $tpl) : $tpl;
 			$compile = substr($compile, 0, strrpos('/', $compile));
 		}
-		
+
 		$this->setCompileDir( Configuration::get('template', 'compiled_template_path') . $compile );
 	}
 
@@ -282,7 +284,7 @@ class Template {
 	public function registerPlugin($type, $name, $callback, $cacheable=NULL, $cache_attrs=NULL) {
 		$this->templateFuncs[] = array($type, $name, $callback, $cacheable, $cache_attrs);
 	}
-	
+
 	/**
 	 *	\brief Limpa uma variável do template
 	 */

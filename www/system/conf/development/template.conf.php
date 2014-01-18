@@ -4,7 +4,7 @@
  *
  *  \warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
- *	\copyright	Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.\n
+ *	\copyright	Copyright (c) 2007-2014 FVAL Consultoria e Informática Ltda.\n
  */
 
 /**
@@ -27,7 +27,8 @@
 	// 'template_path'          => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'templates',
 	// 'template_config_path'   => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'templates_conf',
 	// 'compiled_template_path' => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'templates_c',
-	// 'template_cached_path'   => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'templates_cached'
+	// 'template_cached_path'   => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'templates_cached',
+	// 'use_sub_dirs'           => false
 // );
 
 /**@}*/

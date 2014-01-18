@@ -1,8 +1,8 @@
 FVAL PHP Framework for Web Applications
 
-Copyright (C) 2007-2013 FVAL - Consultoria e Informática Ltda.
-Copyright (C) 2007-2013 Fernando Val
-Copyright (C) 2009-2013 Lucas Cardozo
+Copyright (C) 2007-2014 FVAL - Consultoria e Informática Ltda.
+Copyright (C) 2007-2014 Fernando Val
+Copyright (C) 2009-2014 Lucas Cardozo
 
 http://www.fval.com.br
 
@@ -14,6 +14,8 @@ Developer team:
 Framework Update History
 
 ------------------------------------------------------------------------------------ --- -- -
+2.1.2
+	- Implementado recurso de armazenamento dos templates compilados e cache dos templates em subdiretório para melhoria de performance em caso de grande quantidade de arquivos que causam lentidão no sistema operacional.
 2.1.1
 	- Correção de bug na lib FW\DB.
 2.1.0

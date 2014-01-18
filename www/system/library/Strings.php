@@ -8,7 +8,7 @@
  *
  *	\brief		Classe com métodos para diversos tipos de tratamento e validação de dados string
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	0.6.8
+ *	\version	0.7.9
  *  \author		Fernando Val  - fernando.val@gmail.com
  *	\ingroup	framework
  */
@@ -85,7 +85,16 @@ class Strings {
 	}
 
 	/**
-	 *	\brief Retorna o endereço IP remoto real
+	 *  \brief Retorna o endereço IP remoto real
+	 *  
+	 *  Existem certas situações em que o verdadeiro IP do visitante fica mascarado quando o servidor de aplicação
+	 *  está por trás de um firewall ou balanceador de carga. Nesses casos é necessário fazer certas verificações em
+	 *  lugar de pegar apenas o valor da vairável $_SERVER['REMOTE_ADDR'].
+	 *  
+	 *  Este método tenta recuperar o real IP do visitante, fazendo verificações e garantindo que nenhum valor de IP
+	 *  inválido seja retornado.
+	 *  
+	 *  \return Retorna uma string contendo o IP real do host que fez a requisição.
 	 */
 	public static function getRealRemoteAddr() {
 		// Pega o IP que vem por trás de proxies
@@ -114,10 +123,13 @@ class Strings {
 			if (!empty($_SERVER['HTTP_X_REAL_IP'])) {
 				$ip = $_SERVER['HTTP_X_REAL_IP'];
 			} else {
-				$ip = $_SERVER['REMOTE_ADDR'];
+				$ip = empty($_SERVER['REMOTE_ADDR']) ? "" : $_SERVER['REMOTE_ADDR'];
 			}
 		}
 
+		if (filter_var($ip, FILTER_VALIDATE_IP) === false) {
+			return "";
+		}
 		return $ip;
 	}
 

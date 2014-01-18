@@ -2,8 +2,8 @@
 /**	\file
  *  FVAL PHP Framework for Web Applications
  *
- *  \copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.
- *  \copyright Copyright (c) 2007-2013 Fernando Val
+ *  \copyright Copyright (c) 2007-2014 FVAL Consultoria e Informática Ltda.
+ *  \copyright Copyright (c) 2007-2014 Fernando Val
  *
  *  \brief		Classe Model para acesso a banco de dados
  *  \note		Essa classe extende a classe DB.

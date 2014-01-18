@@ -2,13 +2,13 @@
 /**	\file
  *  FVAL PHP Framework for Web Applications
  *
- *  \copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.
- *  \copyright Copyright (c) 2007-2013 Fernando Val
+ *  \copyright Copyright (c) 2007-2014 FVAL Consultoria e Informática Ltda.
+ *  \copyright Copyright (c) 2007-2014 Fernando Val
  *  \copyright Copyright (c) 2009-2013 Lucas Cardozo
  *
  *  \brief		Script da classe cerne do framework
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	1.6.31
+ *  \version	1.6.32
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *  \ingroup	framework
@@ -23,7 +23,7 @@ namespace FW;
  */
 class Kernel {
 	/// Versão do framework
-	const VERSION = '2.1.1';
+	const VERSION = '2.1.2';
 	/// Array interno com dados de configuração
 	private static $confs = array();
 	/// Array com informações de debug

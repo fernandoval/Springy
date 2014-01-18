@@ -7,8 +7,8 @@
  *  
  *  http://framework.fval.net.br
  *  
- *  \copyright Copyright (C) 2007-2013 FVAL - Consultoria e Informática Ltda.
- *  \copyright Copyright (C) 2007-2013 Fernando Val
+ *  \copyright Copyright (C) 2007-2014 FVAL - Consultoria e Informática Ltda.
+ *  \copyright Copyright (C) 2007-2014 Fernando Val
  *  \copyright Copyright (C) 2009-2013 Lucas Cardozo
  *  
  *  \author Fernando Val  - fernando.val@gmail.com

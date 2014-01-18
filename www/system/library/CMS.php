@@ -2,8 +2,8 @@
 /**	\file
  *	FVAL PHP Framework for Web Applications
  *
- *	\copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.
- *	\copyright Copyright (c) 2007-2013 Fernando Val
+ *	\copyright Copyright (c) 2007-2014 FVAL Consultoria e Informática Ltda.
+ *	\copyright Copyright (c) 2007-2014 Fernando Val
  *
  *	\brief		Script da classe do Mini CMS
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido

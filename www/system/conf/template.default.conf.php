@@ -4,7 +4,7 @@
  *
  *  \warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
- *	\copyright	Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.\n
+ *	\copyright	Copyright (c) 2007-2014 FVAL Consultoria e Informática Ltda.\n
  */
 
 /**
@@ -21,6 +21,9 @@
  *  - \c template_config_path - Caminho de disco do diretório configuração de templates
  *  - \c compiled_template_path - Caminho de disco do diretório configuração de templates compilados
  *  - \c template_cached_path - Caminho de disco do diretório configuração de templates cacheados
+ *  - \c use_sub_dirs - Valor booleano que informa para a classe de templates que os compilados e cache deverão ser armazenados em subdiretórios.
+ *      Esse recurso é importante para aplicações com grande quantidade de páginas/templates ou que utilizem cache de template que gere grande quantidade de arquivos.
+ *      Diretórios contendo milhares de arquivos criam problema de performance porque, nesses casos, o sistema de arquivos do sistema operacional demora a responder.
  *  
  *  \see config
  *  @{
@@ -44,7 +47,8 @@ $conf = array(
 	'template_path'          => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'templates',
 	'template_config_path'   => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'templates_conf',
 	'compiled_template_path' => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'templates_c',
-	'template_cached_path'   => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'templates_cached'
+	'template_cached_path'   => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'templates_cached',
+	'use_sub_dirs'           => false
 );
 
 /**@}*/
