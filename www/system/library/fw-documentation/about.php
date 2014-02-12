@@ -3,7 +3,7 @@
  *  
  *  ## FVAL PHP Framework
  *  
- *  \version 2.0.0
+ *  \version 2.2.0
  *  
  *  http://framework.fval.net.br
  *  
@@ -48,9 +48,10 @@
  *  \li \b "www" : é o diretório onde está o inicializador e o sysconf.php. Em alguns ambientes essa pasta tem nomes como httpdocs ou public_html;
  *  \li \b "system" : é onde estão os subdiretórios do arquivos do framework e da aplicação. Pos questões de seguramça, recomenda-se que este diretório esteja fora da árvore navegável da aplicação, se seu servidor web permitir o acesso a arquivos fora da árvore do www. Neste caso é necessário ajustar o caminho no arquivo sysconf.php;
  *  \li \b "library" : diretório onde estão armazenados as classes e bibliotecas do framework;
+ *  \li \b "classes" : diretório onde são armazenadas as classes proprietárias;
  *  \li \b "conf" : diretório onde são armazenados os scripts de configuração do sistema;
  *  \li \b "controller" : diretório onde as controladoras são armazenados (pode conter subdiretórios);
- *  \li \b "user_classes" : diretório onde são armazenadas as classes proprietárias;
+ *  \li \b "other" : diretório onde estão armazenados as classes e bibliotecas de terceiros;
  *  \li \b "templates" : diretório onde são asmazenados os templates (pode conter subdiretórios);
  *  \li \b "templates_c" : diretório onde são asmazenados os templates compilados (o PHP deve ter direito de escrita dentro dele);
  *  \li \b "templates_cached" : diretório onde a classe de templates irá salvar as páginas cacheadas.

@@ -7,14 +7,14 @@
  *
  *	\brief		Classe para criação de XML de RSS
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.3.4
+ *	\version	1.4.5
  *  \author		Fernando Val  - fernando.val@gmail.com
  *	\ingroup	framework
  */
 
 namespace FW;
 
-require_once dirname( __FILE__) . DIRECTORY_SEPARATOR . 'feedcreator' . DIRECTORY_SEPARATOR . 'feedcreator.class.php';
+require_once $GLOBALS['SYSTEM']['3RDPARTY_PATH'] . DIRECTORY_SEPARATOR . 'feedcreator' . DIRECTORY_SEPARATOR . 'feedcreator.class.php';
 
 /**
  *  \brief Classe para criação de XML de RSS

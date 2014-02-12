@@ -7,14 +7,14 @@
  *
  *	\brief		Classe para conexão SOAP
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	0.4.5
+ *	\version	0.5.6
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \ingroup	framework
  */
 
 namespace FW;
 
-require_once dirname( __FILE__) . DIRECTORY_SEPARATOR . 'NuSOAP' . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'nusoap.php';
+require_once $GLOBALS['SYSTEM']['3RDPARTY_PATH'] . DIRECTORY_SEPARATOR . 'NuSOAP' . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'nusoap.php';
 
 /**
  *  \brief Classe para conexão SOAP

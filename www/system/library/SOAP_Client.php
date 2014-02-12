@@ -7,14 +7,14 @@
  *
  *	\brief		Classe para cliente SOAP
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.2.8
+ *	\version	1.3.9
  *  \author		Fernando Val  - fernando.val@gmail.com
  *	\ingroup	framework
  */
 
 namespace FW;
 
-if (!class_exists('SoapClient')) require_once dirname( __FILE__) . DIRECTORY_SEPARATOR . 'NuSOAP' . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'nusoap.php';
+if (!class_exists('SoapClient')) require_once $GLOBALS['SYSTEM']['3RDPARTY_PATH'] . DIRECTORY_SEPARATOR . 'NuSOAP' . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'nusoap.php';
 
 /**
  *  \brief Classe para cliente SOAP

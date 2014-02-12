@@ -9,7 +9,7 @@
  *  http://www.fval.com.br
  *
  *	\brief		Script de inicialização da aplicação
- *  \version	2.0.12
+ *  \version	2.0.13
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *  \file

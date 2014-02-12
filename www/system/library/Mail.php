@@ -8,7 +8,7 @@
  *
  *	\brief		Classe para envio de email
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.5.9
+ *	\version	1.6.10
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
@@ -16,7 +16,7 @@
 
 namespace FW;
 
-require_once dirname( __FILE__) . DIRECTORY_SEPARATOR . 'MimeMessage' . DIRECTORY_SEPARATOR . 'email_message.php';
+require_once $GLOBALS['SYSTEM']['3RDPARTY_PATH'] . DIRECTORY_SEPARATOR . 'MimeMessage' . DIRECTORY_SEPARATOR . 'email_message.php';
 
 /**
  *  \brief Classe para envio de email
@@ -39,11 +39,11 @@ class Mail {
 			error_reporting(E_ALL^E_NOTICE);
 			restore_error_handler();
 
-			require_once dirname( __FILE__) . DIRECTORY_SEPARATOR . 'MimeMessage' . DIRECTORY_SEPARATOR . 'smtp_message.php';
-			require_once dirname( __FILE__) . DIRECTORY_SEPARATOR . 'Smtp' . DIRECTORY_SEPARATOR . 'smtp.php';
+			require_once $GLOBALS['SYSTEM']['3RDPARTY_PATH'] . DIRECTORY_SEPARATOR . 'MimeMessage' . DIRECTORY_SEPARATOR . 'smtp_message.php';
+			require_once $GLOBALS['SYSTEM']['3RDPARTY_PATH'] . DIRECTORY_SEPARATOR . 'Smtp' . DIRECTORY_SEPARATOR . 'smtp.php';
 
 			if (Configuration::get('mail', 'ssl') || Configuration::get('mail', 'starttls')) {
-				require_once dirname( __FILE__) . DIRECTORY_SEPARATOR . 'Sasl' . DIRECTORY_SEPARATOR . 'sasl.php';
+				require_once $GLOBALS['SYSTEM']['3RDPARTY_PATH'] . DIRECTORY_SEPARATOR . 'Sasl' . DIRECTORY_SEPARATOR . 'sasl.php';
 			}
 
 			$this->message_obj = new \smtp_message_class;
@@ -73,7 +73,7 @@ class Mail {
 
 
 		} elseif (Configuration::get('mail', 'method') == 'sendmail') {
-			require_once dirname( __FILE__) . DIRECTORY_SEPARATOR . 'MimeMessage' . DIRECTORY_SEPARATOR . 'sendmail_message.php';
+			require_once $GLOBALS['SYSTEM']['3RDPARTY_PATH'] . DIRECTORY_SEPARATOR . 'MimeMessage' . DIRECTORY_SEPARATOR . 'sendmail_message.php';
 
 			$this->message_obj = new \sendmail_message_class;
 
