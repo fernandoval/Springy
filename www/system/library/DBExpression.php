@@ -1,4 +1,7 @@
 <?php
+
+namespace FW;
+
 abstract class DBExpression {
 	const C_ELSE = 'ELSE';
 	const COND_AND = 'AND';

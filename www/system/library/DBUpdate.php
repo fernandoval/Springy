@@ -1,4 +1,7 @@
 <?php
+
+namespace FW;
+
 class DBUpdate {
 	private $tabela = NULL;
 	private $columns = array();

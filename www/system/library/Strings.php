@@ -8,7 +8,7 @@
  *
  *	\brief		Classe com métodos para diversos tipos de tratamento e validação de dados string
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	0.7.9
+ *	\version	0.8.10
  *  \author		Fernando Val  - fernando.val@gmail.com
  *	\ingroup	framework
  */
@@ -57,9 +57,13 @@ class Strings {
 	 *	@param Boolean $checkDNS - determina se a existência do domínio do email deve ser verificado
 	 */
 	public static function validateEmailAddress($email, $checkDNS=true) {
-		if (preg_match('/^[a-z0-9_\-]+(\.[a-z0-9_\-]+)*@([a-z0-9_\.\-]*[a-z0-9_\-]+\.[a-z]{2,4})$/i', $email, $res)) {
+		if ( 
+			filter_var($email, FILTER_VALIDATE_EMAIL) && 
+			preg_match('/^[a-z0-9_\-]+(\.[a-z0-9_\-]+)*@([a-z0-9_\.\-]*[a-z0-9_\-]+\.[a-z]{2,4})$/i', $email, $res)
+		) {
 			return $checkDNS ? checkdnsrr($res[2]) : true;
 		}
+
 		return false;
 	}
 
@@ -182,8 +186,7 @@ class Strings {
 		return !empty($txt);
 	}
 	
-	/*
-	 * 
+	/* 
 	 * @param[in] (string)$numero - variável a ser validado
 	 * @param[in] (string)$tamanho - quantidade máxima de caracteres [0-9] aceitos. Se for passado vazio (''), será infinito
 	 * @param[in] (string)$minimo - quantidade mínima de caracteres [0-9] aceitos
@@ -202,14 +205,22 @@ class Strings {
 	 *	@param[in] (string)$data - data no formato d/m/Y
 	 */
 	public static function data($data) {
-		if (!preg_match('/^(0[1-9]|[1-2][0-9]|3[0-1])\/(0[1-9]|1[0-2])\/((19|20|21)[0-9]{2})$/', $data, $res)) {
+		$d = \DateTime::createFromFormat('d/m/Y', $data);
+		return $d && $d->format('d/m/Y') == $data;
+	}
+
+	/**
+	 * Valida uma hora no formato HH:MM ou HH:MM:SS
+	 * @param string $hora
+	 * @param boolean $segundos Valida os segundos, default: false
+	 * @return boolean
+	 */
+	public static function hora($hora, $segundos = false) {
+		if($segundos && !preg_match('/^([0-1][0-9]|[2][0-3]|[0-9]):([0-5][0-9]|[0-9]):([0-5][0-9]|[0-9])$/', $hora)){
+			return false;
+		} elseif(!$segundos && !preg_match('/^([0-1][0-9]|[2][0-3]|[0-9]):([0-5][0-9]|[0-9])$/', $hora)) {
 			return false;
 		}
-
-		if (date('d/m/Y', mktime(0, 0, 0, $res[2], $res[1], $res[3])) != $data) {
-			return false;
-		}
-
 		return true;
 	}
 
@@ -228,7 +239,7 @@ class Strings {
 	}
 
 	public static function telefone(&$ddd, &$telefone) {
-		$telefone = str_replace('-', '', $telefone);
+		$telefone = preg_replace('/[^0-9]/', '', $telefone);
 		$len = strlen($ddd . $telefone);
 		return ($len == 10 || $len == 11) && is_numeric($ddd . $telefone);
 	}
@@ -392,36 +403,20 @@ class Strings {
 	 *
 	 * @access public
 	 * @param string $data1, $data 2, $tipo 31/12/2013 ou 2012-12-31
-	 * @return mktime $data
+	 * @return int Dias
 	 */
-
-	public static function qtdDias($dataIni, $dataFim) {
-		if( (!isset($dataIni) || empty($dataIni)) || (!isset($dataFim) || empty($dataFim))) {
-			return false;
-		}
-
-		if(strpos($dataIni, '/')) {
-			$partes = explode('/', $dataIni);
-			$time_inicial = mktime(0, 0, 0, $partes[1], $partes[0], $partes[2]);
-
-			$partes = explode('/', $dataFim);
-			$time_final = mktime(0, 0, 0, $partes[1], $partes[0], $partes[2]);
-		} elseif(strpos($dataIni, '-')) {
-			$partes = explode('-', $dataIni);
-			$time_inicial = mktime(0, 0, 0, $partes[1], $partes[2], $partes[0]);
-
-			$partes = explode('-', $dataFim);
-			$time_final = mktime(0, 0, 0, $partes[1], $partes[2], $partes[0]);
-
+	public static function qtdDias($dataIni, $dataFim) 
+	{
+		if ( strpos($dataIni, '/') ) {
+			$dataIni = \DateTime::createFromFormat('d/m/Y', $dataIni);
+			$dataFim = \DateTime::createFromFormat('d/m/Y', $dataFim);
+		} elseif( strpos($dataIni, '-') ) {
+			$dataIni = \DateTime::createFromFormat('Y-m-d', $dataIni);
+			$dataFim = \DateTime::createFromFormat('Y-m-d', $dataFim);
 		} else {
 			return false;
 		}
-
-		// Calcula a diferença de segundos entre as duas datas:
-		$diferenca = $time_final - $time_inicial; // segundos
-
-		// Calcula a diferença de dias
-		return (int)floor( $diferenca / 86400); // 24 horas  = 86400 segundos
-
+		
+		return $dataIni->diff( $dataFim )->days;
 	}
 }

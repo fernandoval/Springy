@@ -7,8 +7,9 @@
  *
  *	\brief		Classe de configuração
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.1.1
+ *	\version	1.2.2
  *  \author		Fernando Val  - fernando.val@gmail.com
+ *  \author		Allan Marques - allan.marques@ymail.com
  *	\ingroup	framework
  */
 
@@ -25,29 +26,63 @@ class Configuration {
 
 
 	/**
-	 *	\brief Pega o conteúdo de um registro de configuração
+	 *  \brief Pega o conteúdo de um registro de configuração
 	 *
-	 *	\param[in] (string) $local - nome do arquivo de configuração
-	 *	\param[in] (string) $var - registro desejado
-	 *	\return se o registro existir, retorna seu valor, caso contrário retorna NULL
+	 *  \param[in] (string) $local - nome do arquivo de configuração
+	 *  \param[in] (string) $var - registro desejado
+	 *  \param[in] (string) $var - registro desejado.\n
+	 *      Se omitido, poderá ser utilizado o conceito de sub-níveis separedos por ponto.
+	 *  \return se o registro existir, retorna seu valor, caso contrário retorna NULL
 	 */
-	public static function get($local, $var) {
+	public static function get($local, $var = null) {
+        if (is_null($var)) {
+            $firstSegment = substr($local, 0, strpos($local, '.'));
+
+            if ($firstSegment) {
+                $var = substr($local, strpos($local, '.') + 1);
+                $local = $firstSegment;
+            }
+        }
+
 		if (!isset(self::$confs[$local])) {
 			self::load($local);
 		}
-		return (isset(self::$confs[$local][$var]) ? self::$confs[$local][$var] : NULL);
+
+        if (!$var) {
+            return self::$confs[$local];
+        }
+
+		return ArrayUtils::newInstance()->dottedGet(self::$confs[$local], $var);
 	}
 
 	/**
-	 *	\brief Altera o valor de uma entrada de configuração
+	 *  \brief Altera o valor de uma entrada de configuração
 	 *
-	 *	\param[in] (string) $local - nome do arquivo de configuração
-	 *	\param[in] (string) $val - nome da entrada de configuração
-	 *	\param[in] (variant) $valor - novo valor da entrada de configuração
-	 *	\return void
+	 *  \param[in] (string) $local - nome do arquivo de configuração
+	 *  \param[in] (string) $var - nome da entrada de configuração
+	 *  \param[in] (variant) $valor - novo valor da entrada de configuração
+	 *  \param[in] (string) $var - registro desejado.\n
+	 *      Se omitido, poderá ser utilizado o conceito de sub-níveis separedos por ponto.
+	 *      Nesse caso, $local receberá o local separado por pontos e $var o valor a ser armazenado.
+	 *  \return void
 	 */
-	public static function set($local, $var, $value) {
-		self::$confs[$local][$var] = $value;
+	public static function set($local, $var, $value = null) {
+        if (is_null($value)) {
+            $value = $var;
+            $var = '';
+            $firstSegment = substr($local, 0, strpos($local, '.'));
+
+            if ($firstSegment) {
+                $local = $firstSegment;
+                $var = substr($local, strpos($local, '.') + 1);
+            }
+
+            if (!$var) {
+                self::$confs[$local] = $value;
+            }
+        }
+
+		ArrayUtils::newInstance()->dottedSet(self::$confs[$local], $var, $value);
 	}
 
 	/**

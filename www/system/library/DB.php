@@ -8,9 +8,10 @@
  *
  *	\brief		Script da classe de acesso a banco de dados
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.6.22
+ *	\version	1.6.23
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
+ *  \author		Allan Marques - allan.marques@ymail.com
  *	\ingroup	framework
  */
 
@@ -212,16 +213,17 @@ class DB {
 	 *  \see connected
 	 */
 	public static function hasConnection($database='default') {
-		self::connected($database);
+		return self::connected($database);
 	}
 
 	/**
 	 *	\brief Fecha a conexão com o banco de dados
 	 */
 	public function disconnect() {
-		if ($this->dataConnect && $this->dataConnect->IsConnected()) {
-			///	a instância de conexão é estática, para nao criar uma nova a cada nova instãncia da classe
-			self::$DB[$this->database]['con']->Disconnect();
+		if (static::connected($this->database)) {
+			///	a instância de conexão é estática, para não criar uma nova a cada nova instância da classe
+			unset(self::$DB[$this->database]['con']);
+			$this->dataConnect = false;
 		}
 		unset(self::$DB[$this->database]);
 	}
@@ -256,37 +258,47 @@ class DB {
 			return;
 		}
 		// [pt-br] Lê as configurações de acesso ao banco de dados
-		$conf = Configuration::get('db', self::$DB[$this->database]['dbName']);
+		$conf = Configuration::get('db', $this->database);
 
 		if (isset($this->LastQuery)) {
-			$sqlError = '<pre>' . htmlentities((is_object($this->LastQuery) ? $this->LastQuery->__toString() : $this->LastQuery)) . '</pre><br /> Parametros:<br />' . Kernel::print_rc($this->LastValues, true);
+			if (PHP_SAPI === 'cli' || defined('STDIN')) {
+				$sqlError = htmlentities((is_object($this->LastQuery) ? $this->LastQuery->__toString() : $this->LastQuery)) . "\n" . 'Parametros: ' . Kernel::print_rc($this->LastValues, true);
+			} else {
+				$sqlError = '<pre>' . htmlentities((is_object($this->LastQuery) ? $this->LastQuery->__toString() : $this->LastQuery)) . '</pre><br /> Parametros:<br />' . Kernel::print_rc($this->LastValues, true);
+			}
 		} else {
 			$sqlError = 'Still this connection was not executed some instruction SQL using.';
 		}
 
 		$errorInfo = ($this->SQLRes ? $this->SQLRes->errorInfo() : $this->dataConnect->errorInfo());
 
-		$htmlError = '
-			<tr>
-				<td style="background-color:#66C; color:#FFF; font-weight:bold; padding-left:10px; padding:3px 2px" colspan="2">Dados do banco</td>
-			</tr>
-			<tr>
-				<td valign="top"><label style="font-weight:bold">Host:</label></td>
-				<td>'.$conf['host_name'].'</td>
-			</tr>
-			<tr style="background:#efefef">
-				<td valign="top"><label style="font-weight:bold">User:</label></td>
-				<td><span style="background:#efefef">' . (isset($conf['user_name']) ? $conf['user_name'] : 'não informado') . '</span></td>
-			</tr>
-			<tr>
-				<td valign="top"><label style="font-weight:bold">Pass:</label></td>
-				<td>' . (isset($conf['password']) ? $conf['password'] : 'não informado') . '</td>
-			</tr>
-			<tr>
-				<td valign="top"><label style="font-weight:bold">DB:</label></td>
-				<td><span style="background:#efefef">' . (isset($conf['database']) ? $conf['database'] : 'não informado') . '</span></td>
-			</tr>
-		';
+		if (PHP_SAPI === 'cli' || defined('STDIN')) {
+			$htmlError = 'Dados do banco' . "\n"
+					   . 'Host: '.$conf['host_name'] . "\n"
+					   . 'Login: ' . (isset($conf['user_name']) ? $conf['user_name'] : 'não informado') . "\n"
+					   . 'Senha: ' . (isset($conf['password']) ? $conf['password'] : 'não informado') . "\n"
+					   . 'DB: ' . (isset($conf['database']) ? $conf['database'] : 'não informado') . "\n";
+		} else {
+			$htmlError = '<tr>'
+					   . '  <td style="background-color:#66C; color:#FFF; font-weight:bold; padding-left:10px; padding:3px 2px" colspan="2">Dados do banco</td>'
+					   . '</tr>'
+					   . '<tr>'
+					   . '  <td valign="top"><label style="font-weight:bold">Host:</label></td>'
+					   . '  <td>'.$conf['host_name'].'</td>'
+					   . '</tr>'
+					   . '<tr style="background:#efefef">'
+					   . '  <td valign="top"><label style="font-weight:bold">User:</label></td>'
+					   . '  <td><span style="background:#efefef">' . (isset($conf['user_name']) ? $conf['user_name'] : 'não informado') . '</span></td>'
+					   . '</tr>'
+					   . '<tr>'
+					   . '  <td valign="top"><label style="font-weight:bold">Pass:</label></td>'
+					   . '  <td>' . (isset($conf['password']) ? $conf['password'] : 'não informado') . '</td>'
+					   . '</tr>'
+					   . '<tr>'
+					   . '  <td valign="top"><label style="font-weight:bold">DB:</label></td>'
+					   . '  <td><span style="background:#efefef">' . (isset($conf['database']) ? $conf['database'] : 'não informado') . '</span></td>'
+					   . '</tr>';
+		}
 		unset($sqlError);
 
 		Errors::sendReport(
@@ -682,29 +694,10 @@ class DB {
 	 *
 	 *	@return Retorna a data no formato universal (Y-m-d) concatenada da hora no formato universal (H:n:s), se o $flgtime for TRUE.
 	 */
-	public static function castCateBrToDb($datetime, $flgtime=false) {
-		if (preg_match('/^([0-9]{2})\/([0-9]{2})\/([0-9]{4})/', $datetime, $res)) {
-			$date = array($res[1], $res[2], $res[3]);
-		} else {
-			return '';
-		}
+	public static function castDateBrToDb($datetime, $flgtime=false) {
+        $date = \DateTime::createFromFormat('d/m/Y H:i:s', $datetime);
 
-		if ($flgtime) {
-			if (preg_match('/([0-9]{2})\:([0-9]{2})\:([0-9]{2})$/', $datetime, $res)) {
-				$time = array($res[1], $res[2], $res[3]);
-			} else {
-				return '';
-			}
-		}
-
-		$date = $date[2] . '-' . $date[1] . '-' . $date[0];
-		unset($res);
-
-		if (!$flgtime) {
-			return $date;
-		}
-
-		return $date . ' ' . $time[0] . ':' . $time[1] . ':' . $time[2];
+        return $flgtime ? $date->format('Y-m-d H:i:s') : $date->format('Y-m-d');
 	}
 
 	/**
@@ -717,28 +710,13 @@ class DB {
 	 *	@return Retorna a data no formato brasileiro (d/m/Y) concatenada da hora no formato brasileiro 24h (H:n:s), se o $flgtime for TRUE.
 	 */
 	public static function castDateDbToBr($datetime, $flgtime=false, $sec=false) {
-		if (preg_match('/^([0-9]{4})-([0-9]{2})-([0-9]{2})/', $datetime, $res)) {
-			$date = array($res[1], $res[2], $res[3]);
-		} else {
-			return '';
-		}
+        $date = \DateTime::createFromFormat('Y-m-d H:i:s', $datetime);
 
-		if ($flgtime) {
-			if (preg_match('/([0-9]{2})\:([0-9]{2})\:([0-9]{2})/', $datetime, $res)) {
-				$time = array($res[1], $res[2], $res[3]);
-			} else {
-				return '';
-			}
-		}
+        if (!$flgtime) {
+            return $date->format('d/m/Y');
+        }
 
-		$date = $date[2] . '/' . $date[1] . '/' . $date[0];
-		unset($res);
-
-		if (!$flgtime) {
-			return $date;
-		}
-
-		return $date . ' ' . $time[0] . ':' . $time[1] . ($sec ? ':' . $time[2] : '');
+        return $sec ? $date->format('d/m/Y H:i') : $date->format('d/m/Y H:i:s');
     }
 
 	/**
@@ -749,37 +727,14 @@ class DB {
 	 *  \return Retorna o valor UNIX timestamp
 	 */
 	public static function makeDbDateTime($dateTime) {
-		if (preg_match('/^([0-9]{4})-([0-9]{2})-([0-9]{2})/', $dateTime, $res)) {
-			$data = array(
-				$res[1],
-				$res[2],
-				$res[3],
-			);
-		} else if (preg_match('/^([0-9]{2})\/([0-9]{2})\/([0-9]{4})/', $dateTime, $res)) {
-			$data = array(
-				$res[3],
-				$res[2],
-				$res[1],
-			);
+		if (preg_match('/^([0-9]{4})-([0-9]{2})-([0-9]{2})/', $dateTime)) {
+			return \DateTime::createFromFormat('Y-m-d H:i:s', $dateTime)->getTimestamp();
 		}
-		unset($res);
+        else if (preg_match('/^([0-9]{2})\/([0-9]{2})\/([0-9]{4})/', $dateTime)) {
+			return \DateTime::createFromFormat('d/m/Y H:i:s', $dateTime)->getTimestamp();
+		}
 
-		preg_match('/([0-9]{2}):([0-9]{2}):([0-9]{2})$/', $dateTime, $res);
-		if (isset($res[1])) {
-			$hora = array(
-				$res[1],
-				$res[2],
-				$res[3],
-			);
-		} else {
-			$hora = array(
-				0,
-				0,
-				0,
-			);
-		}
-		unset($res);
-		return mktime($hora[0], $hora[1], $hora[2], $data[1], $data[2], $data[0]);
+        return null;
     }
 	/**
 	 *  \brief DEPRECATED - Use makeDbDateTime()
@@ -797,10 +752,11 @@ class DB {
 	 *  \param (string)$dataTimeStamp - data hora no format Y-m-d H:i:s
 	 *  \return Retorna uma string no formato '<dia> de <nome_do_mes>'.
 	 */
-	public static function londBrazilianDate($dataTimeStamp) {
-		$dateTime = DB::mk_db_datetime($dataTimeStamp);
+	public static function longBrazilianDate($dataTimeStamp) {
+		$dateTime = static::makeDbDateTime($dataTimeStamp);
 		$mes = array('Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro');
-		return date('d', $dateTime) . ' de ' . $mes[date('m', $dateTime)];
+        $numMes = (int) date('m', $dateTime);
+		return date('d', $dateTime) . ' de ' . $mes[--$numMes] . ' de ' . date('Y', $dateTime);
     }
 	/**
 	 *  \brief DEPRECATED - Use londBrazilianDate()
@@ -808,6 +764,6 @@ class DB {
 	 *  \see londBrazilianDate
 	 */
 	public static function dateToStr($dataTimeStamp) {
-		return self::londBrazilianDate($dataTimeStamp);
+		return self::longBrazilianDate($dataTimeStamp);
 	}
 }

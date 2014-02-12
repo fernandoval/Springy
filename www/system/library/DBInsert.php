@@ -1,4 +1,7 @@
 <?php
+
+namespace FW;
+
 class DBInsert {
 	private $tabela = '';
 	private $columns = array();

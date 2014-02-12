@@ -14,6 +14,10 @@ Developer team:
 Framework Update History
 
 ------------------------------------------------------------------------------------ --- -- -
+2.2.0
+	- Implementado recurso de leitura de dados de configurações utilizando sistema de sub-níveis separados por ponto. Ex: Configuration::get('db.round_robin.type') - Colaboração de Allan Marques;
+	- Inclusão da classe de manipulação de arrays - ArrayUtils - Colaboração de Allan Marques;
+	- Alteração da mensagem do handler de erro quando o sistema é executado em modo cli.
 2.1.2
 	- Implementado recurso de armazenamento dos templates compilados e cache dos templates em subdiretório para melhoria de performance em caso de grande quantidade de arquivos que causam lentidão no sistema operacional.
 2.1.1

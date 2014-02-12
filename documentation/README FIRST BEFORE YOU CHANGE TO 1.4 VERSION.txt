@@ -7,6 +7,16 @@ Copyright (C) 2009-2014 Lucas Cardozo
 http://www.fval.com.br
 
 
+Migrando para a Versão 2.2.0 de versões anteriores
+--------------------------------------------------
+
+As duas maiores mudanças ocorridas na versão 2.2.0 foram:
+
+1) Alteração estrutural no framework em que o diretório de classes da aplicação deixou de se chamar `user_classes`, configurada na entrada global 'USER_CLASS_PATH', para se chamar apenas `classes`, configurada na entrada global 'CLASS_PATH';
+
+2) Criação do diretório `other` para armazenar a biblioteca de classes de terceiros, configurada na entrada global '3RDPARTY_PATH'. O Smarty e as classes de terceiros foram movidos para esse diretório.
+
+
 Migrando para a Versão 2.0.0 de versões anteriores
 --------------------------------------------------
 

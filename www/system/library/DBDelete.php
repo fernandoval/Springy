@@ -1,4 +1,7 @@
 <?php
+
+namespace FW;
+
 class DBDelete {
 	private $tabela = '';
 	private $conds = '';

@@ -8,7 +8,7 @@
  *
  *	\brief		Classe para pegar arquivos de toda uma árvore de diretórios
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	0.2.2
+ *	\version	0.3.3
  *  \author		Fernando Val  - fernando.val@gmail.com
  *	\ingroup	framework
  *
@@ -46,18 +46,18 @@ namespace FW;
  *  \brief Classe para pegar arquivos de toda uma árvore de diretórios
  *	\author (c) Ilya Nemihin
  */
-class DeepDir extends Kernel {
-	private $dir   = NULL;
-	private $files = NULL;
-	private $error = NULL;
+class DeepDir {
+	private $dir     = NULL;
+	private $files   = NULL;
+	private $error   = NULL;
+	private $dirFILO = NULL;
 
 	/**
 	 *	\brief Método construtor
 	 */
 	public function __construct($dir='.') {
-		$this->dir = $dir;
-		$this->files = array();
 		$this->dirFILO = new FILO;
+		$this->setDir($dir);
 	}
 
 	/**

@@ -8,7 +8,7 @@
  *
  *  \brief		Script da classe cerne do framework
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	1.6.32
+ *  \version	1.6.33
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *  \ingroup	framework
@@ -23,7 +23,7 @@ namespace FW;
  */
 class Kernel {
 	/// Versão do framework
-	const VERSION = '2.1.2';
+	const VERSION = '2.2.0';
 	/// Array interno com dados de configuração
 	private static $confs = array();
 	/// Array com informações de debug
@@ -176,7 +176,7 @@ class Kernel {
 				return str_replace('&lt;?php', '', str_replace('?&gt;', '', highlight_string('<?php ' . var_export($par->__toString(), true) . ' ?>', true ) )) .
 				(($par instanceof DBSelect || $par instanceof DBInsert || $par instanceof DBUpdate || $par instanceof DBDelete) ? '<br />' . str_replace('&lt;?php', '', str_replace('?&gt;', '', highlight_string('<?php ' . var_export($par->getAllValues(), true) . ' ?>', true ) )) : '');
 			} else {
-				return '<pre>' . print_r($par, true) . '</pre>';
+				return (PHP_SAPI === 'cli' || defined('STDIN')) ? print_r($par, true) : '<pre>' . print_r($par, true) . '</pre>';
 			}
 		} else {
 			return str_replace('&lt;?php', '', str_replace('?&gt;', '',

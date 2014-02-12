@@ -78,10 +78,10 @@ function fwgv_autoload($classe) {
 		}
 
 		// procura a classe nas Libarys
-		if (file_exists($GLOBALS['SYSTEM']['USER_CLASS_PATH'] . DIRECTORY_SEPARATOR . $nameSpace . DIRECTORY_SEPARATOR . $classe. '.php')) {
-			require_once $GLOBALS['SYSTEM']['USER_CLASS_PATH'] . DIRECTORY_SEPARATOR . $nameSpace . DIRECTORY_SEPARATOR . $classe . '.php';
-		} elseif (file_exists($GLOBALS['SYSTEM']['USER_CLASS_PATH'] . DIRECTORY_SEPARATOR . $classe . '.php')) {
-			require_once $GLOBALS['SYSTEM']['USER_CLASS_PATH'] . DIRECTORY_SEPARATOR . $classe . '.php';
+		if (file_exists($GLOBALS['SYSTEM']['CLASS_PATH'] . DIRECTORY_SEPARATOR . $nameSpace . DIRECTORY_SEPARATOR . $classe. '.php')) {
+			require_once $GLOBALS['SYSTEM']['CLASS_PATH'] . DIRECTORY_SEPARATOR . $nameSpace . DIRECTORY_SEPARATOR . $classe . '.php';
+		} elseif (file_exists($GLOBALS['SYSTEM']['CLASS_PATH'] . DIRECTORY_SEPARATOR . $classe . '.php')) {
+			require_once $GLOBALS['SYSTEM']['CLASS_PATH'] . DIRECTORY_SEPARATOR . $classe . '.php';
 		}
 	}
 }

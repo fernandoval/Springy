@@ -8,7 +8,7 @@
  *
  *	\brief		Classe de pilha (FILO - First In Last Out)
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.1.2
+ *	\version	1.2.3
  *	\author		Pascal@Pascal-Rehfeldt.com
  *	\author		Under license GNU General Public License (Version 2, June 1991)
  *	\ingroup	framework
@@ -22,7 +22,7 @@ namespace FW;
 /**
  *  \brief Classe de pilha (FILO - First In Last Out)
  */
-class FILO extends Kernel {
+class FILO {
 	private $elements = NULL;
 
 	/**

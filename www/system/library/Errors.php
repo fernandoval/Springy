@@ -8,7 +8,7 @@
  *
  *	\brief		Classe para tratamento de erros
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.5.12
+ *	\version	1.6.13
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
@@ -99,11 +99,19 @@ class Errors {
 			break;
 		}
 
-		self::sendReport(
-			'<span style="color:#FF0000">'.$printError.'</span>'.($errstr ? ': <em>'.$errstr.'</em>':'').($errfile ?' in <strong>'.$errfile.'</strong> on line <strong>'.$errline.'</strong>' : ''),
-			$errorType,
-			hash('crc32', $errno . $errfile . $errline) /// error id
-		);
+		if (PHP_SAPI === 'cli' || defined('STDIN')) {
+			self::sendReport(
+				$printError . ($errstr ? ' - '.$errstr : "") . ($errfile ? ' in '.$errfile.' on line '.$errline : ""),
+				$errorType,
+				hash('crc32', $errno . $errfile . $errline) /// error id
+			);
+		} else {
+			self::sendReport(
+				'<span style="color:#FF0000">'.$printError.'</span>'.($errstr ? ': <em>'.$errstr.'</em>':'').($errfile ?' in <strong>'.$errfile.'</strong> on line <strong>'.$errline.'</strong>' : ''),
+				$errorType,
+				hash('crc32', $errno . $errfile . $errline) /// error id
+			);
+		}
 
 		die;
 	}
@@ -117,112 +125,128 @@ class Errors {
 			$getParams[] = $var.'='.$value;
 		}
 
-		$msg = '<table width="100%" border="0" cellspacing="0" cellpadding="0" style="font-family:Arial, Helvetica, sans-serif; font-size:12px">
-			  <tr>
-				<td style="background-color:#66C; color:#FFF; font-weight:bold; padding-left:10px; padding:3px 2px">Description error</td>
-			  </tr>
-			  <tr>
-				<td style="padding:3px 2px">'.$msg.'</td>
-			  </tr>
-			  <tr>
-				<td style="padding:3px 2px"><strong>Error ID:</strong> '.$errorId.' (<a href="'.URI::buildURL(array('_system_bug_solved_', $errorId)).'">marcar bug como resolvido</a>)</td>
-			  </tr>
-			  <tr style="color:#000; display:none" class="bugList">
-				<td style="padding:3px 2px"><strong>Número de ocorrencias:</strong> [n_ocorrencias] | <strong>Última ocorrência:</strong> [ultima_ocorrencia] (<a href="javascript:;">mais informações</a>)</td>
-			  </tr>
-			  <tr class="hideMoreInfo">
-			    <td colspan="2">
-			      <table width="100%" border="0" cellspacing="0" cellpadding="0" style="font-family:Arial, Helvetica, sans-serif; font-size:12px">
-					  <tr>
-						<td colspan="2" style="background-color:#66C; color:#FFF; font-weight:bold; padding-left:10px; padding:3px 2px">Debug</td>
-					  </tr>
-					  <tr style="background:#efefef">
-						<td style="padding:3px 2px"><label style="font-weight:bold">Tempo de execução da página até aqui:</label></td>
-						<td style="padding:3px 2px">' . number_format(microtime(true) - $GLOBALS['FWGV_START_TIME'], 6) . ' segundos</td>
-					  </tr>
-					  <tr>
-						<td style="padding:3px 2px"><label style="font-weight:bold">Sistema:</label></td>
-						<td style="padding:3px 2px">'.php_uname('n').'</td>
-					  </tr>
-					  <tr style="background:#efefef">
-						<td style="padding:3px 2px"><label style="font-weight:bold">Modo Seguro:</label></td>
-						<td style="padding:3px 2px">'.(ini_get('safe_mode') ? 'Sim' : 'Não').'</td>
-					  </tr>
-					  <tr>
-						<td style="padding:3px 2px"><label style="font-weight:bold">Data:</label></td>
-						<td style="padding:3px 2px">'.date('Y-m-d').'</td>
-					  </tr>
-					  <tr style="background:#efefef">
-						<td style="padding:3px 2px"><label style="font-weight:bold">Horario:</label></td>
-						<td style="padding:3px 2px">'.date('G:i:s').'</td>
-					  </tr>
-					  <tr>
-						<td style="padding:3px 2px"><label style="font-weight:bold">Request:</label></td>
-						<td style="padding:3px 2px">'.$_SERVER['REQUEST_URI'].'</td>
-					  </tr>
-					  <tr style="background:#efefef">
-						<td style="padding:3px 2px"><label style="font-weight:bold">Request method:</label></td>
-						<td style="padding:3px 2px">'.$_SERVER['REQUEST_METHOD'].'</td>
-					  </tr>
-					  <tr>
-						<td style="padding:3px 2px"><label style="font-weight:bold">Protocol:</label></td>
-						<td style="padding:3px 2px">'.$_SERVER['SERVER_PROTOCOL'].'</td>
-					  </tr>
-					  <tr style="background:#efefef">
-						<td style="padding:3px 2px"><label style="font-weight:bold">URL:</label></td>
-						<td style="padding:3px 2px">'.URI::getURIString().'?'.implode('&', $getParams).'</td>
-					  </tr>
-					  <tr>
-						<td valign="top" style="padding:3px 2px"><label style="font-weight:bold">Debug:</label></td>
-						<td style="padding:3px 2px"><table width="100%"><tr><td style="font-family:Arial, Helvetica, sans-serif; font-size:12px; padding:3px 2px">'.Kernel::getDebugContent().'</td></tr></table></td>
-					  </tr>
-					  <tr style="background:#efefef">
-						<td valign="top" style="padding:3px 2px"><label style="font-weight:bold">Info:</label></td>
-						<td style="padding:3px 2px"><table width="100%"><tr><td style="padding:3px 2px">'.Kernel::makeDebugBacktrace().'</td></tr></table></td>
-					  </tr>
-					  <tr>
-						<td colspan="2" style="background-color:#66C; color:#FFF; font-weight:bold; padding-left:10px; padding:3px 2px">IP</td>
-					  </tr>
-					  <tr>
-						<td style="padding:3px 2px"><label style="font-weight:bold">Referer:</label></td>
-						<td style="padding:3px 2px">'.(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '').'</td>
-					  </tr>
-					  <tr style="background:#efefef">
-						<td style="padding:3px 2px"><label style="font-weight:bold">IP:</label></td>
-						<td style="padding:3px 2px">'.Strings::getRealRemoteAddr().'</td>
-					  </tr>
-					  <tr style="background:#efefef">
-						<td style="padding:3px 2px"><label style="font-weight:bold">Reverso:</label></td>
-						<td style="padding:3px 2px">'. (Strings::getRealRemoteAddr() ? gethostbyaddr(Strings::getRealRemoteAddr()) : 'sem ip') .'</td>
-					  </tr>
-					  <tr>
-						<td style="padding:3px 2px"><label style="font-weight:bold">Browser:</label></td>
-						<td style="padding:3px 2px">'.(isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '').'</td>
-					  </tr>
-					  '.$adictionalInfo.'
-					  <tr>
-						<td colspan="2" style="background-color:#66C; color:#FFF; font-weight:bold; padding-left:10px; padding:3px 2px">VARS</td>
-					  </tr>
-					  <tr>
-						<td valign="top" style="padding:3px 2px"><label style="font-weight:bold">_POST</label></td>
-						<td style="padding:3px 2px">'.Kernel::print_rc($_POST, true).'</td>
-					  </tr>
-					  <tr>
-						<td valign="top" style="padding:3px 2px"><label style="font-weight:bold">_GET</label></td>
-						<td style="padding:3px 2px">'.Kernel::print_rc($_GET, true).'</td>
-					  </tr>
-					  <tr>
-						<td valign="top" style="padding:3px 2px"><label style="font-weight:bold">_COOKIE</label></td>
-						<td style="padding:3px 2px">'.Kernel::print_rc($_COOKIE, true).'</td>
-					  </tr>
-					  <tr>
-						<td valign="top" style="padding:3px 2px"><label style="font-weight:bold">_SESSION</label></td>
-						<td style="padding:3px 2px">'.Kernel::print_rc(Session::getAll(), true).'</td>
-					  </tr>
-					</table>
-				</td>
-			  </tr>
-			</table>';
+		if (PHP_SAPI === 'cli' || defined('STDIN')) {
+			$msg = 'Descricao do erro: ' . $msg."\n"
+				 . 'ID do Error: ' . $errorId . ' ('.URI::build_url(array('_system_bug_solved_', $errorId)).')'."\n"
+				 . 'Tempo de execucao ateh aqui: ' . number_format(microtime(true) - $GLOBALS['FWGV_START_TIME'], 6) . ' segundos'."\n"
+				 . 'Sistema: ' . php_uname('n') . "\n"
+				 . 'Modo Seguro: ' . (ini_get('safe_mode') ? 'Sim' : 'Não') . "\n"
+				 . 'Data: ' . date('Y-m-d') . "\n"
+				 . 'Horario: ' . date('G:i:s') . "\n"
+				 . 'Requesicao: ' . (isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : 'indefinido') . "\n"
+				 . 'Metodo da requisicao: ' . (isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : 'indefinido') . "\n"
+				 . 'Protocolo: ' . (isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'indefinido') . "\n"
+				 . 'URL: ' . URI::get_uri_string() . '?' . implode('&', $getParams) . "\n";
+				 // . 'Debug: ' . parent::get_debug() . "\n\n"
+				 // . 'Info: ' . print_r(parent::make_debug_backtrace(), true) . "\n\n";
+		} else {
+			$msg = '<table width="100%" border="0" cellspacing="0" cellpadding="0" style="font-family:Arial, Helvetica, sans-serif; font-size:12px">'
+				 . '  <tr>'
+				 . '    <td style="background-color:#66C; color:#FFF; font-weight:bold; padding-left:10px; padding:3px 2px">Descrição do erro</td>'
+				 . '  </tr>'
+				 . '  <tr>'
+				 . '    <td style="padding:3px 2px">'.$msg.'</td>'
+				 . '  </tr>'
+				 . '  <tr>'
+				 . '    <td style="padding:3px 2px"><strong>ID do Erro:</strong> '.$errorId.' (<a href="'.URI::buildURL(array('_system_bug_solved_', $errorId)).'">marcar bug como resolvido</a>)</td>'
+				 . '  </tr>'
+				 // . '  <tr style="color:#000; display:none" class="bugList">'
+				 // . '    <td style="padding:3px 2px"><strong>Número de ocorrências:</strong> [n_ocorrencias] | <strong>Última ocorrência:</strong> [ultima_ocorrencia] (<a href="javascript:;">mais informações</a>)</td>'
+				 // . '  </tr>'
+				 . '  <tr class="hideMoreInfo">'
+				 . '    <td colspan="2">'
+				 . '      <table width="100%" border="0" cellspacing="0" cellpadding="0" style="font-family:Arial, Helvetica, sans-serif; font-size:12px">'
+				 . '        <tr>'
+				 . '          <td colspan="2" style="background-color:#66C; color:#FFF; font-weight:bold; padding-left:10px; padding:3px 2px">Debug</td>'
+				 . '        </tr>'
+				 . '        <tr style="background:#efefef">'
+				 . '          <td style="padding:3px 2px"><label style="font-weight:bold">Tempo de execução da página até aqui:</label></td>'
+				 . '          <td style="padding:3px 2px">' . number_format(microtime(true) - $GLOBALS['FWGV_START_TIME'], 6) . ' segundos</td>'
+				 . '        </tr>'
+				 . '        <tr>'
+				 . '          <td style="padding:3px 2px"><label style="font-weight:bold">Sistema:</label></td>'
+				 . '          <td style="padding:3px 2px">'.php_uname('n').'</td>'
+				 . '        </tr>'
+				 . '        <tr style="background:#efefef">'
+				 . '          <td style="padding:3px 2px"><label style="font-weight:bold">Modo Seguro:</label></td>'
+				 . '          <td style="padding:3px 2px">'.(ini_get('safe_mode') ? 'Sim' : 'Não').'</td>'
+				 . '        </tr>'
+				 . '        <tr>'
+				 . '          <td style="padding:3px 2px"><label style="font-weight:bold">Data:</label></td>'
+				 . '          <td style="padding:3px 2px">'.date('Y-m-d').'</td>'
+				 . '        </tr>'
+				 . '        <tr style="background:#efefef">'
+				 . '          <td style="padding:3px 2px"><label style="font-weight:bold">Horário:</label></td>'
+				 . '          <td style="padding:3px 2px">'.date('G:i:s').'</td>'
+				 . '        </tr>'
+				 . '        <tr>'
+				 . '          <td style="padding:3px 2px"><label style="font-weight:bold">Requisição:</label></td>'
+				 . '          <td style="padding:3px 2px">'.$_SERVER['REQUEST_URI'].'</td>'
+				 . '        </tr>'
+				 . '        <tr style="background:#efefef">'
+				 . '          <td style="padding:3px 2px"><label style="font-weight:bold">Método de requisição:</label></td>'
+				 . '          <td style="padding:3px 2px">'.$_SERVER['REQUEST_METHOD'].'</td>'
+				 . '        </tr>'
+				 . '        <tr>'
+				 . '          <td style="padding:3px 2px"><label style="font-weight:bold">Protocolo:</label></td>'
+				 . '          <td style="padding:3px 2px">'.$_SERVER['SERVER_PROTOCOL'].'</td>'
+				 . '        </tr>'
+				 . '        <tr style="background:#efefef">'
+				 . '          <td style="padding:3px 2px"><label style="font-weight:bold">URL:</label></td>'
+				 . '          <td style="padding:3px 2px">'.URI::getURIString().'?'.implode('&', $getParams).'</td>'
+				 . '        </tr>'
+				 . '        <tr>'
+				 . '          <td valign="top" style="padding:3px 2px"><label style="font-weight:bold">Debug:</label></td>'
+				 . '          <td style="padding:3px 2px"><table width="100%"><tr><td style="font-family:Arial, Helvetica, sans-serif; font-size:12px; padding:3px 2px">'.Kernel::getDebugContent().'</td></tr></table></td>'
+				 . '        </tr>'
+				 . '        <tr style="background:#efefef">'
+				 . '          <td valign="top" style="padding:3px 2px"><label style="font-weight:bold">Info:</label></td>'
+				 . '          <td style="padding:3px 2px"><table width="100%"><tr><td style="padding:3px 2px">'.Kernel::makeDebugBacktrace().'</td></tr></table></td>'
+				 . '        </tr>'
+				 . '        <tr>'
+				 . '          <td colspan="2" style="background-color:#66C; color:#FFF; font-weight:bold; padding-left:10px; padding:3px 2px">IP</td>'
+				 . '        </tr>'
+				 . '        <tr>'
+				 . '          <td style="padding:3px 2px"><label style="font-weight:bold">Referer:</label></td>'
+				 . '          <td style="padding:3px 2px">'.(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '').'</td>'
+				 . '        </tr>'
+				 . '        <tr style="background:#efefef">'
+				 . '          <td style="padding:3px 2px"><label style="font-weight:bold">IP:</label></td>'
+				 . '          <td style="padding:3px 2px">'.Strings::getRealRemoteAddr().'</td>'
+				 . '        </tr>'
+				 . '        <tr style="background:#efefef">'
+				 . '          <td style="padding:3px 2px"><label style="font-weight:bold">Reverso:</label></td>'
+				 . '          <td style="padding:3px 2px">'. (Strings::getRealRemoteAddr() ? gethostbyaddr(Strings::getRealRemoteAddr()) : 'sem ip') .'</td>'
+				 . '        </tr>'
+				 . '        <tr>'
+				 . '          <td style="padding:3px 2px"><label style="font-weight:bold">User Agent:</label></td>'
+				 . '          <td style="padding:3px 2px">'.(isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '').'</td>'
+				 . '        </tr>'
+				 . $adictionalInfo
+				 . '        <tr>'
+				 . '          <td colspan="2" style="background-color:#66C; color:#FFF; font-weight:bold; padding-left:10px; padding:3px 2px">VARS</td>'
+				 . '        </tr>'
+				 . '        <tr>'
+				 . '          <td valign="top" style="padding:3px 2px"><label style="font-weight:bold">_POST</label></td>'
+				 . '          <td style="padding:3px 2px">'.Kernel::print_rc($_POST, true).'</td>'
+				 . '        </tr>'
+				 . '        <tr>'
+				 . '          <td valign="top" style="padding:3px 2px"><label style="font-weight:bold">_GET</label></td>'
+				 . '          <td style="padding:3px 2px">'.Kernel::print_rc($_GET, true).'</td>'
+				 . '        </tr>'
+				 . '        <tr>'
+				 . '          <td valign="top" style="padding:3px 2px"><label style="font-weight:bold">_COOKIE</label></td>'
+				 . '          <td style="padding:3px 2px">'.Kernel::print_rc($_COOKIE, true).'</td>'
+				 . '        </tr>'
+				 . '        <tr>'
+				 . '          <td valign="top" style="padding:3px 2px"><label style="font-weight:bold">_SESSION</label></td>'
+				 . '          <td style="padding:3px 2px">'.Kernel::print_rc(Session::getAll(), true).'</td>'
+				 . '        </tr>'
+				 . '      </table>'
+				 . '    </td>'
+				 . '  </tr>'
+				 . '</table>';
+		}
 
 		// Envia a mensagem de erro para o webmaster
 		if (!in_array($errorType, array(404, 503)) && Configuration::get('mail', 'errors_go_to') && !Configuration::get('system','debug')) {
@@ -336,19 +360,23 @@ class Errors {
 				ob_clean();
 			}
 
-			$tpl = new Template('_error' . $errorType);
+			if (PHP_SAPI === 'cli' || defined('STDIN')) {
+				echo $msg."\n";
+			} else {
+				$tpl = new Template('_error' . $errorType);
 
-			header('Content-type: text/html; charset=UTF-8', true, $errorType);
+				header('Content-type: text/html; charset=UTF-8', true, $errorType);
 
-			$tpl->assign('urlJS',  URI::buildURL(array('scripts'), array(), isset($_SERVER['HTTPS']), 'static'));
-			$tpl->assign('urlCSS', URI::buildURL(array('css'), array(), isset($_SERVER['HTTPS']), 'static'));
-			$tpl->assign('urlIMG', URI::buildURL(array('images'), array(), isset($_SERVER['HTTPS']), 'static'));
-			$tpl->assign('urlSWF', URI::buildURL(array('swf'), array(), isset($_SERVER['HTTPS']), 'static'));
+				$tpl->assign('urlJS',  URI::buildURL(array('scripts'), array(), isset($_SERVER['HTTPS']), 'static'));
+				$tpl->assign('urlCSS', URI::buildURL(array('css'), array(), isset($_SERVER['HTTPS']), 'static'));
+				$tpl->assign('urlIMG', URI::buildURL(array('images'), array(), isset($_SERVER['HTTPS']), 'static'));
+				$tpl->assign('urlSWF', URI::buildURL(array('swf'), array(), isset($_SERVER['HTTPS']), 'static'));
 
-			$tpl->assign('errorDebug', (Configuration::get('system', 'debug') ? $msg : ''));
+				$tpl->assign('errorDebug', (Configuration::get('system', 'debug') ? $msg : ''));
 
-			$tpl->display();
-			unset($tpl);
+				$tpl->display();
+				unset($tpl);
+			}
 		} else {
 			header('Content-type: application/json; charset=utf-8', true, $errorType);
 			if (is_array($msg)) {

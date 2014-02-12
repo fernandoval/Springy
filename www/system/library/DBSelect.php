@@ -1,4 +1,7 @@
 <?php
+
+namespace FW;
+
 class DBSelect extends DBExpression {
 	private $colunas = array();
 	private $from = '';

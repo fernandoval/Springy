@@ -1,4 +1,7 @@
 <?php
+
+namespace FW;
+
 class DBFiltro extends DBExpression {
 	private $cond = '';
 	private $valor = NULL;

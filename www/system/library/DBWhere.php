@@ -1,4 +1,7 @@
 <?php
+
+namespace FW;
+
 class DBWhere extends DBExpression {
 	private $where = '';
 	private $values = array();

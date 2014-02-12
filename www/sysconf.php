@@ -2,9 +2,9 @@
 /** \file
  *  FVAL PHP Framework for Web Applications
  *
- *	\copyright	Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.\n
+ *	\copyright	Copyright (c) 2007-2014 FVAL Consultoria e Informática Ltda.\n
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	1.5.7
+ *  \version	1.6.8
  *  \author		Fernando Val  - fernando.val@gmail.com
  *
  *  \brief Configurações do cerne do sistema
@@ -30,8 +30,10 @@
  *  \li 'ROOT_PATH' - Diretório root da aplicação.
  *  \li 'SYSTEM_PATH' - Diretório do sistema.
  *  \li 'LIBRARY_PATH' - Diretório da biblioteca do sistema.
+ *  \li '3RDPARTY_PATH' - Diretório da biblioteca de classes de terceiros.
  *  \li 'CONTROLER_PATH' - Diretório das classes da aplicação.
- *  \li 'USER_CLASS_PATH' - Diretório das classes da aplicação.
+ *  \li 'CLASS_PATH' - Diretório das classes da aplicação.
+ *  \li 'USER_CLASS_PATH' - [DEPRECATED] O mesmo que CLASS_PATH.
  *  \li 'CONFIG_PATH' - Diretório das configurações do sistema.
  *  \li 'CHARSET' - Charset do sistema.
  *  \li 'TIMEZONE' - Timestamp do sistema
@@ -70,6 +72,7 @@ $SYSTEM = array(
 	'SYSTEM_PATH' => "", 
 	'LIBRARY_PATH' => "", 
 	'CONTROLER_PATH' => "", 
+	'CLASS_PATH' => "", 
 	'USER_CLASS_PATH' => "", 
 	'CONFIG_PATH' => "", 
 
@@ -81,10 +84,13 @@ $SYSTEM = array(
 $SYSTEM['SYSTEM_PATH'] = realpath($SYSTEM['ROOT_PATH'] . DIRECTORY_SEPARATOR . 'system');
 /// Diretório da biblioteca do sistema
 $SYSTEM['LIBRARY_PATH'] = realpath($SYSTEM['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'library');
+/// Diretório de classes de terceiros que não são carregadas pelo autoload
+$SYSTEM['3RDPARTY_PATH'] = realpath($SYSTEM['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'other');
 /// Diretório das controladoras
 $SYSTEM['CONTROLER_PATH'] = realpath($SYSTEM['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'controllers');
 /// Diretório das classes da aplicação
-$SYSTEM['USER_CLASS_PATH'] = realpath($SYSTEM['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'user_classes');
+$SYSTEM['CLASS_PATH'] = realpath($SYSTEM['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'classes');
+$SYSTEM['USER_CLASS_PATH'] = $SYSTEM['CLASS_PATH'];
 /// Diretório das configurações do sistema
 $SYSTEM['CONFIG_PATH'] = realpath($SYSTEM['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'conf');
 
