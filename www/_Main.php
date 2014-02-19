@@ -9,7 +9,7 @@
  *  http://www.fval.com.br
  *
  *	\brief		Script de inicialização da aplicação
- *  \version	2.0.13
+ *  \version	2.1.14
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *  \file
@@ -23,7 +23,7 @@
  *  \defgroup controllers Controladoras da aplicação
  *  @{
  *	@}
- *  \defgroup user_classes Classes da aplicação
+ *  \defgroup app_classes Classes da aplicação
  *  @{
  *	@}
  *  \defgroup templates Templates da aplicação
@@ -44,7 +44,8 @@ require('sysconf.php');
 /**
  *	\brief Função de carga automática de classes
  */
-function fwgv_autoload($classe) {
+function fwgv_autoload($classe)
+{
 	$aclass = explode('\\', $classe);
 	if (count($aclass) > 1) {
 		if ($aclass[0] == 'FW') {
@@ -94,15 +95,24 @@ if (!spl_autoload_register('fwgv_autoload')) {
 /**
  *  \brief Classe Exception extendida do FW
  */
-class FW_Exception extends Exception {
+class FW_Exception extends Exception
+{
+	/// Contexto do erro
     private $context = null;
-    public function __construct($code, $message, $file, $line, $context = null) {
+	
+    public function __construct($code, $message, $file, $line, $context = null)
+	{
         parent::__construct($message, $code);
         $this->file = $file;
         $this->line = $line;
         $this->context = $context;
     }
-	public function getContext() {
+	
+	/**
+	 *  \brief Pega o contexto do erro
+	 */
+	public function getContext()
+	{
 		return $this->context;
 	}
 };
@@ -110,7 +120,8 @@ class FW_Exception extends Exception {
 /**
  *	\brief Função de tratamento de exceções
  */
-function FW_ExceptionHandler($error) {
+function FW_ExceptionHandler($error)
+{
 	FW\Errors::errorHandler($error->getCode(), $error->getMessage(), $error->getFile(), $error->getLine(), (method_exists($error, 'getContext') ? $error->getContext() : null));
 }
 set_exception_handler('FW_ExceptionHandler');
@@ -119,7 +130,8 @@ set_exception_handler('FW_ExceptionHandler');
  *	\brief Função de tratamento de erros
  */
 error_reporting(E_ALL);
-function FW_ErrorHandler($errno, $errstr, $errfile, $errline, $errContext) {
+function FW_ErrorHandler($errno, $errstr, $errfile, $errline, $errContext)
+{
 	FW\Errors::errorHandler($errno, $errstr, $errfile, $errline, $errContext);
 }
 set_error_handler('FW_ErrorHandler');
@@ -201,21 +213,36 @@ if (FW\Configuration::get('system', 'maintenance')) {
 	FW\Errors::displayError(503, 'The system is under maintenance');
 }
 
-// Verifica se a controller _global existe
-$path = $GLOBALS['SYSTEM']['CONTROLER_PATH'] . DIRECTORY_SEPARATOR . '_global.php';
-if (file_exists($path)) {
+// Se foi definido uma Controller, carrega para a memória
+if (!is_null($controller)) {
+	// Valida a URI antes de carregar a controladora
+	FW\URI::validateURI();
 
-	require_once($path);
-	unset($path);
+	// Carrega a controladora
+	require_once($controller);
 
-	$pageClassName = 'Global_Controller';
-	if (class_exists($pageClassName)) {
-		new $pageClassName;
+	// Define o nome da classe controladora
+	$ControllerClassName = str_replace('-', '_', FW\URI::getControllerClass()) . '_Controller';
+}
+
+// Se a classe controladora foi carregada e ela não possui sua própria classe Global, chega a existência da _global
+if (!isset($ControllerClassName) || !method_exists($ControllerClassName, '_ignore_global')) {
+	// Verifica se a controller _global existe
+	$path = $GLOBALS['SYSTEM']['CONTROLER_PATH'] . DIRECTORY_SEPARATOR . '_global.php';
+	if (file_exists($path)) {
+
+		require_once($path);
+		unset($path);
+
+		$pageClassName = 'Global_Controller';
+		if (class_exists($pageClassName)) {
+			new $pageClassName;
+		}
 	}
 }
 
 // Se foi definido uma Controller, carega
-if (!is_null($controller)) {
+if (isset($ControllerClassName)) {
 	// verifica se há uma classe default dentro da pasta
 	$defaultFile = dirname($controller) . DIRECTORY_SEPARATOR . '_default.page.php';
 	if (file_exists($defaultFile)) {
@@ -224,14 +251,7 @@ if (!is_null($controller)) {
 	}
 	unset($defaultFile);
 
-	// Valida a URI antes de carregar a controladora
-	FW\URI::validateURI();
-
-	// Carrega a controladora
-	require_once($controller);
-
 	// Inicializa a controller
-	$ControllerClassName = str_replace('-', '_', FW\URI::getControllerClass()) . '_Controller';
 	if (class_exists($ControllerClassName)) {
 		$PageController = new $ControllerClassName;
 		$PageMethod = str_replace('-', '_', FW\URI::getSegment(0, true));

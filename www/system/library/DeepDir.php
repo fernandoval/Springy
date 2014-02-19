@@ -8,7 +8,7 @@
  *
  *	\brief		Classe para pegar arquivos de toda uma árvore de diretórios
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	0.3.3
+ *	\version	0.3.4
  *  \author		Fernando Val  - fernando.val@gmail.com
  *	\ingroup	framework
  *
@@ -45,8 +45,10 @@ namespace FW;
 /**
  *  \brief Classe para pegar arquivos de toda uma árvore de diretórios
  *	\author (c) Ilya Nemihin
+ *	\author Fernando Val - fernando.val@gmail.com
  */
-class DeepDir {
+class DeepDir
+{
 	private $dir     = NULL;
 	private $files   = NULL;
 	private $error   = NULL;
@@ -55,26 +57,29 @@ class DeepDir {
 	/**
 	 *	\brief Método construtor
 	 */
-	public function __construct($dir='.') {
-		$this->dirFILO = new FILO;
+	public function __construct($dir='.')
+	{
+		$this->dirFILO = array();
 		$this->setDir($dir);
 	}
 
 	/**
 	 *	\brief Define o diretório
 	 */
-	public function setDir($dir) {
+	public function setDir($dir)
+	{
 		$this->dir = $dir;
 		$this->files = array();
 		$this->error = false;
-		$this->dirFILO->zero();
-		$this->dirFILO->push( $this->dir );
+		$this->dirFILO = array();
+		array_push($this->dirFILO, $this->dir);
 	}
 
 	/**
 	 *	\brief Pega o último erro encontrado
 	 */
-	public function getError() {
+	public function getError()
+	{
 		return $this->error;
 	}
 	
@@ -82,15 +87,17 @@ class DeepDir {
 	 *	\brief Pega os arquivos encontrados
 	 *	\return Retorna um \c array contendo a árvore de diretórios
 	 */
-	public function getFiles() {
+	public function getFiles()
+	{
 		return $this->files;
 	}
 
 	/**
 	 *	\brief Carrega a árvore de diretórios
 	 */
-	public function load() {
-		while ($this->curDir = $this->dirFILO->pop()) {
+	public function load()
+	{
+		while ($this->curDir = array_pop($this->dirFILO)) {
 			$this->loadFromCurDir();
 		}
 	}
@@ -98,14 +105,15 @@ class DeepDir {
 	/**
 	 *	\brief Carrega a relação de arquivos e diretórios do diretório corrente
 	 */
-	private function loadFromCurDir() {
+	private function loadFromCurDir()
+	{
 		if ($handle = @opendir($this->curDir)) {
 			while (false !== ($file = readdir($handle))) {
 				if ($file == "." || $file == "..") continue;
 				$filePath = $this->curDir . '/' . $file;
 				$fileType = filetype($filePath);
 				if ($fileType == 'dir') {
-					$this->dirFILO->push($filePath);
+					array_push($this->dirFILO, $filePath);
 					continue;
 				}
 				$this->files[] = $filePath;
@@ -117,5 +125,4 @@ class DeepDir {
 			return false;
 		}
 	}
-
 }

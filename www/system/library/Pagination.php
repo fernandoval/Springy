@@ -8,7 +8,7 @@
  *	\brief		A single pagination class
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
  *	\link		http://www.fval.com.br/
- *	\version	2.3.4
+ *	\version	2.3.5
  *	\author		Fernando Val <fernando.val@gmail.com>
  *	\ingroup	framework
  */
@@ -70,7 +70,8 @@ namespace FW;
  *					$ultima_pag = $Pagination->CalculateNumPages((int)$reg[0], $rowsperpage);
  *					print $Pagination->Parse($curr_page, $ultima_pag);
  */
-class Pagination {
+class Pagination
+{
     /// Array contendo os links das página / page link array
     private $PagesLink = array();
 	/// Define a página atual / current page number
@@ -107,7 +108,8 @@ class Pagination {
 	/**
 	 *  \brief Constructor
 	 */
-	public function __construct() {
+	public function __construct()
+	{
 		if (isset($_REQUEST['pag']) && is_numeric($_REQUEST['pag'])) {
 			$this->setCurrentPage($_REQUEST['pag']);
 		}
@@ -116,21 +118,24 @@ class Pagination {
 	/**
 	 *  \brief Set tag link
 	 */
-	public function setTagLink($tag) {
+	public function setTagLink($tag)
+	{
 		$this->tagLink = $tag;
 	}
 
 	/**
 	 *  \brief Get tag link
 	 */
-	public function getTagLink() {
+	public function getTagLink()
+	{
 		return $this->tagLink;
 	}
 
 	/**
 	 *  \brief Set site link
 	 */
-	public function setSiteLink($link, $qs=array()) {
+	public function setSiteLink($link, $qs=array())
+	{
 		if (is_array($link)) {
 			if (isset($_SERVER['HTTPS'])) {
 				$this->siteLink = str_replace(urlencode($this->tagLink), $this->tagLink, URI::buildURL($link, array_merge($qs, array('pag' => $this->tagLink)), true, 'secure'));
@@ -145,84 +150,96 @@ class Pagination {
 	/**
 	 *  \brief Set current page
 	 */
-	public function setCurrentPage($pgatual) {
+	public function setCurrentPage($pgatual)
+	{
 		$this->CurrentPage = $pgatual;
 	}
 
 	/**
 	 *  \brief Get current page
 	 */
-	public function getCurrentPage() {
+	public function getCurrentPage()
+	{
 		return ($this->CurrentPage == 0 ? 1 : $this->CurrentPage);
 	}
 
 	/**
 	 *  \brief Set number of pages beside current page
 	 */
-	public function setBesidePages($BesidePages) {
+	public function setBesidePages($BesidePages)
+	{
 		$this->BesidePages = $BesidePages;
 	}
 
 	/**
 	 *  \brief Get number os beside pages
 	 */
-	public function getBesidePages() {
+	public function getBesidePages()
+	{
 		return $this->BesidePages;
 	}
 
 	/**
 	 *  \brief Set total line number
 	 */
-	public function setNumRows($rows) {
+	public function setNumRows($rows)
+	{
 		$this->nunRows = $rows;
 	}
 
 	/**
 	 *  \brief Get total line number
 	 */
-	public function getNumRows() {
+	public function getNumRows()
+	{
 		return $this->nunRows;
 	}
 
 	/**
 	 *  \brief Set number of lines per page
 	 */
-	public function setRowsPerPage($qtd) {
+	public function setRowsPerPage($qtd)
+	{
 		$this->nunRowsPerPage = $qtd;
 	}
 
 	/**
 	 * \brief Get number of lines per page
 	 */
-	public function getRowsPerPage() {
+	public function getRowsPerPage()
+	{
 		return $this->nunRowsPerPage;
 	}
 
 	/**
 	 *  \brief Set previous string text
 	 */
-	public function setPreviousText($txt) {
+	public function setPreviousText($txt)
+	{
 		$this->PreviousText = $txt;
 	}
 
 	/**
 	 *  \brief Set next string text
 	 */
-	public function setNextText($txt) {
+	public function setNextText($txt)
+	{
 		$this->NextText = $txt;
 	}
 
 	/**
 	 *  \brief Calculate total page number
 	 */
-	private function CalculateNumPages() {
+	private function CalculateNumPages()
+	{
         $this->LastPage = ceil($this->nunRows / $this->nunRowsPerPage);
     }
 
 	/**
 	 *  \brief Parses the pagination
 	 */
-    public function parse() {
+    public function parse()
+	{
 		$this->CalculateNumPages();
 
 		$this->PagesLink['pages'] = array();
@@ -291,7 +308,8 @@ class Pagination {
 	/**
 	 *  \brief Make HTML format of pagination
 	 */
-    public function makeHtml() {
+    public function makeHtml()
+	{
         $this->Parse();
 
 		if (count($this->PagesLink['pages']) == 1) {
@@ -321,7 +339,8 @@ class Pagination {
 	/**
 	 *  \brief Print the HTML format
 	 */
-    public function show($pgatual = 0, $pgfim = 0) {
+    public function show($pgatual = 0, $pgfim = 0)
+	{
         echo $this->MakeHTML($pgatual, $pgfim);
     }
 }

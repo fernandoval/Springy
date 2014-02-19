@@ -7,43 +7,48 @@
  *
  *	\brief		Classe de construção e tratamento de objetos JSON
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	0.2.3
+ *	\version	0.3.3
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
  */
 
-namespace FW;
+namespace FW\Utils;
 
 /**
  *  \brief Classe de construção e tratamento de objetos JSON
  */
-class JSON {
+class JSON
+{
 	private $dados = array();
 	private $headerStatus = 200;
 
-	public function __construct() {
-		Configuration::set('system', 'ajax', true);
+	public function __construct()
+	{
+		\FW\Configuration::set('system', 'ajax', true);
 		header('Content-type: application/json; charset=' . $GLOBALS['SYSTEM']['CHARSET'], true, $this->headerStatus);
 	}
 
 	/**
 	 *  \brief Adiciona um dado ao JSON
 	 */
-	public function add($dados) {
+	public function add($dados)
+	{
 		$this->dados = array_merge($this->dados, $dados);
 	}
 
 	/**
 	 *  \brief Pega todos os dados do JSON
 	 */
-	public function getDados() {
+	public function getDados()
+	{
 		return $this->dados;
 	}
 
 	/**
 	 *  \brief Inicializa o HTTP Header para objeto JSON
 	 */
-	public function setHeaderStatus($status) {
+	public function setHeaderStatus($status)
+	{
 		$this->headerStatus = $status;
 		header('Content-type: application/json; charset=' . $GLOBALS['SYSTEM']['CHARSET'], true, $this->headerStatus);
 		header('Expires: Sat, 26 Jul 1997 05:00:00 GMT');
@@ -56,7 +61,8 @@ class JSON {
 	/**
 	 *  \brief Codifica o objeto JSON
 	 */
-	public function fetch() {
+	public function fetch()
+	{
 		foreach (JSON_Static::getDefaultVars() as $name => $value) {
 			if (!isset($this->dados[$name])) {
 				$this->dados[$name] = $value;
@@ -69,9 +75,10 @@ class JSON {
 	/**
 	 *  \brief Imprime o objeto JSON
 	 */
-	public function printJ($andDie=true) {
-		if (Configuration::get('system', 'debug')) {
-			$this->dados['debug'] = Kernel::getDebugContent();
+	public function printJ($andDie=true)
+	{
+		if (\FW\Configuration::get('system', 'debug')) {
+			$this->dados['debug'] = \FW\Kernel::getDebugContent();
 		}
 
 		echo $this->fetch();
@@ -84,7 +91,8 @@ class JSON {
 	/**
 	 *  \brief Converte o objeto JSON para String
 	 */
-	public function __toString() {
+	public function __toString()
+	{
 		$this->printJ();
 	}
 }

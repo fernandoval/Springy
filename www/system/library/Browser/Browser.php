@@ -8,7 +8,7 @@
  *
  *  \brief		Classe de detecção do navegador
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	1.0.0
+ *  \version	1.0.1
  *  \author		Gabriel Bull
  *  \ingroup	framework
  *  \package	browser
@@ -25,7 +25,8 @@ namespace FW\Browser;
  *
  *  \link https://github.com/gavroche/php-browser
  */
-class Browser {
+class Browser
+{
     private static $userAgent;
     private static $name;
     private static $version;
@@ -72,7 +73,8 @@ class Browser {
      *
      *  @return  string
      */
-    public static function getUserAgent() {
+    public static function getUserAgent()
+	{
         if (!isset(self::$userAgent)) {
             self::setUserAgent(isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : "");
         }
@@ -85,7 +87,8 @@ class Browser {
      *  @param   string $value
      *  @return  void
      */
-    public static function setUserAgent($value) {
+    public static function setUserAgent($value)
+	{
         self::$userAgent = $value;
         self::$name = self::$version = self::$isRobot = null;
         OS::setOS(null);
@@ -97,7 +100,8 @@ class Browser {
      *
      *  @return  string
      */
-    public static function getBrowser() {
+    public static function getBrowser()
+	{
         if (!isset(self::$name)) {
             self::checkBrowser();
         }
@@ -110,7 +114,8 @@ class Browser {
      *  @param   string $name
      *  @return  bool
      */
-    public static function isBrowser($name) {
+    public static function isBrowser($name)
+	{
         if (!isset(self::$name)) {
             self::checkBrowser();
         }
@@ -123,7 +128,8 @@ class Browser {
      *  @param   string $value
      *  @return  void
      */
-    public static function setBrowser($value) {
+    public static function setBrowser($value)
+	{
         self::$name = $value;
     }
 
@@ -132,7 +138,8 @@ class Browser {
      *
      *  @return  string
      */
-    public static function getVersion() {
+    public static function getVersion()
+	{
         if (!isset(self::$name)) {
             self::checkBrowser();
         }
@@ -145,7 +152,8 @@ class Browser {
      *  @param   string $value
      *  @return  void
      */
-    public static function setVersion($value) {
+    public static function setVersion($value)
+	{
         self::$version = $value;
     }
 
@@ -154,7 +162,8 @@ class Browser {
      *
      *  @return  bool
      */
-    public static function isRobot() {
+    public static function isRobot()
+	{
         return self::$isRobot;
     }
 
@@ -164,7 +173,8 @@ class Browser {
      *  @param   bool $value
      *  @return  void
      */
-    public static function setRobot($value = true) {
+    public static function setRobot($value = true)
+	{
         self::$isRobot = (bool)$value;
     }
 
@@ -174,7 +184,8 @@ class Browser {
      *
      *  @return  bool
      */
-    public static function isMobile() {
+    public static function isMobile()
+	{
         return OS::isMobile();
     }
 
@@ -183,7 +194,8 @@ class Browser {
      *
      *  @return  bool
      */
-    public static function isChromeFrame() {
+    public static function isChromeFrame()
+	{
         return (strpos(self::getUserAgent(), "chromeframe") !== false);
     }
 
@@ -192,7 +204,8 @@ class Browser {
      *
      *  @return  bool
      */
-    private static function checkBrowser() {
+    private static function checkBrowser()
+	{
         self::$name = self::UNKNOWN;
         self::$version = self::VERSION_UNKNOWN;
 
@@ -250,7 +263,8 @@ class Browser {
      *
      *  @return  bool
      */
-    private static function checkBrowserBlackBerry() {
+    private static function checkBrowserBlackBerry()
+	{
         if (stripos(self::getUserAgent(), 'blackberry') !== false) {
             $aresult = explode("/", stristr(self::getUserAgent(), "BlackBerry"));
             $aversion = explode(' ', $aresult[1]);
@@ -266,7 +280,8 @@ class Browser {
      *
      *  @return  bool
      */
-    private static function checkBrowserRobot() {
+    private static function checkBrowserRobot()
+	{
         if (
             stripos(self::getUserAgent(), 'bot') !== false ||
             stripos(self::getUserAgent(), 'spider') !== false ||
@@ -283,7 +298,8 @@ class Browser {
      *
      *  @return  bool
      */
-    private static function checkBrowserInternetExplorer() {
+    private static function checkBrowserInternetExplorer()
+	{
         // Test for v1 - v1.5 IE
         if (stripos(self::getUserAgent(), 'microsoft internet explorer') !== false) {
             self::setBrowser(self::IE);
@@ -327,7 +343,8 @@ class Browser {
      *
      *  @return  bool
      */
-    private static function checkBrowserOpera() {
+    private static function checkBrowserOpera()
+	{
         if (stripos(self::getUserAgent(), 'opera mini') !== false) {
             $resultant = stristr(self::getUserAgent(), 'opera mini');
             if (preg_match('/\//', $resultant)) {
@@ -363,7 +380,8 @@ class Browser {
      *
      *  @return  bool
      */
-    private static function checkBrowserChrome() {
+    private static function checkBrowserChrome()
+	{
         if (stripos(self::getUserAgent(), 'Chrome') !== false) {
             $aresult = explode('/', stristr(self::getUserAgent(), 'Chrome'));
             $aversion = explode(' ', $aresult[1]);
@@ -374,13 +392,13 @@ class Browser {
         return false;
     }
 
-
     /**
      *  \brief Determine if the browser is WebTv.
      *
      *  @return  bool
      */
-    private static function checkBrowserWebTv() {
+    private static function checkBrowserWebTv()
+	{
         if (stripos(self::getUserAgent(), 'webtv') !== false) {
             $aresult = explode('/', stristr(self::getUserAgent(), 'webtv'));
             $aversion = explode(' ', $aresult[1]);
@@ -396,7 +414,8 @@ class Browser {
      *
      *  @return  bool
      */
-    private static function checkBrowserNetPositive() {
+    private static function checkBrowserNetPositive()
+	{
         if (stripos(self::getUserAgent(), 'NetPositive') !== false) {
             $aresult = explode('/', stristr(self::getUserAgent(), 'NetPositive'));
             $aversion = explode(' ', $aresult[1]);
@@ -412,7 +431,8 @@ class Browser {
      *
      *  @return  bool
      */
-    private static function checkBrowserGaleon() {
+    private static function checkBrowserGaleon()
+	{
         if (stripos(self::getUserAgent(), 'galeon') !== false) {
             $aresult = explode(' ', stristr(self::getUserAgent(), 'galeon'));
             $aversion = explode('/', $aresult[0]);
@@ -428,7 +448,8 @@ class Browser {
      *
      *  @return  bool
      */
-    private static function checkBrowserKonqueror() {
+    private static function checkBrowserKonqueror()
+	{
         if (stripos(self::getUserAgent(), 'Konqueror') !== false) {
             $aresult = explode(' ', stristr(self::getUserAgent(), 'Konqueror'));
             $aversion = explode('/', $aresult[0]);
@@ -444,7 +465,8 @@ class Browser {
      *
      *  @return  bool
      */
-    private static function checkBrowserIcab() {
+    private static function checkBrowserIcab()
+	{
         if (stripos(self::getUserAgent(), 'icab') !== false) {
             $aversion = explode(' ', stristr(str_replace('/', ' ', self::getUserAgent()), 'icab'));
             self::setVersion($aversion[1]);
@@ -459,7 +481,8 @@ class Browser {
      *
      *  @return  bool
      */
-    private static function checkBrowserOmniWeb() {
+    private static function checkBrowserOmniWeb()
+	{
         if (stripos(self::getUserAgent(), 'omniweb') !== false) {
             $aresult = explode('/', stristr(self::getUserAgent(), 'omniweb'));
             $aversion = explode(' ', isset($aresult[1]) ? $aresult[1] : "");
@@ -475,7 +498,8 @@ class Browser {
      *
      *  @return  bool
      */
-    private static function checkBrowserPhoenix() {
+    private static function checkBrowserPhoenix()
+	{
         if (stripos(self::getUserAgent(), 'Phoenix') !== false) {
             $aversion = explode('/', stristr(self::getUserAgent(), 'Phoenix'));
             self::setVersion($aversion[1]);
@@ -490,7 +514,8 @@ class Browser {
      *
      *  @return  bool
      */
-    private static function checkBrowserFirebird() {
+    private static function checkBrowserFirebird()
+	{
         if (stripos(self::getUserAgent(), 'Firebird') !== false) {
             $aversion = explode('/', stristr(self::getUserAgent(), 'Firebird'));
             self::setVersion($aversion[1]);
@@ -505,7 +530,8 @@ class Browser {
      *
      *  @return  bool
      */
-    private static function checkBrowserNetscapeNavigator9Plus() {
+    private static function checkBrowserNetscapeNavigator9Plus()
+	{
         if (stripos(self::getUserAgent(), 'Firefox') !== false && preg_match('/Navigator\/([^ ]*)/i', self::getUserAgent(), $matches)) {
             self::setVersion($matches[1]);
             self::setBrowser(self::NETSCAPE_NAVIGATOR);
@@ -523,7 +549,8 @@ class Browser {
      *
      *  @return  bool
      */
-    private static function checkBrowserShiretoko() {
+    private static function checkBrowserShiretoko()
+	{
         if (stripos(self::getUserAgent(), 'Mozilla') !== false && preg_match('/Shiretoko\/([^ ]*)/i', self::getUserAgent(), $matches)) {
             self::setVersion($matches[1]);
             self::setBrowser(self::SHIRETOKO);
@@ -537,7 +564,8 @@ class Browser {
      *
      *  @return  bool
      */
-    private static function checkBrowserIceCat() {
+    private static function checkBrowserIceCat()
+	{
         if (stripos(self::getUserAgent(), 'Mozilla') !== false && preg_match('/IceCat\/([^ ]*)/i', self::getUserAgent(), $matches)) {
             self::setVersion($matches[1]);
             self::setBrowser(self::ICECAT);
@@ -551,7 +579,8 @@ class Browser {
      *
      *  @return  bool
      */
-    private static function checkBrowserNokia() {
+    private static function checkBrowserNokia()
+	{
         if (preg_match("/Nokia([^\/]+)\/([^ SP]+)/i", self::getUserAgent(), $matches)) {
             self::setVersion($matches[2]);
             if (stripos(self::getUserAgent(), 'Series60') !== false || strpos(self::getUserAgent(), 'S60') !== false) {
@@ -569,7 +598,8 @@ class Browser {
      *
      *  @return  bool
      */
-    private static function checkBrowserFirefox() {
+    private static function checkBrowserFirefox()
+	{
         if (stripos(self::getUserAgent(), 'safari') === false) {
             if (preg_match("/Firefox[\/ \(]([^ ;\)]+)/i", self::getUserAgent(), $matches)) {
                 self::setVersion($matches[1]);
@@ -589,7 +619,8 @@ class Browser {
      *
      *  @return  bool
      */
-    private static function checkBrowserSeaMonkey() {
+    private static function checkBrowserSeaMonkey()
+	{
         if (stripos(self::getUserAgent(), 'safari') === false) {
             if (preg_match("/SeaMonkey[\/ \(]([^ ;\)]+)/i", self::getUserAgent(), $matches)) {
                 self::setVersion($matches[1]);
@@ -609,7 +640,8 @@ class Browser {
      *
      *  @return  bool
      */
-    private static function checkBrowserIceweasel() {
+    private static function checkBrowserIceweasel()
+	{
         if (stripos(self::getUserAgent(), 'Iceweasel') !== false) {
             $aresult = explode('/', stristr(self::getUserAgent(), 'Iceweasel'));
             $aversion = explode(' ', $aresult[1]);
@@ -625,7 +657,8 @@ class Browser {
      *
      *  @return  bool
      */
-    private static function checkBrowserMozilla() {
+    private static function checkBrowserMozilla()
+	{
         if (stripos(self::getUserAgent(), 'mozilla') !== false && preg_match('/rv:[0-9].[0-9][a-b]?/i', self::getUserAgent()) && stripos(self::getUserAgent(), 'netscape') === false) {
             $aversion = explode(' ', stristr(self::getUserAgent(), 'rv:'));
             preg_match('/rv:[0-9].[0-9][a-b]?/i', self::getUserAgent(), $aversion);
@@ -650,7 +683,8 @@ class Browser {
      *
      *  @return  bool
      */
-    private static function checkBrowserLynx() {
+    private static function checkBrowserLynx()
+	{
         if (stripos(self::getUserAgent(), 'lynx') !== false) {
             $aresult = explode('/', stristr(self::getUserAgent(), 'Lynx'));
             $aversion = explode(' ', (isset($aresult[1]) ? $aresult[1] : ""));
@@ -666,7 +700,8 @@ class Browser {
      *
      *  @return  bool
      */
-    private static function checkBrowserAmaya() {
+    private static function checkBrowserAmaya()
+	{
         if (stripos(self::getUserAgent(), 'amaya') !== false) {
             $aresult = explode('/', stristr(self::getUserAgent(), 'Amaya'));
             $aversion = explode(' ', $aresult[1]);
@@ -683,7 +718,7 @@ class Browser {
      *  @return  bool
      */
     private static function checkBrowserSafari()
-     {
+    {
         if (stripos(self::getUserAgent(), 'Safari') !== false) {
             $aresult = explode('/', stristr(self::getUserAgent(), 'Version'));
             if (isset($aresult[1])) {
@@ -703,7 +738,8 @@ class Browser {
      *
      *  @return  bool
      */
-    private static function checkBrowserAndroid() {
+    private static function checkBrowserAndroid()
+	{
         // Navigator
         if (stripos(self::getUserAgent(), 'Android') !== false) {
             if (preg_match('/Version\/([\d\.]*)/i', self::getUserAgent(), $matches)) {

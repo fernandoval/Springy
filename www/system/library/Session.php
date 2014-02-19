@@ -7,7 +7,7 @@
  *
  *	\brief		Classe para tratamento de sessão
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.5.13
+ *	\version	1.5.14
  *  \author		Fernando Val  - fernando.val@gmail.com
  *	\ingroup	framework
  */
@@ -19,7 +19,8 @@ namespace FW;
  *  
  *  Esta classe é estática e invocada automaticamente pelo framework.
  */
-class Session {
+class Session
+{
 	/// Flag de controle de sessão iniciada
 	private static $started = false;
 	/// ID da sessão
@@ -44,7 +45,8 @@ class Session {
 	/**
 	 *	\brief Inicia a sessão
 	 */
-    public static function start($name=null) {
+    public static function start($name=null)
+	{
 		if (self::$started) return true;
 
 		// Carrega as configurações de tratamento de sesssão
@@ -125,7 +127,8 @@ class Session {
 	/**
 	 *	\brief Salva uma sessão em banco ou memcached
 	 */
-	public static function _save_db_session() {
+	public static function _save_db_session()
+	{
 		if (self::$type == 'db') {
 			$data_value = serialize(self::$data);
 			$sql = 'UPDATE '.self::$session_table
@@ -146,7 +149,8 @@ class Session {
 	/**
 	 *  \brief Define o id da sessão
 	 */
-	public static function setSessionId($id) {
+	public static function setSessionId($id)
+	{
 		self::$id = $id;
 		if (self::$type != 'db') {
 			session_id($id);
@@ -156,7 +160,8 @@ class Session {
 	/**
 	 *	\brief Informa se a variável de sessão está definida
 	 */
-	public static function defined($var) {
+	public static function defined($var)
+	{
 		self::start();
 		return isset(self::$data[$var]);
 	}
@@ -164,7 +169,8 @@ class Session {
 	/**
 	 *	\brief Coloca um valor em variável de sessão
 	 */
-	public static function set($var, $value) {
+	public static function set($var, $value)
+	{
 		self::start();
 		self::$data[$var] = $value;
 		if (self::$type == 'std') {
@@ -177,7 +183,8 @@ class Session {
 	/**
 	 *	\brief Pega o valor de uma variável de sessão
 	 */
-	public static function get($var) {
+	public static function get($var)
+	{
 		self::start();
 		// if (isset($_SESSION['_ffw_'][$var])) {
 			// return $_SESSION['_ffw_'][$var];
@@ -194,7 +201,8 @@ class Session {
 	 *
 	 *	\return retorna \c array() se tiver sucesso ou \c NULL se não houver sessão
 	 */
-	public static function getAll() {
+	public static function getAll()
+	{
 		self::start();
 		// if (isset($_SESSION['_ffw_'])) {
 			// return $_SESSION['_ffw_'];
@@ -211,7 +219,8 @@ class Session {
 	 *
 	 *	\return retorna o ID da sessão ativa
 	 */
-	public static function getId() {
+	public static function getId()
+	{
 		self::start();
 		// return session_id();
 		return self::$id;
@@ -220,7 +229,8 @@ class Session {
 	/**
 	 *	\brief Remove uma variável de sessão
 	 */
-	public static function unregister($var) {
+	public static function unregister($var)
+	{
 		self::start();
 		unset(self::$data[$var]);
 		if (self::$type == 'std' && isset($_SESSION) && isset($_SESSION['_ffw_']) && isset($_SESSION['_ffw_'][$var])) {

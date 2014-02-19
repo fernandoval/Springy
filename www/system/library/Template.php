@@ -8,7 +8,7 @@
  *
  *	\brief		Classe de tratamento de templates
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	3.4.6
+ *	\version	3.4.7
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
@@ -23,7 +23,8 @@ require_once $GLOBALS['SYSTEM']['3RDPARTY_PATH'] . DIRECTORY_SEPARATOR . 'Smarty
  *
  *  \note Esta classe utiliza internamente a classe Smarty. Não utilize a classe Smarty diretamente.
  */
-class Template {
+class Template
+{
 	const TPL_NAME_SUFIX = '.tpl.html';
 
 	private $tplObj = NULL;
@@ -39,7 +40,8 @@ class Template {
 	/**
 	 *	\brief Inicializa a classe de template
 	 */
-	public function __construct($tpl=NULL) {
+	public function __construct($tpl=NULL)
+	{
 		// Verifica o sub-dir
 		if (is_dir(Configuration::get('template', 'template_path') . DIRECTORY_SEPARATOR . URI::currentPage())) {
 			$path = URI::currentPage();
@@ -104,42 +106,48 @@ class Template {
 		return true;
 	}
 
-	public function __destruct() {
+	public function __destruct()
+	{
 		unset($this->tplObj);
 	}
 
 	/**
 	 *	\brief Define o local dos arquivos de template
 	 */
-	public function setTemplateDir($path) {
+	public function setTemplateDir($path)
+	{
 		$this->tplObj->setTemplateDir($path);
 	}
 
 	/**
 	 *	\brief Define o local dos arquivos de template compilados
 	 */
-	public function setCompileDir($path) {
+	public function setCompileDir($path)
+	{
 		$this->tplObj->setCompileDir($path);
 	}
 
 	/**
 	 *	\brief Define o local dos arquivos .conf usados nas tpls
 	 */
-	public function setConfigDir($path) {
+	public function setConfigDir($path)
+	{
 		$this->tplObj->setConfigDir($path);
 	}
 
 	/**
 	 *	\brief Define o local dos arquivos de template cacheados
 	 */
-	public function setCacheDir($path) {
+	public function setCacheDir($path)
+	{
 		$this->tplObj->setCacheDir($path);
 	}
 
 	/**
 	 *	\brief Verifica o template ideal de acordo com a página
 	 */
-	private function setAutoTemplatePaths() {
+	private function setAutoTemplatePaths()
+	{
 		// Se o nome do template não foi informado, define como sendo a página atual
 		if ($this->templateName === NULL) {
 			// Pega o caminha relativo da página atual
@@ -177,7 +185,8 @@ class Template {
 	 *
 	 * @return boolean
 	 */
-	public function isCached() {
+	public function isCached()
+	{
 		return $this->tplObj->isCached($this->templateName . Template::TPL_NAME_SUFIX, $this->templateCacheId, $this->templateCompileId);
 	}
 
@@ -186,18 +195,21 @@ class Template {
 	 *
 	 * @
 	 */
-	public function setCaching($value='current') {
+	public function setCaching($value='current')
+	{
 		$this->tplObj->setCaching( $value != 'current' ? \Smarty::CACHING_LIFETIME_SAVED : \Smarty::CACHING_LIFETIME_CURRENT);
 	}
 
-	public function setCacheLifetime($seconds) {
+	public function setCacheLifetime($seconds)
+	{
 		$this->tplObj->setCacheLifetime($seconds);
 	}
 
 	/**
 	 *	\brief Retorna a página montada
 	 */
-	public function fetch() {
+	public function fetch()
+	{
 		$this->setAutoTemplatePaths();
 
 		// Carrega as variáveis CONSTANTES
@@ -231,7 +243,8 @@ class Template {
 	 *
 	 * @return String
 	 */
-	public function display() {
+	public function display()
+	{
 		echo $this->fetch();
 	}
 
@@ -239,7 +252,8 @@ class Template {
 	 *	\brief Define o arquivos de template
 	 * @param String $tpl Nome do template, sem extenção do arquivo
 	 */
-	public function setTemplate($tpl) {
+	public function setTemplate($tpl)
+	{
 		$this->templateName = ((is_array($tpl)) ? join(DIRECTORY_SEPARATOR, $tpl) : $tpl);
 
 		$compile = '';
@@ -254,21 +268,24 @@ class Template {
 	/**
 	 *	\brief Define o id do cache
 	 */
-	public function setCacheId($id) {
+	public function setCacheId($id)
+	{
 		$this->templateCacheId = $id;
 	}
 
 	/**
 	 *	\brief Define o id da compilação
 	 */
-	public function setCompileId($id) {
+	public function setCompileId($id)
+	{
 		$this->templateCompileId = $id;
 	}
 
 	/**
 	 *	\brief Define uma variável do template
 	 */
-	public function assign($var, $value=null, $nocache=false) {
+	public function assign($var, $value=null, $nocache=false)
+	{
 		if (is_array($var)) {
 			foreach ($var as $name => $value) {
 				$this->assign($name, $value);
@@ -281,14 +298,16 @@ class Template {
 	/**
 	 *	\brief Método statico que define um pluguin para todas as instancias da Template
 	 */
-	public function registerPlugin($type, $name, $callback, $cacheable=NULL, $cache_attrs=NULL) {
+	public function registerPlugin($type, $name, $callback, $cacheable=NULL, $cache_attrs=NULL)
+	{
 		$this->templateFuncs[] = array($type, $name, $callback, $cacheable, $cache_attrs);
 	}
 
 	/**
 	 *	\brief Limpa uma variável do template
 	 */
-	public function clearAssign($var) {
+	public function clearAssign($var)
+	{
 		unset($this->tplVars[$var]);
 	}
 
@@ -297,35 +316,40 @@ class Template {
 	 *
 	 *	As an optional parameter, you can supply a minimum age in seconds the cache files must be before they will get cleared.
 	 */
-	public function clearAllCache($expire_time) {
+	public function clearAllCache($expire_time)
+	{
 		$this->tplObj->clearAllCache($expire_time);
 	}
 
 	/**
 	 *	\brief Limpa o cache para o template corrente
 	 */
-	public function clearCache($expireTime=NULL) {
+	public function clearCache($expireTime=NULL)
+	{
 		$this->tplObj->clearCache($this->templateName . Template::TPL_NAME_SUFIX, $this->templateCacheId, $this->templateCompileId, $expireTime);
 	}
 
 	/**
 	 *	\brief Limpa a versão compilada do template atual
 	 */
-	public function clearCompiled($expTime) {
+	public function clearCompiled($expTime)
+	{
 		$this->tplObj->clearCompiledTemplate($this->templateName . Template::TPL_NAME_SUFIX, $this->templateCompileId, $expTime);
 	}
 
 	/**
 	 *	\brief Limpa variável de config definida
 	 */
-	public function clearConfig($var) {
+	public function clearConfig($var)
+	{
 		$this->tplObj->clearConfig($var);
 	}
 
 	/**
 	 *	\brief Verifica se um arquivo de template existe
 	 */
-	public function templateExists($tplName) {
+	public function templateExists($tplName)
+	{
 		return $this->tplObj->templateExists($tplName . Template::TPL_NAME_SUFIX);
 	}
 }

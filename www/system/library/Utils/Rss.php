@@ -7,26 +7,28 @@
  *
  *	\brief		Classe para criação de XML de RSS
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.4.5
+ *	\version	1.5.6
  *  \author		Fernando Val  - fernando.val@gmail.com
  *	\ingroup	framework
  */
 
-namespace FW;
+namespace FW\Utils;
 
 require_once $GLOBALS['SYSTEM']['3RDPARTY_PATH'] . DIRECTORY_SEPARATOR . 'feedcreator' . DIRECTORY_SEPARATOR . 'feedcreator.class.php';
 
 /**
  *  \brief Classe para criação de XML de RSS
  */
-class Rss {
+class Rss
+{
 	private static $rss = NULL;
 	private static $image = NULL;
 
 	/**
 	 *	\brief Construtor da classe
 	 */
-	function __construct($title='', $desc='', $link='', $syndcationURL='') {
+	function __construct($title='', $desc='', $link='', $syndcationURL='')
+	{
 		self::$rss = new \UniversalFeedCreator();
 		self::$rss->useCached();
 		self::$rss->link = (empty($link) ? 'http://'.$_SERVER['HTTP_HOST'] : $link);
@@ -35,7 +37,7 @@ class Rss {
 		if ($title)	{
 			self::title($title);
 		}
-		if ($desc)	{
+		if ($desc) {
 			self::description($desc);
 		}
 	}
@@ -43,14 +45,16 @@ class Rss {
 	/**
 	 *	\brief Define o título do feed
 	 */
-	public function title($value) {
+	public function title($value)
+	{
 		self::$rss->title = $value;
 	}
 
 	/**
 	 *	\brief Define a descrição do feed
 	 */
-	public function description($value, $truncateSize=0) {
+	public function description($value, $truncateSize=0)
+	{
 		self::$rss->description = $value;
 		if ($truncateSize) {
 			self::$rss->descriptionTruncSize = $truncateSize;
@@ -60,21 +64,24 @@ class Rss {
 	/**
 	 *	\brief
 	 */
-	public function descriptionHtmlSynticated($value) {
+	public function descriptionHtmlSynticated($value)
+	{
 		self::$rss->descriptionHtmlSyndicated = $value;
 	}
 
 	/**
 	 *	\brief Define a descrição do feed
 	 */
-	public function link($value) {
+	public function link($value)
+	{
 		self::$rss->link = $value;
 	}
 
 	/**
 	 *	\brief Define a imagem do feed
 	 */
-	public function image($imageUrl, $link, $title='', $description='') {
+	public function image($imageUrl, $link, $title='', $description='')
+	{
 		$image = new \FeedImage();
 		$image->title = $title;
 		$image->url = $imageUrl;
@@ -86,14 +93,16 @@ class Rss {
 	/**
 	 *	\brief Define o charset do feed
 	 */
-	public function setEncoding($value) {
+	public function setEncoding($value)
+	{
 		self::$rss->encoding = $value;
 	}
 
 	/**
 	 *	\brief Adiciona um item ao feed
 	 */
-	public function addItem($title, $link, $description, $date, $category, $autor, $source='') {
+	public function addItem($title, $link, $description, $date, $category, $autor, $source='')
+	{
 		$item = new \FeedItem();
 		$item->title = html_entity_decode(htmlspecialchars($title));
 		$item->link  = $link;
@@ -113,7 +122,8 @@ class Rss {
 	 *	@param[in] $format Formato do feed.
 	 *		Os seguintes valores são aceitáveis: 'RSS2.0', 'RSS0.91', 'RSS1.0', 'ATOM0.3', 'OPML'
 	 */
-	public function save($file, $format='RSS2.0') {
+	public function save($file, $format='RSS2.0')
+	{
 		$validFormats = array('RSS2.0', 'RSS0.91', 'RSS1.0', 'ATOM0.3', 'OPML');
 
 		if (!in_array($format, $validFormats)) {
@@ -126,5 +136,4 @@ class Rss {
 
 		self::$rss->saveFeed($format, $file);
 	}
-
 }

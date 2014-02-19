@@ -8,7 +8,7 @@
  *
  *	\brief		Classe para tratamento de URI
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.12.20
+ *	\version	1.12.21
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
@@ -21,7 +21,8 @@ namespace FW;
  *  
  *  Esta classe é estática e invocada automaticamente pelo framework.
  */
-class URI {
+class URI
+{
 	/// String da URI
 	private static $uri_string = '';
 	/// Array dos segmentos da URI
@@ -41,7 +42,8 @@ class URI {
 	 *
 	 *	\return \c true se houve sucesso no processo e \c false em caso contrário
 	 */
-	private static function _fetch_uri_string() {
+	private static function _fetch_uri_string()
+	{
 		// Verifica se há um único parâmetro na query string e esse parâmetro não é uma vafiável GET
 		if (is_array($_GET) && count($_GET) == 1 && (trim(key($_GET), '/') != '') && empty($_GET[key($_GET)])) {
 			self::$uri_string = key($_GET);
@@ -84,7 +86,8 @@ class URI {
 	/**
 	 *	\brief Define o nome da classe da controller
 	 */
-	private static function _set_class_controller($classname) {
+	private static function _set_class_controller($classname)
+	{
 		self::$class_controller = $classname;
 	}
 
@@ -93,7 +96,8 @@ class URI {
 	 *
 	 *	\note Este método não retorna valor
 	 */
-	public static function parseURI() {
+	public static function parseURI()
+	{
 		if (isset($_SERVER) && isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'HEAD' && !isset($_SERVER['HTTP_HOST'])) {
 			header('Pragma: no-cache');
 			header('Expires: 0');
@@ -247,7 +251,8 @@ class URI {
 	/**
 	 *	\brief Valida a quantidade de segmentos da URI conforme a controladora
 	 */
-	public static function validateURI() {
+	public static function validateURI()
+	{
 		$ctrl = trim(str_replace(DIRECTORY_SEPARATOR, '/', (Kernel::controllerRoot() ? implode(DIRECTORY_SEPARATOR, Kernel::controllerRoot()) : "")) . '/' . self::getControllerClass(), '/');
 
 		if ($pc = Configuration::get('uri', 'prevalidate_controller')) {
@@ -292,7 +297,8 @@ class URI {
 	 *
 	 *	\return O nome da classe da controller
 	 */
-	public static function getControllerClass() {
+	public static function getControllerClass()
+	{
 		return self::$class_controller;
 	}
 
@@ -301,7 +307,8 @@ class URI {
 	 *
 	 *	\return A string da URI
 	 */
-	public static function getURIString() {
+	public static function getURIString()
+	{
 		return self::$uri_string;
 	}
 
@@ -310,7 +317,8 @@ class URI {
 	 *
 	 *	\return O segmento que representa a página atual
 	 */
-	public static function currentPage() {
+	public static function currentPage()
+	{
 		return self::getSegment(self::$segment_page, false);
 	}
 
@@ -319,7 +327,8 @@ class URI {
 	 *
 	 *	\return Uma string contendo o caminho relativo à página atual
 	 */
-	public static function relativePathPage($consider_controller_root=FALSE) {
+	public static function relativePathPage($consider_controller_root=FALSE)
+	{
 		$path = (count(Kernel::controllerRoot()) && $consider_controller_root? implode(DIRECTORY_SEPARATOR, Kernel::controllerRoot()) : "");
 		for ($i = 0; $i < self::$segment_page; $i++) {
 			$path .= (empty($path) ? "" : DIRECTORY_SEPARATOR) . self::getSegment($i, false);
@@ -332,7 +341,8 @@ class URI {
 	 *
 	 *	\returns Uma string contendo a URI da página atual
 	 */
-	public static function currentPageURI() {
+	public static function currentPageURI()
+	{
 		return trim(str_replace(DIRECTORY_SEPARATOR, '/', self::relativePathPage()) . '/' . self::currentPage(), '/');
 	}
 
@@ -342,7 +352,8 @@ class URI {
 	 *	@param[in] $segment_num número relativo ao segmento da URI
 	 *	\return \c trus se definiu o segmento relativo à página atual e \c false em caso contrário
 	 */
-	public static function setCurrentPage($segment_num) {
+	public static function setCurrentPage($segment_num)
+	{
 		if (self::getSegment($segment_num, false)) {
 			self::$segment_page = $segment_num;
 			return true;
@@ -359,7 +370,8 @@ class URI {
 	 *		relativo ao segmento que determina a página atual. Default = true
 	 *	\return o valor do segmento ou \c false caso o segmento não exista
 	 */
-	public static function getSegment($segment_num, $relative_to_page=TRUE, $consider_controller_root=FALSE) {
+	public static function getSegment($segment_num, $relative_to_page=TRUE, $consider_controller_root=FALSE)
+	{
 		if ($relative_to_page) {
 			$segment_num += (1 + self::$segment_page);
 		}
@@ -378,7 +390,8 @@ class URI {
 	 *	@param[in] $segment_num O número do segmento desejado
 	 *	\return o valor do segmento ignorado ou \c false caso o segmento não exista
 	 */
-	public static function getIgnoredSegment($segment_num) {
+	public static function getIgnoredSegment($segment_num)
+	{
 		if (array_key_exists($segment_num, self::$ignored_segments)) {
 			return self::$ignored_segments[ $segment_num ];
 		}
@@ -390,7 +403,8 @@ class URI {
 	 *
 	 *	\return um array contendo todos os segmentos
 	 */
-	public static function getAllSegments() {
+	public static function getAllSegments()
+	{
 		return self::$segments;
 	}
 
@@ -399,7 +413,8 @@ class URI {
 	 *
 	 *	\return um array contendo todos os segmentos ignorados
 	 */
-	public static function getAllIgnoredSegments() {
+	public static function getAllIgnoredSegments()
+	{
 		return self::$ignored_segments;
 	}
 
@@ -409,7 +424,8 @@ class URI {
 	 *	@param[in] $segment String contendo o valor do segmento
 	 *	\return \c true se tiver sucesso e \c false em caso contrário
 	 */
-	public static function addSegment($segment) {
+	public static function addSegment($segment)
+	{
 		if (trim($segment) != '') {
 			self::$segments[] = $segment;
 			return true;
@@ -424,7 +440,8 @@ class URI {
 	 *	@param[in] (string) $segment String contendo o valor do segmento
 	 *	\return \c true se tiver sucesso e \c false em caso contrário
 	 */
-	public static function insertSegment($position, $segment) {
+	public static function insertSegment($position, $segment)
+	{
 		if (trim($segment) != '') {
 			array_splice(self::$segments, $position, 0, array($segment));
 			return true;
@@ -438,7 +455,8 @@ class URI {
 	 *	@param[i] $var String contendo o nome da variável desesada
 	 *	\return O valor da variável, caso exista, ou \c false caso a variável não exista
 	 */
-	public static function _GET($var) {
+	public static function _GET($var)
+	{
 		if (array_key_exists($var, self::$get_params)) {
 			return self::$get_params[ $var ];
 		}
@@ -449,7 +467,8 @@ class URI {
 	 *	\brief get_param é um apelido para _GET
 	 *	\see _GET
 	 */
-	public static function getParam($var) {
+	public static function getParam($var)
+	{
 		return self::_GET($var);
 	}
 
@@ -457,7 +476,8 @@ class URI {
 	 *	\brief retorna todo o _GET
 	 *	\see _GET
 	 */
-	public static function getParams() {
+	public static function getParams()
+	{
 		return self::$get_params;
 	}
 	
@@ -465,7 +485,8 @@ class URI {
      *  \brief remove um parametro do _GET
 	 *	@param[in] $var String contendo o nome da variável a ser excluida
      */
-    public static function removeParam($var) {
+    public static function removeParam($var)
+	{
 		unset(self::$get_params[$var]);
     }
 	
@@ -475,7 +496,8 @@ class URI {
 	 *	@param[in] $var String contendo o nome da variável a ser definida
 	 *	@param[in] $value O valor da variável
 	 */
-	public static function setParam($var, $value) {
+	public static function setParam($var, $value)
+	{
 		self::$get_params[ $var ] = $value;
 	}
 
@@ -487,7 +509,8 @@ class URI {
 	 *	@param[in] $forceRewrite flag (true/false) que determina se o formato SEF deve ser forçado
 	 *	\return Uma \c string contendo a URL
 	 */
-	public static function buildURL($segments=array(), $query=array(), $forceRewrite=false, $host='dynamic', $include_ignores_segments=true) {
+	public static function buildURL($segments=array(), $query=array(), $forceRewrite=false, $host='dynamic', $include_ignores_segments=true)
+	{
 		if ($include_ignores_segments) {
 			$segments = array_merge(self::$ignored_segments, is_array($segments) ? $segments : array($segments));
 		}
@@ -524,7 +547,8 @@ class URI {
 	 *	@param[in] $host String contendo o host com ou sem o protocolo, ou a entrada de configuração do host
 	 *	\return Retorna a string contendo o protocolo e o host
 	 */
-	private static function _host($host='dynamic') {
+	private static function _host($host='dynamic')
+	{
 		if (preg_match('|^(.+):\/\/(.+)|i', $host)) {
 			return $host;
 		} elseif ($host = Configuration::get('uri', $host)) {
@@ -543,7 +567,8 @@ class URI {
 	 *	@param[out] $param variável de retorno da query string
 	 *	\return Void
 	 */
-	private static function encode_param($query, $key, &$param) {
+	private static function encode_param($query, $key, &$param)
+	{
 		foreach ($query as $var => $value) {
 			if (is_array($value)) {
 				self::encode_param($value, $var.'['.key($value).']', $param);
@@ -564,7 +589,8 @@ class URI {
 	 *		(302 = permanente, 301 = temporário, etc.).\n
 	 *		Se omitido usa 302 por padrão.
 	 */
-	public static function redirect($url, $header=302) {
+	public static function redirect($url, $header=302)
+	{
 		$redirs = array(
 			301 => 'Moved Permanently',
 			302 => 'Found',
@@ -587,7 +613,8 @@ class URI {
 	 *	@paran[in] (string)$space String que será usada para substituir os espaços em $txt. Utiliza '-' como padrão.
 	 *	\return Uma string com o slug
 	 */
-	public static function makeSlug($txt, $space='-') {
+	public static function makeSlug($txt, $space='-')
+	{
 		$txt = mb_strtolower(trim($txt));
 
 		if (mb_check_encoding($txt, 'UTF-8')) {
@@ -613,7 +640,8 @@ class URI {
 	 *
 	 *  @return (bool) Retorna true ou false
 	 */
-	public static function isAjaxRequest() {
+	public static function isAjaxRequest()
+	{
 		return (! empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest');
 	}
 }

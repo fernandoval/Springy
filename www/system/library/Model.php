@@ -8,7 +8,7 @@
  *  \brief		Classe Model para acesso a banco de dados
  *  \note		Essa classe extende a classe DB.
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	1.3.4
+ *  \version	1.3.5
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \ingroup	framework
  */
@@ -24,7 +24,8 @@ namespace FW;
  *
  *  Utilize-a para diminuir a quantidade de métodos que sua classe precisará ter para consultas e manutenção em bancos de dados.
  */
-class Model extends DB {
+class Model extends DB
+{
 	/**
 	 *  Atributos da classe
 	 */
@@ -58,7 +59,8 @@ class Model extends DB {
 	 *
 	 *  \param $filtro - Filto de busca, opcional. Deve ser um array de campos ou inteiro com ID do usuário.
 	 */
-	function __construct($database=null, $filter=null) {
+	function __construct($database=null, $filter=null)
+	{
 		parent::__construct($database);
 
 		if (is_array($filter)) {
@@ -71,7 +73,8 @@ class Model extends DB {
 	 *
 	 *  \return Retorna TRUE se todas as colunas da chave primária estão definiadas e FALSE em caso contrário.
 	 */
-	protected function isPrimaryKeyDefined() {
+	protected function isPrimaryKeyDefined()
+	{
 		if (empty($this->primaryKey)) {
 			return false;
 		}
@@ -90,7 +93,8 @@ class Model extends DB {
 	 *
 	 *  \note Este método deve ser extendido na classe herdeira
 	 */
-	protected function filter($filter, array &$where, array &$params) {
+	protected function filter($filter, array &$where, array &$params)
+	{
 		return false;
 	}
 
@@ -103,7 +107,8 @@ class Model extends DB {
 	 *
 	 *  \return Retorna TRUE se encontrar um registro que se adeque aos filtros de busca. Retorna FALSE em caso contrário.
 	 */
-	public function load(array $filter=null) {
+	public function load(array $filter=null)
+	{
 		if ($this->query($filter) && $this->dbNumRows == 1) {
 			$this->loaded = true;
 		} else {
@@ -118,7 +123,8 @@ class Model extends DB {
 	 *
 	 *  \return Retorna TRUE se o dado foi salvo ou FALSE caso nenhum dado tenha sido alterado
 	 */
-	public function save() {
+	public function save()
+	{
 		if (count($this->changedColumns) < 1) {
 			return false;
 		}
@@ -164,7 +170,8 @@ class Model extends DB {
 	 *  	Se omitido (ou null), default, deleta o registro carregado na classe
 	 *  \return Retorna o número de linhas afetadas ou FALSE em caso contrário.
 	 */
-	public function delete(array $filter=null) {
+	public function delete(array $filter=null)
+	{
 		// Se está carregado e não foi passado um filtro, exclui o registro corrente
 		if ($this->loaded && is_null($filter)) {
 			// Abandona se a chave primária não estiver definida
@@ -226,7 +233,8 @@ class Model extends DB {
 	 *
 	 *  \return Retorna o conteúdo da coluna passada, um array com as colunas do registro atual ou NULL
 	 */
-	public function get($column=NULL) {
+	public function get($column=NULL)
+	{
 		if (is_null($column)) {
 			return current($this->rows);
 		}
@@ -245,7 +253,8 @@ class Model extends DB {
 	 *
 	 *  \return Retorna TRUE se alterou o valor da coluna ou FALSE caso a coluna não exista ou não haja registro carregado
 	 */
-	public function set($column, $value) {
+	public function set($column, $value)
+	{
 		if (in_array($column, $this->writableColumns)) {
 			if (empty($this->rows)) {
 				$this->rows[] = array();
@@ -275,7 +284,8 @@ class Model extends DB {
 	 *
 	 *  \return Retorna TRUE caso tenha efetuado a busca ou FALSE caso não tenha recebido filtros válidos.
 	 */
-	public function query(array $filter=null, array $order=array(), $offset=NULL, $limit=NULL) {
+	public function query(array $filter=null, array $order=array(), $offset=NULL, $limit=NULL)
+	{
 		// Se nenhuma chave de busca foi passada, utiliza dados do objeto
 		if (is_null($filter) && !empty($this->rows)) {
 			$filter = $this->rows[0];
@@ -374,7 +384,8 @@ class Model extends DB {
 	 *
 	 *  \return Retorna o primeiro registro ou FALSE caso não haja registros.
 	 */
-	public function reset() {
+	public function reset()
+	{
 		return reset($this->rows);
 	}
 
@@ -383,7 +394,8 @@ class Model extends DB {
 	 *
 	 *  \return Retorna o registro anterior ou FALSE caso não haja mais registros.
 	 */
-	public function prev() {
+	public function prev()
+	{
 		return prev($this->rows);
 	}
 
@@ -392,7 +404,8 @@ class Model extends DB {
 	 *
 	 *  \return Retorna o próximo registro da fila ou FALSE caso não haja mais registros.
 	 */
-	public function next() {
+	public function next()
+	{
 		if ($r = each($this->rows)) {
 			return $r['value'];
 		}
@@ -404,7 +417,8 @@ class Model extends DB {
 	 *
 	 *  \return Retorna o último registro ou FALSE caso não haja registros.
 	 */
-	public function end() {
+	public function end()
+	{
 		return end($this->rows);
 	}
 
@@ -413,7 +427,8 @@ class Model extends DB {
 	 *  
 	 *  \return Retorna um array de valores de uma determinada coluna do resultset.
 	 */
-	public function getAllColumn($column) {
+	public function getAllColumn($column)
+	{
 		return array_column($this->rows, $column);
 	}
 	
@@ -422,7 +437,8 @@ class Model extends DB {
 	 *
 	 *  \return Retorna a quantidade de registros contidos do offset de dados do objeto
 	 */
-	public function count() {
+	public function count()
+	{
 		return count($this->rows);
 	}
 
@@ -431,7 +447,8 @@ class Model extends DB {
 	 *
 	 *  \return Retorna a quantidade de registros encntrados no banco de dados para a última busca efetuada.
 	 */
-	public function foundRows() {
+	public function foundRows()
+	{
 		return $this->dbNumRows;
 	}
 }

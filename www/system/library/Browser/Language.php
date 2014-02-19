@@ -8,7 +8,7 @@
  *
  *  \brief		Classe de detecção do idioma do navegador
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	1.0.0
+ *  \version	1.0.1
  *  \author		Gabriel Bull
  *  \ingroup	framework
  *  \package	browser
@@ -25,7 +25,8 @@ namespace FW\Browser;
  *
  *  \link https://github.com/gavroche/php-browser
  */
-class Language {
+class Language
+{
     private static $acceptLanguage;
     private static $languages;
 
@@ -34,7 +35,8 @@ class Language {
      *
      *  \return void
      */
-    private static function checkLanguages() {
+    private static function checkLanguages()
+	{
         $acceptLanguage = self::getAcceptLanguage();
         self::$languages = array();
 
@@ -64,7 +66,8 @@ class Language {
      *
      *  \return string
      */
-    public static function getAcceptLanguage() {
+    public static function getAcceptLanguage()
+	{
         if (!isset(self::$acceptLanguage)) {
             self::setAcceptLanguage(isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? $_SERVER['HTTP_ACCEPT_LANGUAGE'] : "");
         }
@@ -78,7 +81,8 @@ class Language {
      *  \param    string $acceptLanguage
      *  \return   void
      */
-    public static function setAcceptLanguage($acceptLanguage) {
+    public static function setAcceptLanguage($acceptLanguage)
+	{
         self::$acceptLanguage = $acceptLanguage;
     }
 
@@ -87,7 +91,8 @@ class Language {
      *
      *  \return   array
      */
-    public static function getLanguages() {
+    public static function getLanguages()
+	{
         if (!is_array(self::$languages)) {
             self::checkLanguages();
         }
@@ -101,7 +106,8 @@ class Language {
      *  \param   string $value
      *  \return  void
      */
-    public static function setLanguages($value) {
+    public static function setLanguages($value)
+	{
         self::$languages = $value;
     }
 
@@ -110,7 +116,8 @@ class Language {
      *
      *  \return  string
      */
-    public static function getLanguage() {
+    public static function getLanguage()
+	{
         if (!is_array(self::$languages)) {
             self::checkLanguages();
         }
@@ -123,7 +130,8 @@ class Language {
      *
      *  \return  string
      */
-    public static function getLanguageLocale($separator = '-') {
+    public static function getLanguageLocale($separator = '-')
+	{
         if (!is_array(self::$languages)) {
             self::checkLanguages();
         }

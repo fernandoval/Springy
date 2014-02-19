@@ -8,7 +8,7 @@
  *
  *	\brief		Script da classe de acesso a banco de dados
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.6.23
+ *	\version	1.6.24
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *  \author		Allan Marques - allan.marques@ymail.com
@@ -24,7 +24,8 @@ namespace FW;
  *  
  *	\note		Esta classe usa a PHP Data Object (PDO) para acesso a banco de dados
  */
-class DB {
+class DB
+{
 	/// Guarda os IDs de conexão com os SGBDs
 	private static $DB = array();
 	/// SQL Resource
@@ -62,7 +63,8 @@ class DB {
 	 *  \param $cache_expires tempo em segundo de cacheamento de consultas.
 	 *    Default = null (sem cache)
 	 */
-	public function __construct($database='default', $cache_expires=null) {
+	public function __construct($database='default', $cache_expires=null)
+	{
 		$this->cacheExpires = $cache_expires;
 		$this->database = $database;
 		$this->dataConnect = $this->connect($this->database);
@@ -73,7 +75,8 @@ class DB {
 	 *
 	 *  Fecha todos os cursores, consultas em aberto com banco de dados e desinstancia a classe
 	 */
-	public function __destruct() {
+	public function __destruct()
+	{
 		if (!is_null($this->SQLRes)) {
 			$this->SQLRes->closeCursor();
 			$this->SQLRes = NULL;
@@ -88,7 +91,8 @@ class DB {
 	 *
 	 *  @return Retorna o conector do banco de dados
 	 */
-	public function connect($database) {
+	public function connect($database)
+	{
 		if (isset(self::$conErrors[$database])) {
 			return false;
 		}
@@ -155,7 +159,8 @@ class DB {
 	 *
 	 *	@return Retorna o conector do banco de dados.
 	 */
-	private function _round_robin($database, $dbconf) {
+	private function _round_robin($database, $dbconf)
+	{
 		// Lê as configurações de controle de round robin
 		$rr = Configuration::get('db', 'round_robin');
 
@@ -204,7 +209,8 @@ class DB {
 	 *	@param $database chave de configuração do banco de dados.
 	 *		Default = 'default'
 	 */
-	public static function connected($database='default') {
+	public static function connected($database='default')
+	{
 		return !isset(self::$conErrors[$database]) && isset(self::$DB[$database]) && self::$DB[$database]['con'];
 	}
 	/**
@@ -212,14 +218,16 @@ class DB {
 	 *  \deprecated
 	 *  \see connected
 	 */
-	public static function hasConnection($database='default') {
+	public static function hasConnection($database='default')
+	{
 		return self::connected($database);
 	}
 
 	/**
 	 *	\brief Fecha a conexão com o banco de dados
 	 */
-	public function disconnect() {
+	public function disconnect()
+	{
 		if (static::connected($this->database)) {
 			///	a instância de conexão é estática, para não criar uma nova a cada nova instância da classe
 			unset(self::$DB[$this->database]['con']);
@@ -233,7 +241,8 @@ class DB {
 	 *
 	 *  \return DB
 	 */
-	public function disableReportError() {
+	public function disableReportError()
+	{
 		$this->report_error = false;
 		return $this;
 	}
@@ -243,7 +252,8 @@ class DB {
 	 *
 	 *  \return DB
 	 */
-	public function enableReportError() {
+	public function enableReportError()
+	{
 		$this->report_error = true;
 		return $this;
 	}
@@ -253,7 +263,8 @@ class DB {
 	 *
 	 *	Método para alerta de erros. Também envia e-mails com informações sobre o erro e grava-o em um arquivo de Log.
 	 */
-	private function reportError($msg, \PDOException $exception=NULL) {
+	private function reportError($msg, \PDOException $exception=NULL)
+	{
 		if(!$this->report_error) {
 			return;
 		}
@@ -314,7 +325,8 @@ class DB {
 	/**
 	 *	\brief Alterna o estado de debug de banco de dados
 	 */
-	public static function debug($debug) {
+	public static function debug($debug)
+	{
 		self::$db_debug = $debug;
 		Kernel::debug('DEBUG DE BANCO DE DADOS: ' . ($debug ? 'LIGADO' : 'DESLIGADO'));
 	}
@@ -324,7 +336,8 @@ class DB {
 	 *
 	 *	Como as transações podem utilzar varias classes e métodos, a transação será "estatica"
 	 */
-	public static function beginTransaction($database='default') {
+	public static function beginTransaction($database='default')
+	{
 		self::connect($database)->beginTransaction();
 	}
 
@@ -333,7 +346,8 @@ class DB {
 	 *
 	 *	Como as transações podem utilzar varias classes e métodos, a transação será "estatica"
 	 */
-	public static function rollBack($database='default') {
+	public static function rollBack($database='default')
+	{
 		self::connect($database)->rollBack();
 	}
 
@@ -342,7 +356,8 @@ class DB {
 	 *
 	 *	Como as transações podem utilzar varias classes e métodos, a transação será "estatica"
 	 */
-	public static function commit($database='default') {
+	public static function commit($database='default')
+	{
 		self::connect($database)->commit();
 	}
 
@@ -353,7 +368,8 @@ class DB {
 	 *
 	 *	Como as transações podem utilzar varias classes e métodos, a transação será "estatica"
 	 */
-	public static function rollBackAll() {
+	public static function rollBackAll()
+	{
 		foreach (self::$DB as $db => $v) {
 			if ($v['con']->inTransaction()) {
 				Kernel::debug('DB ' . $db . ' rollback start');
@@ -367,7 +383,8 @@ class DB {
 	 *  \deprecated
 	 *  \see rollBackAll
 	 */
-	public static function transactionAllRollBack() {
+	public static function transactionAllRollBack()
+	{
 		self::rollBackAll();
 	}
 
@@ -379,7 +396,8 @@ class DB {
 	 *  \param $cache_expires tempo em segundos para cacheamento da consulta.
 	 *    Default = null (sem cache)
 	 */
-	public function execute($sql, array $where_v=array(), $cache_expires=null) {
+	public function execute($sql, array $where_v=array(), $cache_expires=null)
+	{
 		$this->sqlErrorCode = null;
 		$this->sqlErrorInfo = null;
 		self::$sqlNum++;
@@ -505,21 +523,24 @@ class DB {
 	/**
 	 *	\brief Retorna o último comando executado
 	 */
-	public function lastQuery() {
+	public function lastQuery()
+	{
 		return $this->LastQuery;
 	}
 	
 	/**
 	 *  \brief Retorna uma string com o código do último erro ocorrido com a instância do banco
 	 */
-	public function errorCode() {
+	public function errorCode()
+	{
 		return $this->dataConnect->errorCode();
 	}
 
 	/**
 	 *  \brief Retorna um array com informações do último erro ocorrido com a instãncia do banco
 	 */
-	public function errorInfo() {
+	public function errorInfo()
+	{
 		return $this->dataConnect->errorInfo();
 	}
 	
@@ -527,7 +548,8 @@ class DB {
 	 *  \brief Retorna uma string com o código do erro ocorrido com o último \c execute
 	 *  \see execute
 	 */
-	public function statmentErrorCode() {
+	public function statmentErrorCode()
+	{
 		return $this->sqlErrorCode;
 	}
 
@@ -535,7 +557,8 @@ class DB {
 	 *  \brief Retorna um array com informações do erro ocorrido com o último \c execute
 	 *  \see execute
 	 */
-	public function statmentErrorInfo() {
+	public function statmentErrorInfo()
+	{
 		return $this->sqlErrorInfo;
 	}
 	
@@ -544,7 +567,8 @@ class DB {
 	 *
 	 *	\return Retorna uma string contendo o nome do driver do banco de dados atual
 	 */
-	public function driverName() {
+	public function driverName()
+	{
 		return $this->dataConnect->getAttribute(\PDO::ATTR_DRIVER_NAME);
 	}
 
@@ -553,21 +577,24 @@ class DB {
 	 *
 	 *  \return Retorna um valor inteiro com a versão do servidor
 	 */
-	public function serverVersion() {
+	public function serverVersion()
+	{
 		return $this->dataConnect->getAttribute(\PDO::ATTR_SERVER_VERSION);
 	}
 
 	/**
 	 *	\brief Retorna o valor do campo autoincremento do último INSERT
 	 */
-	public function lastInsertedId($indice='') {
+	public function lastInsertedId($indice='')
+	{
 		return $this->dataConnect->lastInsertId( ((!$indice && $this->LastQuery instanceof DBInsert) ? $this->LastQuery->getTable() . '_id_seq' : $indice) );
 	}
 
 	/**
 	 *	\brief Retorna o número de linhas afetadas no último comando
 	 */
-	public function affectedRows() {
+	public function affectedRows()
+	{
 		return $this->SQLRes->rowCount();
 	}
 	/**
@@ -575,7 +602,8 @@ class DB {
 	 *  \deprecated
 	 *  \see affectedRows
 	 */
-	public function num_rows() {
+	public function num_rows()
+	{
 		if (is_null($this->cacheStatement)) {
 			return $this->affected_rows();
 		}
@@ -585,7 +613,8 @@ class DB {
 	/**
 	 *	\brief Retorna todas as linhas do resultado de uma consulta
 	 */
-	public function fetchAll($resultType=\PDO::FETCH_ASSOC) {
+	public function fetchAll($resultType=\PDO::FETCH_ASSOC)
+	{
 		if (is_null($this->cacheStatement)) {
 			if ($this->SQLRes) {
 				return $this->SQLRes->fetchAll($resultType);
@@ -601,14 +630,16 @@ class DB {
 	 *  \deprecated
 	 *  \see fetch_all
 	 */
-	public function get_all($resultType=\PDO::FETCH_ASSOC) {
+	public function get_all($resultType=\PDO::FETCH_ASSOC)
+	{
 		return $this->fetchAll($resultType);
 	}
 
 	/**
 	 *	\brief Retorna o primeiro resultado do cursor de uma consulta
 	 */
-	public function fetchFirst($resultType=\PDO::FETCH_ASSOC) {
+	public function fetchFirst($resultType=\PDO::FETCH_ASSOC)
+	{
 		if (is_null($this->cacheStatement)) {
 			if ($this->SQLRes) {
 				return $this->SQLRes->fetch($resultType, \PDO::FETCH_ORI_FIRST);
@@ -623,7 +654,8 @@ class DB {
 	/**
 	 *	\brief Retorna o resultado anterior do cursor de uma consulta
 	 */
-	public function fetchPrev($resultType=\PDO::FETCH_ASSOC) {
+	public function fetchPrev($resultType=\PDO::FETCH_ASSOC)
+	{
 		if (is_null($this->cacheStatement)) {
 			if ($this->SQLRes) {
 				return $this->SQLRes->fetch($resultType, \PDO::FETCH_ORI_PRIOR);
@@ -638,7 +670,8 @@ class DB {
 	/**
 	 *	\brief Retorna o próximo resultado de uma consulta
 	 */
-	public function fetchNext($resultType=\PDO::FETCH_ASSOC) {
+	public function fetchNext($resultType=\PDO::FETCH_ASSOC)
+	{
 		if (is_null($this->cacheStatement)) {
 			if ($this->SQLRes) {
 				return $this->SQLRes->fetch($resultType);
@@ -655,7 +688,8 @@ class DB {
 	/**
 	 *	\brief Retorna o último resultado do cursor de uma consulta
 	 */
-	public function fetchLast($resultType=\PDO::FETCH_ASSOC) {
+	public function fetchLast($resultType=\PDO::FETCH_ASSOC)
+	{
 		if (is_null($this->cacheStatement)) {
 			if ($this->SQLRes) {
 				return $this->SQLRes->fetch($resultType, \PDO::FETCH_ORI_LAST);
@@ -670,7 +704,8 @@ class DB {
 	/**
 	 *	\brief Retorna o valor de uma coluna do último registro pego por fetch_next
 	 */
-	public function getColumn($var=0) {
+	public function getColumn($var=0)
+	{
 		if (is_null($this->cacheStatement)) {
 			if ($this->SQLRes && is_numeric($var)) {
 				return $this->SQLRes->fetchColumn($var);
@@ -694,7 +729,8 @@ class DB {
 	 *
 	 *	@return Retorna a data no formato universal (Y-m-d) concatenada da hora no formato universal (H:n:s), se o $flgtime for TRUE.
 	 */
-	public static function castDateBrToDb($datetime, $flgtime=false) {
+	public static function castDateBrToDb($datetime, $flgtime=false)
+	{
         $date = \DateTime::createFromFormat('d/m/Y H:i:s', $datetime);
 
         return $flgtime ? $date->format('Y-m-d H:i:s') : $date->format('Y-m-d');
@@ -709,7 +745,8 @@ class DB {
 	 *
 	 *	@return Retorna a data no formato brasileiro (d/m/Y) concatenada da hora no formato brasileiro 24h (H:n:s), se o $flgtime for TRUE.
 	 */
-	public static function castDateDbToBr($datetime, $flgtime=false, $sec=false) {
+	public static function castDateDbToBr($datetime, $flgtime=false, $sec=false)
+	{
         $date = \DateTime::createFromFormat('Y-m-d H:i:s', $datetime);
 
         if (!$flgtime) {
@@ -726,7 +763,8 @@ class DB {
 	 *
 	 *  \return Retorna o valor UNIX timestamp
 	 */
-	public static function makeDbDateTime($dateTime) {
+	public static function makeDbDateTime($dateTime)
+	{
 		if (preg_match('/^([0-9]{4})-([0-9]{2})-([0-9]{2})/', $dateTime)) {
 			return \DateTime::createFromFormat('Y-m-d H:i:s', $dateTime)->getTimestamp();
 		}
@@ -741,7 +779,8 @@ class DB {
 	 *  \deprecated
 	 *  \see makeDbDateTime
 	 */
-	public static function dateToTime($dateTime) {
+	public static function dateToTime($dateTime)
+	{
 		return self::makeDbDateTime($dateTime);
 	}
 
@@ -752,7 +791,8 @@ class DB {
 	 *  \param (string)$dataTimeStamp - data hora no format Y-m-d H:i:s
 	 *  \return Retorna uma string no formato '<dia> de <nome_do_mes>'.
 	 */
-	public static function longBrazilianDate($dataTimeStamp) {
+	public static function longBrazilianDate($dataTimeStamp)
+	{
 		$dateTime = static::makeDbDateTime($dataTimeStamp);
 		$mes = array('Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro');
         $numMes = (int) date('m', $dateTime);
@@ -763,7 +803,8 @@ class DB {
 	 *  \deprecated
 	 *  \see londBrazilianDate
 	 */
-	public static function dateToStr($dataTimeStamp) {
+	public static function dateToStr($dataTimeStamp)
+	{
 		return self::longBrazilianDate($dataTimeStamp);
 	}
 }

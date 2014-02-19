@@ -8,17 +8,18 @@
  *
  *	\brief		Classe com métodos para diversos tipos de tratamento e validação de dados string
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	0.8.10
+ *	\version	0.9.11
  *  \author		Fernando Val  - fernando.val@gmail.com
  *	\ingroup	framework
  */
 
-namespace FW;
+namespace FW\Utils;
 
 /**
  *  \brief Classe com métodos para diversos tipos de tratamento e validação de dados string
  */
-class Strings {
+class Strings
+{
 	/**
 	 *	\brief Verifica se uma string está codificada em UTF-8
 	 *
@@ -28,7 +29,8 @@ class Strings {
 	 *
 	 *	In order to check if a string is encoded correctly in utf-8, I suggest the following function, that implements the RFC3629 better than mb_check_encoding()
 	 */
-	public static function checkUTF8($str) {
+	public static function checkUTF8($str)
+	{
 		$len = strlen($str);
 		for($i = 0; $i < $len; $i++){
 			$c = ord($str[$i]);
@@ -56,7 +58,8 @@ class Strings {
 	 *	@param String $email - email a ser validado
 	 *	@param Boolean $checkDNS - determina se a existência do domínio do email deve ser verificado
 	 */
-	public static function validateEmailAddress($email, $checkDNS=true) {
+	public static function validateEmailAddress($email, $checkDNS=true)
+	{
 		if ( 
 			filter_var($email, FILTER_VALIDATE_EMAIL) && 
 			preg_match('/^[a-z0-9_\-]+(\.[a-z0-9_\-]+)*@([a-z0-9_\.\-]*[a-z0-9_\-]+\.[a-z]{2,4})$/i', $email, $res)
@@ -70,7 +73,8 @@ class Strings {
 	/**
 	 *	\brief Verifica se é um slug válido
 	 */
-	public static function validateSlug($txt) {
+	public static function validateSlug($txt)
+	{
 		return preg_match('/^[a-z0-9-]+$/', $txt);
 	}
 
@@ -82,7 +86,8 @@ class Strings {
 	 *	@param Int $min - Tamanho mínimo esperado para o texto (default=3).
 	 *	@param Int $max - Tamanho máximo que o texto pode ter. Se deixar em branco permite textos de tamanho infinito.
 	 */
-	public static function validateText(&$txt, $min=3, $max=false) {
+	public static function validateText(&$txt, $min=3, $max=false)
+	{
 		$txt = trim(strip_tags($txt));
 		$len = strlen($txt);
 		return (!empty($txt) && ($len >= $min) && (!$max || ($max && $len <= $max)));
@@ -100,7 +105,8 @@ class Strings {
 	 *  
 	 *  \return Retorna uma string contendo o IP real do host que fez a requisição.
 	 */
-	public static function getRealRemoteAddr() {
+	public static function getRealRemoteAddr()
+	{
 		// Pega o IP que vem por trás de proxies
 		// $ApacheHeader = apache_request_headers();
 		// if (!empty($_SERVER['HTTP_X_FORWARDED_FOR']) || !empty($ApacheHeader['X-Forwarded-For']))
@@ -143,7 +149,8 @@ class Strings {
 	 *	\note Esta função foi copiada da contribuição de Alix Axel para a documentação do PHP
 	 *	em http://php.net/manual/en/function.com-create-guid.php
 	 */
-	public static function guid() {
+	public static function guid()
+	{
 		if (function_exists('com_create_guid') === true) {
 			return trim(com_create_guid(), '{}');
 		}
@@ -157,7 +164,8 @@ class Strings {
 	 *	@param String $ip - endereço ip
 	 *	@return Retorna um valor inteiro
 	 */
-	public static function ipv4ToNumber($ip) {
+	public static function ipv4ToNumber($ip)
+	{
 		// Sepada os octetos do IP
 		$m = explode('.', $ip);
 		if (count($m) < 4) {
@@ -171,7 +179,8 @@ class Strings {
 	/**
 	 *	\brief Troca caracteres acentuados por não acentuado
 	 */
-	public static function removeAccentedChars($txt) {
+	public static function removeAccentedChars($txt)
+	{
 		if ((function_exists('mb_check_encoding') && mb_check_encoding($txt, 'UTF-8')) || self::checkUTF8($txt)) {
 			return Strings_UTF8::removeAccentedChars($txt);
 		}
@@ -181,7 +190,8 @@ class Strings {
 
 	/* As funções abaixo ainda estão em processo de migração para o framework e não devem ser utilizadas */
 
-	public static function bigText(&$txt, $notStripTags='') {
+	public static function bigText(&$txt, $notStripTags='')
+	{
 		$txt = trim(strip_tags($txt, $notStripTags));
 		return !empty($txt);
 	}
@@ -193,7 +203,8 @@ class Strings {
 	 * @param[in] (boolean|int|string)$float - Se for === false, não poderá ser flutuante. Se for int, será o número máximo de caracteres aceitos após o ponto. Se for vazio ('') será infinito
 	 * @param[in] (boolean)$negativo - informa se o número poderá ser negativo
 	 */
-	public static function numero($numero, $tamanho='', $minimo=1, $float=false, $negativo=false) {
+	public static function numero($numero, $tamanho='', $minimo=1, $float=false, $negativo=false)
+	{
 		return preg_match('/^' . ($negativo ? '[\-]?' : '') . '[0-9]{'.$minimo.',' . $tamanho . '}' . ($float !== false ? '\.[0-9]{1,' . $float . '}' : '') . '$/', $numero);
 	}
 	
@@ -204,7 +215,8 @@ class Strings {
 	 *
 	 *	@param[in] (string)$data - data no formato d/m/Y
 	 */
-	public static function data($data) {
+	public static function data($data)
+	{
 		$d = \DateTime::createFromFormat('d/m/Y', $data);
 		return $d && $d->format('d/m/Y') == $data;
 	}
@@ -215,7 +227,8 @@ class Strings {
 	 * @param boolean $segundos Valida os segundos, default: false
 	 * @return boolean
 	 */
-	public static function hora($hora, $segundos = false) {
+	public static function hora($hora, $segundos = false)
+	{
 		if($segundos && !preg_match('/^([0-1][0-9]|[2][0-3]|[0-9]):([0-5][0-9]|[0-9]):([0-5][0-9]|[0-9])$/', $hora)){
 			return false;
 		} elseif(!$segundos && !preg_match('/^([0-1][0-9]|[2][0-3]|[0-9]):([0-5][0-9]|[0-9])$/', $hora)) {
@@ -224,21 +237,25 @@ class Strings {
 		return true;
 	}
 
-	public static function senha($senha) {
+	public static function senha($senha)
+	{
 		return preg_match('/^(.){6,12}$/', $senha);
 	}
 
-	public static function ie($ie) {
+	public static function ie($ie)
+	{
 		$ie = str_replace('/', '', str_replace('-', '', str_replace('.', '', $ie)));
 		return is_numeric($ie);
 	}
 
-	public static function cep(&$cep) {
+	public static function cep(&$cep)
+	{
 		$cep = preg_replace('/[-.]/', '', $cep);
 		return preg_match('/^[0-9]{8}$/', $cep);
 	}
 
-	public static function telefone(&$ddd, &$telefone) {
+	public static function telefone(&$ddd, &$telefone)
+	{
 		$telefone = preg_replace('/[^0-9]/', '', $telefone);
 		$len = strlen($ddd . $telefone);
 		return ($len == 10 || $len == 11) && is_numeric($ddd . $telefone);
@@ -246,17 +263,20 @@ class Strings {
 
 	/* *** */
 
-	public static function form_id($to, $code) {
-		return (Session::get('_FORM_CAPTCHA_' . strtoupper($to)) == base64_decode($code));
+	public static function form_id($to, $code)
+	{
+		return (\FW\Session::get('_FORM_CAPTCHA_' . strtoupper($to)) == base64_decode($code));
 	}
 
-	public static function generate_form_id($to) {
+	public static function generate_form_id($to)
+	{
 		$id = md5($to) . md5(Session::getId()) . md5(uniqid(rand(), true));
-		Session::set('_FORM_CAPTCHA_' . strtoupper($to), $id);
+		\FW\Session::set('_FORM_CAPTCHA_' . strtoupper($to), $id);
 		return base64_encode($id);
 	}
 
-	private static function checkIsFake($string, $length) {
+	private static function checkIsFake($string, $length)
+	{
 		for ($i=0; $i<=9; $i++) {
 			$fake = str_pad('', $length, $i);
 			if($string === $fake) {
@@ -267,7 +287,8 @@ class Strings {
 		return false;
 	}
 
-	public static function cpf(&$cpf) {
+	public static function cpf(&$cpf)
+	{
 		$cpf = preg_replace('/[^0-9]/', '', $cpf);
  		// VERIFICA SE O QUE FOI INFORMADO É NÚMERO
         if (!trim($cpf) || !is_numeric($cpf) || self::checkIsFake($cpf, 11)) {
@@ -324,7 +345,8 @@ class Strings {
 
 	}
 
-	public static function cnpj(&$cnpj) {
+	public static function cnpj(&$cnpj)
+	{
 		$cnpj = str_replace('/', '', str_replace('-', '', str_replace('.', '', $cnpj)));
 
 		if(empty($cnpj) || strlen($cnpj) != 14 || !is_numeric($cnpj) || self::checkIsFake($cnpj, 14)) {
@@ -384,19 +406,19 @@ class Strings {
 	 * @param string $url
 	 * @return bool true||false
 	 */
-	public static function validarMaps( $url ) {
+	public static function validarMaps( $url )
+	{
 		$domin = "";
 		$urls = explode("/", $url);
 
-		foreach( $urls as $url )
-		{
-			if( preg_match('/maps.google.com.br|maps.google.com/i', $url ) )
+		foreach ($urls as $url) {
+			if (preg_match('/maps.google.com.br|maps.google.com/i', $url ))
 				return true;
-		}//forech
+		}
 
 		return false;
 
-	}//function
+	}
 
 	/**
 	 * função que retorna a quantidade de dias entre 2 datas

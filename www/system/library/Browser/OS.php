@@ -8,7 +8,7 @@
  *
  *  \brief		Classe de detecção do sistema operacional do visitante
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	1.0.0
+ *  \version	1.0.1
  *  \author		Gabriel Bull
  *  \ingroup	framework
  *  \package	browser
@@ -25,7 +25,8 @@ namespace FW\Browser;
  *
  *  \link https://github.com/gavroche/php-browser
  */
-class OS {
+class OS
+{
     const UNKNOWN = 'unknown';
     const OSX = 'OS X';
     const IOS = 'iOS';
@@ -54,7 +55,8 @@ class OS {
      *
      *  @return  string
      */
-    public static function getOS() {
+    public static function getOS()
+	{
         if (!isset(self::$name)) {
             self::checkOS();
         }
@@ -67,7 +69,8 @@ class OS {
      *  @param   string $value
      *  @return  void
      */
-    public static function setOS($value) {
+    public static function setOS($value)
+	{
         self::$name = $value;
     }
 
@@ -76,7 +79,8 @@ class OS {
      *
      *  @return  string
      */
-    public static function getVersion() {
+    public static function getVersion()
+	{
         if (isset(self::$version)) {
             return self::$version;
         } else {
@@ -91,7 +95,8 @@ class OS {
      *  @param   string $value
      *  @return  void
      */
-    public static function setVersion($value) {
+    public static function setVersion($value)
+	{
         self::$version = $value;
     }
 
@@ -100,7 +105,8 @@ class OS {
      *
      *  @return  bool
      */
-    public static function isMobile() {
+    public static function isMobile()
+	{
         if (!isset(self::$name)) {
             self::checkOS();
         }
@@ -113,7 +119,8 @@ class OS {
      *  @param   bool $value
      *  @return  void
      */
-    public static function setMobile($value = true) {
+    public static function setMobile($value = true)
+	{
         self::$isMobile = (bool)$value;
     }
 
@@ -122,7 +129,8 @@ class OS {
      *
      *  @return  bool
      */
-    private static function checkOS() {
+    private static function checkOS()
+	{
         self::$name = self::UNKNOWN;
         self::$version = self::VERSION_UNKNOWN;
         self::$isMobile = false;
@@ -155,7 +163,8 @@ class OS {
      *
      *  @return   bool
      */
-    private static function checkMobileBrowsers() {
+    private static function checkMobileBrowsers()
+	{
         // Check for Opera Mini
         if (stripos(Browser::getUserAgent(), 'opera mini') !== false) {
             self::setMobile(true);
@@ -171,7 +180,8 @@ class OS {
      *
      *  @return   bool
      */
-    private static function checkIOS() {
+    private static function checkIOS()
+	{
         if (stripos(Browser::getUserAgent(), 'CPU OS') !== false || stripos(Browser::getUserAgent(), 'iPhone OS') !== false && stripos(Browser::getUserAgent(), 'OS X')) {
             self::$name = self::IOS;
             if (preg_match('/CPU( iPhone)? OS ([\d_]*)/i', Browser::getUserAgent(), $matches)) {
@@ -188,7 +198,8 @@ class OS {
      *
      *  @return   bool
      */
-    private static function checkOSX() {
+    private static function checkOSX()
+	{
         if (stripos(Browser::getUserAgent(), 'OS X') !== false) {
             self::$name = self::OSX;
             if (preg_match('/OS X ([\d_]*)/i', Browser::getUserAgent(), $matches)) {
@@ -199,13 +210,13 @@ class OS {
         return false;
     }
 
-
     /**
      *  \brief Determine if the user's operating system is Windows.
      *
      *  @return   bool
      */
-    private static function checkWindows() {
+    private static function checkWindows()
+	{
         if (stripos(Browser::getUserAgent(), 'Windows NT') !== false) {
             self::$name = self::WINDOWS;
             // Windows version
@@ -262,7 +273,8 @@ class OS {
      *
      *  @return   bool
      */
-    private static function checkSymbOS() {
+    private static function checkSymbOS()
+	{
         if (stripos(Browser::getUserAgent(), 'SymbOS') !== false) {
             self::$name = self::SYMBOS;
             return true;
@@ -275,7 +287,8 @@ class OS {
      *
      *  @return   bool
      */
-    private static function checkLinux() {
+    private static function checkLinux()
+	{
         if (stripos(Browser::getUserAgent(), 'Linux') !== false) {
             self::$version = self::VERSION_UNKNOWN;
             self::$name = self::LINUX;
@@ -289,7 +302,8 @@ class OS {
      *
      *  @return   bool
      */
-    private static function checkNokia() {
+    private static function checkNokia()
+	{
         if (stripos(Browser::getUserAgent(), 'Nokia') !== false) {
             self::$version = self::VERSION_UNKNOWN;
             self::$name = self::NOKIA;
@@ -304,7 +318,8 @@ class OS {
      *
      *  @return   bool
      */
-    private static function checkBlackBerry() {
+    private static function checkBlackBerry()
+	{
         if (stripos(Browser::getUserAgent(), 'BlackBerry') !== false) {
             self::$version = self::VERSION_UNKNOWN;
             self::$name = self::BLACKBERRY;
@@ -319,7 +334,8 @@ class OS {
      *
      *  @return   bool
      */
-    private static function checkAndroid() {
+    private static function checkAndroid()
+	{
         if (stripos(Browser::getUserAgent(), 'Android') !== false) {
             if (preg_match('/Android ([\d\.]*)/i', Browser::getUserAgent(), $matches)) {
                 self::$version = $matches[1];
@@ -338,7 +354,8 @@ class OS {
      *
      *  @return   bool
      */
-    private static function checkFreeBSD() {
+    private static function checkFreeBSD()
+	{
         if (stripos(Browser::getUserAgent(), 'FreeBSD') !== false) {
             self::$version = self::VERSION_UNKNOWN;
             self::$name = self::FREEBSD;
@@ -352,7 +369,8 @@ class OS {
      *
      *  @return   bool
      */
-    private static function checkOpenBSD() {
+    private static function checkOpenBSD()
+	{
         if (stripos(Browser::getUserAgent(), 'OpenBSD') !== false) {
             self::$version = self::VERSION_UNKNOWN;
             self::$name = self::OPENBSD;
@@ -366,7 +384,8 @@ class OS {
      *
      *  @return   bool
      */
-    private static function checkSunOS() {
+    private static function checkSunOS()
+	{
         if (stripos(Browser::getUserAgent(), 'SunOS') !== false) {
             self::$version = self::VERSION_UNKNOWN;
             self::$name = self::SUNOS;
@@ -380,7 +399,8 @@ class OS {
      *
      *  @return   bool
      */
-    private static function checkNetBSD() {
+    private static function checkNetBSD()
+	{
         if (stripos(Browser::getUserAgent(), 'NetBSD') !== false) {
             self::$version = self::VERSION_UNKNOWN;
             self::$name = self::NETBSD;
@@ -394,7 +414,8 @@ class OS {
      *
      *  @return   bool
      */
-    private static function checkOpenSolaris() {
+    private static function checkOpenSolaris()
+	{
         if (stripos(Browser::getUserAgent(), 'OpenSolaris') !== false) {
             self::$version = self::VERSION_UNKNOWN;
             self::$name = self::OPENSOLARIS;
@@ -408,7 +429,8 @@ class OS {
      *
      *  @return   bool
      */
-    private static function checkOS2() {
+    private static function checkOS2()
+	{
         if (stripos(Browser::getUserAgent(), 'OS\/2') !== false) {
             self::$version = self::VERSION_UNKNOWN;
             self::$name = self::OS2;
@@ -422,7 +444,8 @@ class OS {
      *
      *  @return   bool
      */
-    private static function checkBeOS() {
+    private static function checkBeOS()
+	{
         if (stripos(Browser::getUserAgent(), 'BeOS') !== false) {
             self::$version = self::VERSION_UNKNOWN;
             self::$name = self::BEOS;

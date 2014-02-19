@@ -32,4 +32,14 @@ $conf = array(
 	'secure'  => $_SERVER['HTTP_HOST']
 );
 
+/// Configurações sobrescritas para hosts específicos (EXEMPLO)
+$over_conf = array(
+	'host.seusite.localhost' => array (
+		'dynamic'          => 'http://host.seusite.localhost',
+		'prevalidate_controller' => array(
+			'mycontroller' => array('command' => 404, 'segments' => 2, 'validate' => array('/^[a-z0-9\-]+$/', '/^[0-9]+$/')),
+		),
+	)
+);
+
 /**@}*/

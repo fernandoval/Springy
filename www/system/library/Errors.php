@@ -8,7 +8,7 @@
  *
  *	\brief		Classe para tratamento de erros
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.6.13
+ *	\version	1.6.14
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
@@ -21,15 +21,18 @@ namespace FW;
  *  
  *  Esta classe é estática e invocada automaticamente pelo framework.
  */
-class Errors {
-	public static function ajax($errorType, $msg='') {
+class Errors
+{
+	public static function ajax($errorType, $msg='')
+	{
 		self::errorHandler(E_USER_ERROR, $msg, '', '', '', $errorType);
 	}
 
 	/**
 	 *	\brief Encerra o processamento e dá saída na página de erro HTML
 	 */
-	public static function displayError($errorType, $msg='') {
+	public static function displayError($errorType, $msg='')
+	{
 		$debug = debug_backtrace();
 		self::errorHandler(E_USER_ERROR, $msg, $debug[0]['file'], $debug[0]['line'], '', $errorType);
 	}
@@ -37,7 +40,8 @@ class Errors {
 	/**
 	 *	\brief Trata um erro ocorrido no sistema e encerra seu funcionamento
 	 */
-	public static function errorHandler($errno, $errstr, $errfile, $errline, $localErro, $errorType=500) {
+	public static function errorHandler($errno, $errstr, $errfile, $errline, $localErro, $errorType=500)
+	{
 		if (
 			strpos($errfile, 'template') !== false || strpos($errfile, 'Smarty') !== false
 			|| strpos($errstr, 'filemtime') !== false
@@ -119,7 +123,8 @@ class Errors {
 	/**
 	 *	\brief Monta a mensagem de erro com dados de backtrace, se aplicável
 	 */
-	public static function sendReport($msg, $errorType, $errorId, $adictionalInfo='') {
+	public static function sendReport($msg, $errorType, $errorId, $adictionalInfo='')
+	{
 		$getParams = array();
 		foreach (URI::getParams() as $var => $value) {
 			$getParams[] = $var.'='.$value;
@@ -282,7 +287,8 @@ class Errors {
 	/**
 	 *	\brief Marga um bug como resolvido
 	 */
-	public static function bugSolved($errorId) {
+	public static function bugSolved($errorId)
+	{
 		$db = new DB;
 		if (DB::hasConnection()) {
 			$db->execute('DELETE FROM system_error WHERE error_code = ?', array($errorId));
@@ -294,7 +300,8 @@ class Errors {
 	/**
 	 *	\brief Lista os bugs registrados
 	 */
-	public static function bugList() {
+	public static function bugList()
+	{
 		$tpl = new Template('_buglist');
 
 		$nPorPagina = 5;
@@ -352,7 +359,8 @@ class Errors {
 	/**
 	 *	\brief Imprime a mensagem de erro
 	 */
-	public static function printHtml($errorType, $msg) {
+	public static function printHtml($errorType, $msg)
+	{
 		// Verifica se a saída do erro não é em ajax ou json
 		//if (!Configuration::get('system', 'ajax') || !in_array('Content-type: application/json; charset=' . $GLOBALS['SYSTEM']['CHARSET'], headers_list())) {
 		if (!URI::isAjaxRequest()) {

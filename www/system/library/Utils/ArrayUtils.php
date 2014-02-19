@@ -8,18 +8,16 @@
  *
  *	\brief		Classe de Utilidades para Manipulação de Arrays
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.0
+ *	\version	1.1.1
  *  \author		Allan Marques  - allan.marques@ymail.com
  *	\ingroup	framework
  */
 
 
-namespace FW;
+namespace FW\Utils;
 
 /**
  *  \brief Classe de manipulação de arrays
- *
- *  Esta classe é dinâmica mas pode ser chamada no contexto estático graças ao método mágico __callStatic.
  */
 class ArrayUtils
 {

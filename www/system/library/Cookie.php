@@ -8,7 +8,7 @@
  *
  *	\brief		Script da classe para tratamento de cookies
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.2.4
+ *	\version	1.2.5
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
@@ -22,14 +22,16 @@ namespace FW;
  *  \todo		Implementar correção no método delete.
  *  			Foi detectado que o método delete não deleta de fato, é necessário, após expirar a chave, setar seu valor para vazio.
  */
-class Cookie {
+class Cookie
+{
 	// [en-us] Reserved session keys
 	private static $_reserved = array();
 
 	/**
 	 *	\brief Delete a cookie
 	 */
-	public static function delete($key) {
+	public static function delete($key)
+	{
 		// [en-us] Change string representation array to key/value array
 		$key = self::_scrubKey($key);
 
@@ -77,14 +79,16 @@ class Cookie {
 	 *  \deprecated
 	 *  \see delete
 	 */
-	public static function del($key) {
+	public static function del($key)
+	{
 		self::delete($key);
 	}
 
 	/**
 	 *	\brief See if a cookie key exists
 	 */
-	public static function exists($key) {
+	public static function exists($key)
+	{
 		// [en-us] Change string representation array to key/value array
 		$key = self::_scrubKey($key);
 
@@ -108,7 +112,8 @@ class Cookie {
 	/**
 	 *	\brief Get cookie information
 	 */
-	public static function get($key) {
+	public static function get($key)
+	{
 		// [en-us] Change string representation array to key/value array
 		$key = self::_scrubKey($key);
 
@@ -132,16 +137,18 @@ class Cookie {
 	/**
 	 *	\brief Return the cookie array
 	 */
-	public static function contents() {
+	public static function contents()
+	{
 		return $_COOKIE;
 	}
 
 	/**
 	 *	\brief Set cookie information
 	 *
-	 *		Default expire time (session, 1 week = 604800)
+	 *  Default expire time (session, 1 week = 604800)
 	 */
-	public static function set($key, $value, $expire=0, $path='', $domain='', $secure=false, $httponly=true) {
+	public static function set($key, $value, $expire=0, $path='', $domain='', $secure=false, $httponly=true)
+	{
 		// [en-us] Make sure they aren't trying to set a reserved word
 		if (!in_array($key, self::$_reserved)) {
 			// [en-us] If $key is in array format, change it to string representation
@@ -159,7 +166,8 @@ class Cookie {
 	/**
 	 *	\brief Converts strings to arrays (or vice versa if toString = true)
 	 */
-	private static function _scrubKey($key, $toString = false) {
+	private static function _scrubKey($key, $toString = false)
+	{
 		// [en-us] Converting from array to string
 		if ($toString) {
 			// [en-us] If $key is in array format, change it to string representation

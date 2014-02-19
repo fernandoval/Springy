@@ -18,7 +18,8 @@ namespace FW;
 /**
  *  \brief Classe para construção de arquivos no formato Microsoft(R) Excel(R)
  */
-class Excel {
+class Excel
+{
 	// Handle do arquivo aberto
 	private $fp = NULL;
 
@@ -46,7 +47,8 @@ class Excel {
      *	@Return : On Success Valid File Pointer to file
      *             On Failure return false
      */
-    function __construct($file="", $bsc="CELLPAR"){
+    function __construct($file="", $bsc="CELLPAR")
+	{
         return $this->open($file);
     }
 
@@ -55,7 +57,8 @@ class Excel {
 	 *
 	 *	Caso haja algum arquivo aberto, irá fechá-lo primeiro.
 	 */
-	function __destruct() {
+	function __destruct()
+	{
 		if (!is_null($this->fp)) {
 			$this->close();
 		}
@@ -64,14 +67,16 @@ class Excel {
 	/**
 	 *	\brief Retorna o cC3digo do último erro
 	 */
-	public function getError() {
+	public function getError()
+	{
 		return $this->error;
 	}
 
 	/**
 	 *	\brief Retorna uma mensagem texto do último erro
 	 */
-	public function getErrorMessage() {
+	public function getErrorMessage()
+	{
 		$message = "";
 		switch ($this->error) {
 			case self::ERR_ANOTHER_FILE_OPENED :
@@ -96,7 +101,8 @@ class Excel {
 	/**
 	 *	\brief Define o nome do arquivo
 	 */
-	public function setNameFile($nameFile) {
+	public function setNameFile($nameFile)
+	{
 		$this->nameFile = $nameFile;
 	}
 
@@ -110,7 +116,8 @@ class Excel {
      *	@Return : On Success Valid File Pointer to file
      *                On Failure return false
      */
-    public function open($file) {
+    public function open($file)
+	{
 		if (!is_null($this->fp)) {
             $this->error = self::ERR_ANOTHER_FILE_OPENED;
 			return false;
@@ -135,7 +142,8 @@ class Excel {
 	/**
 	 *	\brief	Fecha o arquivo
 	 */
-    public function close() {
+    public function close()
+	{
        if (!is_null($this->state)) {
 			$this->error = self::ERR_NO_FILE_OPENED;
 			return false;
@@ -159,7 +167,8 @@ class Excel {
 	 *	@Params : Void
 	 *	@return : Void
 	*/
-	private function _header() {
+	private function _header()
+	{
         $header = '<html xmlns:o="urn:schemas-microsoft-com:office:office" '
 				. 'xmlns:x="urn:schemas-microsoft-com:office:excel" '
 				. 'xmlns="http://www.w3.org/TR/REC-html40">'
@@ -217,14 +226,16 @@ class Excel {
 	/**
 	 *	\brief Retorna o rodapé do arquivo Exscel
 	 */
-    private function _footer(){
+    private function _footer()
+	{
        return "</table></body></html>";
     }
 
 	/**
 	 *	\brief Escreve uma linha de título e define os tipos das colunas
 	 */
-    public function writeHeader($columns) {
+    public function writeHeader($columns)
+	{
 		if (is_null($this->fp)) {
 			$this->error = self::ERR_NO_FILE_OPENED;
 			return false;
@@ -257,7 +268,8 @@ class Excel {
      *	@Params : $line_arr: An valid array
      *	@Return : Void
      */
-    public function writeLine($line_arr) {
+    public function writeLine($line_arr)
+	{
 		if (is_null($this->fp)) {
 			$this->error = self::ERR_NO_FILE_OPENED;
 			return false;
@@ -280,7 +292,8 @@ class Excel {
 	 *	\brief Abre uma nova linha na tabela
      *	@Return : Void
      */
-    public function openRow() {
+    public function openRow()
+	{
 		if (is_null($this->fp)){
 			$this->error = self::ERR_NO_FILE_OPENED;
 			return false;
@@ -298,7 +311,8 @@ class Excel {
      *	\brief Fecha uma linha
      *	@Return : Void
      */
-    public function closeRow() {
+    public function closeRow()
+	{
 		if (is_null($this->fp)){
 			$this->error = self::ERR_NO_FILE_OPENED;
 			return false;
@@ -316,7 +330,8 @@ class Excel {
      *	@Params : $value : Coloumn Value
      *	@Return : Void
      */
-    public function addCol($value, $column=NULL) {
+    public function addCol($value, $column=NULL)
+	{
 		if (is_null($this->fp)){
 			$this->error = self::ERR_NO_FILE_OPENED;
 			return false;

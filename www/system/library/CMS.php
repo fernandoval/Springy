@@ -7,7 +7,7 @@
  *
  *	\brief		Script da classe do Mini CMS
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	0.4.4
+ *	\version	0.4.5
  *  \author		Fernando Val  - fernando.val@gmail.com
  *	\ingroup	framework
  */
@@ -17,7 +17,8 @@ namespace FW;
 /**
  *  \brief Classe do Mini CMS
  */
-class CMS {
+class CMS
+{
 	private static $category_data = NULL;
 	private static $article_data = NULL;
 
@@ -26,7 +27,8 @@ class CMS {
 	 *
 	 *	\return \c true se um artigo foi carregado pra memória e \c false em caso contrário
 	 */
-	public static function isArticleLoaded() {
+	public static function isArticleLoaded()
+	{
 		return (self::$article_data != NULL);
 	}
 
@@ -35,7 +37,8 @@ class CMS {
 	 *
 	 *	\return \c true se uma categoria foi carregada pra memória e \c false em caso contrário
 	 */
-	public static function isCategoryLoaded() {
+	public static function isCategoryLoaded()
+	{
 		return (self::$category_data != NULL);
 	}
 
@@ -46,7 +49,8 @@ class CMS {
 	 *
 	 *	\return o valor da coluna selecionada
 	 */
-	public static function getArticleData($col='category_id') {
+	public static function getArticleData($col='category_id')
+	{
 		if (self::isCategoryLoaded() && isset(self::$category_data[$col])) {
 			return self::$category_data[$col];
 		}
@@ -61,7 +65,8 @@ class CMS {
 	 *
 	 *	\return \c true se carregou o artigo/categoria pra memória e \c false em caso contrário
 	 */
-	public static function checkArticleOrCategory($slug='') {
+	public static function checkArticleOrCategory($slug='')
+	{
 		$slug = (empty($slug) ? URI::currentPage() : $slug);
 
 		DB::connect();
@@ -106,7 +111,8 @@ class CMS {
 	 *	\return um \c array com os dados do artigo caso o encontre ou \c false se não encontrar um
 	 *		artigo correspondete a chave informada
 	 */
-	public static function getArticle($article_key, $key='article_id', $published=true) {
+	public static function getArticle($article_key, $key='article_id', $published=true)
+	{
 		DB::connect();
 
 		switch ($key) {
@@ -144,7 +150,8 @@ class CMS {
 	 *	\return a quantidade de registros afetados se tiver êxito na execução do método ou
 	 *		\c false se não tiver sucesso
 	 */
-	public static function deleteArticle($article_id, &$error='') {
+	public static function deleteArticle($article_id, &$error='')
+	{
 		if (!is_numeric($article_id)) {
 			$error = 'Invalid method call CMS::deleteArticle(): article_id is not numeric';
 			Errors::displayError(500, $error);
@@ -168,7 +175,8 @@ class CMS {
 	 *
 	 *	\return 
 	 */
-	public static function insertArticle($data, &$error='') {
+	public static function insertArticle($data, &$error='')
+	{
 		$data['title']       = empty($data['title']) ? 'Untitled' : trim($data['title']);
 		$data['slug']        = empty($data['slug']) ? $data['title'] : trim($data['slug']);
 		$data['subtitle']    = empty($data['subtitle']) ? '' : trim($data['subtitle']);
@@ -189,7 +197,8 @@ class CMS {
 	 *
 	 *	\return a quantidade de registros afetados ou \c false se houver erro
 	 */
-	public static function updateArticle($article_id, $data, &$error='') {
+	public static function updateArticle($article_id, $data, &$error='')
+	{
 		if (!is_numeric($article_id)) {
 			$error = 'Invalid method call CMS::updateArticle(): article_id is not numeric';
 			Errors::displayError(500, $error);
@@ -310,7 +319,8 @@ class CMS {
 	 *
 	 *	\see get_article
 	 */
-	public static function getArticleById($article_key, $published=true) {
+	public static function getArticleById($article_key, $published=true)
+	{
 		return self::getArticle((int)$article_key, 'article_id', $published);
 	}
 
@@ -325,7 +335,8 @@ class CMS {
 	 *
 	 *	\see get_article
 	 */
-	public static function getArticleBySlug($slug, $published=true) {
+	public static function getArticleBySlug($slug, $published=true)
+	{
 		return self::getArticle($slug, 'slug', $published);
 	}
 
@@ -348,7 +359,8 @@ class CMS {
 	 *
 	 *	\return um array com a lista de artigos encontrados ou false caso encontre erro
 	 */
-	public static function getArticles($category_id=NULL, $published=true, $order_by='dt_creation', $order_sort='DESC', $start=0, $limit=10, &$count=0) {
+	public static function getArticles($category_id=NULL, $published=true, $order_by='dt_creation', $order_sort='DESC', $start=0, $limit=10, &$count=0)
+	{
 		$query = 'SELECT SQL_CALC_FOUND_ROWS a.`article_id`, a.`title`, a.`slug`, a.`subtitle`, a.`text`, a.`author`, a.`published`, a.`dt_creation`, a.`dt_update`, c.`category_id`, c.`title` AS category_title, c.`slug` AS category_slug';
 		$query .= ' FROM `cms_categories` c';
 		$query .= ' RIGHT OUTER JOIN `cms_articles` a ON a.`category_id` = c.`category_id`';
@@ -397,7 +409,8 @@ class CMS {
 	 *
 	 *	\see get_articles
 	 */
-	public static function getArticlesByCategory($category_id=NULL, $published=true, $order='ASC', $start=0, $limit=10, &$count=0) {
+	public static function getArticlesByCategory($category_id=NULL, $published=true, $order='ASC', $start=0, $limit=10, &$count=0)
+	{
 		return self::getArticles($category_id, $published, 'c.`category_id`', $order, $start, $limit, $count);
 	}
 
@@ -418,7 +431,8 @@ class CMS {
 	 *
 	 *	\see get_articles
 	 */
-	public static function getLastArticles($category_id=NULL, $published=true, $start=0, $limit=10, &$count=0) {
+	public static function getLastArticles($category_id=NULL, $published=true, $start=0, $limit=10, &$count=0)
+	{
 		return self::getArticles($category_id, $published, 'a.`dt_creation`', 'DESC', $start, $limit, $count);
 	}
 
@@ -436,7 +450,8 @@ class CMS {
 	 *	\return um \c array com os dados da categoria, caso encontre ou \c false caso não encontre
 	 *		uma categoria
 	 */
-	public static function getCategory($category_key, $key='category_id', $published=false) {
+	public static function getCategory($category_key, $key='category_id', $published=false)
+	{
 		DB::connect();
 
 		switch ($key) {
@@ -473,7 +488,8 @@ class CMS {
 	 *	\return a quantidade de registros afetados se tiver êxito na execução do método ou
 	 *		\c false se não tiver sucesso
 	 */
-	public static function deleteCategory($category_id, &$error='') {
+	public static function deleteCategory($category_id, &$error='')
+	{
 		if (!is_numeric($category_id)) {
 			$error = 'Invalid method call CMS::deleteCategory(): category_id is not numeric';
 			Errors::displayError(500, $error);
@@ -497,7 +513,8 @@ class CMS {
 	 *
 	 *	\return 
 	 */
-	public static function insertCategory($data, &$error='') {
+	public static function insertCategory($data, &$error='')
+	{
 		$data['title']       = empty($data['title']) ? 'Untitled' : trim($data['title']);
 		$data['slug']        = empty($data['slug']) ? $data['title'] : trim($data['slug']);
 		$data['published']   = empty($data['published']) ? 0 : (int)$data['published'];
@@ -514,7 +531,8 @@ class CMS {
 	 *
 	 *	\return a quantidade de registros afetados ou \c false se houver erro
 	 */
-	public static function updateCategory($category_id, $data, &$error='') {
+	public static function updateCategory($category_id, $data, &$error='')
+	{
 		if (!is_numeric($category_id)) {
 			$error = 'Invalid method call CMS::updateCategory(): category_id is not numeric';
 			Errors::displayError(500, $error);
@@ -625,7 +643,8 @@ class CMS {
 	 *
 	 *	\see get_category
 	 */
-	public static function getCategoryById($category_key, $published=true) {
+	public static function getCategoryById($category_key, $published=true)
+	{
 		return self::getCategory((int)$category_key, 'category_id', $published);
 	}
 
@@ -640,7 +659,8 @@ class CMS {
 	 *
 	 *	\see get_category
 	 */
-	public static function getCategoryBySlug($slug, $published=true) {
+	public static function getCategoryBySlug($slug, $published=true)
+	{
 		return self::getCategory($slug, 'slug', $published);
 	}
 
@@ -661,7 +681,8 @@ class CMS {
 	 *
 	 *	\return um array com a lista de categorias encontradas ou false caso encontre erro
 	 */
-	public static function getCategories($published=true, $order_by='title', $order_sort='ASC', $start=0, $limit=10, &$count=0) {
+	public static function getCategories($published=true, $order_by='title', $order_sort='ASC', $start=0, $limit=10, &$count=0)
+	{
 		$query = 'SELECT SQL_CALC_FOUND_ROWS `category_id`, `title`, `slug`, `dt_update`';
 		$query .= ' FROM `cms_categories`';
 		/*if ($published) {
@@ -697,7 +718,8 @@ class CMS {
 	 *
 	 *	\return \c true se tiver uma categoria em memória e \c false em caso contrário
 	 */
-	public static function loadCategoryToTemplate() {
+	public static function loadCategoryToTemplate()
+	{
 		if (self::isCategoryLoaded()) {
 			if (!$tpl = new Templateed()) {
 				$tpl = new Template();
@@ -720,7 +742,8 @@ class CMS {
 	 *
 	 *	\return \c true se tiver um artigo em memória e \c false em caso contrário
 	 */
-	public static function loadArticleToTemplate() {
+	public static function loadArticleToTemplate()
+	{
 		if (self::isArticleLoaded()) {
 			if (!$tpl = new Templateed()) {
 				$tpl = new Template();
@@ -755,7 +778,8 @@ class CMS {
 	 *	\return \c true se tiver uma categoria em memória e houverem artigos para esta categoria
 	 *		ou \c false em caso contrário
 	 */
-	public static function loadArticlesToTemplate($start=0, $limit=10) {
+	public static function loadArticlesToTemplate($start=0, $limit=10)
+	{
 		if (self::isCategoryLoaded()) {
 			if ($articles = self::getLastArticles(self::$category_data['category_id'], true, $start, $limit, $count)) {
 				if (!$tpl = new Templateed()) {
@@ -788,7 +812,8 @@ class CMS {
 	 *
 	 *	\return um \c array com os dados do usuário, caso encontre ou \c false em caso contrário
 	 */
-	private static function getUser($user_key, $key='user_id', $pass='') {
+	private static function getUser($user_key, $key='user_id', $pass='')
+	{
 		DB::connect();
 
 		switch ($key) {
@@ -819,7 +844,8 @@ class CMS {
 	/**
 	 *	\brief Atualiza os dados de um determinado usuário
 	 */
-	private static function updateUser($data, $user_key, $key='user_id') {
+	private static function updateUser($data, $user_key, $key='user_id')
+	{
 		DB::connect();
 
 		switch ($key) {
@@ -867,7 +893,8 @@ class CMS {
 	/**
 	 *	\brief Retorna um array estrutura com os dados de um usuário
 	 */
-	private static function setUserArray($login='', $password='', $name='', $email='') {
+	private static function setUserArray($login='', $password='', $name='', $email='')
+	{
 		$data = array();
 		if (!empty($login)) $data['login'] = $login;
 		if (!empty($password)) $data['password'] = $password;
@@ -879,28 +906,32 @@ class CMS {
 	/**
 	 *	\brief Retorna os dados de um usuário dado o seu id
 	 */
-	public static function getUserById($user_id) {
+	public static function getUserById($user_id)
+	{
 		return self::getUser((int)$user_id, 'user_id');
 	}
 
 	/**
 	 *	\brief Retorna os dados de um usuário dado o seu login
 	 */
-	public static function getUserByLogin($user_login, $pass='') {
+	public static function getUserByLogin($user_login, $pass='')
+	{
 		return self::getUser($user_login, 'login', $pass);
 	}
 
 	/**
 	 *	\brief Atualiza os dados de um usuário dado o seu id
 	 */
-	public static function updateUserById($user_id, $login='', $password='', $name='', $email='') {
+	public static function updateUserById($user_id, $login='', $password='', $name='', $email='')
+	{
 		return self::updateUser(self::setUserArray($login, $password, $name, $email), $user_id, 'user_id');
 	}
 
 	/**
 	 *	\brief Verifica se há um usuário logado
 	 */
-	public static function logged_in_user() {
+	public static function logged_in_user()
+	{
 		if (!Session::defined('_cms_user')) {
 			return false;
 		}
@@ -911,7 +942,8 @@ class CMS {
 	/**
 	 *	\brief Faz o logon de um usuário
 	 */
-	public static function login_user($login, $password) {
+	public static function login_user($login, $password)
+	{
 		if (Session::defined('_cms_user')) {
 			return false;
 		}
@@ -926,7 +958,8 @@ class CMS {
 	/**
 	 *	\brief Faz o logoff do usuário
 	 */
-	public static function logout_user() {
+	public static function logout_user()
+	{
 		if (!Session::defined('_cms_user')) {
 			return false;
 		}
@@ -935,5 +968,4 @@ class CMS {
 
 		return true;
 	}
-
 }

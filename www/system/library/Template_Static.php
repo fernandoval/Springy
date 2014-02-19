@@ -8,7 +8,7 @@
  *
  *	\brief		Classe estática para tratamento de templates
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.1.1
+ *	\version	1.1.2
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
  */
@@ -18,21 +18,24 @@ namespace FW;
 /**
  *  \brief Classe estática para tratamento de templates
  */
-class Template_Static {
+class Template_Static
+{
 	private static $defaultVars = array();
 	private static $defaultFuncs = array();
 
 	/**
 	 *	\brief Método statico que define um pluguin para todas as instancias da Template
 	 */
-	public static function registerDefaultPlugin($type, $name, $callback, $cacheable=NULL, $cache_attrs=NULL) {
+	public static function registerDefaultPlugin($type, $name, $callback, $cacheable=NULL, $cache_attrs=NULL)
+	{
 		Template_Static::$defaultFuncs[] = array($type, $name, $callback, $cacheable, $cache_attrs);
 	}
 
 	/**
 	 *	\brief Método statico que adiciona uma variável a todas as instancias da Template
 	 */
-	public static function assignDefaultVar($name, $value) {
+	public static function assignDefaultVar($name, $value)
+	{
 		Template_Static::$defaultVars[$name] = $value;
 	}
 
@@ -41,7 +44,8 @@ class Template_Static {
 	 *
 	 * @return Array
 	 */
-	public static function getDefaultVars() {
+	public static function getDefaultVars()
+	{
 		return self::$defaultVars;
 	}
 
@@ -50,7 +54,8 @@ class Template_Static {
 	 *
 	 * @return Array
 	 */
-	public static function getDefaultPlugins() {
+	public static function getDefaultPlugins()
+	{
 		return self::$defaultFuncs;
 	}
 
@@ -61,7 +66,8 @@ class Template_Static {
 	 *
 	 * @return mixed
 	 */
-	public static function getDefaultVar($name) {
+	public static function getDefaultVar($name)
+	{
 		return (isset(Template_Static::$defaultVars[$name]) ? Template_Static::$defaultVars[$name] : NULL);
 	}
 }

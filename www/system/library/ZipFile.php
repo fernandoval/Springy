@@ -2,14 +2,14 @@
 /**	\file
  *  FVAL PHP Framework for Web Applications
  *
- *  \copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.\n
- *  \copyright Copyright (c) 2007-2013 Fernando Val\n
+ *  \copyright Copyright (c) 2007-2014 FVAL Consultoria e Informática Ltda.\n
+ *  \copyright Copyright (c) 2007-2014 Fernando Val\n
  *
  *  \brief		Classe para geração de arquivos ZIP
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	0.3.5
- *  \author		(c) 2003 by Pascal Rehfeldt with changes by Fernando Val
- *  \author		Pascal@Pascal-Rehfeldt.com, under license GNU General Public License (Version 2, June 1991)
+ *  \version	0.3.6
+ *  \author		(c) 2003 by Pascal Rehfeldt - Pascal@Pascal-Rehfeldt.com, under license GNU General Public License (Version 2, June 1991)
+ *  \author		Fernando Val - fernando.val@gmail.com
  *  \ingroup	framework
  */
 
@@ -24,11 +24,12 @@ namespace FW;
  *  \copyright (c) 2003 by Pascal Rehfeldt with changes by Fernando Val
  *  \copyright Under license GNU General Public License (Version 2, June 1991)
  *  \author Pascal@Pascal-Rehfeldt.com
- *  \author Fernando Val
+ *  \author Fernando Val - fernando.val@gmail.com
  *
  *  You can use ZIPlib to add different resources to a ZIP file.
  */
-class ZipFile {
+class ZipFile
+{
 	/// Nome do arquivo de saída
 	private $output_filename = 'archive.zip';
 	private $datasec         = array();
@@ -41,7 +42,8 @@ class ZipFile {
 	/**
 	 *	\brief Construtor da classe
 	 */
-	public function __construct($output_filename='archive.zip', $root_path="") {
+	public function __construct($output_filename='archive.zip', $root_path="")
+	{
 		$this->output_filename = $output_filename;
 		$this->root_path       = str_replace('\\', '/', $root_path);
 		//$this->pathToFPDF      = $FPDF;
@@ -50,7 +52,8 @@ class ZipFile {
 	/**
 	 *	\brief Troca a estensão de um arquivo
 	 */
-	private function replaceSuffix($file, $suffix = 'pdf') {
+	private function replaceSuffix($file, $suffix = 'pdf')
+	{
 		$arr = explode('.', $file);
 		unset($arr[count($arr) - 1]);
 		$file = NULL;
@@ -63,7 +66,8 @@ class ZipFile {
 	/**
 	 *	\brief Converte uma data/hora no formato UNIX para o formato DOS
 	 */
-	private function unix2DosTime($unixtime = 0) {
+	private function unix2DosTime($unixtime = 0)
+	{
 		$timearray = ($unixtime == 0) ? getdate() : getdate($unixtime);
 
 		if ($timearray['year'] < 1980) {
@@ -82,32 +86,33 @@ class ZipFile {
 	/**
 	 *	\brief Pega o conteúdo de um diretório
 	 */
-	private function getDirContent($dirName='./') {
+	private function getDirContent($dirName='./')
+	{
 		if (is_dir($dirName)) {
-			// if (include($this->pathToDeepDir)) {
-				$dir = new DeepDir();
-				$dir->setDir($dirName);
-				$dir->load();
-				return $dir->getFiles();
+			$dir = new DeepDir();
+			$dir->setDir($dirName);
+			$dir->load();
+			Kernel::debug($dir->getFiles());
+			return $dir->getFiles();
+			/*
+			O código comentado abaixo foi um experimento utilizando RecursiveIteratorIterator que
+			demonostrou ser muito mais lento que uma classe escrita em PHP.
+			Código mantido para referência.
+			*/
+			// $dir = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($dirName), \RecursiveIteratorIterator::LEAVES_ONLY);
+			// $arr = array();
+			// foreach($dir as $name => $object){
+				// $arr[] = $name;
 			// }
-			// else {
-				// if ($handle = opendir($dirName)) {
-					// while (false !== ($file = readdir($handle))) {
-						// if (($file != '.') && ($file != '..') && (is_file($file))) {
-							// $content[] = $file;
-						// }
-					// }
-					// closedir($handle);
-					// return $content;
-				// }
-			// }
+			// return $arr;
 		}
 	}
 
 	/**
 	 *	\brief Lê o conteúdo de um arquivo
 	 */
-	private function readFile($file) {
+	private function readFile($file)
+	{
 		if (is_file($file)) {
 			if ($fp = fopen ($file, 'rb')) {
 				$content = fread($fp, filesize($file));
@@ -123,7 +128,8 @@ class ZipFile {
 	/**
 	 *	\brief Monta o conteúdo do ZIP
 	 */
-	private function zipContent() {
+	private function zipContent()
+	{
 		$data    = implode(NULL, $this -> datasec);
 		$ctrldir = implode(NULL, $this -> ctrl_dir);
 
@@ -146,9 +152,10 @@ class ZipFile {
 	 *	Não importa se há arquivos texto ou binários no diretório.
 	 *	Esta função faz uso da classe DeepDir já adicionada a este framework.
 	 */
-	public function addDirContent($dir='./') {
+	public function addDirContent($dir='./')
+	{
 		foreach ($this->getDirContent($dir) as $input) {
-			$this->addFileAndRead(str_replace('.//', NULL, $input));
+			$this->addFile(str_replace('.//', NULL, $input));
 		}
 	}
 
@@ -165,15 +172,16 @@ class ZipFile {
 	 *
 	 *	Para adicionar um arquivo completo, você deve usar a função addFile().
 	 */
-	public function addContentAsFile($data, $name, $time = 0) {
+	public function addContentAsFile($data, $name, $time = 0)
+	{
 		if (mb_check_encoding($name, 'UTF-8')) {
-			$name = Strings_UTF8::convert_to_windowscp1252($name);
+			$name = Strings_UTF8::convertToWindowsCP1252($name);
 		} else {
-			$name = Strings_ANSI::convert_to_windowscp1252($name);
+			$name = Strings_ANSI::convertToWindowsCP1252($name);
 		}
 
 		$name     = str_replace('\\', '/', $name);
-		$name     = ereg_replace('^('.$this->root_path.')?(.*)$', '\\2', $name);
+		$name     = preg_replace('/^('.$this->root_path.')?(.*)$/', '\\2', $name);
 
 		$dtime    = dechex($this->unix2DosTime($time));
 		$hexdtime = '\x' . $dtime[6] . $dtime[7]
@@ -250,7 +258,8 @@ class ZipFile {
 	 *	addFile() pega um arquivo, lê seu conteúdo e o adiciona ao seu ZIP.
 	 *	Esta função pode ler arquivos texto e binários.
 	 */
-	public function addFile($file) {
+	public function addFile($file)
+	{
 		if (is_file($file)) {
 			$this->addContentAsFile($this->readFile($file), $file);
 		}
@@ -268,7 +277,8 @@ class ZipFile {
 	 *
 	 *	\note Arquivos binários não são suportados por esta função.
 	 */
-	public function addFileAsPDF($file, $title='PDF File', $author='Anonymous') {
+	public function addFileAsPDF($file, $title='PDF File', $author='Anonymous')
+	{
 		return;
 
 		//You need FPDF to use this function!
@@ -312,7 +322,8 @@ class ZipFile {
 	/**
 	 *	\brief Salva o arquivo ZIP
 	 */
-	public function save($path='') {
+	public function save($path='')
+	{
 		$return = false;
 
 		if(substr($path, -1) != DIRECTORY_SEPARATOR) {
@@ -330,7 +341,8 @@ class ZipFile {
 	/**
 	 *	\brief Envia o arquivo para o browser do usuário sem salvá-lo no disco
 	 */
-	public function download() {
+	public function download()
+	{
 		header('Content-Type: application/x-zip');
 		header('Content-Disposition: inline; filename="' . $this->output_filename . '"');
 		header('Expires: 0');

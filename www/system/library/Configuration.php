@@ -7,7 +7,7 @@
  *
  *	\brief		Classe de configuração
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.2.2
+ *	\version	1.3.3
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Allan Marques - allan.marques@ymail.com
  *	\ingroup	framework
@@ -20,9 +20,12 @@ namespace FW;
  *  
  *  Esta classe é estática e invocada automaticamente pelo framework.
  */
-class Configuration {
+class Configuration
+{
 	/// Array interno com dados de configuração
 	private static $confs = array();
+	/// Array interno com dados de configuração
+	private static $env = null;
 
 
 	/**
@@ -34,7 +37,8 @@ class Configuration {
 	 *      Se omitido, poderá ser utilizado o conceito de sub-níveis separedos por ponto.
 	 *  \return se o registro existir, retorna seu valor, caso contrário retorna NULL
 	 */
-	public static function get($local, $var = null) {
+	public static function get($local, $var = null)
+	{
         if (is_null($var)) {
             $firstSegment = substr($local, 0, strpos($local, '.'));
 
@@ -51,9 +55,9 @@ class Configuration {
         if (!$var) {
             return self::$confs[$local];
         }
-
-		return ArrayUtils::newInstance()->dottedGet(self::$confs[$local], $var);
-	}
+        
+        return Utils\ArrayUtils::newInstance()->dottedGet(self::$confs[$local], $var);
+    }
 
 	/**
 	 *  \brief Altera o valor de uma entrada de configuração
@@ -66,7 +70,8 @@ class Configuration {
 	 *      Nesse caso, $local receberá o local separado por pontos e $var o valor a ser armazenado.
 	 *  \return void
 	 */
-	public static function set($local, $var, $value = null) {
+	public static function set($local, $var, $value = null)
+	{
         if (is_null($value)) {
             $value = $var;
             $var = '';
@@ -81,63 +86,76 @@ class Configuration {
                 self::$confs[$local] = $value;
             }
         }
-
-		ArrayUtils::newInstance()->dottedSet(self::$confs[$local], $var, $value);
+        
+        Utils\ArrayUtils::newInstance()->dottedSet(self::$confs[$local], $var, $value);
 	}
 
 	/**
 	 *  \brief Carrega o arquivo de configuração e seta o atributo de configuração
 	 */
-	private static function _load($config_file, $local) {
+	private static function _load($config_file, $local)
+	{
 		if (file_exists($config_file)) {
 			$conf = array();
 			require_once $config_file;
 			self::$confs[ $local ] = array_merge(self::$confs[ $local ], $conf);
-			
+            
+			if (isset($_SERVER['HTTP_HOST']) && isset($over_conf[$_SERVER['HTTP_HOST']])) {                
+				self::$confs[ $local ] = array_merge(self::$confs[ $local ], $over_conf[$_SERVER['HTTP_HOST']]);
+			}
+
 			return true;
 		}
-		
+
 		return false;
 	}
-	
+
 	/**
 	 *	\brief Carrega um arquivo de configuração
 	 *
 	 *	\param[in] (string) $local - nome do arquivo de configuração
 	 *	\return \c true se tiver carregado o arquivo de configuração ou \c false em caso contrário
 	 */
-	public static function load($local) {
+	public static function load($local)
+	{
 		self::$confs[ $local ] = array();
 	
 		// Carrega a configuração DEFAULT para $local
 		self::_load($GLOBALS['SYSTEM']['CONFIG_PATH'] . DIRECTORY_SEPARATOR . $local . '.default.conf.php', $local);
-		
-		// Define o arquivo de configuração para o ambiente ativo
-		if (empty($GLOBALS['SYSTEM']['ACTIVE_ENVIRONMENT'])) {
-			if (isset($_SERVER['HTTP_HOST'])) {
-				$environment = $_SERVER['HTTP_HOST'];
+
+		if (is_null(self::$env)) {
+			// Define o arquivo de configuração para o ambiente ativo
+			if (empty($GLOBALS['SYSTEM']['ACTIVE_ENVIRONMENT'])) {
+				if (isset($_SERVER['HTTP_HOST'])) {
+					$environment = $_SERVER['HTTP_HOST'];
+				} else {
+					$environment = 'unknowed';
+				}
 			} else {
-				$environment = 'unknowed';
+				$environment = $GLOBALS['SYSTEM']['ACTIVE_ENVIRONMENT'];
 			}
-		} else {
-			$environment = $GLOBALS['SYSTEM']['ACTIVE_ENVIRONMENT'];
-		}
-		if (is_array($GLOBALS['SYSTEM']['ENVIRONMENT_ALIAS']) && count($GLOBALS['SYSTEM']['ENVIRONMENT_ALIAS'])) {
-			foreach($GLOBALS['SYSTEM']['ENVIRONMENT_ALIAS'] as $alias => $as) {
-				if (preg_match('/^' . $alias . '$/', $environment)) {
-					$environment = $as;
+			if (is_array($GLOBALS['SYSTEM']['ENVIRONMENT_ALIAS']) && count($GLOBALS['SYSTEM']['ENVIRONMENT_ALIAS'])) {
+				foreach($GLOBALS['SYSTEM']['ENVIRONMENT_ALIAS'] as $alias => $as) {
+					if (preg_match('/^' . $alias . '$/', $environment)) {
+						$environment = $as;
+					}
 				}
 			}
+
+			self::$env = $environment;
+
+		} else {
+			$environment = self::$env;
 		}
-		
+
 		// Carreta a configuração para o ambiente ativo
 		self::_load($GLOBALS['SYSTEM']['CONFIG_PATH'] . DIRECTORY_SEPARATOR . $environment . DIRECTORY_SEPARATOR . $local . '.conf.php', $local);
-		
+
 		// Confere se a configuração foi carregada
 		if (empty(self::$confs[ $local ])) {
 			Errors::displayError(500, 'Missing configuration for "' . $local . '" on environment "' . $environment . '".');
 		}
-	
+
 		return true;
 	}
 }

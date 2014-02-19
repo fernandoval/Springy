@@ -8,7 +8,7 @@
  *
  *  \brief		Script da classe cerne do framework
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	1.6.33
+ *  \version	1.6.34
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *  \ingroup	framework
@@ -21,9 +21,10 @@ namespace FW;
  *  
  *  Esta classe é estática e invocada automaticamente pelo framework.
  */
-class Kernel {
+class Kernel
+{
 	/// Versão do framework
-	const VERSION = '2.2.0';
+	const VERSION = '2.2.1';
 	/// Array interno com dados de configuração
 	private static $confs = array();
 	/// Array com informações de debug
@@ -44,7 +45,8 @@ class Kernel {
 	 *  \param (array)$controller_root - ae definido, altera o root de controladoras
 	 *  \return Retorna um array contendo o root de controladoras
 	 */
-	public static function controllerRoot($controller_root=null) {
+	public static function controllerRoot($controller_root=null)
+	{
 		if (!is_null($controller_root)) {
 			self::$controller_root = $controller_root;
 		}
@@ -56,7 +58,8 @@ class Kernel {
 	 *
 	 *	\param string $controller
 	 */
-	public static function controllerNamespace($controller=null) {
+	public static function controllerNamespace($controller=null)
+	{
 		if(!is_null($controller) && file_exists($controller)) {
 			$controller  = pathinfo($controller);
 			$controller = str_replace($GLOBALS['SYSTEM']['CONTROLER_PATH'], '', $controller['dirname']);
@@ -69,7 +72,8 @@ class Kernel {
 	/**
 	 *	\brief Põe uma informação na janela de debug
 	 */
-	public static function debug($txt, $name='', $highlight=true, $revert=true) {
+	public static function debug($txt, $name='', $highlight=true, $revert=true)
+	{
 		$debug =  array(
 			memory_get_usage(true),
 			$name,
@@ -89,7 +93,8 @@ class Kernel {
 	 *
 	 *	\return void
 	 */
-	public static function debugPrint() {
+	public static function debugPrint()
+	{
 		if (!defined('STDIN') && Configuration::get('system', 'debug') == true && !Configuration::get('system', 'sys_ajax')) {
 			$size = memory_get_peak_usage(true);
 			$unit = array('b', 'KB', 'MB', 'GB', 'TB', 'PB');
@@ -136,7 +141,8 @@ class Kernel {
 	 *
 	 *	\return Retorna uma string contendo os dados capturados em debug
 	 */
-	public static function getDebugContent() {
+	public static function getDebugContent()
+	{
 		$return = array();
 		foreach(self::$debug as $debug) {
 			$id      = 'debug_' . str_replace('.', '', current(explode(' ', microtime())));
@@ -170,7 +176,8 @@ class Kernel {
 	 *	\param[in] (bool) $return - sem utilização
 	 *	\return Retorna uma string HTML
 	 */
-	public static function print_rc($par, $return=false) {
+	public static function print_rc($par, $return=false)
+	{
 		if (is_object($par)) {
 			if (method_exists($par, '__toString')) {
 				return str_replace('&lt;?php', '', str_replace('?&gt;', '', highlight_string('<?php ' . var_export($par->__toString(), true) . ' ?>', true ) )) .
@@ -190,7 +197,8 @@ class Kernel {
 	 *
 	 *	\param[in] (array) $debug array com o backtrace gerado
 	 */
-	public static function makeDebugBacktrace($debug = null) {
+	public static function makeDebugBacktrace($debug = null)
+	{
 		if(!is_array($debug)) {
 			$debug = debug_backtrace();
 		}
@@ -249,7 +257,8 @@ class Kernel {
 	 *	\param[in] $array (mixed) array a ser convertido
 	 *	\return Retorna um objeto stdClasse
 	 */
-	public static function arrayToObject($array) {
+	public static function arrayToObject($array)
+	{
 		if(!is_array($array)) {
 			return $array;
 		}
@@ -274,7 +283,8 @@ class Kernel {
 	 *	\param[in] $object (mixed) objeto a ser convertido
 	 *	\return Retorna um array
      */
-    public static function objectToArray($object) {
+    public static function objectToArray($object)
+	{
         if (is_object($object)) {
             $object = get_object_vars($object);
 			if (count($object) > 0) {
@@ -392,7 +402,8 @@ class Kernel {
 	/**
 	 *	\brief Informa se o usuário está usando um dispositivo móvel
 	 */
-	public static function getMobileDevice() {
+	public static function getMobileDevice()
+	{
 		if (self::$mobile === NULL) {
 			self::mobileDeviceDetect();
 		}
@@ -402,7 +413,8 @@ class Kernel {
 	/**
 	 *	\brief Copyright do Framework
 	 */
-	public static function printCopyright() {
+	public static function printCopyright()
+	{
 		if (ob_get_contents()) {
 			ob_clean();
 		}
@@ -475,7 +487,8 @@ class Kernel {
 		exit(0);
 	}
 
-	private static function _img_logo() {
+	private static function _img_logo()
+	{
 		return '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';
 	}
 }
