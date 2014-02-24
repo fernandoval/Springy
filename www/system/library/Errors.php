@@ -8,13 +8,15 @@
  *
  *	\brief		Classe para tratamento de erros
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.6.14
+ *	\version	1.6.15
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
  */
 
 namespace FW;
+
+use FW\Utils\Strings;
 
 /**
  *  \brief Classe para tratamento de erros

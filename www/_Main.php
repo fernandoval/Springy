@@ -9,7 +9,7 @@
  *  http://www.fval.com.br
  *
  *	\brief		Script de inicialização da aplicação
- *  \version	2.1.14
+ *  \version	2.2.15
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *  \file
@@ -225,29 +225,28 @@ if (!is_null($controller)) {
 	$ControllerClassName = str_replace('-', '_', FW\URI::getControllerClass()) . '_Controller';
 }
 
-// Se a classe controladora foi carregada e ela não possui sua própria classe Global, chega a existência da _global
+// Se a classe controladora foi carregada e ela não possui sua própria classe Global, checa a existência da _global
 if (!isset($ControllerClassName) || !method_exists($ControllerClassName, '_ignore_global')) {
 	// Verifica se a controller _global existe
 	$path = $GLOBALS['SYSTEM']['CONTROLER_PATH'] . DIRECTORY_SEPARATOR . '_global.php';
 	if (file_exists($path)) {
-
 		require_once($path);
-		unset($path);
-
-		$pageClassName = 'Global_Controller';
-		if (class_exists($pageClassName)) {
-			new $pageClassName;
+		if (class_exists('Global_Controller')) {
+			new Global_Controller;
 		}
 	}
+	unset($path);
 }
 
 // Se foi definido uma Controller, carega
 if (isset($ControllerClassName)) {
-	// verifica se há uma classe default dentro da pasta
-	$defaultFile = dirname($controller) . DIRECTORY_SEPARATOR . '_default.page.php';
+	// Verifica a existência da controladora hook dentro da pasta da controladora atual
+	$defaultFile = dirname($controller) . DIRECTORY_SEPARATOR . '_default.php';
 	if (file_exists($defaultFile)) {
 		require $defaultFile;
-		new Default_Controller;
+		if (class_exists('Default_Controller')) {
+			new Default_Controller;
+		}
 	}
 	unset($defaultFile);
 

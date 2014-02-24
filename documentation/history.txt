@@ -15,6 +15,7 @@ Framework Update History
 
 ------------------------------------------------------------------------------------ --- -- -
 2.2.1
+	- Script da controladora Default renomeado para _default.php;
 	- Eliminação da classe FILO;
 	- Implementação de sobrescrição de configuração para hosts específicos;
 	- Classes ArrayUtils, JSON, JSON_Static, Rss, Strings, Strings_ANSI e Strings_UTF8 movidas para dentro de Utils;

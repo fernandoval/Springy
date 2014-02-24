@@ -8,7 +8,7 @@
  *  \brief		Classe Model para acesso a banco de dados
  *  \note		Essa classe extende a classe DB.
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	1.3.5
+ *  \version	1.4.6
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \ingroup	framework
  */
@@ -59,7 +59,7 @@ class Model extends DB
 	 *
 	 *  \param $filtro - Filto de busca, opcional. Deve ser um array de campos ou inteiro com ID do usuário.
 	 */
-	function __construct($database=null, $filter=null)
+	function __construct($database='default', $filter=null)
 	{
 		parent::__construct($database);
 
@@ -253,8 +253,15 @@ class Model extends DB
 	 *
 	 *  \return Retorna TRUE se alterou o valor da coluna ou FALSE caso a coluna não exista ou não haja registro carregado
 	 */
-	public function set($column, $value)
-	{
+	public function set($column, $value = null) 
+    {
+        if ( is_array($column) ) {
+            foreach ($column as $key => $val) {
+                $this->set($key, $val);
+            }
+            return true;
+        }
+        
 		if (in_array($column, $this->writableColumns)) {
 			if (empty($this->rows)) {
 				$this->rows[] = array();
@@ -451,4 +458,24 @@ class Model extends DB
 	{
 		return $this->dbNumRows;
 	}
+    
+    /**
+     * \brief Alis de get(), para retornar columns como se fossem propriedades
+     * \param variant $name
+     * \return variant
+     */
+    public function __get($name) 
+    {
+        return $this->get($name);
+    }
+    
+    /**
+     * \brief Alias de set(), para setar columns como se fossem propriedades
+     * \param string $name
+     * \param variant $value
+     */
+    public function __set($name, $value) 
+    {
+        $this->set($name, $value);
+    }
 }

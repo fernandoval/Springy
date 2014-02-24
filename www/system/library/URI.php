@@ -8,13 +8,16 @@
  *
  *	\brief		Classe para tratamento de URI
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.12.21
+ *	\version	1.12.22
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
  */
 
 namespace FW;
+
+use FW\Utils\Strings_ANSI;
+use FW\Utils\Strings_UTF8;
 
 /**
  *  \brief Classe para tratamento de URI

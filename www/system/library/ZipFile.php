@@ -7,13 +7,16 @@
  *
  *  \brief		Classe para geração de arquivos ZIP
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	0.3.6
+ *  \version	0.3.7
  *  \author		(c) 2003 by Pascal Rehfeldt - Pascal@Pascal-Rehfeldt.com, under license GNU General Public License (Version 2, June 1991)
  *  \author		Fernando Val - fernando.val@gmail.com
  *  \ingroup	framework
  */
 
 namespace FW;
+
+use FW\Utils\Strings_ANSI;
+use FW\Utils\Strings_UTF8;
 
 /**
  *  \brief Classe para geração de arquivos ZIP

@@ -8,7 +8,7 @@
  *
  *	\brief		Script da classe de acesso a banco de dados
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.6.24
+ *	\version	1.6.25
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *  \author		Allan Marques - allan.marques@ymail.com
@@ -36,7 +36,9 @@ class DB
 	private $cacheStatement = null;
 	/// Último comando executado
 	private $LastQuery = '';
-	/// Código do erro ocorrido no execute
+    /// Valores do Último comando executado
+    private $LastValues = null;
+    /// Código do erro ocorrido no execute
 	private $sqlErrorCode = null;
 	/// Informações do erro ocorrido no execute
 	private $sqlErrorInfo = null;

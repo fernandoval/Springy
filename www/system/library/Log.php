@@ -7,12 +7,14 @@
  *
  *	\brief		Classe para geração de saídas em logs de eventos
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	0.11.11
+ *	\version	0.11.12
  *  \author		Fernando Val  - fernando.val@gmail.com
  *	\ingroup	framework
  */
 
 namespace FW;
+
+use FW\Utils\Strings;
 
 /**
  *  \brief Classe para geração de saídas em logs de eventos
