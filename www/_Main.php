@@ -136,6 +136,11 @@ function FW_ErrorHandler($errno, $errstr, $errfile, $errline, $errContext)
 }
 set_error_handler('FW_ErrorHandler');
 
+/**
+ * \brief Carregando arquivos de helpers
+ */
+require 'helpers.php';
+
 /*  ------------------------------------------------------------------------------------ --- -- -
 	Início do script
 	------------------------------------------------------------------------------------ --- -- - */

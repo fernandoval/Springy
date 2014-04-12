@@ -14,6 +14,27 @@ Developer team:
 Framework Update History
 
 ------------------------------------------------------------------------------------ --- -- -
+3.0.0
+	- Inclusão da classe Container\DIContainer - Classe de container para inversão de controle (Dependecy Injection);
+	- Inclusão da classe Core\Application - Classe container de dependências de toda aplicação;
+	- Inclusão da classe Core\Input - Classe para gerenciamento de dados de input de usuário (GET e POST);
+	- Inclusão da classe Events\HandlerInterface - Interface para classes handlers de eventos;
+	- Inclusão da classe Events\Mediator - Classe de intermediadora de administração de eventos;
+	- Inclusão da classe Security\AclManager - Classe para gerenciamento de permissões de identidades autenticadas na aplicação;
+	- Inclusão da classe Security\AclUserInterface - Interface para padronizar as identidades que serão permissionadas na aplicação;
+	- Inclusão da classe Security\AuthDriverInterface - Interface para padronizar os drivers de autenticação de identidades;
+	- Inclusão da classe Security\Authentication - Gerenciador de autenticação de identidades;
+	- Inclusão da classe Security\BasicHasher - Classe pa geração básica de hashes;
+	- Inclusão da classe Security\BCryptHasher - Classe pa geração de hashes via BCrypt;
+	- Inclusão da classe Security\DBAuthDriver - Driver de autenticação que utiliza o banco de dados como storage;
+	- Inclusão da classe Security\HasherInterface - Interface para padronizar os geradores de hashes;
+	- Inclusão da classe Security\IdentityInterface - Interface para representar identidades que terão uma sessão na aplicação;
+	- Inclusão da classe Utils\FlashMessagesManager - Classe que gerenciar dados flash de sessão, ou seja, dados que ficam disponíveis por somente um request;
+	- Inclusão da classe Utils\MessageContainer - Classe container de mensagens de texto;
+	- Inclusão da classe Validation\Validator - Validador de dados de input do usuário;
+	- Inclusão do Arquivo de helpers com funções e constantes para deixar o desenvolvedor mais feliz e produtivo;
+	- Alteração na variável de configuração global 'SYSTEM' para possibilitar desenvolvimento de teste integrado;
+	- Criado tratamento para ignorar avisos (warnings) de funções depreciadas (deprecated).
 2.2.1
 	- Script da controladora Default renomeado para _default.php;
 	- Eliminação da classe FILO;

@@ -8,7 +8,7 @@
  *	\brief		A single pagination class
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
  *	\link		http://www.fval.com.br/
- *	\version	2.3.5
+ *	\version	2.3.6
  *	\author		Fernando Val <fernando.val@gmail.com>
  *	\ingroup	framework
  */
@@ -67,8 +67,8 @@ namespace FW;
  *					$res = mysql_query($sql);
  *					$reg = mysql_fetch_row($res);
  *					$rowsperpage = 10;
- *					$ultima_pag = $Pagination->CalculateNumPages((int)$reg[0], $rowsperpage);
- *					print $Pagination->Parse($curr_page, $ultima_pag);
+ *					$ultima_pag = $Pagination->calculateNumPages((int)$reg[0], $rowsperpage);
+ *					print $Pagination->parse($curr_page, $ultima_pag);
  */
 class Pagination
 {
@@ -95,15 +95,15 @@ class Pagination
     /// Texto a ser mostrado como separador para primeira e última páginas / first/last page separator
     private $SeparatorText = '...';
     /// Classe CSS usada para a LABEL de página atual / current page class style
-    private $CurrentPageClass = '';
+    private $CurrentPageClass = 'active';
     /// Classe CSS usada para os LINKs de navegação / page link class style
     private $NavigatorClass = '';
     /// Classe CSS usada para os LABELS dos separadores de primeira e última páginas / sepatator class style
     private $SeparatorClass = 'separador';
     /// Texto a ser mostrado no link para a página anterior / previous page text
-    private $PreviousText = '-';
+    private $PreviousText = '&laquo;';
     /// Texto a ser mostrado no link para a príxima página / next page text
-    private $NextText = '+';
+    private $NextText = '&raquo;';
 
 	/**
 	 *  \brief Constructor
@@ -230,7 +230,7 @@ class Pagination
 	/**
 	 *  \brief Calculate total page number
 	 */
-	private function CalculateNumPages()
+	private function calculateNumPages()
 	{
         $this->LastPage = ceil($this->nunRows / $this->nunRowsPerPage);
     }
@@ -240,7 +240,7 @@ class Pagination
 	 */
     public function parse()
 	{
-		$this->CalculateNumPages();
+		$this->calculateNumPages();
 
 		$this->PagesLink['pages'] = array();
         $this->PagesLink['currpage'] = $this->CurrentPage;
@@ -310,37 +310,32 @@ class Pagination
 	 */
     public function makeHtml()
 	{
-        $this->Parse();
+        $this->parse();
 
 		if (count($this->PagesLink['pages']) == 1) {
 			return;
 		}
-
-        $separator = '<span ' . ($this->SeparatorClass ? 'class="'.$this->SeparatorClass.'"' : '') . '>'.$this->SeparatorText.'</span>';
-        $previous  = empty($this->PagesLink['previous'])  ? '' : '<a href="'.$this->PagesLink['previous'].'" class="'.$this->NavigatorClass.'">'.$this->PreviousText.'</a> ';
-        $next      = empty($this->PagesLink['next'])  ? '' : '<a href="'.$this->PagesLink['next'].'" class="'.$this->NavigatorClass.'">'.$this->NextText.'</a>';
-        $first     = empty($this->PagesLink['first']) ? '' : '<a href="'.$this->PagesLink['first'].'" class="'.$this->NavigatorClass.'">1</a>';
-        $last      = empty($this->PagesLink['last'])  ? '' : '<a href="'.$this->PagesLink['last'].'" class="'.$this->NavigatorClass.'">'.$this->LastPage.'</a>';
-        $pages     = array();
+        
+        $separator = '<li ' . ($this->SeparatorClass ? 'class="disabled '.$this->SeparatorClass.'"' : '') . '><a href="#">'.$this->SeparatorText.'</a></li>';
+        $previous  = empty($this->PagesLink['previous'])  ? '' : '<li><a href="'.$this->PagesLink['previous'].'" class="'.$this->NavigatorClass.'">'.$this->PreviousText.'</a></li> ';
+        $next      = empty($this->PagesLink['next'])  ? '' : '<li><a href="'.$this->PagesLink['next'].'" class="'.$this->NavigatorClass.'">'.$this->NextText.'</a></li>';
+        $first     = empty($this->PagesLink['first']) ? '' : '<li><a href="'.$this->PagesLink['first'].'" class="'.$this->NavigatorClass.'">1</a></li>';
+        $last      = empty($this->PagesLink['last'])  ? '' : '<li><a href="'.$this->PagesLink['last'].'" class="'.$this->NavigatorClass.'">'.$this->LastPage.'</a></li>';
+        $middle    = '';
 
         foreach($this->PagesLink['pages'] as $Page => $Link) {
-            $pages[] = empty($Link) ? '<span ' . ($this->CurrentPageClass ? 'class="'.$this->CurrentPageClass.'"' : '') . '>'.$Page.'</span>' : '<a href="'.$Link.'" class="'.$this->NavigatorClass.'">'.$Page.'</a> ';
+            $middle .= empty($Link) ? '<li ' . ($this->CurrentPageClass ? 'class="'.$this->CurrentPageClass.'"' : '') . '><a href="#">'.$Page.'</a></li>' : '<li><a href="'.$Link.'" class="'.$this->NavigatorClass.'">'.$Page.'</a></li>';
         }
 
-        $middle = '';
-        foreach($pages as $Page) {
-            $middle .= ' '.$Page;
-        }
-
-        $this->HTML = str_replace('  ', ' ', trim($previous.' '.$first.(!empty($first)?' '.$separator:'').' '.trim($middle).' '.(!empty($last)?' '.$separator:'').$last.' '.$next));
+        $this->HTML = '<ul class="pagination">'.$previous.$first.(!empty($first)?$separator:'').$middle.(!empty($last)?$separator:'').$last.$next.'</ul>';
         return $this->HTML;
     }
 
 	/**
 	 *  \brief Print the HTML format
 	 */
-    public function show($pgatual = 0, $pgfim = 0)
+    public function show()
 	{
-        echo $this->MakeHTML($pgatual, $pgfim);
+        echo $this->makeHTML();
     }
 }

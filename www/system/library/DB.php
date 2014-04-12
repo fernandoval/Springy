@@ -8,7 +8,7 @@
  *
  *	\brief		Script da classe de acesso a banco de dados
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.6.25
+ *	\version	1.6.26
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *  \author		Allan Marques - allan.marques@ymail.com
@@ -283,7 +283,13 @@ class DB
 			$sqlError = 'Still this connection was not executed some instruction SQL using.';
 		}
 
-		$errorInfo = ($this->SQLRes ? $this->SQLRes->errorInfo() : $this->dataConnect->errorInfo());
+		if ($this->SQLRes) {
+			$errorInfo = $this->SQLRes->errorInfo();
+		} elseif ($this->dataConnect) {
+			$errorInfo = $this->dataConnect->errorInfo();
+		} else {
+			$errorInfo = array(0, 0, 'Erro desconhecido');
+		}
 
 		if (PHP_SAPI === 'cli' || defined('STDIN')) {
 			$htmlError = 'Dados do banco' . "\n"

@@ -4,7 +4,7 @@
  *
  *	\copyright	Copyright (c) 2007-2014 FVAL Consultoria e Informática Ltda.\n
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	1.6.8
+ *  \version	1.7.9
  *  \author		Fernando Val  - fernando.val@gmail.com
  *
  *  \brief Configurações do cerne do sistema
@@ -78,7 +78,7 @@
 /**@{*/
 
 /// Configurações gerais do sistema
-$SYSTEM = array(
+$GLOBALS['SYSTEM'] = array(
 	'SYSTEM_NAME' => 'Nome Do Seu Sistema', 
 	'SYSTEM_VERSION' => 'Versão do Seu Projeto', 
 
@@ -103,17 +103,17 @@ $SYSTEM = array(
 );
 
 /// Diretório do sistema
-$SYSTEM['SYSTEM_PATH'] = realpath($SYSTEM['ROOT_PATH'] . DIRECTORY_SEPARATOR . 'system');
+$GLOBALS['SYSTEM']['SYSTEM_PATH'] = realpath($SYSTEM['ROOT_PATH'] . DIRECTORY_SEPARATOR . 'system');
 /// Diretório da biblioteca do sistema
-$SYSTEM['LIBRARY_PATH'] = realpath($SYSTEM['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'library');
+$GLOBALS['SYSTEM']['LIBRARY_PATH'] = realpath($SYSTEM['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'library');
 /// Diretório de classes de terceiros que não são carregadas pelo autoload
-$SYSTEM['3RDPARTY_PATH'] = realpath($SYSTEM['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'other');
+$GLOBALS['SYSTEM']['3RDPARTY_PATH'] = realpath($SYSTEM['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'other');
 /// Diretório das controladoras
-$SYSTEM['CONTROLER_PATH'] = realpath($SYSTEM['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'controllers');
+$GLOBALS['SYSTEM']['CONTROLER_PATH'] = realpath($SYSTEM['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'controllers');
 /// Diretório das classes da aplicação
-$SYSTEM['CLASS_PATH'] = realpath($SYSTEM['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'classes');
-$SYSTEM['USER_CLASS_PATH'] = $SYSTEM['CLASS_PATH'];
+$GLOBALS['SYSTEM']['CLASS_PATH'] = realpath($SYSTEM['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'classes');
+$GLOBALS['SYSTEM']['USER_CLASS_PATH'] = $SYSTEM['CLASS_PATH'];
 /// Diretório das configurações do sistema
-$SYSTEM['CONFIG_PATH'] = realpath($SYSTEM['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'conf');
+$GLOBALS['SYSTEM']['CONFIG_PATH'] = realpath($SYSTEM['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'conf');
 
 /**@}*/

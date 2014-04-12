@@ -237,9 +237,37 @@ class Strings
 		return true;
 	}
 
-	public static function senha($senha)
+	/**
+	 *  \brief Valida o tamanho de uma string
+	 *
+	 *  Essa função não tem muito sentido em existir. Está sendo mantida apenas
+	 *  para compatibilidade com versões anteriores do framework.
+	 *
+	 *	Ela foi criada por causa da função nunca agregada, mas mantida sem
+	 *  documentação, denominada senha, que verifica apenas os tamanhos
+	 *  mínimo e máximo de um string fornecido.
+	 *
+	 *  Sugestão: elaborar uma função ou classe melhor para verificação de
+	 *  senhas, que, preferencialmente, tenha recursos como o de teste de força
+	 *  da senha.
+	 *
+	 *  \param (string)$string - String a ser verificado
+	 *  \param (int)$minSize - tamanho mínimo aceito. Padrão = 5
+	 *  \param (int)$maxSize - tamanho máximo aceito. Padrão = 16
+	 */
+	public static function sizeMatch($string, $minSize=5, $maxSize=16)
 	{
-		return preg_match('/^(.){6,12}$/', $senha);
+		return preg_match("/^(.){" . $minSize . "," . $maxSize . "}$/", $string);
+	}
+
+	/**
+	 *  \brief [DEPRECATED] Sinônimo para password
+	 *  \deprecated
+	 *  \see password
+	 */
+	public static function senha($senha, $minSize=5, $maxSize=16)
+	{
+		return self::sizeMatch($senha, $minSize, $maxSize);
 	}
 
 	public static function ie($ie)

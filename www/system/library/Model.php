@@ -8,12 +8,14 @@
  *  \brief		Classe Model para acesso a banco de dados
  *  \note		Essa classe extende a classe DB.
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	1.4.6
+ *  \version	1.4.7
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \ingroup	framework
  */
 
 namespace FW;
+
+use FW\Validation\Validator;
 
 /**
  *  \brief Classe Model para acesso a banco de dados
@@ -24,7 +26,7 @@ namespace FW;
  *
  *  Utilize-a para diminuir a quantidade de métodos que sua classe precisará ter para consultas e manutenção em bancos de dados.
  */
-class Model extends DB
+class Model extends DB implements \Iterator
 {
 	/**
 	 *  Atributos da classe
@@ -53,8 +55,10 @@ class Model extends DB
 	protected $dbNumRows = 0;
 	/// Flag de carga do banco de dados. Informa que os dados do objeto foram lidos do banco.
 	protected $loaded = false;
+    /// Container de mensagem de erros de validação.
+    protected $validationErrors;
 
-	/**
+    /**
 	 *  \brief Método construtor da classe.
 	 *
 	 *  \param $filtro - Filto de busca, opcional. Deve ser um array de campos ou inteiro com ID do usuário.
@@ -97,8 +101,67 @@ class Model extends DB
 	{
 		return false;
 	}
+    
+    /**
+     * \brief Retorna as configurações de regras para validação dos dados do model
+     * 
+     * \note Este método deve ser extendido na classe herdeira
+     * 
+     * \return array
+     */
+    protected function validationRules()
+    {
+        return array();
+    }
+    
+    /**
+     * \brief Mensagens de erros customizadas para cada tipo de validação à ser
+     *        realizado neste model.
+     * 
+     * \note Este método deve ser extendido na classe herdeira
+     * 
+     * \return array
+     */
+    protected function validationErrorMessages()
+    {
+        return array();
+    }
+    
+    /**
+     * \brief Retorna o container de mensagens de errors que guardará as mensagens de erros
+     *       vindas do teste de validação
+     * 
+     * \return FW\Utils\MessageContainer
+     */
+    public function validationErrors()
+    {
+        return $this->validationErrors;
+    }
+    
+    /**
+     * \brief Realiza uma validação dos dados populados no objeto, passando-os por testes
+     *        de acordo com  as configurações regras estipulados no método 'validationRules()'
+     * 
+     * \return bool resultado da validação, true para passou e false para não passou
+     */
+    public function validate()
+    {        
+        $data = $this->rows[0];
+        
+        $validation = Validator::make(
+            $data, 
+            $this->validationRules(), 
+            $this->validationErrorMessages()
+        );
+        
+        $result = $validation->validate();
+        
+        $this->validationErrors = $validation->errors();
+        
+        return $result;
+    }
 
-	/**
+    /**
 	 *  \brief Método de carga do objeto
 	 *
 	 *  Busca um registro específico e o carrega para as propriedades.
@@ -123,8 +186,21 @@ class Model extends DB
 	 *
 	 *  \return Retorna TRUE se o dado foi salvo ou FALSE caso nenhum dado tenha sido alterado
 	 */
-	public function save()
+	public function save($onlyIfValidationPasses = true)
 	{
+        // Se o parametro de salvar o objeto somente se a validação passar,
+        // então é feita a validação e se o teste falar, retorna falso sem salvar
+        if ( $onlyIfValidationPasses && !$this->validate() ) {
+            try {
+                // Se houver erros e o objeto de flashdata estiver registrado
+                // salvá-los nos dados de flash para estarem disponívels na variavel
+                // de template global '$errors' somente durante o próximo request.
+                app('session.flashdata')->setErrors( $this->validationErrors() );
+            } catch (Exception $e) { }
+            
+            return false;
+        }
+        
 		if (count($this->changedColumns) < 1) {
 			return false;
 		}
@@ -291,7 +367,7 @@ class Model extends DB
 	 *
 	 *  \return Retorna TRUE caso tenha efetuado a busca ou FALSE caso não tenha recebido filtros válidos.
 	 */
-	public function query(array $filter=null, array $order=array(), $offset=NULL, $limit=NULL)
+	public function query(array $filter=null, array $orderby=array(), $offset=NULL, $limit=NULL)
 	{
 		// Se nenhuma chave de busca foi passada, utiliza dados do objeto
 		if (is_null($filter) && !empty($this->rows)) {
@@ -478,4 +554,25 @@ class Model extends DB
     {
         $this->set($name, $value);
     }
+
+    public function current() 
+    {
+        return current($this->rows);
+    }
+
+    public function key() 
+    {
+        return key($this->rows);
+    }
+
+    public function rewind() 
+    {
+        reset($this->rows);
+    }
+
+    public function valid() 
+    {
+        return $this->current() !== false;
+    }
+
 }

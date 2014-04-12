@@ -7,8 +7,8 @@ Copyright (C) 2009-2014 Lucas Cardozo
 http://www.fval.com.br
 
 
-Migrando para a Versão 2.2.0 de versões anteriores
---------------------------------------------------
+Migrando para a Versão >= 2.2.0 de versões anteriores
+-----------------------------------------------------
 
 As duas maiores mudanças ocorridas na versão 2.2.0 foram:
 

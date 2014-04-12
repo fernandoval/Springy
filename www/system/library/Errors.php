@@ -8,7 +8,7 @@
  *
  *	\brief		Classe para tratamento de erros
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.6.15
+ *	\version	1.6.16
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
@@ -96,6 +96,7 @@ class Errors
 			case E_DEPRECATED:
 			case E_USER_DEPRECATED:
 				$printError = 'Deprecated Function';
+				if (Configuration::get('system', 'ignore_deprecated')) return false;
 			break;
 			case E_RECOVERABLE_ERROR:
 				$printError = 'Fatal Error';

@@ -17,6 +17,7 @@
  *  Você poderá adicionar entradas personalizadas de sua aplicação.
  *  
  *  Entradas de configuração:
+ *  - \c ignore_deprecated - Instrui o handler de tratamento de erros a ignorar avisos de funções depreciadas
  *  - \c controller_path - Caminho do diretório de scripts de controle (controllers)
  *  - \c css_path - Caminho do diretório dos arquivos CSS
  *  - \c js_path - Caminho do diretório dos arquivos JavaScript
@@ -64,12 +65,13 @@
 
 /// Configurações para todos os ambientes
 $conf = array(
-	'developer_user'  => '',
-	'developer_pass'  => '',
-	'dba_user'        => '',
-	'controller_path' => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'controllers',
-	'css_path'        => $GLOBALS['SYSTEM']['ROOT_PATH'] . DIRECTORY_SEPARATOR . 'css',
-	'js_path'         => $GLOBALS['SYSTEM']['ROOT_PATH'] . DIRECTORY_SEPARATOR . 'js'
+	'ignore_deprecated' => false,
+	'developer_user'    => '',
+	'developer_pass'    => '',
+	'dba_user'          => '',
+	'controller_path'   => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'controllers',
+	'css_path'          => $GLOBALS['SYSTEM']['ROOT_PATH'] . DIRECTORY_SEPARATOR . 'css',
+	'js_path'           => $GLOBALS['SYSTEM']['ROOT_PATH'] . DIRECTORY_SEPARATOR . 'js'
 );
 
 /**@}*/
