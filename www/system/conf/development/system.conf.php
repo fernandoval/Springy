@@ -26,11 +26,13 @@
 $conf = array(
 	'debug'             => true,
 	'maintenance'       => false,
-	'admin_maintenance' => false,
 	'rewrite_url'       => true,
 	'cache'             => false,
 	'cache-control'     => 'no-cache',
-	'authentication'    => array()
+	'authentication'    => array(),
+	'system_error'      => array(
+		'save_in_database' => false
+	)
 );
 
 /**@}*/

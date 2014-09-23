@@ -131,7 +131,7 @@ class Kernel
 			if (preg_match('/<body(.*?)>/', $conteudo)) {
 				echo preg_replace('/<body(.*?)>/', '<body\\1>' . $htmlDebug, $conteudo);
 			} else {
-				echo preg_replace('/^(.*?)$/', '<script type="text/javascript" src="'.URI::buildURL(array('scripts'), array(), true, 'static').'/jquery.js"></script>' . $htmlDebug . '\\1', $conteudo);
+				echo preg_replace('/^(.*?)$/', '<script type="text/javascript" src="'.URI::buildURL(array(Configuration::get('uri', 'js_dir')), array(), true, 'static').'/jquery.js"></script>' . $htmlDebug . '\\1', $conteudo);
 			}
 		}
 	}

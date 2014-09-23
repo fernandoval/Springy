@@ -94,7 +94,11 @@ $conf = array(
 	'common_urls'                     => array(),
 	'redirect_last_slash'             => true,
 	'force_slash_on_index'            => true,
-	'ignored_segments'                => 0
+	'ignored_segments'                => 0,
+	'js_dir'                          => 'js',
+	'css_dir'                         => 'css',
+	'images_dir'                      => 'images',
+	'swf_dir'                         => 'swf'
 );
 
 /**@}*/

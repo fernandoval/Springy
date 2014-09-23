@@ -18,10 +18,10 @@ class Global_Controller {
 		FW\Template_Static::assignDefaultVar('isMobileDevice', FW\Browser\OS::isMobile());
 
 		// Inicializa as URLs estáticas
-		FW\Template_Static::assignDefaultVar('urlJS',  FW\URI::buildURL(array('js'), array(), true, 'static'));
-		FW\Template_Static::assignDefaultVar('urlCSS', FW\URI::buildURL(array('css'), array(), true, 'static'));
-		FW\Template_Static::assignDefaultVar('urlIMG', FW\URI::buildURL(array('images'), array(), true, 'static'));
-		FW\Template_Static::assignDefaultVar('urlSWF', FW\URI::buildURL(array('swf'), array(), true, 'static'));
+		FW\Template_Static::assignDefaultVar('urlJS',  FW\URI::buildURL(array(FW\Configuration::get('uri', 'js_dir')), array(), true, 'static'));
+		FW\Template_Static::assignDefaultVar('urlCSS', FW\URI::buildURL(array(FW\Configuration::get('uri', 'css_dir')), array(), true, 'static'));
+		FW\Template_Static::assignDefaultVar('urlIMG', FW\URI::buildURL(array(FW\Configuration::get('uri', 'images_dir')), array(), true, 'static'));
+		FW\Template_Static::assignDefaultVar('urlSWF', FW\URI::buildURL(array(FW\Configuration::get('uri', 'swf_dir')), array(), true, 'static'));
 
 		// Inicializa o controle de versões de arquivos estáticos
 		FW\Template_Static::registerDefaultPlugin('function', 'files_static_version', 'files_static_version');

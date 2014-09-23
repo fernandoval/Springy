@@ -8,7 +8,7 @@
  *
  *	\brief		Classe para tratamento de erros
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.6.16
+ *	\version	1.6.18
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
@@ -258,17 +258,19 @@ class Errors
 
 		// Envia a mensagem de erro para o webmaster
 		if (!in_array($errorType, array(404, 503)) && Configuration::get('mail', 'errors_go_to') && !Configuration::get('system','debug')) {
-			$db = new DB;
-			if (DB::hasConnection()) {
-				$db->execute('SELECT 1 FROM system_error WHERE error_code = ?', array($errorId));
+			if (Configuration::get('system', 'system_error.save_in_database')) {
+				$db = new DB;
+				if (DB::hasConnection()) {
+					$db->execute('SELECT 1 FROM system_error WHERE error_code = ?', array($errorId));
 
-				if ($db->affectedRows()) {
-					$naoMandaEmail = true;
+					if ($db->affectedRows()) {
+						$naoMandaEmail = true;
+					}
+
+					$db->execute('INSERT INTO system_error (error_code, detalhes) VALUES (?, ?) ON DUPLICATE KEY UPDATE qtd = qtd + 1', array($errorId, $msg));
 				}
-
-				$db->execute('INSERT INTO system_error (error_code, detalhes) VALUES (?, ?) ON DUPLICATE KEY UPDATE qtd = qtd + 1', array($errorId, $msg));
+				unset($db);
 			}
-			unset($db);
 
 			if (!isset($naoMandaEmail)) {
 				$msg = preg_replace('/\<a href="javascript\:\;" onclick="var obj=\$\(\#(.*?)\)\.toggle\(\)" style="color:#06c; margin:3px 0"\>ver argumentos passados a função\<\/a\>/', '<span style="font-weight:bold; color:#06c; margin:3px 0">Argumentos da Função:</span>', $msg);
@@ -378,10 +380,10 @@ class Errors
 
 				header('Content-type: text/html; charset=UTF-8', true, $errorType);
 
-				$tpl->assign('urlJS',  URI::buildURL(array('scripts'), array(), isset($_SERVER['HTTPS']), 'static'));
-				$tpl->assign('urlCSS', URI::buildURL(array('css'), array(), isset($_SERVER['HTTPS']), 'static'));
-				$tpl->assign('urlIMG', URI::buildURL(array('images'), array(), isset($_SERVER['HTTPS']), 'static'));
-				$tpl->assign('urlSWF', URI::buildURL(array('swf'), array(), isset($_SERVER['HTTPS']), 'static'));
+				$tpl->assign('urlJS',  URI::buildURL(array(Configuration::get('uri', 'js_dir')), array(), isset($_SERVER['HTTPS']), 'static'));
+				$tpl->assign('urlCSS', URI::buildURL(array(Configuration::get('uri', 'css_dir')), array(), isset($_SERVER['HTTPS']), 'static'));
+				$tpl->assign('urlIMG', URI::buildURL(array(Configuration::get('uri', 'images_dir')), array(), isset($_SERVER['HTTPS']), 'static'));
+				$tpl->assign('urlSWF', URI::buildURL(array(Configuration::get('uri', 'swf_dir')), array(), isset($_SERVER['HTTPS']), 'static'));
 
 				$tpl->assign('errorDebug', (Configuration::get('system', 'debug') ? $msg : ''));
 
