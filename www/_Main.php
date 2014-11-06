@@ -1,7 +1,7 @@
 <?php
 /** \file
  *  FVAL PHP Framework for Web Applications
- *  
+ *
  *	\copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.\n
  *	\copyright Copyright (c) 2007-2013 Fernando Val\n
  *	\copyright Copyright (c) 2009-2013 Lucas Cardozo
@@ -9,7 +9,7 @@
  *  http://www.fval.com.br
  *
  *	\brief		Script de inicialização da aplicação
- *  \version	2.2.15
+ *  \version	2.4.17
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *  \file
@@ -29,7 +29,7 @@
  *  \defgroup templates Templates da aplicação
  *  @{
  *	@}
- *  
+ *
  *  \ingroup framework
  */
 $FWGV_START_TIME = microtime(true); // Memoriza a hora do início do processamento
@@ -55,7 +55,7 @@ function fwgv_autoload($classe)
 	} else {
 		$file = $aclass[0];
 	}
-	
+
 	if (file_exists($GLOBALS['SYSTEM']['LIBRARY_PATH'] . DIRECTORY_SEPARATOR . $file . '.php')) {
 		require_once($GLOBALS['SYSTEM']['LIBRARY_PATH'] . DIRECTORY_SEPARATOR . $file . '.php');
 	} else {
@@ -83,6 +83,24 @@ function fwgv_autoload($classe)
 			require_once $GLOBALS['SYSTEM']['CLASS_PATH'] . DIRECTORY_SEPARATOR . $nameSpace . DIRECTORY_SEPARATOR . $classe . '.php';
 		} elseif (file_exists($GLOBALS['SYSTEM']['CLASS_PATH'] . DIRECTORY_SEPARATOR . $classe . '.php')) {
 			require_once $GLOBALS['SYSTEM']['CLASS_PATH'] . DIRECTORY_SEPARATOR . $classe . '.php';
+		} else {
+			$classe = $vars['class'];
+
+			if (!empty($vars['subclass'])) {
+				$classe .= '_' . substr($vars['subclass'], 1);
+			}
+
+			if (isset($vars['type'])) {
+				$classe .= '.static';
+			} else {
+				$classe .= '.class';
+			}
+
+			if (file_exists($GLOBALS['SYSTEM']['CLASS_PATH'] . DIRECTORY_SEPARATOR . $nameSpace . DIRECTORY_SEPARATOR . $classe. '.php')) {
+				require_once $GLOBALS['SYSTEM']['CLASS_PATH'] . DIRECTORY_SEPARATOR . $nameSpace . DIRECTORY_SEPARATOR . $classe . '.php';
+			} elseif (file_exists($GLOBALS['SYSTEM']['CLASS_PATH'] . DIRECTORY_SEPARATOR . $classe . '.php')) {
+				require_once $GLOBALS['SYSTEM']['CLASS_PATH'] . DIRECTORY_SEPARATOR . $classe . '.php';
+			}
 		}
 	}
 }
@@ -99,7 +117,7 @@ class FW_Exception extends Exception
 {
 	/// Contexto do erro
     private $context = null;
-	
+
     public function __construct($code, $message, $file, $line, $context = null)
 	{
         parent::__construct($message, $code);
@@ -107,7 +125,7 @@ class FW_Exception extends Exception
         $this->line = $line;
         $this->context = $context;
     }
-	
+
 	/**
 	 *  \brief Pega o contexto do erro
 	 */
@@ -141,6 +159,13 @@ set_error_handler('FW_ErrorHandler');
  */
 require 'helpers.php';
 
+/**
+ *  \brief Carrega autoload do Composer, caso exista
+ */
+if (file_exists($GLOBALS['SYSTEM']['3RDPARTY_PATH'] . DIRECTORY_SEPARATOR . 'autoload.php')) {
+	require $GLOBALS['SYSTEM']['3RDPARTY_PATH'] . DIRECTORY_SEPARATOR . 'autoload.php';
+}
+
 /*  ------------------------------------------------------------------------------------ --- -- -
 	Início do script
 	------------------------------------------------------------------------------------ --- -- - */
@@ -159,7 +184,7 @@ ini_set('date.timezone', $GLOBALS['SYSTEM']['TIMEZONE']);
 
 // Resolve a URI e monta as variáveis internas
 $controller = FW\URI::parseURI();
-	
+
 // Verifica se o acesso ao sistema necessita de autenticação
 if (is_array(FW\Configuration::get('system', 'authentication'))) {
 	$auth = FW\Configuration::get('system', 'authentication');

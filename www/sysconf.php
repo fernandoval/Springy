@@ -82,10 +82,13 @@ $GLOBALS['SYSTEM'] = array(
 	'SYSTEM_NAME' => 'Nome Do Seu Sistema', 
 	'SYSTEM_VERSION' => 'Versão do Seu Projeto', 
 
-	'ACTIVE_ENVIRONMENT' => 'development', 
+	'ACTIVE_ENVIRONMENT' => '', 
 	'ENVIRONMENT_ALIAS' => array(
+		'localhost' => 'development',
+		'127\.0\.0\.1' => 'development',
+		'192\.168\.[0-9]*\.[0-9]*' => 'development',
 		'homol(ogation)?' => 'development',
-		'(www\.)?seusite\.com(\.br)?' => 'development'
+		'(www\.)?seusite\.com(\.br)?' => 'production'
 	), 
 
 	'CMS' => false, 

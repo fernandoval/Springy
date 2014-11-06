@@ -3,8 +3,6 @@ RewriteEngine On
 RewriteCond %{REQUEST_METHOD} ^(delete|head|trace|track) [NC]
 RewriteRule ^(.*)$ - [F,L]
 
-RewriteBase /
-
 # Rewrite para arquivos estáticos com controle de versão para evitar cache do browser
 # COMENTAR OU EXCLUIR ESSAS LINHAS CASO NÃO UTILIZE
 RewriteCond %{REQUEST_URI} \__([0-9]*)\.(css|js)$ [NC]
@@ -12,9 +10,9 @@ RewriteRule ^(.*)__([0-9]*)\.(css|js)$ $1.$3 [L]
 
 # Rewrite para dominio sem URI (ex: www.seusite.com.br/, o que faria cairia no index.php)
 RewriteCond %{REQUEST_FILENAME} -d
-RewriteRule ^$ /_Main.php?%{QUERY_STRING} [L]
+RewriteRule ^$ /_Main.php?SUPERVAR=/&%{QUERY_STRING} [L]
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteCond %{REQUEST_URI}	!\.(gif|jpe?g|css|js|png|swf|ico)$ [NC]
+RewriteCond %{REQUEST_URI}	!\.(gif|jpe?g|s?css|js|png|swf|ico|eot|svg|ttf|woff|otf|less|json)$ [NC]
 RewriteRule ^(.*?)$ /_Main.php?SUPERVAR=$1&%{QUERY_STRING} [L]

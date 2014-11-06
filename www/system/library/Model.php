@@ -8,7 +8,7 @@
  *  \brief		Classe Model para acesso a banco de dados
  *  \note		Essa classe extende a classe DB.
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	1.4.7
+ *  \version	1.5.8
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \ingroup	framework
  */
@@ -19,7 +19,7 @@ use FW\Validation\Validator;
 
 /**
  *  \brief Classe Model para acesso a banco de dados
- *  
+ *
  *  Esta classe extende a classe DB.
  *
  *  Esta classe deve ser utilizada como herança para as classes de acesso a banco.
@@ -36,7 +36,7 @@ class Model extends DB implements \Iterator
 	/// Relação de colunas da tabela para a consulta (pode ser uma string separada por vírgula ou um array com nos nomes das colunas)
 	protected $tableColumns = '*';
 	/// Colunas que determinam a chave primária
-	protected $primaryKey = array();
+	protected $primaryKey = 'id';
 	/// Nome da coluna que armazena a data de inclusão do registro (será utilizada pelo método save)
 	protected $insertDateColumn = null;
 	/// Nome da coluna usada para definir que o registro foi excluído
@@ -57,13 +57,17 @@ class Model extends DB implements \Iterator
 	protected $loaded = false;
     /// Container de mensagem de erros de validação.
     protected $validationErrors;
+	/// Protege contra carga completa
+	protected $abortOnEmptyFilter = true;
+	/// Objetos relacionados
+	protected $embedding = array();
 
     /**
 	 *  \brief Método construtor da classe.
 	 *
 	 *  \param $filtro - Filto de busca, opcional. Deve ser um array de campos ou inteiro com ID do usuário.
 	 */
-	function __construct($database='default', $filter=null)
+	function __construct($filter=null, $database='default')
 	{
 		parent::__construct($database);
 
@@ -83,7 +87,8 @@ class Model extends DB implements \Iterator
 			return false;
 		}
 
-		foreach($this->primaryKey as $column) {
+		$primary = explode(',', $this->primaryKey);
+		foreach($primary as $column) {
 			if (!isset($this->rows[0][$column])) {
 				return false;
 			}
@@ -99,65 +104,111 @@ class Model extends DB implements \Iterator
 	 */
 	protected function filter($filter, array &$where, array &$params)
 	{
-		return false;
+		foreach ($filter as $field => $value) {
+			if (is_array($value)) {
+				$method = array_shift($value);
+				switch (strtolower($method)) {
+					case 'eq':
+						$where[] = $field.' = ?';
+						$params[] = $value[0];
+						break;
+					case 'gt':
+						$where[] = $field.' > ?';
+						$params[] = $value[0];
+						break;
+					case 'gte':
+						$where[] = $field.' >= ?';
+						$params[] = $value[0];
+						break;
+					case 'lt':
+						$where[] = $field.' < ?';
+						$params[] = $value[0];
+						break;
+					case 'lte':
+						$where[] = $field.' <= ?';
+						$params[] = $value[0];
+						break;
+					case 'ne':
+						$where[] = $field.' != ?';
+						$params[] = $value[0];
+						break;
+					case 'like':
+						$where[] = $field.' LIKE ?';
+						$params[] = $value[0];
+						break;
+					case 'match':
+						$where[] = 'MATCH ('.$field.') AGAINST (?)';
+						$params[] = $value[0];
+						break;
+					case 'match in boolean mode':
+						$where[] = 'MATCH ('.$field.') AGAINST (? IN BOOLEAN MODE)';
+						$params[] = $value[0];
+						break;
+				}
+			} else {
+				$where[] = $field.' = ?';
+				$params[] = $value;
+			}
+		}
+		return true;
 	}
-    
+
     /**
      * \brief Retorna as configurações de regras para validação dos dados do model
-     * 
+     *
      * \note Este método deve ser extendido na classe herdeira
-     * 
+     *
      * \return array
      */
     protected function validationRules()
     {
         return array();
     }
-    
+
     /**
      * \brief Mensagens de erros customizadas para cada tipo de validação à ser
      *        realizado neste model.
-     * 
+     *
      * \note Este método deve ser extendido na classe herdeira
-     * 
+     *
      * \return array
      */
     protected function validationErrorMessages()
     {
         return array();
     }
-    
+
     /**
      * \brief Retorna o container de mensagens de errors que guardará as mensagens de erros
      *       vindas do teste de validação
-     * 
+     *
      * \return FW\Utils\MessageContainer
      */
     public function validationErrors()
     {
         return $this->validationErrors;
     }
-    
+
     /**
      * \brief Realiza uma validação dos dados populados no objeto, passando-os por testes
      *        de acordo com  as configurações regras estipulados no método 'validationRules()'
-     * 
+     *
      * \return bool resultado da validação, true para passou e false para não passou
      */
     public function validate()
-    {        
+    {
         $data = $this->rows[0];
-        
+
         $validation = Validator::make(
-            $data, 
-            $this->validationRules(), 
+            $data,
+            $this->validationRules(),
             $this->validationErrorMessages()
         );
-        
+
         $result = $validation->validate();
-        
+
         $this->validationErrors = $validation->errors();
-        
+
         return $result;
     }
 
@@ -172,6 +223,7 @@ class Model extends DB implements \Iterator
 	 */
 	public function load(array $filter=null)
 	{
+
 		if ($this->query($filter) && $this->dbNumRows == 1) {
 			$this->loaded = true;
 		} else {
@@ -179,6 +231,13 @@ class Model extends DB implements \Iterator
 		}
 
 		return ($this->dbNumRows == 1);
+	}
+	
+	/**
+	 *  \brief Informa se o registro foi carregado com dados do banco
+	 */
+	public function idLoaded() {
+		return $this->loaded;
 	}
 
 	/**
@@ -197,10 +256,10 @@ class Model extends DB implements \Iterator
                 // de template global '$errors' somente durante o próximo request.
                 app('session.flashdata')->setErrors( $this->validationErrors() );
             } catch (Exception $e) { }
-            
+
             return false;
         }
-        
+
 		if (count($this->changedColumns) < 1) {
 			return false;
 		}
@@ -209,26 +268,26 @@ class Model extends DB implements \Iterator
 		$values = array();
 
 		foreach ($this->changedColumns as $column) {
-			$columns[] = '`'.$column.'`';
+			$columns[] = $column;
 			$values[] = $this->rows[0][$column];
 		}
 
-		// $db = new DB;
 		if ($this->loaded) {
 			if ($this->isPrimaryKeyDefined()) {
 				$pk = array();
-				foreach($this->primaryKey as $column) {
-					$pk[] = '`'.$column.'` = ?';
+				$primary = explode(',', $this->primaryKey);
+				foreach($primary as $column) {
+					$pk[] = $column.' = ?';
 					$values[] = $this->rows[0][$column];
 				}
-				$this->execute('UPDATE `'.$this->tableName.'` SET '.implode(' = ?,', $columns).' = ? WHERE '.implode(' AND ', $pk), $values);
+				$this->execute('UPDATE '.$this->tableName.' SET '.implode(' = ?,', $columns).' = ? WHERE '.implode(' AND ', $pk), $values);
 			}
 		}
 		else {
-			$this->execute('INSERT INTO `'.$this->tableName.'`('.implode(', ', $columns).($this->insertDateColumn ? ', `'.$this->insertDateColumn.'`' : "").') VALUES ('.rtrim(str_repeat('?,', count($values)),',').($this->insertDateColumn ? ', NOW()' : "").')', $values);
+			$this->execute('INSERT INTO '.$this->tableName.' ('.implode(', ', $columns).($this->insertDateColumn ? ', '.$this->insertDateColumn : "").') VALUES ('.rtrim(str_repeat('?,', count($values)),',').($this->insertDateColumn ? ', NOW()' : "").')', $values);
 
-			if ($this->affectedRows() > 0 && $this->lastInsertedId() && !empty($this->primaryKey) && count($this->primaryKey) == 1 && empty($this->rows[0][$this->primaryKey[0]])) {
-				$this->rows[0][$this->primaryKey[0]] = $this->lastInsertedId();
+			if ($this->affectedRows() > 0 && $this->lastInsertedId() && !empty($this->primaryKey) && !strpos($this->primaryKey, ',') && empty($this->rows[0][$this->primaryKey])) {
+				$this->rows[0][$this->primaryKey] = $this->lastInsertedId();
 			}
 		}
 
@@ -257,17 +316,18 @@ class Model extends DB implements \Iterator
 
 			// Monta a chave primária
 			$pk = array();
-			foreach($this->primaryKey as $column) {
-				$pk[] = '`'.$column.'` = ?';
+			$primary = explode(',', $this->primaryKey);
+			foreach($primary as $column) {
+				$pk[] = $column.' = ?';
 				$values[] = $this->rows[0][$column];
 			}
 
 			// Faz a exclusão lógica ou física do registro
 			if (!empty($this->deletedColumn)) {
 				array_unshift($values, 1);
-				$this->execute('UPDATE `'.$this->tableName.'` SET `'.$this->deletedColumn.'` = ? WHERE '.implode(' AND ', $pk), $values);
+				$this->execute('UPDATE '.$this->tableName.' SET '.$this->deletedColumn.' = ? WHERE '.implode(' AND ', $pk), $values);
 			} else {
-				$this->execute('DELETE FROM `'.$this->tableName.'` WHERE '.implode(' AND ', $pk), $values);
+				$this->execute('DELETE FROM '.$this->tableName.' WHERE '.implode(' AND ', $pk), $values);
 			}
 		}
 		else {
@@ -286,16 +346,16 @@ class Model extends DB implements \Iterator
 
 			// Se há uma coluna de exclusão lógica definida, adiciona-a ao conjunto de filtros
 			if ($this->deletedColumn) {
-				$where[] = '`'.$this->deletedColumn.'` = ?';
+				$where[] = $this->deletedColumn.' = ?';
 				$params[] = 0;
 			}
 
 			// Faz a exclusão lógica ou física do(s) registro(s)
 			if (!empty($this->deletedColumn)) {
 				array_unshift($params, 1);
-				$this->execute('UPDATE `'.$this->tableName.'` SET `'.$this->deletedColumn.'` = ? WHERE '.implode(' AND ', $where), $params);
+				$this->execute('UPDATE '.$this->tableName.' SET '.$this->deletedColumn.' = ? WHERE '.implode(' AND ', $where), $params);
 			} else {
-				$this->execute('DELETE FROM `'.$this->tableName.'` WHERE '.implode(' AND ', $where), $params);
+				$this->execute('DELETE FROM '.$this->tableName.' WHERE '.implode(' AND ', $where), $params);
 			}
 		}
 
@@ -329,7 +389,7 @@ class Model extends DB implements \Iterator
 	 *
 	 *  \return Retorna TRUE se alterou o valor da coluna ou FALSE caso a coluna não exista ou não haja registro carregado
 	 */
-	public function set($column, $value = null) 
+	public function set($column, $value = null)
     {
         if ( is_array($column) ) {
             foreach ($column as $key => $val) {
@@ -337,7 +397,7 @@ class Model extends DB implements \Iterator
             }
             return true;
         }
-        
+
 		if (in_array($column, $this->writableColumns)) {
 			if (empty($this->rows)) {
 				$this->rows[] = array();
@@ -365,9 +425,11 @@ class Model extends DB implements \Iterator
 	/**
 	 *  \brief Método de consulta ao banco de dados
 	 *
+	 *  \param (array)$filter - array contendo o filtro de registros no formato 'coluna' => valor
+	 *
 	 *  \return Retorna TRUE caso tenha efetuado a busca ou FALSE caso não tenha recebido filtros válidos.
 	 */
-	public function query(array $filter=null, array $orderby=array(), $offset=NULL, $limit=NULL)
+	public function query(array $filter=null, array $orderby=array(), $offset=NULL, $limit=NULL, $embbed=false)
 	{
 		// Se nenhuma chave de busca foi passada, utiliza dados do objeto
 		if (is_null($filter) && !empty($this->rows)) {
@@ -375,21 +437,22 @@ class Model extends DB implements \Iterator
 		}
 
 		// Abandona caso não nenhum filtro tenha sido definido (evita retornar toda a tabela como resultado)
-		if (empty($filter)) {
+		if (empty($filter) && $this->abortOnEmptyFilter) {
 			return false;
 		}
 
 		// Monta o conjunto de colunas da busca
 		if (is_array($this->tableColumns)) {
-			$columns = implode(', ', $this->tableColumns);
+			$columns = $this->tableName.'.'.implode(', '.$this->tableName.'.', $this->tableColumns);
 		} else {
-			$columns = $this->tableColumns;
+			$columns = $this->tableName.'.'.$this->tableColumns;
 		}
 
-		$sql = 'SELECT '.($this->driverName() == 'mysql' ? 'SQL_CALC_FOUND_ROWS ' : "").$columns.' FROM `'.$this->tableName.'` WHERE ';
+		$select = 'SELECT '.($this->driverName() == 'mysql' ? 'SQL_CALC_FOUND_ROWS ' : "").$columns;
+		$from = ' FROM '.$this->tableName;
 		unset($columns);
 		$where = array();
-		$orderby = array();
+		$order = array();
 		$params = array();
 
 		// Monta o conjunto de filtros personalizado da classe herdeira
@@ -398,13 +461,13 @@ class Model extends DB implements \Iterator
 		}
 
 		// Abandona caso não hajam filtros
-		if (empty($where)) {
+		if (empty($where) && $this->abortOnEmptyFilter) {
 			return false;
 		}
 
 		// Se há uma coluna de exclusão lógica definida, adiciona-a ao conjunto de filtros
 		if ($this->deletedColumn) {
-			$where[] = '`'.$this->deletedColumn.'` = ?';
+			$where[] = $this->deletedColumn.' = ?';
 			if (isset($filter[$this->deletedColumn])) {
 				$params[] = (int)$filter[$this->deletedColumn];
 			} else {
@@ -412,18 +475,41 @@ class Model extends DB implements \Iterator
 			}
 		}
 
-		$sql .= implode(' AND ', $where);
+		// Monta os JOINs caso um array seja fornecido
+		if (is_array($embbed)) {
+			// Cada item do array de JOINs deve ser um array com os índices 'fields', 'type', 'table', 'on'
+			// 'type' determina o timpo de JOIN. Exemplos: 'INNER', 'LEFT OUTER'
+			// 'fields' deve ser a lista de campos da junção a ser acrescentada ao select e deve conter o nome da tabela para evitar ambiguidade
+			// 'table' é o nome da tabela
+			// 'on' é a cláusula ON para junção das tabelas
+			foreach ($embbed as $join) {
+				if (!empty($join['fields'])) {
+					$select .= ', '.$join['fields'];
+				}
+				if (!isset($join['type'])) {
+					$join['type'] = 'INNER';
+				}
+				$from .= ' '.$join['type'].' JOIN '.$join['table'].' ON '.$join['on'];
+			}
+		}
+
+		$sql = $select.$from;
+
+		if (!empty($where)) {
+			$sql .= ' WHERE ' . implode(' AND ', $where);
+		}
 
 		// Monta a ordenação do resultado de busca
 		if (!empty($orderby)) {
 			foreach($orderby as $column => $direction) {
-				if (in_array($column, array($this->orderColumns)) && in_array($direction, array('ASC', 'DESC'))) {
-					$orderby[] = "$column $direction";
+				if (!strpos($column, '.')) {
+					$column = $this->tableName.'.'.$column;
 				}
+				$order[] = "$column $direction";
 			}
 
-			if (!empty($orderby)) {
-				$sql .= ' ORDER BY ' . implode(', ', $orderby);
+			if (!empty($order)) {
+				$sql .= ' ORDER BY ' . implode(', ', $order);
 			}
 		}
 
@@ -446,11 +532,17 @@ class Model extends DB implements \Iterator
 		// Faz a contagem de registros do filtro apenas se foi definido um limitador de resultador
 		if ($limit) {
 			if ($this->driverName() == 'mysql') {
-				$this->execute('SELECT FOUND_ROWS() AS `found_rows`');
+				$this->execute('SELECT FOUND_ROWS() AS found_rows');
 			} else {
 				array_pop($params);
 				array_pop($params);
-				$this->execute('SELECT COUNT(0) AS `found_rows` FROM `'.$this->tableName.'` WHERE '.implode(' AND ', $where), $params);
+				
+				$sql = 'SELECT COUNT(0) AS found_rows FROM '.$this->tableName;
+				if (!empty($where)) {
+					$sql .= ' WHERE ' . implode(' AND ', $where);
+				}
+				
+				$this->execute($sql, $params);
 			}
 			$columns = $this->fetchNext();
 			$this->dbNumRows = (int)$columns['found_rows'];
@@ -459,7 +551,37 @@ class Model extends DB implements \Iterator
 		}
 		unset($where, $params);
 
+		// if ($embbed === true && count($this->embedding)) {
+			// foreach ($this->embedding as $obj => $attr) {
+				// $keys = array();
+				// foreach ($this->rows as $row) {
+					// if (!in_array($row[$attr[1]], $keys)) {
+						// $keys[] = $row[$attr[1]];
+					// }
+				// }
+				// $embObj = new $attr[0];
+				// $embObj->query(array('id' => $keys));
+
+				// if (isset($doc[$attr[1]])) {
+					// $row[$obj] = $embObj->findOne(array('_id' => $doc[$attr[1]]));
+					// unset($embObj);
+				// } else {
+					// $row[$obj] = null;
+				// }
+			// }
+		// }
+
 		return true;
+	}
+
+	/**
+	 *  \brief Todos os registros
+	 *
+	 *  \return Retorna um array com todas as linhas do resultset
+	 */
+	public function all()
+	{
+		return $this->rows;
 	}
 
 	/**
@@ -507,20 +629,69 @@ class Model extends DB implements \Iterator
 
 	/**
 	 *  \brief Retorna todos os dados de uma determinada coluna
-	 *  
+	 *
 	 *  \return Retorna um array de valores de uma determinada coluna do resultset.
 	 */
 	public function getAllColumn($column)
 	{
 		return array_column($this->rows, $column);
 	}
-	
+
 	/**
-	 *  \brief Dá o número de registros carregados em memória
+	 *  \brief Quantidade de linhas encontradas para uma determinada condição
 	 *
-	 *  \return Retorna a quantidade de registros contidos do offset de dados do objeto
+	 *  \return Retorna a quantidade de registros encontrados para uma determinada condição
 	 */
-	public function count()
+	public function count(array $filter=null, $embbed=false)
+	{
+		$select = 'SELECT COUNT(0) AS rowscount';
+		$from = ' FROM '.$this->tableName;
+		$where = array();
+		$params = array();
+
+		// Monta o conjunto de filtros personalizado da classe herdeira
+		if (!$this->filter($filter, $where, $params)) {
+			return false;
+		}
+
+		// Se há uma coluna de exclusão lógica definida, adiciona-a ao conjunto de filtros
+		if ($this->deletedColumn) {
+			$where[] = $this->deletedColumn.' = ?';
+			if (isset($filter[$this->deletedColumn])) {
+				$params[] = (int)$filter[$this->deletedColumn];
+			} else {
+				$params[] = 0;
+			}
+		}
+
+		// Monta os JOINs caso um array seja fornecido
+		if (is_array($embbed)) {
+			foreach ($embbed as $join) {
+				if (!isset($join['type'])) {
+					$join['type'] = 'INNER';
+				}
+				$from .= ' '.$join['type'].' JOIN '.$join['table'].' ON '.$join['on'];
+			}
+		}
+
+		$sql = $select.$from;
+
+		if (!empty($where)) {
+			$sql .= ' WHERE ' . implode(' AND ', $where);
+		}
+
+		// Executa o comando de contagem
+		$this->execute($sql, $params);
+		$row = $this->fetchNext();
+		return (int)$row['rowscount'];
+	}
+
+	/**
+	 *  \brief Quantidade de linhas do resultset
+	 *
+	 *  \return Retorna a quantidade de registros contidos no resultset da última consulta
+	 */
+	public function rows()
 	{
 		return count($this->rows);
 	}
@@ -534,43 +705,43 @@ class Model extends DB implements \Iterator
 	{
 		return $this->dbNumRows;
 	}
-    
+
     /**
      * \brief Alis de get(), para retornar columns como se fossem propriedades
      * \param variant $name
      * \return variant
      */
-    public function __get($name) 
+    public function __get($name)
     {
         return $this->get($name);
     }
-    
+
     /**
      * \brief Alias de set(), para setar columns como se fossem propriedades
      * \param string $name
      * \param variant $value
      */
-    public function __set($name, $value) 
+    public function __set($name, $value)
     {
         $this->set($name, $value);
     }
 
-    public function current() 
+    public function current()
     {
         return current($this->rows);
     }
 
-    public function key() 
+    public function key()
     {
         return key($this->rows);
     }
 
-    public function rewind() 
+    public function rewind()
     {
         reset($this->rows);
     }
 
-    public function valid() 
+    public function valid()
     {
         return $this->current() !== false;
     }

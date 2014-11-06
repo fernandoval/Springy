@@ -20,7 +20,7 @@ if ( !defined('DS') ) {
  * Retorna a instância compartilhada do container da aplicação
  * ou um serviço registrado com o nome passado por parâmetro. * 
  * @param string $service Nome chave do serviço (opcional)
- * @return FW\Gore\Application
+ * @return FW\Core\Application
  */
 function app($service = null)
 {
