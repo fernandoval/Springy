@@ -8,7 +8,7 @@
  *
  *  \brief		Script da classe cerne do framework
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	1.6.35
+ *  \version	1.6.36
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *  \ingroup	framework
@@ -24,7 +24,7 @@ namespace FW;
 class Kernel
 {
 	/// Versão do framework
-	const VERSION = '3.0.0';
+	const VERSION = '3.0.1 beta 1';
 	/// Array interno com dados de configuração
 	private static $confs = array();
 	/// Array com informações de debug
@@ -101,30 +101,243 @@ class Kernel
 			$memoria = round($size / pow(1024, ($i = floor(log($size,1024)))), 2) . ' ' . $unit[$i];
 			unset($unit, $size);
 
-			self::debug('Tempo de execução de página: ' . number_format(microtime(true) - $GLOBALS['FWGV_START_TIME'], 6) . ' segundos' . "\n" . 'Pico de memória: ' . $memoria, '', true, false);
+			self::debug('Runtime execution time: ' . number_format(microtime(true) - $GLOBALS['FWGV_START_TIME'], 6) . ' segundos' . "\n" . 'Maximum memory consumption: ' . $memoria, '', true, false);
 			unset($memoria);
 
 			$conteudo = ob_get_contents();
 			ob_clean();
 
 			$htmlDebug ='<!-------------------- inicio do código de debug -------------------->' .
-						'<style type="text/css">.debug_box {background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEgAACxIB0t1+/AAAABZ0RVh0Q3JlYXRpb24gVGltZQAwOC8wNC8xMLtLDxEAAAAcdEVYdFNvZnR3YXJlAEFkb2JlIEZpcmV3b3JrcyBDUzVxteM2AAAADUlEQVQImWP4////GQAJyAPKSOz6nwAAAABJRU5ErkJggg==); z-index: 99999; margin:0; width:70px; height:30px; display:block; position:fixed; bottom:0; left:0; text-decoration:none; border: 2px solid #06C}.debug_box * {color:#000; font-weight:normal; font-family:Verdana; font-size:11px; text-align:left; border:0; margin:0; padding:0}.debug_box_3 {cursor:pointer; font-weight: bold; color:#06C; text-align:center }.debug_box_3.close {line-height:30px}.debug_box_3.open {background:url(data:image/gif;base64,R0lGODlhBQAbAMQAAP+mIf/aov/CZv/rzP+xO//PiP/15v/ku/+7Vf/89//Jd//TkP+qKv/hs//x3f+3TP/Mf//dqv/Fbv/u1f+0Q//47v/nxP++Xf/////Wmf+tMgAAAAAAAAAAAAAAAAAAACH5BAAHAP8ALAAAAAAFABsAAAVFICaKSVlWKGqsq+O6UxwPNG3d96HrTd9HQGBgOMwYjYtkssBkQp5PhVQqqVYFWOxlu0V4vY9wmEImE85njVrNaLcBcHgIADs=); line-height:auto; height:auto}.debug_box_3.red {color:#f00}.debug_box_2 .tools {margin:3px}.debug_box_2 .tools a.close {padding:9px 2px 9px 11px; background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAK6wAACusBgosNWgAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNXG14zYAAAAVdEVYdENyZWF0aW9uIFRpbWUAMi8xNy8wOCCcqlgAAABcSURBVBiVhY/REYAwCENTr/tYJ8oomYWJdKP61R7gneQPeITQJA0AN/51QdKsJGkea8XMPja+t0GSYWBmILnr7h087KHgWCmA61yOEcCcKcPhmSzfa5JOAE8RcbyUIkZhBhiUxQAAAABJRU5ErkJggg==) no-repeat left center; color:#f00}.debug_box_2 .tools a.clear {padding:9px 2px 9px 17px; background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAMCAYAAABr5z2BAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAANrwAADa8BQr/nKgAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNXG14zYAAAHrSURBVCiRjZK/axNhGMe/7/tez7sY7HkphVLTH4tDTEBSSqHUxU1xcOofIE3i4B8hjg4Wx6QUXBzMppNjQmuh0BBiIQ2loAnhwPSC0eQS7t7e+7jYotZWv+MDnw/PL0ZE+J98zGTuMKIEhCin8vnGaZ39S1DJ5cYMxp4zIXKmbdPIdbki8hnn+3I0enSpoJbN3hRCvLsai8WnFhYiQtehwhDNUkkF/T5XRC+1i+D9TCarCfFiMpk0rbk5DgBepwNnb0+ZlkWGbaPXbPbOdVBfW7NJ11+PGcbK9NJSVI9GAQBOpUIDx2GTqRSFvh92Dw+HKgzv/iaoZbMPOGNvIrZ9Jb68LBjnkJ6H1vZ2yDWNTaXT3G00hkPX/cSI7ify+daZoJbLrWiMvY9MTBijbpcrIiZ0XSkpmTU7q67F46K9u+vRyUkRrvs4USwGAKCFAA2PjqCbJqbTaZixGAAgGAzwuVzm1+fnoY+P8+bW1pCUepIqFF79OrLmOw5a6+u4sbh4BgNA4HngjKlQyuBLtfqVSXkvublZ+3PZnBsGjJkZONUqjg8OEHgeAOC4XkcoJfvebn+Qvp+49RcYANjJzyX4nQ6+lUro7exA6Dpkvw9S6mmyUHiGS57l/BlXV3VpWQ+JyL+9sfH2IvA0PwDhFvArpErTbgAAAABJRU5ErkJggg==) no-repeat left center; color:#f00}.debug_box_2 .tools a:hover {text-decoration:underline}.debug_box_2 .debug_info_area {overflow:auto; height:97%}.debug_box_2 .debug_info { overflow: auto }.debug_box_2 .debug_info:hover {background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEgAACxIB0t1+/AAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNXG14zYAAAAWdEVYdENyZWF0aW9uIFRpbWUAMDQvMjUvMTHJkGH2AAAADUlEQVQImWP4+/v2GQAJbAOgd8SdQAAAAABJRU5ErkJggg==)} .debug_box_2 .debug_box_ajax_result > span { font-weight: bold }.debug_box_2 .debug_box_ajax_result > p { padding-left:30px }.debug_box_2 table {margin:5px 0; width:100%}.debug_box_2 table th {font-weight: bold; color:#e8740d; font-size:14px; border:0} .debug_box_2 table td {padding:0 0 3px 3px; vertical-align:top}.debug_box_2 a {color:#7250a2}.debug_box_2 > hr, .debug_box_2 .debug_info_area > hr {margin: 15px 0; border:1px solid #d8dade; visibility:visible}.debug_box_2 .ErrorTitle{background-color:#66C; color:#FFF; font-weight:bold; padding-left:10px}.debug_box_2 .ErrorZebra{background:#efefef}.debug_box_2 .ErrorLabel{font-weight:bold}</style>' .
-						//'<script type="text/javascript" src="/aff.js"></script>' .
+						'<style type="text/css">
+							.debug_box {
+								background-color:#fff;
+								z-index: 99999; 
+								margin:0; 
+								width:70px; 
+								height:30px; 
+								display:block; 
+								position:fixed; 
+								bottom:0; 
+								left:0; 
+								text-decoration:none; 
+								text-align:center;
+								border: 2px solid #06C
+							}
+							.debug_box * {
+								color:#000; 
+								font-weight:normal; 
+								font-family:Verdana; 
+								font-size:11px; 
+								text-align:left; 
+								border:0; 
+								margin:0; 
+								padding:0
+							}
+							.debug_box_3 {
+								cursor:pointer; 
+								font-weight: bold; 
+								color:#06C; 
+								text-align:center 
+							}
+							.debug_box_3.debug_closed {
+								line-height:30px
+							}
+							.debug_box_3.open {
+								background:url(data:image/gif;base64,R0lGODlhBQAbAMQAAP+mIf/aov/CZv/rzP+xO//PiP/15v/ku/+7Vf/89//Jd//TkP+qKv/hs//x3f+3TP/Mf//dqv/Fbv/u1f+0Q//47v/nxP++Xf/////Wmf+tMgAAAAAAAAAAAAAAAAAAACH5BAAHAP8ALAAAAAAFABsAAAVFICaKSVlWKGqsq+O6UxwPNG3d96HrTd9HQGBgOMwYjYtkssBkQp5PhVQqqVYFWOxlu0V4vY9wmEImE85njVrNaLcBcHgIADs=); 
+								line-height:auto; 
+								height:auto
+							}
+							.debug_box_3.red {color:#f00}
+							.debug_box_2 .tools {margin:3px}
+							.debug_box_2 .tools a.close_debug {
+								padding:9px 9px 9px 20px; 
+								background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAK6wAACusBgosNWgAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNXG14zYAAAAVdEVYdENyZWF0aW9uIFRpbWUAMi8xNy8wOCCcqlgAAABcSURBVBiVhY/REYAwCENTr/tYJ8oomYWJdKP61R7gneQPeITQJA0AN/51QdKsJGkea8XMPja+t0GSYWBmILnr7h087KHgWCmA61yOEcCcKcPhmSzfa5JOAE8RcbyUIkZhBhiUxQAAAABJRU5ErkJggg==) no-repeat 5px center; 
+								color:#f00
+							}
+							.debug_box_2 .tools a.clear {
+								padding:9px 2px 9px 17px; 
+								background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAMCAYAAABr5z2BAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAANrwAADa8BQr/nKgAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNXG14zYAAAHrSURBVCiRjZK/axNhGMe/7/tez7sY7HkphVLTH4tDTEBSSqHUxU1xcOofIE3i4B8hjg4Wx6QUXBzMppNjQmuh0BBiIQ2loAnhwPSC0eQS7t7e+7jYotZWv+MDnw/PL0ZE+J98zGTuMKIEhCin8vnGaZ39S1DJ5cYMxp4zIXKmbdPIdbki8hnn+3I0enSpoJbN3hRCvLsai8WnFhYiQtehwhDNUkkF/T5XRC+1i+D9TCarCfFiMpk0rbk5DgBepwNnb0+ZlkWGbaPXbPbOdVBfW7NJ11+PGcbK9NJSVI9GAQBOpUIDx2GTqRSFvh92Dw+HKgzv/iaoZbMPOGNvIrZ9Jb68LBjnkJ6H1vZ2yDWNTaXT3G00hkPX/cSI7ify+daZoJbLrWiMvY9MTBijbpcrIiZ0XSkpmTU7q67F46K9u+vRyUkRrvs4USwGAKCFAA2PjqCbJqbTaZixGAAgGAzwuVzm1+fnoY+P8+bW1pCUepIqFF79OrLmOw5a6+u4sbh4BgNA4HngjKlQyuBLtfqVSXkvublZ+3PZnBsGjJkZONUqjg8OEHgeAOC4XkcoJfvebn+Qvp+49RcYANjJzyX4nQ6+lUro7exA6Dpkvw9S6mmyUHiGS57l/BlXV3VpWQ+JyL+9sfH2IvA0PwDhFvArpErTbgAAAABJRU5ErkJggg==) no-repeat left center; 
+								color:#f00
+							}
+							.debug_box_2 .tools a:hover {text-decoration:underline}
+							.debug_box_2 .debug_info_area {
+								overflow:auto; 
+								height:97%
+							}
+							.debug_box_2 .debug_info { overflow: auto }
+							.debug_box_2 .debug_box_ajax_result > span { font-weight: bold }
+							.debug_box_2 .debug_box_ajax_result > p { padding-left:30px }
+							.debug_box_2 table {margin:5px 0; width:100%}
+							.debug_box_2 table th {
+								font-weight: bold; 
+								color:#e8740d; 
+								font-size:14px; 
+								border:0
+							} 
+							.debug_box_2 table td {
+								padding:0 0 3px 3px; 
+								vertical-align:top
+							}
+							.debug_box_2 a {color:#7250a2}
+							.debug_box_2 > hr, .debug_box_2 .debug_info_area > hr {
+								margin: 15px 0; 
+								border:1px solid #d8dade; 
+								visibility:visible
+							}
+							.debug_box_2 .ErrorTitle{
+								background-color:#66C; 
+								color:#FFF; 
+								font-weight:bold; 
+								padding-left:10px
+							}
+							.debug_box_2 .ErrorZebra{background:#efefef}
+							.debug_box_2 .ErrorLabel{font-weight:bold}
+						</style>' .
 						'<script type="text/javascript">'.
-						'Debug={opened:false,pe:null,w:window,p:null,open:function(){$(\'#debug\').css({\'height\':\'auto\',\'width\':(parseInt($(window).width())-5)+\'px\'}).find(\'div\').first().show().css({\'height\':(parseInt($(window).height())-18)+\'px\'}).next(\'.debug_box_3\').hide();Debug.opened=true;try{try{Debug.p.cancel()}catch(e){}clearInterval(Debug.pe);Debug.pe=null}catch(e){}},close:function(){$(\'#debug\').css({\'width\':\'70px\',\'height\':\'\'}).find(\'div\').first().hide().next(\'.debug_box_3\').show().removeClass(\'red\').fadeTo(1,1);Debug.opened=false},clear:function(){$(\'#debug\').find(\'.debug_info_area\').first().html(\'\')},
-						init:function(){var iniciaDoPrincipal=true;do{try{if(Debug.w.document.location==window.top.document.location){break}else{iniciaDoPrincipal=false;Debug.w=Debug.w.parent;$(\'#debug\').hide()}}catch(e){break}}while(true);if(!iniciaDoPrincipal){Debug.printAjaxResults(\'\',{},$(\'#debug\').find(\'.debug_info_area\').first().html())}$(\'#debug\').find(\'.debug_box_3\').first().bind(\'click\',Debug.open);$(\'#debug\').find(\'.close\').first().bind(\'click\',Debug.close);$(\'#debug\').find(\'.clear\').first().bind(\'click\',Debug.clear);if($(\'#debug div.debug_box_2 div.debug_info_area div.debug_info\').size()>1){Debug.startPulsate()}},pulsate:function(){$(\'#debug\').find(\'.debug_box_3\').first().addClass(\'red\');$(\'#debug\').find(\'.debug_box_3\').first().fadeOut(100,function(){$(\'#debug\').find(\'.debug_box_3\').first().fadeIn(100,function(){$(\'#debug\').find(\'.debug_box_3\').first().fadeOut(100,function(){$(\'#debug\').find(\'.debug_box_3\').first().fadeIn(100,function(){})})})})},startPulsate:function(){try{Debug.p.cancel()}catch(e){}Debug.p=1;Debug.pulsate();if(Debug.pe==null){Debug.pe=setInterval(Debug.pulsate,5000)}},printAjaxResults:function(titulo,infos,txt){var d=Debug.w.$(\'.debug_box\');if(d.size()){var now=new Date();var to=d[0].find(\'.debug_box_2\').first().find(\'.debug_info_area\').first();var title=\'Resultado do AJAX feito \';if(window.parent.document.location!==self.document.location){title+=\'no [i]?frame \'+window.name+\' \'}param=\'\';if(infos.param){infos.param=infos.param.split(\'&\');infos.param.each(function(p){param=(param?\', \':\'\')+\'[\'+p+\']\'})}var span=new Element(\'span\').insert(titulo);if(infos.url){span.insert(\'<br />\').insert(\'URL: \'+infos.url)}if(param){span.insert(\'<br />\').insert(\'Parametros:\'+param)}span.insert(\'<br />\').insert(\'Hora: \'+(now.getHours()<10?\'0\':\'\')+now.getHours()+\':\'+(now.getMinutes()<10?\'0\':\'\')+now.getMinutes()+\':\'+(now.getSeconds()<10?\'0\':\'\')+now.getSeconds()+\'\');var dbar=new Element(\'div\').addClass(\'debug_box_ajax_result\').insert(span);if(txt){dbar.insert(new Element(\'p\').insert(txt))}to.insert({top:new Element(\'hr\')}).insert({top:dbar});if(txt&&!Debug.w.Debug.opened){Debug.w.Debug.startPulsate()}}}};jQuery(Debug.init);DebugAjaxComplete=function(e, XMLHttpRequest, ajaxOptions, thrownError){var p={url:e.url,params:e.parameters};if(e.transport.status===\'500\'){Debug.printAjaxResults(\'Error 500\',p,e.transport.responseText)}else if(e.transport.responseText){if(e.transport.responseJSON){var json=e.transport.responseJSON}else if(e.transport.responseText.isJSON()){var json=e.transport.responseText.evalJSON()}else{Debug.printAjaxResults(\'Result AJAX\',p,e.transport.responseText);return}Debug.printAjaxResults(\'Result JSON\',p,(json.debug?json.debug:\'\'))}};$(window).bind(\'ajaxComplete\',DebugAjaxComplete);$(window).bind(\'ajaxSuccess\',DebugAjaxComplete);$(window).bind(\'ajaxError\',DebugAjaxComplete);'.
+						'Debug={
+							opened:false,
+							pe:null,
+							w:window,
+							p:null,
+							open:function(){
+								$(\'#debug\').css({
+									\'height\':\'auto\',
+									\'width\':(parseInt($(window).width())-5)+\'px\'
+								}).find(\'div\').first().show().css({
+									\'height\':(parseInt($(window).height())-18)+\'px\'
+								}).next(\'.debug_box_3\').hide();
+								Debug.opened=true;
+								try{
+									try{
+										Debug.p.cancel()
+									}catch(e){}
+									clearInterval(Debug.pe);
+									Debug.pe=null
+								}catch(e){}
+							},
+							close:function(){
+								$(\'#debug\').css({
+									\'width\':\'\',
+									\'height\':\'\'
+								}).find(\'div\').first().hide().next(\'.debug_box_3\').show().removeClass(\'red\').fadeTo(1,1);
+								Debug.opened=false
+							},
+							clear:function(){
+								$(\'#debug\').find(\'.debug_info_area\').first().html(\'\')
+							},
+							init:function(){
+								var iniciaDoPrincipal=true;
+								do{
+									try{
+										if(Debug.w.document.location==window.top.document.location){
+											break
+										}else{
+											iniciaDoPrincipal=false;
+											Debug.w=Debug.w.parent;
+											$(\'#debug\').hide()
+										}
+									}catch(e){break}
+								}while(true);
+								if(!iniciaDoPrincipal){
+									Debug.printAjaxResults(\'\',{},$(\'#debug\').find(\'.debug_info_area\').first().html())
+								}
+								$(\'#debug\').find(\'.debug_box_3\').first().bind(\'click\',Debug.open);
+								$(\'#debug\').find(\'.close_debug\').first().bind(\'click\',Debug.close);
+								$(\'#debug\').find(\'.clear\').first().bind(\'click\',Debug.clear);
+								if($(\'#debug div.debug_box_2 div.debug_info_area div.debug_info\').size()>1){
+									Debug.startPulsate()
+								}
+							},
+							pulsate:function(){
+								$(\'#debug\').find(\'.debug_box_3\').first().addClass(\'red\');
+								$(\'#debug\').find(\'.debug_box_3\').first().fadeOut(100,function(){
+									$(\'#debug\').find(\'.debug_box_3\').first().fadeIn(100,function(){
+										$(\'#debug\').find(\'.debug_box_3\').first().fadeOut(100,function(){
+											$(\'#debug\').find(\'.debug_box_3\').first().fadeIn(100,function(){})
+										})
+									})
+								})
+							},
+							startPulsate:function(){
+								try{
+									Debug.p.cancel()
+								}catch(e){}
+								Debug.p=1;
+								Debug.pulsate();
+								if(Debug.pe==null){
+									Debug.pe=setInterval(Debug.pulsate,5000)
+								}
+							},
+							printAjaxResults:function(titulo,infos,txt){
+								var d=Debug.w.$(\'.debug_box\');
+								if(d.size()){
+									var now=new Date();
+									var to=d.find(\'.debug_box_2\').first().find(\'.debug_info_area\').first();
+									var title=\'Resultado do AJAX feito \';
+									if(window.parent.document.location!==self.document.location){
+										title+=\'no [i]?frame \'+window.name+\' \'
+									}
+									param=\'\';
+									if(infos.param){
+										infos.param=infos.param.split(\'&\');
+										infos.param.each(function(p){
+											param=(param?\', \':\'\')+\'[\'+p+\']\'
+										})
+									}
+									var span=$(\'<span>\').html(titulo);
+									if(infos.url){
+										span.append($.parseHTML(\'<br />URL: \'+infos.url))
+									}
+									if(param){
+										span.append($.parseHTML(\'<br />Parameters:\'+param))
+									}
+									span.append($.parseHTML(\'<br />Hora: \'+(now.getHours()<10?\'0\':\'\')+now.getHours()+\':\'+(now.getMinutes()<10?\'0\':\'\')+now.getMinutes()+\':\'+(now.getSeconds()<10?\'0\':\'\')+now.getSeconds()+\'\'));
+									var dbar=$(\'<div>\').addClass(\'debug_box_ajax_result\').append(span);
+									if(txt){
+										dbar.append($(\'<p>\').append($.parseHTML(txt)))
+									}
+									to.prepend($(\'<hr>\')).prepend(dbar);
+									if(txt&&!Debug.w.Debug.opened){
+										Debug.w.Debug.startPulsate()
+									}
+								}
+							}
+						};
+						jQuery(Debug.init);
+						DebugAjaxComplete=function(e, XMLHttpRequest, ajaxOptions, thrownError){
+							var p={
+								url:ajaxOptions.url,
+								params:decodeURI(ajaxOptions.data)
+							};
+							if(e.type===\'ajaxError\'){
+								Debug.printAjaxResults(\'Error 500\',p,XMLHttpRequest.responseText)
+							}else if($.isPlainObject(XMLHttpRequest.responseJSON)){
+								var json=XMLHttpRequest.responseJSON;
+							}else{
+								try{
+									var json=$.parseJSON(XMLHttpRequest.responseText);
+								}catch(e){
+									Debug.printAjaxResults(\'Result AJAX\',p,XMLHttpRequest.responseText);
+									return
+								}
+								Debug.printAjaxResults(\'Result JSON\',p,(json.debug?json.debug:\'\'))
+							}
+						};
+						$(window).bind(\'ajaxComplete\',DebugAjaxComplete);
+						$(window).bind(\'ajaxSuccess\',DebugAjaxComplete);
+						$(window).bind(\'ajaxError\',DebugAjaxComplete);'.
 						'</script>' .
 						'<div class="debug_box" id="debug">' .
 							 '<div class="debug_box_2" style="display:none">' .
 								'<div class="tools">' .
-									'<a class="clear" href="javascript:;">Limpar</a>' .
-									'<a class="close" href="javascript:;">Fechar</a>' .
+									'<a class="clear" href="javascript:;">Clear</a>' .
+									'<a class="close_debug" href="javascript:;"><span>Close</span></a>' .
 								'</div>' .
 								'<div class="debug_info_area">' .
 								self::getDebugContent() .
 								'</div>' .
 							 '</div>' .
-							 '<div class="debug_box_3 close">DEBUG</div>' .
+							 '<div class="debug_box_3 debug_closed">DEBUG</div>' .
 						'</div>' .
 						'<!-------------------- fim   do código de debug -------------------->';
 
@@ -154,7 +367,7 @@ class Kernel
 			<div class="debug_info">
 				<table width="100%" border="0" cellspacing="0" cellpadding="0" align="left">
 				  <thead>
-					<th colspan="2" align="left">' . ($debug[1] ? $debug[1] . ' - ' : '') . 'Memória Alocada até aqui: ' . $memoria . '</th>
+					<th colspan="2" align="left">' . ($debug[1] ? $debug[1] . ' - ' : '') . 'Allocated Memory: ' . $memoria . '</th>
 				  </thead>
 				  <tr>
 					<td width="50%" valign="top"> ' . ($debug[2] ? self::print_rc($debug[3]) : $debug[3]) . '</td>
@@ -240,7 +453,7 @@ class Kernel
 				if (count($backtrace['args'])) {
 					$id     = 'args_' . str_replace('.', '', current(explode(' ', microtime())));
 					$saida .= '        <br />' . "\n"
-						   .  '        <a href="javascript:;" onClick="var obj=$(\'#' . $id . '\').toggle()" style="color:#06c; margin:3px 0">ver argumentos passados a função</a>'
+						   .  '        <a href="javascript:;" onClick="var obj=$(\'#' . $id . '\').toggle()" style="color:#06c; margin:3px 0">arguments passed to function</a>'
 						   .  '        ' . (is_array($backtrace['args']) ? '<div id="'.$id.'" style="display:none">' . self::print_rc($backtrace['args'], true) . '</div>' : $backtrace['args']);
 				}
 				$saida .= '      </li>';

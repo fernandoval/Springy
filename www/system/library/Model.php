@@ -106,44 +106,48 @@ class Model extends DB implements \Iterator
 	{
 		foreach ($filter as $field => $value) {
 			if (is_array($value)) {
-				$method = array_shift($value);
-				switch (strtolower($method)) {
-					case 'eq':
-						$where[] = $field.' = ?';
-						$params[] = $value[0];
-						break;
-					case 'gt':
-						$where[] = $field.' > ?';
-						$params[] = $value[0];
-						break;
-					case 'gte':
-						$where[] = $field.' >= ?';
-						$params[] = $value[0];
-						break;
-					case 'lt':
-						$where[] = $field.' < ?';
-						$params[] = $value[0];
-						break;
-					case 'lte':
-						$where[] = $field.' <= ?';
-						$params[] = $value[0];
-						break;
-					case 'ne':
-						$where[] = $field.' != ?';
-						$params[] = $value[0];
-						break;
-					case 'like':
-						$where[] = $field.' LIKE ?';
-						$params[] = $value[0];
-						break;
-					case 'match':
-						$where[] = 'MATCH ('.$field.') AGAINST (?)';
-						$params[] = $value[0];
-						break;
-					case 'match in boolean mode':
-						$where[] = 'MATCH ('.$field.') AGAINST (? IN BOOLEAN MODE)';
-						$params[] = $value[0];
-						break;
+				foreach($value as $method => $key) {
+					switch (strtolower($method)) {
+						case 'eq':
+							$where[] = $field.' = ?';
+							$params[] = $key;
+							break;
+						case 'gt':
+							$where[] = $field.' > ?';
+							$params[] = $key;
+							break;
+						case 'gte':
+							$where[] = $field.' >= ?';
+							$params[] = $key;
+							break;
+						case 'lt':
+							$where[] = $field.' < ?';
+							$params[] = $key;
+							break;
+						case 'lte':
+							$where[] = $field.' <= ?';
+							$params[] = $key;
+							break;
+						case 'ne':
+							$where[] = $field.' != ?';
+							$params[] = $key;
+							break;
+						case 'like':
+							$where[] = $field.' LIKE ?';
+							$params[] = $key;
+							break;
+						case 'match':
+							$where[] = 'MATCH ('.$field.') AGAINST (?)';
+							$params[] = $key;
+							break;
+						case 'match in boolean mode':
+							$where[] = 'MATCH ('.$field.') AGAINST (? IN BOOLEAN MODE)';
+							$params[] = $key;
+							break;
+						default:
+							$where[] = $field.' = ?';
+							$params[] = $key;
+					}
 				}
 			} else {
 				$where[] = $field.' = ?';
@@ -223,7 +227,6 @@ class Model extends DB implements \Iterator
 	 */
 	public function load(array $filter=null)
 	{
-
 		if ($this->query($filter) && $this->dbNumRows == 1) {
 			$this->loaded = true;
 		} else {
@@ -236,7 +239,7 @@ class Model extends DB implements \Iterator
 	/**
 	 *  \brief Informa se o registro foi carregado com dados do banco
 	 */
-	public function idLoaded() {
+	public function isLoaded() {
 		return $this->loaded;
 	}
 
@@ -287,7 +290,7 @@ class Model extends DB implements \Iterator
 			$this->execute('INSERT INTO '.$this->tableName.' ('.implode(', ', $columns).($this->insertDateColumn ? ', '.$this->insertDateColumn : "").') VALUES ('.rtrim(str_repeat('?,', count($values)),',').($this->insertDateColumn ? ', NOW()' : "").')', $values);
 
 			if ($this->affectedRows() > 0 && $this->lastInsertedId() && !empty($this->primaryKey) && !strpos($this->primaryKey, ',') && empty($this->rows[0][$this->primaryKey])) {
-				$this->rows[0][$this->primaryKey] = $this->lastInsertedId();
+				$this->load(array($this->primaryKey => $this->lastInsertedId()));
 			}
 		}
 

@@ -7,6 +7,12 @@ Copyright (C) 2009-2014 Lucas Cardozo
 http://www.fval.com.br
 
 
+Migrando para a Versão >= 3.0.x de versões anteriores
+-----------------------------------------------------
+
+A classe Consultar foi descontinuada e removida do framework.
+
+
 Migrando para a Versão >= 2.2.0 de versões anteriores
 -----------------------------------------------------
 

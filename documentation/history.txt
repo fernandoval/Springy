@@ -14,6 +14,12 @@ Developer team:
 Framework Update History
 
 ------------------------------------------------------------------------------------ --- -- -
+3.0.1 (beta 1)
+	- Exclusão da classe Consultar;
+	- Melhorias e correções de bug na classe Model;
+	- Melhoria nos métodos buildURL e makeSlug da classe URI para permitir URLs com '.', ',' e outros caracteres;
+	- Deminificação do HTML e JavaScript embutido para impressão de debug da classe Kernel;
+	- Correções do JavaScript para bind de Ajax do debug.
 3.0.0
 	- Inclusão da classe Container\DIContainer - Classe de container para inversão de controle (Dependecy Injection);
 	- Inclusão da classe Core\Application - Classe container de dependências de toda aplicação;

@@ -8,7 +8,7 @@
  *
  *	\brief		Classe para tratamento de URI
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.12.22
+ *	\version	1.13.23
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
@@ -529,7 +529,7 @@ class URI
 		$uri = '';
 		for ($i=0; $i < count($segments); $i++) {
 			if ($segments[ $i ] != 'index' && $segments[ $i ] != '') {
-				$uri .= (empty($uri) ? '' : '/') . self::makeSlug($segments[ $i ]);
+				$uri .= (empty($uri) ? '' : '/') . self::makeSlug($segments[ $i ], '-', '\.,|~');
 			}
 		}
 		$url .= $uri;
@@ -610,13 +610,16 @@ class URI
 	}
 
 	/**
-	 *	\brief Gera o slug de um string
+	 *  \brief Gera o slug de uma expressão
 	 *
-	 *	@param[in] (string)$txt String a ser convertida em slug.
-	 *	@paran[in] (string)$space String que será usada para substituir os espaços em $txt. Utiliza '-' como padrão.
-	 *	\return Uma string com o slug
+	 *  @param[in] (string)$txt Expressão a ser convertida em slug.
+	 *  @paran[in] (string)$space Caracter que será usado para substituir os espaços na expressão. Se omitodo será usado o caracter "-" como padrão.
+	 *  @param[in] (string)$accept String contendo relação de caracteres também aceitos para montagem do slug.
+	 *  	Essa sting será usada numa expressão regular, então alguns caracteres como o ponto, precisam ser escapados.
+	 *  	Se nenhum caracter for informado, apenas letras, números e os caracteres "_" e "-" serão aceitos. Todos os demais serão removidos.
+	 *  \return Uma string com o slug
 	 */
-	public static function makeSlug($txt, $space='-')
+	public static function makeSlug($txt, $space='-', $accept="")
 	{
 		$txt = mb_strtolower(trim($txt));
 
@@ -627,10 +630,10 @@ class URI
 		}
 
 		$txt = mb_ereg_replace('[  ]+', ' ', $txt);
-		$txt = mb_ereg_replace('[ ]+', $space, $txt);
 		//$txt = mb_ereg_replace('[--]+', '-', $txt);
 		//$txt = mb_ereg_replace('[__]+', '_', $txt);
-		$txt = mb_ereg_replace('[^a-z0-9_\-]', '', $txt);
+		$txt = mb_ereg_replace('[^a-z0-9 _\-'.$accept.']', '', $txt);
+		$txt = mb_ereg_replace('[ ]+', $space, $txt);
 
 		return $txt;
 	}
