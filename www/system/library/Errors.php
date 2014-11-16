@@ -8,7 +8,7 @@
  *
  *	\brief		Classe para tratamento de erros
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.6.18
+ *	\version	1.6.19
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
@@ -44,13 +44,6 @@ class Errors
 	 */
 	public static function errorHandler($errno, $errstr, $errfile, $errline, $localErro, $errorType=500)
 	{
-		if (
-			strpos($errfile, 'template') !== false || strpos($errfile, 'Smarty') !== false
-			|| strpos($errstr, 'filemtime') !== false
-		   ) {
-			return;
-		}
-
 		DB::rollBackAll();
 
 		switch ($errno) {
@@ -59,6 +52,10 @@ class Errors
 			break;
 			case E_WARNING:
 				$printError = 'Warning';
+				$aFile = explode(DIRECTORY_SEPARATOR, $errfile);
+				if (in_array('smarty', $aFile) || strpos($errstr, 'filemtime') !== false || strpos($errstr, 'unlink') !== false) {
+					return;
+				}
 			break;
 			case E_PARSE:
 				$printError = 'Parse Error';

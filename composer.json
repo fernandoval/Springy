@@ -1,0 +1,14 @@
+{
+	"config": {
+        "vendor-dir": "www/system/other"
+    },
+	"extra": {
+        "installer-paths": {
+            "www/system/other/{$name}": ["vendor/package"]
+        }
+    },
+    "require": {
+		"smarty/smarty" : "*",
+		"ircmaxell/password-compat" : "*"
+    }
+}

@@ -8,7 +8,7 @@
  *
  *	\brief		Classe de tratamento de templates
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	3.4.7
+ *	\version	3.5.8
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
@@ -16,7 +16,7 @@
 
 namespace FW;
 
-require_once $GLOBALS['SYSTEM']['3RDPARTY_PATH'] . DIRECTORY_SEPARATOR . 'Smarty' . DIRECTORY_SEPARATOR . 'Smarty.class.php';
+//require_once $GLOBALS['SYSTEM']['3RDPARTY_PATH'] . DIRECTORY_SEPARATOR . 'Smarty' . DIRECTORY_SEPARATOR . 'Smarty.class.php';
 
 /**
  *  \brief Classe de tratamento de templates

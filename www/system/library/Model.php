@@ -8,7 +8,7 @@
  *  \brief		Classe Model para acesso a banco de dados
  *  \note		Essa classe extende a classe DB.
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	1.5.8
+ *  \version	1.5.9
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \ingroup	framework
  */
@@ -287,7 +287,34 @@ class Model extends DB implements \Iterator
 			}
 		}
 		else {
-			$this->execute('INSERT INTO '.$this->tableName.' ('.implode(', ', $columns).($this->insertDateColumn ? ', '.$this->insertDateColumn : "").') VALUES ('.rtrim(str_repeat('?,', count($values)),',').($this->insertDateColumn ? ', NOW()' : "").')', $values);
+			switch ($this->driverName()) {
+				case 'oci':
+				case 'oracle':
+				case 'mysql':
+				case 'pgsql':
+					$cdtFunc = 'NOW()';
+					break;
+				case 'mssql':
+				case 'sqlsrv':
+					$cdtFunc = 'GETDATE()';
+					break;
+				case 'db2':
+				case 'ibm':
+				case 'ibm-db2':
+				case 'firebird':
+					$cdtFunc = 'CURRENT_TIMESTAMP';
+					break;
+				case 'informix':
+					$cdtFunc = 'CURRENT';
+					break;
+				case 'sqlite':
+					$cdtFunc = 'datetime(\'now\')';
+					break;
+				default:
+					$cdtFunc = '\''.date('Y-m-d H:i:s').'\'';
+			}
+		
+			$this->execute('INSERT INTO '.$this->tableName.' ('.implode(', ', $columns).($this->insertDateColumn ? ', '.$this->insertDateColumn : "").') VALUES ('.rtrim(str_repeat('?,', count($values)),',').($this->insertDateColumn ? ', '.$cdtFunc : "").')', $values);
 
 			if ($this->affectedRows() > 0 && $this->lastInsertedId() && !empty($this->primaryKey) && !strpos($this->primaryKey, ',') && empty($this->rows[0][$this->primaryKey])) {
 				$this->load(array($this->primaryKey => $this->lastInsertedId()));
@@ -470,9 +497,11 @@ class Model extends DB implements \Iterator
 
 		// Se há uma coluna de exclusão lógica definida, adiciona-a ao conjunto de filtros
 		if ($this->deletedColumn) {
-			$where[] = $this->deletedColumn.' = ?';
+			$where[] = $this->tableName.'.'.$this->deletedColumn.' = ?';
 			if (isset($filter[$this->deletedColumn])) {
 				$params[] = (int)$filter[$this->deletedColumn];
+			} elseif (isset($filter[$this->tableName.'.'.$this->deletedColumn])) {
+				$params[] = (int)$filter[$this->tableName.'.'.$this->deletedColumn];
 			} else {
 				$params[] = 0;
 			}

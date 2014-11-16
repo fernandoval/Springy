@@ -8,16 +8,20 @@
  *
  *	\brief		Classe pa geração de hashes via BCrypt
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	0.1
+ *	\version	0.2.2
  *  \author		Allan Marques - allan.marques@ymail.com
+ *  \note		Esta biblioteca utiliza como dependência a classe password_compat de Anthony Ferrara.
  *	\ingroup	framework
  */
 namespace FW\Security;
 
-require sysconf('3RDPARTY_PATH').DS.'password_compat'.DS.'lib'.DS.'password.php';
+//require sysconf('3RDPARTY_PATH').DS.'password_compat'.DS.'lib'.DS.'password.php';
 
 /**
- * \brief		Classe pa geração de hashes via BCrypt
+ *  \brief		Classe pa geração de hashes via BCrypt
+ *  
+ *  \note		Esta classe utiliza como dependência a classe password_compat de Anthony Ferrara,
+ *  			que deve ser previamente instalada com Composer ou manualmente.
  */
 class BCryptHasher implements HasherInterface
 {
