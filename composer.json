@@ -9,6 +9,7 @@
     },
     "require": {
 		"smarty/smarty" : "*",
-		"ircmaxell/password-compat" : "*"
+		"ircmaxell/password-compat" : "*",
+		"twig/twig" : "*"
     }
 }

@@ -2,13 +2,12 @@
 /**	\file
  *	FVAL PHP Framework for Web Applications
  *
- *	\copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.
- *	\copyright Copyright (c) 2007-2013 Fernando Val
- *	\copyright Copyright (c) 2009-2013 Lucas Cardozo
+ *	\copyright Copyright (c) 2007-2014 FVAL Consultoria e Informática Ltda.
+ *	\copyright Copyright (c) 2007-2014 Fernando Val
  *
  *	\brief		Classe de tratamento de templates
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	3.5.8
+ *	\version	4.0.9
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
@@ -16,96 +15,45 @@
 
 namespace FW;
 
-//require_once $GLOBALS['SYSTEM']['3RDPARTY_PATH'] . DIRECTORY_SEPARATOR . 'Smarty' . DIRECTORY_SEPARATOR . 'Smarty.class.php';
-
 /**
  *  \brief Classe de tratamento de templates
  *
- *  \note Esta classe utiliza internamente a classe Smarty. Não utilize a classe Smarty diretamente.
+ *  \note Esta classe utiliza os drivers de template conforme definido no arquivo de configuração.
  */
 class Template
 {
-	const TPL_NAME_SUFIX = '.tpl.html';
-
+	const TPL_ENGINE_SMARTY = 'smarty';
+	const TPL_ENGINE_TWIG = 'twig';
+	
 	private $tplObj = NULL;
-
-	private $templateName = NULL;
-
-	private $templateCacheId = NULL;
-	private $templateCompileId = NULL;
-
-	private $templateVars = array();
-	private $templateFuncs = array();
 
 	/**
 	 *	\brief Inicializa a classe de template
 	 */
 	public function __construct($tpl=NULL)
 	{
-		// Verifica o sub-dir
-		if (is_dir(Configuration::get('template', 'template_path') . DIRECTORY_SEPARATOR . URI::currentPage())) {
-			$path = URI::currentPage();
-		} else {
-			$path = 'default';
+		if (!$driver = Configuration::get('template', 'template_engine')) {
+			$driver = self::TPL_ENGINE_SMARTY;
 		}
-
+		
 		// Inicializa a classe de template
-		$this->tplObj = new \Smarty;
-
-		$this->tplObj->use_sub_dirs = Configuration::get('template', 'use_sub_dirs');
-
-		$this->setCacheDir( Configuration::get('template', 'template_cached_path') );
-
-		$this->setTemplateDir( Configuration::get('template', 'template_path') );
-		$this->setCompileDir( Configuration::get('template', 'compiled_template_path') );
-		$this->setConfigDir( Configuration::get('template', 'template_config_path') );
-
-		if ($tpl) {
-			$this->setTemplate($tpl);
+		switch (strtolower($driver)) {
+			case self::TPL_ENGINE_SMARTY:
+				$this->tplObj = new Template\SmartyDriver($tpl);
+				break;
+			case self::TPL_ENGINE_TWIG:
+				$this->tplObj = new Template\TwigDriver($tpl);
+				break;
+			default:
+				Errors::displayError('500', 'Template engine not implemented');
 		}
-
-		// Iniciliza as variáveis padrão de template
-		if (Configuration::get('uri', 'common_urls')) {
-			if (!Configuration::get('uri', 'register_method_set_common_urls')) {
-				foreach(Configuration::get('uri', 'common_urls') as $var => $value) {
-					if (isset($value[2])) {
-						$this->assign($var, URI::buildURL($value[0], $value[1], $value[2]));
-					} else if (isset($value[1])) {
-						$this->assign($var, URI::buildURL($value[0], $value[1]));
-					} else {
-						$this->assign($var, URI::buildURL($value[0]));
-					}
-				}
-			} else if (Configuration::get('uri', 'register_method_set_common_urls')) {
-				$toCall = Configuration::get('uri', 'register_method_set_common_urls');
-				if ($toCall['static']) {
-					if (!isset($toCall['method'])) {
-						throw new Exception('You need to determine which method will be executed.', 500);
-					}
-
-					//$toCall['class']::$toCall['method'];
-				} else {
-					$obj = new $toCall['class'];
-					if (isset($toCall['method']) && $toCall['method']) {
-						$obj->$toCall['method'];
-					}
-				}
-			}
-		}
-
-		/*
-		 * Cria uma variável no template cujo o valor é o endereço da raiz do site.
-		 */
-		$this->assign('HOST', URI::buildURL());
-
-		/*
-		 * Cria uma variável no template cujo o valor é o endereço da página atual.
-		 */
-		$this->assign('CURRENT_PAGE_URI', URI::currentPageURI());
-
+		
 		return true;
 	}
-
+	
+	/**
+	 *  \brief Destrói o objeto
+	 */
 	public function __destruct()
 	{
 		unset($this->tplObj);
@@ -116,7 +64,7 @@ class Template
 	 */
 	public function setTemplateDir($path)
 	{
-		$this->tplObj->setTemplateDir($path);
+		return $this->tplObj->setTemplateDir($path);
 	}
 
 	/**
@@ -124,7 +72,7 @@ class Template
 	 */
 	public function setCompileDir($path)
 	{
-		$this->tplObj->setCompileDir($path);
+		return $this->tplObj->setCompileDir($path);
 	}
 
 	/**
@@ -132,7 +80,7 @@ class Template
 	 */
 	public function setConfigDir($path)
 	{
-		$this->tplObj->setConfigDir($path);
+		return $this->tplObj->setConfigDir($path);
 	}
 
 	/**
@@ -140,7 +88,7 @@ class Template
 	 */
 	public function setCacheDir($path)
 	{
-		$this->tplObj->setCacheDir($path);
+		return $this->tplObj->setCacheDir($path);
 	}
 
 	/**
@@ -148,36 +96,7 @@ class Template
 	 */
 	private function setAutoTemplatePaths()
 	{
-		// Se o nome do template não foi informado, define como sendo a página atual
-		if ($this->templateName === NULL) {
-			// Pega o caminha relativo da página atual
-			$relative_path_page = URI::relativePathPage(TRUE);
-
-			$this->templateName = URI::getControllerClass();
-
-			// Monta o caminho do diretório do arquivo de template
-			$path = Configuration::get('template', 'template_path') . (empty($relative_path_page) ? '' : DIRECTORY_SEPARATOR) . $relative_path_page;
-
-			// Verifica se existe o diretório e dentro dele um template com o nome da página e
-			// havendo, usa como caminho relativo adicionao. Se não houver, limpa o caminho relativo.
-			if (is_dir($path) && file_exists($path . DIRECTORY_SEPARATOR . $this->templateName . Template::TPL_NAME_SUFIX)) {
-				$relative_path = (empty($relative_path_page) ? '' : DIRECTORY_SEPARATOR) . $relative_path_page;
-			} else {
-				$relative_path = '';
-			}
-
-			// Ajusta os caminhos de template
-			$this->setTemplateDir( Configuration::get('template', 'template_path') . $relative_path);
-			$this->setCompileDir( Configuration::get('template', 'compiled_template_path') . $relative_path);
-			$this->setConfigDir( Configuration::get('template', 'template_config_path'));
-		}
-
-		// Se o arquivo de template não existir, exibe erro 404
-		if (!$this->templateExists($this->templateName)) {
-			Errors::displayError(404, $this->templateName . Template::TPL_NAME_SUFIX);
-		}
-
-		return true;
+		return $this->tplObj->setAutoTemplatePaths();
 	}
 
 	/**
@@ -187,7 +106,7 @@ class Template
 	 */
 	public function isCached()
 	{
-		return $this->tplObj->isCached($this->templateName . Template::TPL_NAME_SUFIX, $this->templateCacheId, $this->templateCompileId);
+		return $this->tplObj->isCached();
 	}
 
 	/**
@@ -197,7 +116,7 @@ class Template
 	 */
 	public function setCaching($value='current')
 	{
-		$this->tplObj->setCaching( $value != 'current' ? \Smarty::CACHING_LIFETIME_SAVED : \Smarty::CACHING_LIFETIME_CURRENT);
+		return $this->tplObj->setCaching($value);
 	}
 
 	public function setCacheLifetime($seconds)
@@ -210,32 +129,7 @@ class Template
 	 */
 	public function fetch()
 	{
-		$this->setAutoTemplatePaths();
-
-		// Carrega as variáveis CONSTANTES
-		$this->tplObj->assign('SYSTEM_NAME', $GLOBALS['SYSTEM']['SYSTEM_NAME']);
-		$this->tplObj->assign('SYSTEM_VERSION', $GLOBALS['SYSTEM']['SYSTEM_VERSION']);
-		$this->tplObj->assign('ACTIVE_ENVIRONMENT', $GLOBALS['SYSTEM']['ACTIVE_ENVIRONMENT']);
-
-		//if (!$this->tplObj->caching) {
-			foreach (Template_Static::getDefaultVars() as $name => $value) {
-				$this->tplObj->assign($name, $value);
-			}
-
-			foreach ($this->templateVars as $name => $data) {
-				$this->tplObj->assign($name, $data['value'], $data['nocache']);
-			}
-
-			foreach(Template_Static::getDefaultPlugins() as $func) {
-				$this->tplObj->registerPlugin($func[0], $func[1], $func[2], $func[3], $func[4]);
-			}
-
-			foreach($this->templateFuncs as $func) {
-				$this->tplObj->registerPlugin($func[0], $func[1], $func[2], $func[3], $func[4]);
-			}
-		//}
-
-		return $this->tplObj->fetch($this->templateName . Template::TPL_NAME_SUFIX, $this->templateCacheId, $this->templateCompileId);
+		return $this->tplObj->fetch();
 	}
 
 	/**
@@ -245,7 +139,7 @@ class Template
 	 */
 	public function display()
 	{
-		echo $this->fetch();
+		echo $this->tplObj->fetch();
 	}
 
 	/**
@@ -254,15 +148,7 @@ class Template
 	 */
 	public function setTemplate($tpl)
 	{
-		$this->templateName = ((is_array($tpl)) ? join(DIRECTORY_SEPARATOR, $tpl) : $tpl);
-
-		$compile = '';
-		if (!is_null($tpl)) {
-			$compile = is_array($tpl) ? implode('/', $tpl) : $tpl;
-			$compile = substr($compile, 0, strrpos('/', $compile));
-		}
-
-		$this->setCompileDir( Configuration::get('template', 'compiled_template_path') . $compile );
+		return $this->tplObj->setTemplate($tpl);
 	}
 
 	/**
@@ -270,7 +156,7 @@ class Template
 	 */
 	public function setCacheId($id)
 	{
-		$this->templateCacheId = $id;
+		return $this->tplObj->setCacheId($id);
 	}
 
 	/**
@@ -278,7 +164,7 @@ class Template
 	 */
 	public function setCompileId($id)
 	{
-		$this->templateCompileId = $id;
+		return $this->tplObj->setCompileId($id);
 	}
 
 	/**
@@ -286,13 +172,7 @@ class Template
 	 */
 	public function assign($var, $value=null, $nocache=false)
 	{
-		if (is_array($var)) {
-			foreach ($var as $name => $value) {
-				$this->assign($name, $value);
-			}
-		} else {
-			$this->templateVars[$var] = array('value' => $value, 'nocache' => $nocache);
-		}
+		return $this->tplObj->assign($var, $value, $nocache);
 	}
 
 	/**
@@ -300,7 +180,7 @@ class Template
 	 */
 	public function registerPlugin($type, $name, $callback, $cacheable=NULL, $cache_attrs=NULL)
 	{
-		$this->templateFuncs[] = array($type, $name, $callback, $cacheable, $cache_attrs);
+		return $this->tplObj->registerPlugin($type, $name, $callback, $cacheable, $cache_attrs);
 	}
 
 	/**
@@ -308,7 +188,7 @@ class Template
 	 */
 	public function clearAssign($var)
 	{
-		unset($this->tplVars[$var]);
+		return $this->tplObj->clearAssign($var);
 	}
 
 	/**
@@ -318,7 +198,7 @@ class Template
 	 */
 	public function clearAllCache($expire_time)
 	{
-		$this->tplObj->clearAllCache($expire_time);
+		return $this->tplObj->clearAllCache($expire_time);
 	}
 
 	/**
@@ -326,7 +206,7 @@ class Template
 	 */
 	public function clearCache($expireTime=NULL)
 	{
-		$this->tplObj->clearCache($this->templateName . Template::TPL_NAME_SUFIX, $this->templateCacheId, $this->templateCompileId, $expireTime);
+		return $this->tplObj->clearCache($expireTime);
 	}
 
 	/**
@@ -334,7 +214,7 @@ class Template
 	 */
 	public function clearCompiled($expTime)
 	{
-		$this->tplObj->clearCompiledTemplate($this->templateName . Template::TPL_NAME_SUFIX, $this->templateCompileId, $expTime);
+		return $this->tplObj->clearCompiled($expTime);
 	}
 
 	/**
@@ -342,7 +222,7 @@ class Template
 	 */
 	public function clearConfig($var)
 	{
-		$this->tplObj->clearConfig($var);
+		return $this->tplObj->clearConfig($var);
 	}
 
 	/**
@@ -350,6 +230,6 @@ class Template
 	 */
 	public function templateExists($tplName)
 	{
-		return $this->tplObj->templateExists($tplName . Template::TPL_NAME_SUFIX);
+		return $this->tplObj->templateExists($tplName . self::TPL_NAME_SUFIX);
 	}
 }

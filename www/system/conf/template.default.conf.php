@@ -17,6 +17,9 @@
  *  Você poderá adicionar entradas personalizadas de sua aplicação.
  *  
  *  Entradas de configuração:
+ *  - \c template_engine - Define a classe de renderização de templates. Os valores aceitos são:\n
+ *      'smarty' - para utilizar a classe Smarty como mecanismo de templates;\n
+ *      'twig' - para utilizar a classe Twig como mecanismo de templates.
  *  - \c template_path - Caminho de disco do diretório de templates
  *  - \c template_config_path - Caminho de disco do diretório configuração de templates
  *  - \c compiled_template_path - Caminho de disco do diretório configuração de templates compilados
@@ -44,10 +47,11 @@
 
 /// Configurações para todos os ambientes
 $conf = array(
+	'template_engine'        => 'smarty',
 	'template_path'          => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'templates',
 	'template_config_path'   => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'templates_conf',
-	'compiled_template_path' => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'templates_c',
-	'template_cached_path'   => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'templates_cached',
+	'compiled_template_path' => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'tpl_comp',
+	'template_cached_path'   => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'tpl_cache',
 	'use_sub_dirs'           => false
 );
 
