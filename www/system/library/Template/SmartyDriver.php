@@ -359,11 +359,11 @@ class SmartyDriver implements TemplateDriverInterface
 		}
 
 		if (file_exists($filePath)) {
-			$filePath = $params['file'] . '__' . filemtime($filePath) . '.' . $params['type'];
+			$fileURI .= '/' . $params['file'] . '__' . filemtime($filePath) . '.' . $params['type'];
 		} else {
-			$filePath = $params['file'] . '.' . $params['type'];
+			$fileURI .= '/' . $params['file'] . '.' . $params['type'];
 		}
 
-		return URI::buildURL(array($fileURI, $filePath), array(), isset($_SERVER['HTTPS']), 'static', false);
+		return URI::buildURL(explode('/', $fileURI), array(), isset($_SERVER['HTTPS']), 'static', false);
 	}
 }

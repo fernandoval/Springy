@@ -378,11 +378,11 @@ class TwigDriver implements TemplateDriverInterface
 		}
 
 		if (file_exists($filePath)) {
-			$filePath = $file . '__' . filemtime($filePath) . '.' . $type;
+			$fileURI .= '/' . $file . '__' . filemtime($filePath) . '.' . $type;
 		} else {
-			$filePath = $file . '.' . $type;
+			$fileURI .= '/' . $file . '.' . $type;
 		}
 
-		return URI::buildURL(array($fileURI, $filePath), array(), isset($_SERVER['HTTPS']), 'static', false);
+		return URI::buildURL(explode('/', $fileURI), array(), isset($_SERVER['HTTPS']), 'static', false);
 	}
 }
