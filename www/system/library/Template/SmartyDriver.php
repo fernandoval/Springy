@@ -189,13 +189,18 @@ class SmartyDriver implements TemplateDriverInterface
 		$this->tplObj->setCaching( $value != 'current' ? \Smarty::CACHING_LIFETIME_SAVED : \Smarty::CACHING_LIFETIME_CURRENT);
 	}
 
+	/**
+	 *  \brief Define o tempo de vida dos arquivos de cache
+	 *  \param (int)$seconds - tempo de vida em segundos
+	 */
 	public function setCacheLifetime($seconds)
 	{
 		$this->tplObj->setCacheLifetime($seconds);
 	}
 
 	/**
-	 *	\brief Retorna a página montada
+	 *  \brief Renderiza o template
+	 *  \return Retorna uma string contendo o template renderizado
 	 */
 	public function fetch()
 	{

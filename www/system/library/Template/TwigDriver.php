@@ -8,7 +8,7 @@
  *  \brief		Classe driver de tratamento de templates utilizando Twig como mecanismo de renderização
  *  \see		http://twig.sensiolabs.org/
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	0.9.0 beta 1
+ *  \version	0.9.1 beta 2
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \ingroup	framework
  */
@@ -33,6 +33,7 @@ class TwigDriver implements TemplateDriverInterface
 
 	private $tplObj = NULL;
 
+	private $templatePath = NULL;
 	private $templateName = NULL;
 
 	private $templateCacheId = NULL;
@@ -95,6 +96,7 @@ class TwigDriver implements TemplateDriverInterface
 		if (isset($this->tplObj)) {
 			unset($this->tplObj);
 		}
+		$this->templatePath = $templatePath;
 		$loader = new \Twig_Loader_Filesystem( $templatePath );
 		$this->tplObj = new \Twig_Environment($loader, array(
 			'autoescape' => false,
@@ -187,28 +189,32 @@ class TwigDriver implements TemplateDriverInterface
 	}
 
 	/**
-	 *	\brief Verifica se o template está cacheado
+	 *  \brief Verifica se o template está cacheado
 	 *
-	 * @return boolean
+	 *  @return boolean
 	 */
 	public function isCached()
 	{
-		// return $this->tplObj->isCached($this->templateName . self::TPL_NAME_SUFIX, $this->templateCacheId, $this->templateCompileId);
+		return file_exists($this->tplObj->getCacheFilename($this->templateName . self::TPL_NAME_SUFIX));
 	}
 
 	/**
-	 *	\brief Define o cacheamento dos templates
-	 *
-	 * @
+	 *  \brief Define o cacheamento dos templates
+	 *  \node Sem função, pois o Twig não permite controle de tempo de vida do cache
 	 */
 	public function setCaching($value='current')
 	{
-		// $this->tplObj->setCaching( $value != 'current' ? \Smarty::CACHING_LIFETIME_SAVED : \Smarty::CACHING_LIFETIME_CURRENT);
+		// Método criado apenas para atender definição da interface
 	}
 
+	/**
+	 *  \brief Define o tempo de vida dos arquivos de cache
+	 *  \note Sem função, pois no Twig não dá para controlar o tempo de cache dos
+	 *        template compilados.
+	 */
 	public function setCacheLifetime($seconds)
 	{
-		// $this->tplObj->setCacheLifetime($seconds);
+		// Método criado apenas para atender definição da interface
 	}
 
 	/**
@@ -254,8 +260,8 @@ class TwigDriver implements TemplateDriverInterface
 	}
 
 	/**
-	 *	\brief Define o arquivos de template
-	 * @param String $tpl Nome do template, sem extenção do arquivo
+	 *  \brief Define o arquivos de template
+	 *  \param $tpl - String com o nome do template, sem extenção do arquivo
 	 */
 	public function setTemplate($tpl)
 	{
@@ -271,7 +277,9 @@ class TwigDriver implements TemplateDriverInterface
 	}
 
 	/**
-	 *	\brief Define o id do cache
+	 *  \brief Define o id do cache
+	 *  \note A pesar de implementado, esse método não tem função,
+	 *        pois o Twig controla internamente o id de controle do cache
 	 */
 	public function setCacheId($id)
 	{
@@ -279,7 +287,10 @@ class TwigDriver implements TemplateDriverInterface
 	}
 
 	/**
-	 *	\brief Define o id da compilação
+	 *  \brief Define o id da compilação
+	 *  \note A pesar de implementado, esse método não tem função,
+	 *        pois o Twig não dá controle sobre id de compilação dos
+	 *        templates
 	 */
 	public function setCompileId($id)
 	{
@@ -323,7 +334,7 @@ class TwigDriver implements TemplateDriverInterface
 	 */
 	public function clearAllCache($expire_time)
 	{
-		// $this->tplObj->clearAllCache($expire_time);
+		$this->tplObj->clearCacheFiles();
 	}
 
 	/**
@@ -331,7 +342,7 @@ class TwigDriver implements TemplateDriverInterface
 	 */
 	public function clearCache($expireTime=NULL)
 	{
-		$this->tplObj->clearTemplateCache();
+		$this->tplObj->clearCacheFiles();
 	}
 
 	/**
@@ -339,15 +350,16 @@ class TwigDriver implements TemplateDriverInterface
 	 */
 	public function clearCompiled($expTime)
 	{
-		// $this->tplObj->clearCompiledTemplate($this->templateName . self::TPL_NAME_SUFIX, $this->templateCompileId, $expTime);
+		$this->tplObj->clearCacheFiles();
 	}
 
 	/**
-	 *	\brief Limpa variável de config definida
+	 *  \brief Limpa variável de config definida
+	 *  \note Esse método não tem funçao no Twig
 	 */
 	public function clearConfig($var)
 	{
-		// $this->tplObj->clearConfig($var);
+		// Método criado apenas para atender definição da interface
 	}
 
 	/**
@@ -355,7 +367,7 @@ class TwigDriver implements TemplateDriverInterface
 	 */
 	public function templateExists($tplName)
 	{
-		// return $this->tplObj->templateExists($tplName . self::TPL_NAME_SUFIX);
+		return file_exists($this->templatePath . DIRECTORY_SEPARATOR . $tplName . self::TPL_NAME_SUFIX);
 	}
 
 	/**
