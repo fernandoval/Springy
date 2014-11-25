@@ -12,7 +12,15 @@ Developer team:
 Sobre o framework:
 ------------------
 
-O FVAL PHP Framework for Web Applications foi projetado para ser um framework de desenvolvimentos de aplicações web em PHP no formato MVC.
+O FVAL PHP Framework for Web Applications foi projetado para ser um framework de desenvolvimentos de aplicações web em PHP no formato MVC, leve, de fácil aprendizado, rico em recursos, adaptável e de execução ágil.
+
+Este framework nasceu a partir de um projeto pessoal de Fernando Val, desenvolvido em 2005, para facilitação de desenvolvimento de projetos e sites baseados em PHP. Em 2007 o projeto foi totalmente reescrito e ganhou orientação a objetos, ainda mantendo-se a compabilidade com a versão 4 do PHP.
+
+No ano de 2008 Lucas Cardozo agregou nova estrutura e recursos ao projeto, transformando-o num micro-framework, utilizado nos projetos da equipe de desenvolvedores PHP liderada por Fernando. Entretanto não havia uma classe com suporte a múltiplas plataformas de sistemas gerenciadores de bancos de dados (SGBD) e apenas o MySQL era suportado.
+
+O framework foi finalmente compilado, remodelado e reestruturado, transformando-se em plataforma MVC, utilizando a classe [Smarty](http://www.smarty.net) como mecanismo de renderização das visões (views), em 2009 por Fernando. O suporte ao PHP 4 foi abandonado e o PHP 5.0 passou a ser menor versão admissível para utilização do framework. A classe de bando de dados [adoDB](http://adodb.sourceforge.net) foi adicionada para suporte a múltiplos SGBD.
+
+Em 2011 a classe adoDB foi abandonada e o mecanismo PDO (PHP Data Objects) foi adotado. Dessa forma a menor versão suportada para utilização do framework passou a ser a 5.1.
 
 
 O sistema MVC deste framework:
@@ -20,9 +28,9 @@ O sistema MVC deste framework:
 
 Os models (modelos) nada mais são que classes para tratamento de dados ou funções genéricas ou de uso comum que não fazem parte do cerne do framework. Nesse framework os models são tratados simplesmento como "classes proprietárias" e ficam armazenadas no diterório de classes proprietárias (ver estrutura de diretórios). O framework possui uma classe de tratamento de bancos da qual você poderá herdar suas classes para tratamento de tabelas em banco, simplesmente crie suas classes extendendo a classe \FW\Model.
 
-As views (visões), que são o resultado visual do processamento, são tratadas como templates (modelos) e o sistema de gerenciamento de templates adotado nesse framework é a excelente biblioteca Smarty (http://smarty.net). Os templates são armazenados no diretório de templates que pode ter múltiplos níveis de acordo com a necessidade do projeto.
+As views (visões), que são o resultado visual do processamento, são tratadas como templates (modelos) e o desenvolvedor pode optar por utiliza as bibliotecas [Smarty](http://smarty.net) ou [Twig](http://twig.sensiolabs.org) como mecanismos de renderização, sendo que os templates Smarty deverão ter a terminação ".tpl.html" em seus nomes, enquanto para Twig deverão ser terminados por ".twig.html". Os templates são armazenados no diretório de templates que pode ter múltiplos níveis de acordo com a necessidade do projeto.
 
-As controladoras são os responsáveis pelo processamento específico de cada funcionalidade da aplicação. As controladoras são armazenadas no diretório de controladoras que, assim como o diretório de templates, pode conter múltiplos níveis para atender às necessidades do projeto.
+As controladoras são os responsáveis pelo processamento específico de cada funcionalidade da aplicação e ficam armazenadas no diretório de controladoras que, assim como o diretório de templates, pode conter múltiplos níveis para atender às necessidades do projeto.
 
 
 A estrurura de diretórios do framework:
@@ -48,8 +56,8 @@ Lista padrão de diretórios do framework:
 * "controller" : diretório onde as controladoras são armazenados (pode conter subdiretórios);
 * "other" : diretório onde estão armazenados as classes e bibliotecas de terceiros;
 * "templates" : diretório onde são asmazenados os templates (pode conter subdiretórios);
-* "templates_c" : diretório onde são asmazenados os templates compilados (o PHP deve ter direito de escrita dentro dele);
-* "templates_cached" : diretório onde a classe de templates irá salvar as páginas cacheadas.
+* "tpl_comp" : diretório onde são asmazenados os templates compilados (o PHP deve ter direito de escrita dentro dele);
+* "tpl_cache" : diretório onde a classe de templates irá salvar as páginas cacheadas (o PHP deve ter direito de escrita dentro dele).
 
 
 Como o sistema elege um script de controle (controladora):
@@ -70,7 +78,7 @@ Caso o sistema tenha eleito uma controladora, ele o carrega para a memória e a 
 
 Não havendo uma controladora eleita, o sistema verifica se o mini CMS interno está habilitado e, em caso afirmativo, passa o controle para ele.
 
-Na eventualidade de não ter encontrado a controladora adequado e nem estar sendo usado o mini CMS, a págia de erro 404 é mostrada.
+Na eventualidade de não ter encontrado a controladora adequado e nem estar sendo usado o mini CMS, a página de erro 404 é mostrada.
 
 
 A pré-controladora _global:
@@ -104,7 +112,7 @@ A biblioteca de classes:
 
 O framework já possuiu uma série de classes que podem ser utilizadas pela equipe de programadores a fim de facilitar e agilizar o desenvolvimento do projeto.
 
-Para uma listagem completa das classes da biblioteca, acesse a documentação do framework no seguinte enredeço: http://framework.fval.net.br
+Para uma listagem completa das classes da biblioteca, acesse a documentação do framework no seguinte endereço: http://framework.fval.net.br
 
 
 Bibliotecas Javascript inclusas no pacote:
@@ -122,7 +130,7 @@ Direitos Autorais e Propriedade Intelectual:
 
 Este framework utiliza componentes na licença GPL e outras licenças Open Source, entretanto esse framework é distribuído sob a licença MIT.
 
-Recomendamos a leitura da Lei 9609 de 19/02/1998 para esclarecimentos quanto aos direitos dos autores. http://www.planalto.gov.br/ccivil/Leis/L9609.htm
+A pesar desse framework ser distribuído sob uma licença Open Source, recomendamos a leitura da Lei 9609 de 19/02/1998 para esclarecimentos quanto a direitos autorais http://www.planalto.gov.br/ccivil/Leis/L9609.htm brasileiros.
 
 Para detalhes de como utilizar esse framework, entre em contato com os autores.
 

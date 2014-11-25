@@ -7,14 +7,12 @@
  *
  *	\brief		Classe para servidor SOAP
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	0.3.3
+ *	\version	0.4.4
  *  \author		Fernando Val  - fernando.val@gmail.com
  *	\ingroup	framework
  */
 
 namespace FW;
-
-if (!class_exists('SoapServer')) require_once $GLOBALS['SYSTEM']['3RDPARTY_PATH'] . DIRECTORY_SEPARATOR . 'NuSOAP' . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'nusoap.php';
 
 /**
  *  \brief Classe para servidor SOAP
@@ -22,8 +20,6 @@ if (!class_exists('SoapServer')) require_once $GLOBALS['SYSTEM']['3RDPARTY_PATH'
  *  \warning Esta classe ainda está em estágio experimental.
  */
 class SOAP_Server extends Kernel {
-	/// Classe utilizada internamente
-	private $classUsed = NULL;
 	/// Objeto SOAP server interno
 	private $server = NULL;
 
@@ -34,100 +30,62 @@ class SOAP_Server extends Kernel {
 	 *	@param[in] (array) $options - 
 	 */
 	public function __construct($endpoint='', $options=array()) {
-		if (class_exists('SoapServer')) {
-			$this->classUsed = 'SoapServer';
-
-			$this->server = new \SoapServer($endpoint, $options);
-		} else {
-			return false;
-		}
+		$this->server = new \SoapServer($endpoint, $options);
 	}
 
 	/**
 	 *	\brief Adiciona uma ou mais funções
 	 */
 	public function addFunction($functions) {
-		if ($this->classUsed == 'SoapServer') {
-			$this->server->addFunction($functions);
-		} else {
-			return false;
-		}
+		$this->server->addFunction($functions);
 	}
 
 	/**
 	 *	\brief 
 	 */
 	public function addSoapHeader($object) {
-		if ($this->classUsed == 'SoapServer') {
-			$this->server->addSoapHeader($object);
-		} else {
-			return false;
-		}
+		$this->server->addSoapHeader($object);
 	}
 
 	/**
 	 *	\brief Retorna a lista das funções definidas
 	 */
 	public function getFunctions() {
-		if ($this->classUsed == 'SoapServer') {
-			return $this->server->getFunctions();
-		} else {
-			return false;
-		}
+		return $this->server->getFunctions();
 	}
 
 	/**
 	 *	\brief Lida com uma solicitação SOAP
 	 */
 	public function handle($soap_request=NULL) {
-		if ($this->classUsed == 'SoapServer') {
-			$this->server->handle($soap_request);
-		} else {
-			return false;
-		}
+		$this->server->handle($soap_request);
 	}
 
 	/**
 	 *	\brief Envia uma resposta para o cliente da requisição corrente, indicando um erro
 	 */
 	public function fault($code, $string, $actor=NULL, $details=NULL, $name=NULL) {
-		if ($this->classUsed == 'SoapServer') {
-			$this->server->fault($code, $string, $actor, $details, $name);
-		} else {
-			return false;
-		}
+		$this->server->fault($code, $string, $actor, $details, $name);
 	}
 
 	/**
 	 *	\brief Define a classe que lida com a solicitação SOAP
 	 */
 	public function setClass($class_name) {
-		if ($this->classUsed == 'SoapServer') {
-			$this->server->setClass($class_name);
-		} else {
-			return false;
-		}
+		$this->server->setClass($class_name);
 	}
 
 	/**
 	 *	\brief Define o objeto que será usado para lidar com a solicitação SOAP
 	 */
 	public function setObject($object) {
-		if ($this->classUsed == 'SoapServer') {
-			$this->server->setObject($object);
-		} else {
-			return false;
-		}
+		$this->server->setObject($object);
 	}
 
 	/**
 	 *	\brief Define o modo de persistência do servidor SOAP
 	 */
 	public function setPersistence($mode) {
-		if ($this->classUsed == 'SoapServer') {
-			$this->server->setPersistence($mode);
-		} else {
-			return false;
-		}
+		$this->server->setPersistence($mode);
 	}
 }

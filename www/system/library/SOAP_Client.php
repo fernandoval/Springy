@@ -7,21 +7,17 @@
  *
  *	\brief		Classe para cliente SOAP
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.3.9
+ *	\version	2.0.10
  *  \author		Fernando Val  - fernando.val@gmail.com
  *	\ingroup	framework
  */
 
 namespace FW;
 
-if (!class_exists('SoapClient')) require_once $GLOBALS['SYSTEM']['3RDPARTY_PATH'] . DIRECTORY_SEPARATOR . 'NuSOAP' . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'nusoap.php';
-
 /**
  *  \brief Classe para cliente SOAP
  */
 class SOAP_Client {
-	/// Classe utilizada internamente
-	private $classUsed = NULL;
 	/// Objeto SOAP client interno
 	private $client = NULL;
 	/// Último erro de execução
@@ -35,60 +31,43 @@ class SOAP_Client {
 	 *	@param[in] (array) $options - array de opções
 	 */
 	public function __construct($endpoint='', $wsdl=false, $options=array(), $wsse=false) {
-		if (class_exists('SoapClient')) {
-			$this->classUsed = 'SoapClient';
-
-			if (Configuration::get('system', 'proxyhost')) $options['proxy_host'] = Configuration::get('system', 'proxyhost');
-			if (Configuration::get('system', 'proxyport')) $options['proxy_port'] = Configuration::get('system', 'proxyport');
-			if (Configuration::get('system', 'proxyusername')) $options['proxy_login'] = Configuration::get('system', 'proxyusername');
-			if (Configuration::get('system', 'proxypassword')) $options['proxy_password'] = Configuration::get('system', 'proxypassword');
-			if (empty($options['connection_timeout'])) {
-				$options['connection_timeout'] = (Configuration::get('soap', 'timeout')) ? Configuration::get('soap', 'timeout') : 20;
-			}
-			ini_set('default_socket_timeout', $options['connection_timeout']);
-
-			restore_error_handler();
-			
-			set_time_limit(0);
-
-			try {
-				// Monta a autenticação W.S.Security
-				if ($wsse && isset($options['Username']) && isset($options['Password'])) {
-					$objSoapVarWSSEHeader = new WsseAuthHeader($options['Username'], $options['Password']);
-					$options['trace'] = 1;
-					$options['exception'] = 0;
-
-					unset($options['Username']);
-					unset($options['Password']);
-				}
-
-				$this->client = new \SoapClient($endpoint, $options);
-
-				if (isset($objSoapVarWSSEHeader)) {
-					$this->client->__setSoapHeaders(array($objSoapVarWSSEHeader));
-				}
-			}
-			catch (Exception $e) {
-				$this->error = $e->getMessage();
-				return false;
-			}
-
-			set_time_limit(30);
-			set_error_handler('FW_ErrorHandler');
+		if (Configuration::get('system', 'proxyhost')) $options['proxy_host'] = Configuration::get('system', 'proxyhost');
+		if (Configuration::get('system', 'proxyport')) $options['proxy_port'] = Configuration::get('system', 'proxyport');
+		if (Configuration::get('system', 'proxyusername')) $options['proxy_login'] = Configuration::get('system', 'proxyusername');
+		if (Configuration::get('system', 'proxypassword')) $options['proxy_password'] = Configuration::get('system', 'proxypassword');
+		if (empty($options['connection_timeout'])) {
+			$options['connection_timeout'] = (Configuration::get('soap', 'timeout')) ? Configuration::get('soap', 'timeout') : 20;
 		}
-		else {
-			$this->classUsed = 'NuSOAP';
-			$this->client = new \nusoap_client($endpoint, $wsdl, Configuration::get('soap', 'proxyhost'), Configuration::get('soap', 'proxyport'), Configuration::get('soap', 'proxyusername'), Configuration::get('soap', 'proxypassword'));
+		ini_set('default_socket_timeout', $options['connection_timeout']);
 
-			// Pega o erro, caso tenha havido
-			if ($this->client->getError()) {
-				$this->error = $this->client->getError();
-				return false;
+		restore_error_handler();
+		
+		set_time_limit(0);
+
+		try {
+			// Monta a autenticação W.S.Security
+			if ($wsse && isset($options['Username']) && isset($options['Password'])) {
+				$objSoapVarWSSEHeader = new WsseAuthHeader($options['Username'], $options['Password']);
+				$options['trace'] = 1;
+				$options['exception'] = 0;
+
+				unset($options['Username']);
+				unset($options['Password']);
 			}
 
-			$this->client->useHTTPPersistentConnection();
-			$this->client->setUseCurl(Configuration::get('soap', 'useCURL'));
+			$this->client = new \SoapClient($endpoint, $options);
+
+			if (isset($objSoapVarWSSEHeader)) {
+				$this->client->__setSoapHeaders(array($objSoapVarWSSEHeader));
+			}
 		}
+		catch (Exception $e) {
+			$this->error = $e->getMessage();
+			return false;
+		}
+
+		set_time_limit(30);
+		set_error_handler('FW_ErrorHandler');
 
 		return true;
 	}
@@ -103,42 +82,22 @@ class SOAP_Client {
 	 */
 	public function call(&$result, $operation, $params=array(), $options=NULL, $input_headers=NULL) {
 		set_time_limit(0);
-		if ($this->classUsed == 'SoapClient') {
-			// $params = $this->_arrayToObject($params);
-			$params = array(Kernel::objectToArray($params));
 
-			restore_error_handler();
+		// $params = $this->_arrayToObject($params);
+		$params = array(Kernel::objectToArray($params));
 
-			try {
-				// $result = $this->client->$operation($params);
-				$result = $this->client->__soapCall($operation, $params, $options, $input_headers, $output_headers);
-			}
-			catch(SoapFault $exception) {
-				$result = $this->error = $exception->faultcode.' - '.$exception->faultstring;
-				return false;
-			}
+		restore_error_handler();
 
-			set_error_handler('FW_ErrorHandler');
+		try {
+			// $result = $this->client->$operation($params);
+			$result = $this->client->__soapCall($operation, $params, $options, $input_headers, $output_headers);
 		}
-		else {
-			$namespace = isset($options['uri']) ? $options['uri'] : NULL;
-			$soapAction = isset($options['soapaction']) ? $options['soapaction'] : NULL;
-			$style = isset($options['style']) ? $options['style'] : NULL;
-			$use = isset($options['use']) ? $options['use'] : NULL;
-			$result = Kernel::arrayToObject($this->client->call($operation, $params, $namespace, $soapAction, $input_headers, $rpcParams, $style, $use));
-
-			if ($this->client->fault) {
-				$result = $this->error = "";
-				return false;
-			} else {
-				$err = $this->client->getError();
-				if ($err) {
-					$result = $this->error = $err;
-					return false;
-				}
-			}
+		catch(SoapFault $exception) {
+			$result = $this->error = $exception->faultcode.' - '.$exception->faultstring;
+			return false;
 		}
-		
+
+		set_error_handler('FW_ErrorHandler');
 		set_time_limit(30);
 
 		return true;
@@ -148,20 +107,14 @@ class SOAP_Client {
 	 *	\brief Retorna a última requisição
 	 */
 	public function getLastRequest() {
-		if ($this->classUsed == 'SoapClient') {
-			return $this->client->__getLastRequest();
-		}
-		return $this->client->request;
+		return $this->client->__getLastRequest();
 	}
 
 	/**
 	 *	\brief Retorna a última resposta
 	 */
 	public function getLastResponse() {
-		if ($this->classUsed == 'SoapClient') {
-			return $this->client->__getLastResponse();
-		}
-		return $this->client->response;
+		return $this->client->__getLastResponse();
 	}
 
 	/**
@@ -171,70 +124,6 @@ class SOAP_Client {
 	 */
 	function getError() {
 		return $this->error;
-	}
-
-	/**
-	 *	\brief Pega o resultado do debug
-	 *
-	 *	Funciona apenas com NuSOAP
-	 */
-	function getDebugText() {
-		if ($this->classUsed == 'SoapClient') {
-			return "";
-		}
-		return $this->client->getDebug();
-	}
-
-	/**
-	 *	\brief Define se tenta usar conexão cURL se possível
-	 *
-	 *	Funciona apenas com NuSOAP
-	 *
-	 *	@param[in] bool $useCURL: Tenta usar conexão cURL?
-	 */
-	public function setUseCURL($useCURL) {
-		if ($this->classUsed == 'SoapClient') {
-			return false;
-		}
-		return $this->client->setUseCurl($useCURL);
-	}
-
-	/**
-	 *	\brief Seta o nível de debug
-	 *
-	 *	Funciona apenas com NuSOAP
-	 */
-	public function setDebugLevel($level) {
-		if ($this->classUsed == 'SoapClient') {
-			return false;
-		}
-		return $this->client->setDebugLevel($level);
-	}
-
-	/**
-	 *	\brief For creating serializable abstractions of native PHP types.
-	 *
-	 *	Funciona apenas com NuSOAP
-	 *
-	 */
-	public function soapval($name='soapval', $type, $value=-1, $element_ns=false, $type_ns=false, $attributes=false) {
-		if ($this->classUsed == 'SoapClient') {
-			return false;
-		}
-		return new \soapval($name, $type, $value, $element_ns, $type_ns, $attributes);
-	}
-
-	/**
-	 *	\brief Define o encoding.
-	 *
-	 *	Funciona apenas com NuSOAP
-	 *
-	 */
-	public function setSOAPEncoding($encoding) {
-		if ($this->classUsed == 'SoapClient') {
-			return false;
-		}
-		$this->client->soap_defencoding = $encoding;
 	}
 }
 

@@ -14,7 +14,12 @@ Developer team:
 Framework Update History
 
 ------------------------------------------------------------------------------------ --- -- -
-3.0.1 (beta 1)
+3.0.1
+	- Abandonado suporte ao NuSOAP (http://sourceforge.net/projects/nusoap/);
+	- Classe Template transformada em um container da classe de template;
+	- Inclusão de suporte à classe de templates Twig (http://twig.sensiolabs.org/);
+	- Adicionado suporte ao Composer;
+	- Classe Smarty removida da distribuição do framework;
 	- Inclusão da classe File\File - para manipulação de arquivos do sistema de arquivos;
 	- Inclusão da classe File\UploadedFile - para manipulação de arquivos que foram criados por upload no sistema de arquivos;
 	- Exclusão da classe Consultar;
@@ -137,7 +142,7 @@ Framework Update History
 	- Melhorias nos métodos de debug.
 
 1.2.1c
-	- Modificada a forma de armazenamento interno das variáveis defaul de template;
+	- Modificada a forma de armazenamento interno das variáveis default de template;
 	- Adicionado método assign_default_var() à biblioteca Template para adição de variáveis de template;
 	- Adicionado método get_default_var() à biblioteca Template para pegar valores de variáveis de template.
 
