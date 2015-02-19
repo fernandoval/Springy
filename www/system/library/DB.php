@@ -2,8 +2,8 @@
 /**	\file
  *	FVAL PHP Framework for Web Applications
  *
- *	\copyright Copyright (c) 2007-2014 FVAL Consultoria e Informática Ltda.\n
- *	\copyright Copyright (c) 2007-2014 Fernando Val\n
+ *  \copyright	Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
+ *  \copyright	Copyright (c) 2007-2015 Fernando Val\n
  *	\copyright Copyright (c) 2009-2013 Lucas Cardozo
  *
  *	\brief		Script da classe de acesso a banco de dados
@@ -49,7 +49,7 @@ class DB
 	/// Entrada de configuração de banco atual
 	private $database = false;
 	/// Flag de habilitação do relatório de erros
-	private $report_error = false;
+	private $report_error = true;
 	/// Flag do modo debug
 	private static $db_debug = false;
 	/// Controle de falhas de conexão

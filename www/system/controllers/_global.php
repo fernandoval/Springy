@@ -5,12 +5,14 @@
  *	Essa classe sempre é construída, independente da controladora chamada.
  *
  *	\ingroup	controllers
- *	\copyright	Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.
+ *	\copyright	Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.
  *  \author		Fernando Val  - fernando.val@gmail.com
  */
 
-class Global_Controller {
-	public function __construct() {
+class Global_Controller
+{
+	public function __construct()
+	{
 		//  Como exemplo, variáveis globais de template são inicializadas para entendimento da usabilidade desse hook de controladora
 	
 		// Informa para o template se o site está com SSL
@@ -43,7 +45,8 @@ class Global_Controller {
  *
  *  Um exemplo de Plugin de template
  */
-function files_static_version($params, $smarty) {
+function files_static_version($params, $smarty)
+{
 	if ($params['type'] == 'js') {
 		return FW\URI::buildURL(array('js'), array(), isset($_SERVER['HTTPS']), 'static', false) . '/' . $params['file'] . '__' . filemtime(FW\Configuration::get('system', 'js_path') . DIRECTORY_SEPARATOR . $params['file'] . '.js') . '.js';
 	} else {

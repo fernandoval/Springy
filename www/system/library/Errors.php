@@ -2,13 +2,13 @@
 /**	\file
  *	FVAL PHP Framework for Web Applications
  *
- *	\copyright Copyright (c) 2007-2014 FVAL Consultoria e Informática Ltda.
- *	\copyright Copyright (c) 2007-2014 Fernando Val
+ *  \copyright	Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
+ *  \copyright	Copyright (c) 2007-2015 Fernando Val\n
  *	\copyright Copyright (c) 2009-2013 Lucas Cardozo
  *
  *	\brief		Classe para tratamento de erros
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.6.19
+ *	\version	1.6.20
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
@@ -56,12 +56,20 @@ class Errors
 				if (in_array('smarty', $aFile) || strpos($errstr, 'filemtime') !== false || strpos($errstr, 'unlink') !== false) {
 					return;
 				}
+				$tplPash = Configuration::get('template', 'compiled_template_path');
+				if (substr($errfile, 0, strlen($tplPash)) == $tplPash) {
+					return;
+				}
 			break;
 			case E_PARSE:
 				$printError = 'Parse Error';
 			break;
 			case E_NOTICE:
 				$printError = 'Notice';
+				$tplPash = Configuration::get('template', 'compiled_template_path');
+				if (substr($errfile, 0, strlen($tplPash)) == $tplPash) {
+					return;
+				}
 			break;
 			case E_CORE_ERROR:
 				$printError = 'Core Error';

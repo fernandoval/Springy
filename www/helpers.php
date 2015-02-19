@@ -1,8 +1,21 @@
 <?php
-/***************************************************************
- * Arquivo de helpers - Funções e Constantes 
+/** \file
+ *  FVAL PHP Framework for Web Applications
+ *  
+ *  \copyright Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
+ *  \copyright Copyright (c) 2007-2015 Fernando Val\n
+ *
+ *	\brief rquivo de helpers - Funções e Constantes 
+ *  \warning Este arquivo é parte integrante do framework e não pode ser omitido
+ *  \version 1.0.0
+ *  \author Fernando Val - fernando.val@gmail.com
+ *  \author Allan Marques - allan.marques@ymail.com
+ *  \ingroup framework
+ */
+
+/*
  * para deixar o desenvolvedor mais feliz e produtivo 
- ***************************************************************/
+ */
 
 /**------------------------------------------------------------
  * Constantes

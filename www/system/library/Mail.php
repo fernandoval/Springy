@@ -2,13 +2,13 @@
 /**	\file
  *	FVAL PHP Framework for Web Applications
  *
- *	\copyright Copyright (c) 2007-2014 FVAL Consultoria e Informática Ltda.
- *	\copyright Copyright (c) 2007-2014 Fernando Val
+ *  \copyright	Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
+ *  \copyright	Copyright (c) 2007-2015 Fernando Val\n
  *	\copyright Copyright (c) 2009-2013 Lucas Cardozo
  *
  *	\brief		Classe para envio de email
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.6.10
+ *	\version	1.7.11
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
@@ -21,7 +21,8 @@ require_once $GLOBALS['SYSTEM']['3RDPARTY_PATH'] . DIRECTORY_SEPARATOR . 'MimeMe
 /**
  *  \brief Classe para envio de email
  */
-class Mail {
+class Mail
+{
 	private $message_obj = NULL;
 	private $html_part = NULL;
 	private $text_part = NULL;
@@ -34,11 +35,9 @@ class Mail {
 	/**
 	 *	\brief Construtor da classe
 	 */
-	function __construct() {
+	function __construct()
+	{
 		if (Configuration::get('mail', 'method') == 'smtp') {
-			error_reporting(E_ALL^E_NOTICE);
-			restore_error_handler();
-
 			require_once $GLOBALS['SYSTEM']['3RDPARTY_PATH'] . DIRECTORY_SEPARATOR . 'MimeMessage' . DIRECTORY_SEPARATOR . 'smtp_message.php';
 			require_once $GLOBALS['SYSTEM']['3RDPARTY_PATH'] . DIRECTORY_SEPARATOR . 'Smtp' . DIRECTORY_SEPARATOR . 'smtp.php';
 
@@ -92,14 +91,16 @@ class Mail {
 	/**
 	 *	\brief Define o valor de um item de cabeçalho
 	 */
-	public function setHeader($header, $value) {
+	public function setHeader($header, $value)
+	{
 		$this->message_obj->SetEncodedHeader($header, $value, $GLOBALS['SYSTEM']['CHARSET']);
 	}
 
 	/**
 	 *	\brief Define o valor de um item de cabeçalho
 	 */
-	public function setEmailHeader($header, $email, $name='') {
+	public function setEmailHeader($header, $email, $name='')
+	{
 		if (is_array($email)) {
 			$this->message_obj->SetMultipleEncodedEmailHeader($header, $email, $GLOBALS['SYSTEM']['CHARSET']);
 		} else {
@@ -116,7 +117,8 @@ class Mail {
 	 *
 	 *	Obs.: Caso seja passado um array de emails para $email, o valor de $name será ignorado.
 	 */
-	public function to($email, $name='') {
+	public function to($email, $name='')
+	{
 		// Verifica se há a entrada forçando o envio de todos os emails para um destinatário específico
 		if (Configuration::get('mail', 'mails_go_to')) {
 			$email = Configuration::get('mail', 'mails_go_to');
@@ -136,21 +138,24 @@ class Mail {
 	/**
 	 *	\brief Define o valor do campo Cc
 	 */
-	public function cc($email, $name='') {
+	public function cc($email, $name='')
+	{
 		$this->setEmailHeader('Cc', $email, $name);
 	}
 
 	/**
 	 *	\brief Define o valor do campo Bcc
 	 */
-	public function bcc($email, $name='') {
+	public function bcc($email, $name='')
+	{
 		$this->setEmailHeader('Bcc', $email, $name);
 	}
 
 	/**
 	 *	\brief Define o valor do campo From
 	 */
-	public function from($email, $name='') {
+	public function from($email, $name='')
+	{
 		$this->setEmailHeader('From', $email, $name);
 		$this->setHeader('Sender', $email, $name);
 	}
@@ -158,7 +163,8 @@ class Mail {
 	/**
 	 *	\brief Define o valor do campo Subject
 	 */
-	public function subject($subject) {
+	public function subject($subject)
+	{
 		$this->setHeader('Subject', $subject);
 		$this->mail_subject = $subject;
 	}
@@ -166,7 +172,8 @@ class Mail {
 	/**
 	 *	\brief Monta o corpo da mensagem
 	 */
-	public function body($html='', $text='') {
+	public function body($html='', $text='')
+	{
 		$alternative_parts = array();
 		// [pt-br] Monta a parte TXT
 		if ($text) {
@@ -187,7 +194,8 @@ class Mail {
 	/**
 	 *	\brief Adiciona um anexo ao e-mail
 	 */
-	public function addAttach($attach){
+	public function addAttach($attach)
+	{
 		$file['FileName'] = $attach['tmp_name'];
 		$file['Name'] = $attach['name'];
 		$file['Content-Type'] = $attach['type'];
@@ -200,7 +208,8 @@ class Mail {
 	/**
 	 *	\brief Envia a mensagem
 	 */
-	public function send() {
+	public function send()
+	{
 		if (Configuration::get('mail', 'method') == 'sendmail') {
 			$error = $this->message_obj->Mail($this->mail_to, $this->mail_subject, $this->text_message, '', '');
 		} else {
@@ -221,12 +230,12 @@ class Mail {
 	 *	@param[in] (string) $textmessage - mensagem em formato texto puro
 	 *	@return Retorna true se a mensagem foi enviada com sucesso ou a mensagem de erro
 	 */
-	public function sendMessage($from, $from_name, $mailto, $to_name, $subject, $htmlmessage, $textmessage) {
+	public function sendMessage($from, $from_name, $mailto, $to_name, $subject, $htmlmessage, $textmessage)
+	{
 		$this->from($from, $from_name);
 		$this->to($mailto, $to_name);
 		$this->subject($subject);
 		$this->body($htmlmessage, $textmessage);
 		return $this->send();
 	}
-
 }

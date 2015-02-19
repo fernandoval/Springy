@@ -4,7 +4,7 @@ FVAL PHP Framework for Web Applications
 Developer team:
 ---------------
 
-* 2007-2014 - Fernando Val
+* 2007-2015 - Fernando Val
 * 2009-2014 - Lucas Cardozo
 
 ### Documentação ###

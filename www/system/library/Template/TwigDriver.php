@@ -2,13 +2,13 @@
 /**	\file
  *  FVAL PHP Framework for Web Applications
  *
- *  \copyright Copyright (c) 2007-2014 FVAL Consultoria e Informática Ltda.
- *  \copyright Copyright (c) 2007-2014 Fernando Val
+ *  \copyright	Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
+ *  \copyright	Copyright (c) 2007-2015 Fernando Val\n
  *
  *  \brief		Classe driver de tratamento de templates utilizando Twig como mecanismo de renderização
  *  \see		http://twig.sensiolabs.org/
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	0.9.1 beta 2
+ *  \version	0.9.3 beta 3
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \ingroup	framework
  */
@@ -60,9 +60,13 @@ class TwigDriver implements TemplateDriverInterface
 		if (Configuration::get('uri', 'common_urls')) {
 			if (!Configuration::get('uri', 'register_method_set_common_urls')) {
 				foreach(Configuration::get('uri', 'common_urls') as $var => $value) {
-					if (isset($value[2])) {
+					if (isset($value[4])) {
+						$this->assign($var, URI::buildURL($value[0], $value[1], $value[2], $value[3], $value[4]));
+					} elseif (isset($value[3])) {
+						$this->assign($var, URI::buildURL($value[0], $value[1], $value[2], $value[3]));
+					} elseif (isset($value[2])) {
 						$this->assign($var, URI::buildURL($value[0], $value[1], $value[2]));
-					} else if (isset($value[1])) {
+					} elseif (isset($value[1])) {
 						$this->assign($var, URI::buildURL($value[0], $value[1]));
 					} else {
 						$this->assign($var, URI::buildURL($value[0]));
@@ -100,6 +104,7 @@ class TwigDriver implements TemplateDriverInterface
 		$loader = new \Twig_Loader_Filesystem( $templatePath );
 		$this->tplObj = new \Twig_Environment($loader, array(
 			'autoescape' => false,
+			'strict_variables' => Configuration::get('template', 'strict_variables'),
 			//'debug' => Configuration::get('system', 'debug'),
 			'cache' => $compilePath,
 			'auto_reload' => true

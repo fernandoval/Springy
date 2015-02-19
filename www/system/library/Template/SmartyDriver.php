@@ -2,13 +2,13 @@
 /**	\file
  *  FVAL PHP Framework for Web Applications
  *
- *  \copyright Copyright (c) 2007-2014 FVAL Consultoria e Informática Ltda.
- *  \copyright Copyright (c) 2007-2014 Fernando Val
+ *  \copyright	Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
+ *  \copyright	Copyright (c) 2007-2015 Fernando Val\n
  *
  *  \brief		Classe driver de tratamento de templates utilizando Smarty como mecanismo de renderização
  *  \see		http://www.smarty.net/
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	1.0.0
+ *  \version	1.0.3
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \ingroup	framework
  */
@@ -18,6 +18,7 @@ namespace FW\Template;
 use FW\Template_Static;
 use FW\Configuration;
 use FW\URI;
+use FW\Errors;
 
 /**
  *  \brief Classe driver de tratamento de templates utilizando Smarty como mecanismo
@@ -48,6 +49,10 @@ class SmartyDriver implements TemplateDriverInterface
 	{
 		$this->tplObj = new \Smarty;
 
+		if (Configuration::get('template', 'strict_variables')) {
+			$this->tplObj->error_reporting = E_ALL & ~E_NOTICE;
+			\Smarty::muteExpectedErrors();
+		}
 		$this->tplObj->use_sub_dirs = Configuration::get('template', 'use_sub_dirs');
 
 		$this->setCacheDir( Configuration::get('template', 'template_cached_path') );
@@ -64,9 +69,13 @@ class SmartyDriver implements TemplateDriverInterface
 		if (Configuration::get('uri', 'common_urls')) {
 			if (!Configuration::get('uri', 'register_method_set_common_urls')) {
 				foreach(Configuration::get('uri', 'common_urls') as $var => $value) {
-					if (isset($value[2])) {
+					if (isset($value[4])) {
+						$this->assign($var, URI::buildURL($value[0], $value[1], $value[2], $value[3], $value[4]));
+					} elseif (isset($value[3])) {
+						$this->assign($var, URI::buildURL($value[0], $value[1], $value[2], $value[3]));
+					} elseif (isset($value[2])) {
 						$this->assign($var, URI::buildURL($value[0], $value[1], $value[2]));
-					} else if (isset($value[1])) {
+					} elseif (isset($value[1])) {
 						$this->assign($var, URI::buildURL($value[0], $value[1]));
 					} else {
 						$this->assign($var, URI::buildURL($value[0]));
@@ -353,22 +362,34 @@ class SmartyDriver implements TemplateDriverInterface
 	 */
 	function assetFile($params, $smarty)
 	{
-		if ($params['type'] == 'js') {
+		if (!empty($params['type']) && $params['type'] == 'js') {
 			$filePath = Configuration::get('system', 'js_path') . DIRECTORY_SEPARATOR . $params['file'] . '.js';
 			$fileURI = Configuration::get('uri', 'js_dir');
-		} elseif ($params['type'] == 'css') {
+		} elseif (!empty($params['type']) && $params['type'] == 'css') {
 			$filePath = Configuration::get('system', 'css_path') . DIRECTORY_SEPARATOR . $params['file'] . '.css';
 			$fileURI = Configuration::get('uri', 'css_dir');
+		} elseif (!empty($params['file'])) {
+			$filePath = Configuration::get('system', 'assets_path') . DIRECTORY_SEPARATOR . $params['file'];
+			$fileURI = Configuration::get('uri', 'assets_dir');
 		} else {
 			return '#';
 		}
 
+		$get = array();
+		
 		if (file_exists($filePath)) {
-			$fileURI .= '/' . $params['file'] . '__' . filemtime($filePath) . '.' . $params['type'];
-		} else {
+			if (!empty($params['type'])) {
+				$fileURI .= '/' . $params['file'] . '__' . filemtime($filePath) . '.' . $params['type'];
+			} else {
+				$fileURI .= '/' . $params['file'];
+				$get['v'] = filemtime($filePath);
+			}
+		} elseif (!empty($params['type'])) {
 			$fileURI .= '/' . $params['file'] . '.' . $params['type'];
+		} else {
+			$fileURI .= '/' . $params['file'];
 		}
 
-		return URI::buildURL(explode('/', $fileURI), array(), isset($_SERVER['HTTPS']), 'static', false);
+		return URI::buildURL(explode('/', $fileURI), $get, isset($_SERVER['HTTPS']), 'static', false);
 	}
 }

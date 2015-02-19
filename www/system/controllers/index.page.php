@@ -3,7 +3,7 @@
  * 	\brief		Controladora da página principal da aplicação
  *
  *	\ingroup	controllers
- *	\copyright	Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.\n
+ *	\copyright	Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
  *  \author		Fernando Val  - fernando.val@gmail.com
  */
 

@@ -4,7 +4,7 @@
  *
  *  \warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
- *	\copyright	Copyright (c) 2007-2014 FVAL Consultoria e Informática Ltda.\n
+ *  \copyright	Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
  */
 
 /**
@@ -35,7 +35,6 @@ $conf = array(
 	'realm'           => '',
 	'workstation'     => '',
 	'pass'            => '',
-	'exclude_address' => '',
 	'auth_host'       => '',
 	'debug'           => 0,
 	'hlmt_debug'      => 0,

@@ -2,8 +2,8 @@
 /**	\file
  *	FVAL PHP Framework for Web Applications
  *
- *	\copyright Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.
- *	\copyright Copyright (c) 2007-2013 Fernando Val
+ *	\copyright	Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.
+ *	\copyright	Copyright (c) 2007-2015 Fernando Val
  *
  *	\brief		A single pagination class
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
@@ -57,18 +57,6 @@ namespace FW;
  *					o documento e seus devidos créditos sejam anexados ao projeto;
  *
  *					O autor agradece quaisquer comentários e sugestões de melhorias.
- *
- *	How to use:	[pt-br] : Exemplo de código PHP de como usar esta classe
- *
- *					include('PaginacaoClass.php');
- *					$Pagination = new Paginacao;
- *					$curr_page = empty($_GET['pag']) ? 1 : (int)$_GET['pag'];
- *					$sql = 'SELECT COUNT(1) FROM mytable';
- *					$res = mysql_query($sql);
- *					$reg = mysql_fetch_row($res);
- *					$rowsperpage = 10;
- *					$ultima_pag = $Pagination->calculateNumPages((int)$reg[0], $rowsperpage);
- *					print $Pagination->parse($curr_page, $ultima_pag);
  */
 class Pagination
 {

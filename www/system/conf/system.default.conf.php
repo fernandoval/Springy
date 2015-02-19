@@ -4,7 +4,7 @@
  *
  *  \warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
- *	\copyright	Copyright (c) 2007-2014 FVAL Consultoria e Informática Ltda.\n
+ *  \copyright	Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
  */
 
 /**
@@ -69,9 +69,10 @@ $conf = array(
 	'developer_user'    => '',
 	'developer_pass'    => '',
 	'dba_user'          => '',
+	'assets_path'       => $GLOBALS['SYSTEM']['ROOT_PATH'] . DIRECTORY_SEPARATOR . 'assets',
 	'controller_path'   => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'controllers',
 	'css_path'          => $GLOBALS['SYSTEM']['ROOT_PATH'] . DIRECTORY_SEPARATOR . 'css',
-	'js_path'           => $GLOBALS['SYSTEM']['ROOT_PATH'] . DIRECTORY_SEPARATOR . 'js'
+	'js_path'           => $GLOBALS['SYSTEM']['ROOT_PATH'] . DIRECTORY_SEPARATOR . 'js',
 );
 
 /**@}*/

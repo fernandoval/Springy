@@ -2,13 +2,13 @@
 /**	\file
  *  FVAL PHP Framework for Web Applications
  *
- *  \copyright Copyright (c) 2007-2014 FVAL Consultoria e Informática Ltda.
- *  \copyright Copyright (c) 2007-2014 Fernando Val
+ *  \copyright	Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
+ *  \copyright	Copyright (c) 2007-2015 Fernando Val\n
  *  \copyright Copyright (c) 2009-2013 Lucas Cardozo
  *
  *  \brief		Script da classe cerne do framework
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	1.7.39
+ *  \version	1.7.40
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *  \ingroup	framework
@@ -24,7 +24,7 @@ namespace FW;
 class Kernel
 {
 	/// Versão do framework
-	const VERSION = '3.0.1';
+	const VERSION = '3.0.2';
 	/// Array interno com dados de configuração
 	private static $confs = array();
 	/// Array com informações de debug
@@ -112,8 +112,8 @@ class Kernel
 				$htmlDebug = preg_replace(array('/<!-- DEBUG CONTENT \(.+\) -->/mu', '~<!--.*?-->~s', '!/\*.*?\*/!s', "/\n\s+/", "/\n(\s*\n)+/", "!\n//.*?\n!s", "/\n\}(.+?)\n/", "/\}\s+/", "/,\n/", "/>\n/", "/\{\s*?\n/", "/\}\n/", "/;\n/"), array(self::getDebugContent(), '', '', "\n", "\n", "\n", "}\\1\n", '}', ', ', '>', '{', '} ', ';'), $htmlDebug);
 			}
 
-			if (preg_match('/<body(.*?)>/', $conteudo)) {
-				echo preg_replace('/<body(.*?)>/', '<body\\1>' . $htmlDebug, $conteudo);
+			if (preg_match('/<\/body>/', $conteudo)) {
+				echo preg_replace('/<\/body>/', $htmlDebug . '</body>', $conteudo);
 			} else {
 				echo preg_replace('/^(.*?)$/', '<script type="text/javascript" src="'.URI::buildURL(array(Configuration::get('uri', 'js_dir')), array(), true, 'static').'/jquery.js"></script>' . $htmlDebug . '\\1', $conteudo);
 			}
