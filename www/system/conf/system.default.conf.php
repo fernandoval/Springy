@@ -18,6 +18,9 @@
  *  
  *  Entradas de configuração:
  *  - \c ignore_deprecated - Instrui o handler de tratamento de erros a ignorar avisos de funções depreciadas
+ *  - \c bug_authentication - Habilita autenticação HTTP para acesso à página de log de erros do sistema
+ *    - Esse parâmetro de configuração espera um \c array vazio ou no seguinte formato:
+ *      array('user' => 'usuario', 'pass' => 'senha')
  *  - \c controller_path - Caminho do diretório de scripts de controle (controllers)
  *  - \c css_path - Caminho do diretório dos arquivos CSS
  *  - \c js_path - Caminho do diretório dos arquivos JavaScript

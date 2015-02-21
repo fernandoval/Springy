@@ -54,7 +54,12 @@ $conf = array(
 	'template_config_path'   => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'templates_conf',
 	'compiled_template_path' => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'tpl_comp',
 	'template_cached_path'   => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'tpl_cache',
-	'use_sub_dirs'           => false
+	'use_sub_dirs'           => false,
+	'errors'                 => array(
+		404 => '_error404',
+		500 => '_error500',
+		503 => '_error503'
+	)
 );
 
 /**@}*/

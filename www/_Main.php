@@ -2,14 +2,14 @@
 /** \file
  *  FVAL PHP Framework for Web Applications
  *
- *  \copyright Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
- *  \copyright Copyright (c) 2007-2015 Fernando Val\n
- *	\copyright Copyright (c) 2009-2013 Lucas Cardozo
+ *	\copyright	Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.\n
+ *	\copyright	Copyright (c) 2007-2013 Fernando Val\n
+ *	\copyright	Copyright (c) 2009-2013 Lucas Cardozo
  *
  *  http://www.fval.com.br
  *
  *	\brief		Script de inicialização da aplicação
- *  \version	2.4.17
+ *  \version	2.5.18
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *  \file
@@ -322,11 +322,15 @@ if (isset($ControllerClassName)) {
 		if ($Page = FW\URI::getSegment(0, false)) {
 			if ($Page == 'framework' || $Page == 'about' || $Page == 'copyright' || $Page == 'credits' || $Page == 'fval' || $Page == '_') {
 				FW\Kernel::printCopyright();
-			} else if ($Page == '_pi_') {
+			} elseif ($Page == '_pi_') {
 				phpinfo();
 				ob_end_flush();
 				exit;
-			} else if (in_array($Page, array('_system_bug_', '_system_bug_solved_'))) {
+			} elseif ($Page == '_error_') {
+				if ($error = FW\URI::getSegment(0)) {
+					FW\Errors::displayError((int)$error, 'System error');
+				}
+			} elseif (in_array($Page, array('_system_bug_', '_system_bug_solved_'))) {
 				// Verifica se o acesso ao sistema necessita de autenticação
 				$auth = FW\Configuration::get('system', 'bug_authentication');
 				if (!empty($auth['user']) && !empty($auth['pass'])) {

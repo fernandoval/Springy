@@ -4,11 +4,11 @@
  *
  *  \copyright	Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
  *  \copyright	Copyright (c) 2007-2015 Fernando Val\n
- *  \copyright Copyright (c) 2009-2013 Lucas Cardozo
+ *  \copyright	Copyright (c) 2009-2013 Lucas Cardozo
  *
  *  \brief		Script da classe cerne do framework
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	1.7.40
+ *  \version	1.7.41
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *  \ingroup	framework
@@ -24,7 +24,7 @@ namespace FW;
 class Kernel
 {
 	/// Versão do framework
-	const VERSION = '3.0.2';
+	const VERSION = '3.0.3';
 	/// Array interno com dados de configuração
 	private static $confs = array();
 	/// Array com informações de debug

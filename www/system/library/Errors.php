@@ -4,11 +4,11 @@
  *
  *  \copyright	Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
  *  \copyright	Copyright (c) 2007-2015 Fernando Val\n
- *	\copyright Copyright (c) 2009-2013 Lucas Cardozo
+ *	\copyright	Copyright (c) 2009-2013 Lucas Cardozo
  *
  *	\brief		Classe para tratamento de erros
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.6.21
+ *	\version	1.7.21
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
@@ -381,7 +381,12 @@ class Errors
 			if (PHP_SAPI === 'cli' || defined('STDIN')) {
 				echo $msg."\n";
 			} else {
-				$tpl = new Template('_error' . $errorType);
+				$tpl = Configuration::get('template', 'errors.'.$errorType);
+				if ($tpl) {
+					$tpl = new Template($tpl);
+				} else {
+					$tpl = new Template('_error' . $errorType);
+				}
 
 				header('Content-type: text/html; charset=UTF-8', true, $errorType);
 

@@ -14,10 +14,15 @@ Developer team:
 Framework Update History
 
 ------------------------------------------------------------------------------------ --- -- -
+3.0.3
+	- Criada entrada de configurações template.errors para definir nome dos templates das páginas de erros (404, 500, 503, etc.);
+	- Acrescentado URI mágica para teste das páginas de erro. Para usá-la, chame a página /_error_/{codigo do erro};
+	- Removida a criação das variáveis de template urlJS, urlCSS, urlIMG e urlSWF do método Errors::printHtml().
 3.0.2
 	- Criada entrada de configuração do sistema para diretório assets;
 	- Criada entrada de configuração em templates strict_variables que quando verdadeiro faz classe de templates ignorar variáveis inválidas e/ou indefinidas;
 	- Criada entrada de configuração em uri 'assets_dir' para definição do diretório de assets;
+	- Templates utilizando engine Smarty passam a ter disponível o método assetFile que versiona arquivos estáticos para evitar desatualização pelo cache do navegador do usuário;
 	- Alteração da classe DB para reportar erros por padrão;
 	- Alteração da classe Errors para não tratar erros de template (html);
 	- Alteração da posição do bloco de debug dentro do HTML;

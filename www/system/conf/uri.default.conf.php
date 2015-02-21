@@ -103,6 +103,9 @@ $conf = array(
 	'register_method_set_common_urls' => null,
 	// URLs comuns do site
 	'common_urls'                     => array(
+		'urlAssets' => array(array('assets'), array(), false, 'static', true),
+		'urlCSS' => array(array('assets', 'css'), array(), false, 'static', true),
+		'urlJS' => array(array('assets', 'js'), array(), false, 'static', true),
 		'urlHome' => array(array()),
 		'urlLogin' => array(array('login'), array(), false, 'secure', true),
 		'urlLogout' => array(array('logout'), array(), false, 'secure', true)
