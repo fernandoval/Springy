@@ -26,7 +26,7 @@
 $conf = array(
 	'round_robin' => array(
 		'type' => 'file',
-		'server_addr' => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'templates_c',
+		'server_addr' => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'tpl_comp',
 		'server_port' => 11211
 	),
 	'cache' => array(

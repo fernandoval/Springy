@@ -8,7 +8,7 @@
  *
  *	\brief		Classe para tratamento de erros
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.6.20
+ *	\version	1.6.21
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
@@ -140,7 +140,7 @@ class Errors
 
 		if (PHP_SAPI === 'cli' || defined('STDIN')) {
 			$msg = 'Descricao do erro: ' . $msg."\n"
-				 . 'ID do Error: ' . $errorId . ' ('.URI::build_url(array('_system_bug_solved_', $errorId)).')'."\n"
+				 . 'ID do Error: ' . $errorId . ' ('.URI::buildURL(array('_system_bug_solved_', $errorId)).')'."\n"
 				 . 'Tempo de execucao ateh aqui: ' . number_format(microtime(true) - $GLOBALS['FWGV_START_TIME'], 6) . ' segundos'."\n"
 				 . 'Sistema: ' . php_uname('n') . "\n"
 				 . 'Modo Seguro: ' . (ini_get('safe_mode') ? 'Sim' : 'Não') . "\n"
