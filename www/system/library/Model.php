@@ -8,7 +8,7 @@
  *  \brief		Classe Model para acesso a banco de dados
  *  \note		Essa classe extende a classe DB.
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	1.5.9
+ *  \version	1.6.10
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \ingroup	framework
  */
@@ -61,6 +61,8 @@ class Model extends DB implements \Iterator
 	protected $abortOnEmptyFilter = true;
 	/// Objetos relacionados
 	protected $embedding = array();
+	/// Colunas para agrupamento de consultas
+	protected $groupBy = array();
 
     /**
 	 *  \brief Método construtor da classe.
@@ -235,7 +237,7 @@ class Model extends DB implements \Iterator
 
 		return ($this->dbNumRows == 1);
 	}
-	
+
 	/**
 	 *  \brief Informa se o registro foi carregado com dados do banco
 	 */
@@ -313,7 +315,7 @@ class Model extends DB implements \Iterator
 				default:
 					$cdtFunc = '\''.date('Y-m-d H:i:s').'\'';
 			}
-		
+
 			$this->execute('INSERT INTO '.$this->tableName.' ('.implode(', ', $columns).($this->insertDateColumn ? ', '.$this->insertDateColumn : "").') VALUES ('.rtrim(str_repeat('?,', count($values)),',').($this->insertDateColumn ? ', '.$cdtFunc : "").')', $values);
 
 			if ($this->affectedRows() > 0 && $this->lastInsertedId() && !empty($this->primaryKey) && !strpos($this->primaryKey, ',') && empty($this->rows[0][$this->primaryKey])) {
@@ -453,6 +455,47 @@ class Model extends DB implements \Iterator
 	}
 
 	/**
+	 *  \brief Define a relação de colunas para consultas
+	 *
+	 *  Este método permite alterar a relação padrão de colunas a serem listadas em consultas com o método query
+	 *
+	 *  \params (array)$columns - array contendo a relação de colunas para o comando SELECT
+	 */
+	public function setColumns(array $columns)
+	{
+		$cols = array();
+		foreach($columns as $column) {
+			if (!strpos($column, '.') && !strpos($column, '(')) {
+				$column = $this->tableName.'.'.$column;
+			}
+			$cols[] = $column;
+		}
+
+		$this->tableColumns = implode(',', $cols);
+	}
+
+	/**
+	 *  \brief Define colunas para agrupamento do resultado
+	 *
+	 *  Este método permite definir a relação de colunas para a cláusula GROUP BY da consulta com o método query
+	 *
+	 *  \params (array)$columns - array contendo a relação de colunas para a cláusula GROUP BY
+	 *  \note ESTE MÉTODO AINDA É EXPERIMENTAL
+	 */
+	public function groupBy(array $columns)
+	{
+		$cols = array();
+		foreach($columns as $column) {
+			if (!strpos($column, '.') && !strpos($column, '(')) {
+				$column = $this->tableName.'.'.$column;
+			}
+			$cols[] = $column;
+		}
+
+		$this->groupBy = $cols;
+	}
+
+	/**
 	 *  \brief Método de consulta ao banco de dados
 	 *
 	 *  \param (array)$filter - array contendo o filtro de registros no formato 'coluna' => valor
@@ -475,7 +518,7 @@ class Model extends DB implements \Iterator
 		if (is_array($this->tableColumns)) {
 			$columns = $this->tableName.'.'.implode(', '.$this->tableName.'.', $this->tableColumns);
 		} else {
-			$columns = $this->tableName.'.'.$this->tableColumns;
+			$columns = (!strpos($this->tableColumns, '.') && !strpos($this->tableColumns, '(')) ? $this->tableName.'.'.$this->tableColumns : $this->tableColumns;
 		}
 
 		$select = 'SELECT '.($this->driverName() == 'mysql' ? 'SQL_CALC_FOUND_ROWS ' : "").$columns;
@@ -531,6 +574,11 @@ class Model extends DB implements \Iterator
 			$sql .= ' WHERE ' . implode(' AND ', $where);
 		}
 
+		// Monta o agrupamento
+		if (!empty($this->groupBy)) {
+			$sql .= ' GROUP BY ' . implode(', ', $this->groupBy);
+		}
+
 		// Monta a ordenação do resultado de busca
 		if (!empty($orderby)) {
 			foreach($orderby as $column => $direction) {
@@ -568,12 +616,12 @@ class Model extends DB implements \Iterator
 			} else {
 				array_pop($params);
 				array_pop($params);
-				
+
 				$sql = 'SELECT COUNT(0) AS found_rows FROM '.$this->tableName;
 				if (!empty($where)) {
 					$sql .= ' WHERE ' . implode(' AND ', $where);
 				}
-				
+
 				$this->execute($sql, $params);
 			}
 			$columns = $this->fetchNext();
