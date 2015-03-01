@@ -8,7 +8,7 @@
  *
  *	\brief		Classe para tratamento de URI
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.13.23
+ *	\version	1.13.24
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
@@ -529,7 +529,7 @@ class URI
 		$uri = '';
 		for ($i=0; $i < count($segments); $i++) {
 			if ($segments[ $i ] != 'index' && $segments[ $i ] != '') {
-				$uri .= (empty($uri) ? '' : '/') . self::makeSlug($segments[ $i ], '-', '\.,|~');
+				$uri .= (empty($uri) ? '' : '/') . self::makeSlug($segments[ $i ], '-', '\.,|~\#');
 			}
 		}
 		$url .= $uri;

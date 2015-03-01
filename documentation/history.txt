@@ -16,7 +16,12 @@ Framework Update History
 ------------------------------------------------------------------------------------ --- -- -
 3.0.4
 	- Criação do método setColumns na classe Model para permitir alteração das colunas a serem listadas pelo método query;
-	- Criação do método groupBy na classe Model para permitir agrupamentos em consultas pelo método query.
+	- Criação do método groupBy na classe Model para permitir agrupamentos em consultas pelo método query;
+	- Inclusão do caracter sharp (#) na relação de aceitos para montagem de URL em URI::buildURL();
+	- Adição de entradas de configuração para armazenamento de logs de erro do sistema em banco de dados;
+	- Adição da possibilidade de criação da tabela de log de erros do sistema caso nao exista;
+	- Inclusão de template de mensagem de erros do sistema (error_template.html);
+	- Melhorias na tela de listagem do log de erros armazenado em banco de dados.
 3.0.3
 	- Criação da entrada de configurações template.errors para definir nome dos templates das páginas de erros (404, 500, 503, etc.);
 	- Criação da URI mágica para teste das páginas de erro. Para usá-la, chame a página /_error_/{codigo do erro};

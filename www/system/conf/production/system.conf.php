@@ -29,10 +29,7 @@ $conf = array(
 	'rewrite_url'       => true,
 	'cache'             => false,
 	'cache-control'     => 'private, must-revalidate',
-	'authentication'    => false,
-	'system_error'      => array(
-		'save_in_database' => false
-	)
+	'authentication'    => array(),
 );
 
 /**@}*/

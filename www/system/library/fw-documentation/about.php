@@ -95,10 +95,17 @@
  *  \section precontroller A pré-controladora _global:
  *  
  *  Antes de construir a controladora e fazer a chamada de seus métodos, o framework verifica a existência do script _global.php, no diretório de controladoras. Caso esse arquivo exista,
- *  será carregado e seu método construtor executado. Este script serve como um hook de inicialização que sempre é executado antes de qualquer controladora ser carregada.
+ *  será carregado e seu método construtor executado. Este script serve como um hook de inicialização que sempre é executado antes de qualquer controladora ser carregada, além de também poder ser usado como biblioteca de classes e funções para todo o sistema.
+ *  
+ *  Para que a _global possa ser usada como um hook de inicialização, o script deve conter uma classe de nome Global_Controller e seu respectivo método __construct.
  *  
  *  Caso alguma controladora necessite que a pré-controladora _global não seja carregada, acrescente o método estático púbico de nome \b _ignore_global, à mesma. Esse método não será executado,
  *  mas sua existência orientará o framework a não executar a _global.
+ *  
+ *  
+ *  \section defaultcontroller A pré-controladora _default:
+ *  
+ *  Assim como acontece com a _global.php, o framework verifica a existência do programa _default.php. Só que, diferentemente do _global.php, esse arquivo deve estar no mesmo diretório da controladora a ser executada e, sendo verdadeiro, o carrega para a memória. Da mesma forma que a _global, para que o _default seja usado como hook, se faz necessário que a classe Default_Controller e seu método __construct sejam criados.
  *  
  *  
  *  \section thecontroller A controladora e seus métodos:

@@ -33,6 +33,13 @@
  *  - \c authentication - Define o acesso autenticado por HTTP
  *    - Esse parâmetro de configuração espera um valor \c false ou um \c array no seguinte formato:
  *      array('user' => 'usuario', 'pass' => 'senha')
+ *  - \c system_error - Configurações de tratamento de erros da aplicação
+ *    - \c save_in_database - Informa ao sistema se as ocorrências de erros devem ser armazenadas em banco de dados.
+ *    - \c table_name - Informa ao sistema o nome da tabela onde as ocorrências de erro devem ser armazenadas.
+ *    - \c db_server - Nome da conexão de banco de dados para armazenamento de erros. Se omitido utilizará a default.
+ *    - \c create_table - Informa ao sistema se a tabela de erros deve ser criada, caso não exista.
+ *  	Em caso afirmativo o sistema utlizará o script SQL armazenado no arquivo system_errors_create_table.sql que
+ *  	deverá estar no diretório da biblioteca do sistema.
  *  
  *  Os parâmetros \c developer_user e \c developer_pass informam qual parametro deverá ser passado para ligar o modo debug em servidores que não são de desenvolvimento
  *  deveserá ser usado da seguinte forma:
@@ -72,10 +79,17 @@ $conf = array(
 	'developer_user'    => '',
 	'developer_pass'    => '',
 	'dba_user'          => '',
+	'bug_authentication' => array(),
 	'assets_path'       => $GLOBALS['SYSTEM']['ROOT_PATH'] . DIRECTORY_SEPARATOR . 'assets',
 	'controller_path'   => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'controllers',
 	'css_path'          => $GLOBALS['SYSTEM']['ROOT_PATH'] . DIRECTORY_SEPARATOR . 'css',
 	'js_path'           => $GLOBALS['SYSTEM']['ROOT_PATH'] . DIRECTORY_SEPARATOR . 'js',
+	'system_error'       => array(
+		'save_in_database' => false,
+		'table_name'       => 'system_errors',
+		'db_server'        => 'default',
+		'create_table'     => true
+	)
 );
 
 /**@}*/
