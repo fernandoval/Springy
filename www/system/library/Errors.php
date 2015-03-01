@@ -8,7 +8,7 @@
  *
  *	\brief		Classe para tratamento de erros
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.8.22
+ *	\version	1.8.23
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
@@ -131,7 +131,7 @@ class Errors
 	/**
 	 *	\brief Monta a mensagem de erro com dados de backtrace, se aplicável
 	 */
-	public static function sendReport($msg, $errorType, $errorId, $adictionalInfo='')
+	public static function sendReport($msg, $errorType, $errorId, $additionalInfo='')
 	{
 		$getParams = array();
 		foreach (URI::getParams() as $var => $value) {
@@ -155,28 +155,7 @@ class Errors
 		} else {
 			$errorTemplate = dirname(realpath(__FILE__)) . DIRECTORY_SEPARATOR . 'error_template.html';
 			if (file_exists($errorTemplate) && $out = file_get_contents($errorTemplate)) {
-				$out = preg_replace('/<!-- DESCRIPTION -->/', $msg, $out);
-				$out = preg_replace('/<!-- ERROR_ID -->/', $errorId, $out);
-				$out = preg_replace('/<!-- EXEC_TIME -->/', number_format(microtime(true) - $GLOBALS['FWGV_START_TIME'], 6), $out);
-				$out = preg_replace('/<!-- SYSTEM -->/', php_uname('n'), $out);
-				$out = preg_replace('/<!-- HTTPS -->/', (ini_get('safe_mode') ? 'Yes' : 'No'), $out);
-				$out = preg_replace('/<!-- DATE_TIME -->/', date('Y-m-d G:i:s'), $out);
-				$out = preg_replace('/<!-- REQUEST_URI -->/', isset($_SERVER['REQUEST_URI'])?$_SERVER['REQUEST_URI']:'empty', $out);
-				$out = preg_replace('/<!-- REQUEST_METHOD -->/', isset($_SERVER['REQUEST_METHOD'])?$_SERVER['REQUEST_METHOD']:'empty', $out);
-				$out = preg_replace('/<!-- SERVER_PROTOCOL -->/', isset($_SERVER['SERVER_PROTOCOL'])?$_SERVER['SERVER_PROTOCOL']:'empty', $out);
-				$out = preg_replace('/<!-- URL -->/', URI::getURIString().'?'.implode('&', $getParams), $out);
-				$out = preg_replace('/<!-- KERNEL_DEBUG -->/', Kernel::getDebugContent(), $out);
-				$out = preg_replace('/<!-- BACKTRACE -->/', Kernel::makeDebugBacktrace(), $out);
-				$out = preg_replace('/<!-- HTTP_REFERER -->/', isset($_SERVER['HTTP_REFERER'])?$_SERVER['HTTP_REFERER']:"", $out);
-				$out = preg_replace('/<!-- CLIENT_IP -->/', Strings::getRealRemoteAddr(), $out);
-				$out = preg_replace('/<!-- REVERSE -->/', (Strings::getRealRemoteAddr() ? gethostbyaddr(Strings::getRealRemoteAddr()) : 'no reverse'), $out);
-				$out = preg_replace('/<!-- HTTP_USER_AGENT -->/', isset($_SERVER['HTTP_USER_AGENT'])?$_SERVER['HTTP_USER_AGENT']:"", $out);
-				$out = preg_replace('/<!-- ADDITIONAL_INFO -->/', $adictionalInfo, $out);
-				$out = preg_replace('/<!-- _POST -->/', Kernel::print_rc($_POST, true), $out);
-				$out = preg_replace('/<!-- _GET -->/', Kernel::print_rc($_GET, true), $out);
-				$out = preg_replace('/<!-- _COOKIE -->/', Kernel::print_rc($_COOKIE, true), $out);
-				$out = preg_replace('/<!-- _SESSION -->/', Kernel::print_rc(Session::getAll(), true), $out);
-				$out = preg_replace(array('!/\*.*?\*/!s', "/\n\s+/", "/\n(\s*\n)+/", "!\n//.*?\n!s", "/\n\}(.+?)\n/", "/\}\s+/", "/,\n/", "/>\n/", "/\{\s*?\n/", "/\}\n/", "/;\n/"), array('', "\n", "\n", "\n", "}\\1\n", '}', ', ', '>', '{', '} ', ';'), $out);
+				$out = self::_parseTemplate($out, $errorId, $msg, $additionalInfo);
 			} else {
 				$out = '<table class="table table-bordered" width="100%" border="0" cellspacing="0" cellpadding="0">'
 					 . '  <tr>'
@@ -260,7 +239,7 @@ class Errors
 					 . '          <td style="padding:3px 2px"><label style="font-weight:bold">User Agent:</label></td>'
 					 . '          <td style="padding:3px 2px">'.(isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '').'</td>'
 					 . '        </tr>'
-					 . $adictionalInfo
+					 . $additionalInfo
 					 . '        <tr>'
 					 . '          <td colspan="2" style="background-color:#66C; color:#FFF; font-weight:bold; padding-left:10px; padding:3px 2px">PHP vars</td>'
 					 . '        </tr>'
@@ -319,16 +298,22 @@ class Errors
 		}
 
 		// Envia a mensagem de erro para o webmaster
-		if (!in_array($errorType, array(404, 503)) && Configuration::get('mail', 'errors_go_to') && !Configuration::get('system','debug')) {
+		// if (!in_array($errorType, array(404, 503)) && Configuration::get('mail', 'errors_go_to') && !Configuration::get('system','debug')) {
+		if (!in_array($errorType, array(404, 503)) && Configuration::get('mail', 'errors_go_to')) {
 			if (!isset($repeated)) {
-				$out = preg_replace('/\<a href="javascript\:\;" onClick="var obj=\$\(\#(.*?)\)\.toggle\(\)" style="color:#06c; margin:3px 0"\>arguments passed to function\<\/a\>/', '<span style="font-weight:bold; color:#06c; margin:3px 0">Functions arguments:</span>', $out);
-				$out = preg_replace('/ style="display:none"/', '', $out);
+				$errorTemplate = dirname(realpath(__FILE__)) . DIRECTORY_SEPARATOR . 'error_mail_template.html';
+				if (file_exists($errorTemplate) && $errorMail = file_get_contents($errorTemplate)) {
+					$errorMail = self::_parseTemplate($errorMail, $errorId, $msg, $additionalInfo);
+				} else {
+					$errorMail = preg_replace('/\<a href="javascript\:\;" onClick="var obj=\$\(\#(.*?)\)\.toggle\(\)" style="color:#06c; margin:3px 0"\>arguments passed to function\<\/a\>/', '<span style="font-weight:bold; color:#06c; margin:3px 0">Functions arguments:</span>', $out);
+					$errorMail = preg_replace('/ style="display:none"/', '', $errorMail);
+				}
 
 				$email = new Mail;
-				$email->to(Configuration::get('mail', 'errors_go_to'));
-				$email->from(Configuration::get('mail', 'errors_go_to'));
-				$email->subject('Erro em ' . $GLOBALS['SYSTEM']['SYSTEM_NAME'] . ' (release: "' . $GLOBALS['SYSTEM']['SYSTEM_VERSION'] . '" | ambiente: "' . ($GLOBALS['SYSTEM']['ACTIVE_ENVIRONMENT'] ? $GLOBALS['SYSTEM']['ACTIVE_ENVIRONMENT'] : $_SERVER['HTTP_HOST']) . '")' . ' - ' . ((isset($_SERVER) && isset($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : ""));
-				$email->body($out);
+				$email->to(Configuration::get('mail', 'errors_go_to'), 'System Admin');
+				$email->from(Configuration::get('mail', 'errors_go_to'), 'System Error Report');
+				$email->subject('Error on ' . $GLOBALS['SYSTEM']['SYSTEM_NAME'] . ' (release: "' . $GLOBALS['SYSTEM']['SYSTEM_VERSION'] . '" | environment: "' . ($GLOBALS['SYSTEM']['ACTIVE_ENVIRONMENT'] ? $GLOBALS['SYSTEM']['ACTIVE_ENVIRONMENT'] : $_SERVER['HTTP_HOST']) . '")' . ' - ' . ((isset($_SERVER) && isset($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : ""));
+				$email->body($errorMail);
 				$email->send();
 				unset($email);
 			}
@@ -466,5 +451,45 @@ class Errors
 				echo $msg;
 			}
 		}
+	}
+	
+	/**
+	 *  /brief Preenche o template de erro com as variáveis
+	 *  /param $tpl - HTML carregado do template
+	 *  /param $errorId - ID do erro
+	 *  /param $additionalInfo - Informação adicional
+	 *  /return Retorna o HTML
+	 */
+	private static function _parseTemplate($tpl, $errorId, $msg, $additionalInfo)
+	{
+		$getParams = array();
+		foreach (URI::getParams() as $var => $value) {
+			$getParams[] = $var.'='.$value;
+		}
+		
+		$tpl = preg_replace('/<!-- DESCRIPTION -->/', $msg, $tpl);
+		$tpl = preg_replace('/<!-- ERROR_ID -->/', $errorId, $tpl);
+		$tpl = preg_replace('/<!-- EXEC_TIME -->/', number_format(microtime(true) - $GLOBALS['FWGV_START_TIME'], 6), $tpl);
+		$tpl = preg_replace('/<!-- SYSTEM -->/', php_uname('n'), $tpl);
+		$tpl = preg_replace('/<!-- HTTPS -->/', (ini_get('safe_mode') ? 'Yes' : 'No'), $tpl);
+		$tpl = preg_replace('/<!-- DATE_TIME -->/', date('Y-m-d G:i:s'), $tpl);
+		$tpl = preg_replace('/<!-- REQUEST_URI -->/', isset($_SERVER['REQUEST_URI'])?$_SERVER['REQUEST_URI']:'empty', $tpl);
+		$tpl = preg_replace('/<!-- REQUEST_METHOD -->/', isset($_SERVER['REQUEST_METHOD'])?$_SERVER['REQUEST_METHOD']:'empty', $tpl);
+		$tpl = preg_replace('/<!-- SERVER_PROTOCOL -->/', isset($_SERVER['SERVER_PROTOCOL'])?$_SERVER['SERVER_PROTOCOL']:'empty', $tpl);
+		$tpl = preg_replace('/<!-- URL -->/', URI::getURIString().'?'.implode('&', $getParams), $tpl);
+		$tpl = preg_replace('/<!-- KERNEL_DEBUG -->/', Kernel::getDebugContent(), $tpl);
+		$tpl = preg_replace('/<!-- BACKTRACE -->/', Kernel::makeDebugBacktrace(), $tpl);
+		$tpl = preg_replace('/<!-- HTTP_REFERER -->/', isset($_SERVER['HTTP_REFERER'])?$_SERVER['HTTP_REFERER']:"", $tpl);
+		$tpl = preg_replace('/<!-- CLIENT_IP -->/', Strings::getRealRemoteAddr(), $tpl);
+		$tpl = preg_replace('/<!-- REVERSE -->/', (Strings::getRealRemoteAddr() ? gethostbyaddr(Strings::getRealRemoteAddr()) : 'no reverse'), $tpl);
+		$tpl = preg_replace('/<!-- HTTP_USER_AGENT -->/', isset($_SERVER['HTTP_USER_AGENT'])?$_SERVER['HTTP_USER_AGENT']:"", $tpl);
+		$tpl = preg_replace('/<!-- ADDITIONAL_INFO -->/', $additionalInfo, $tpl);
+		$tpl = preg_replace('/<!-- _POST -->/', Kernel::print_rc($_POST, true), $tpl);
+		$tpl = preg_replace('/<!-- _GET -->/', Kernel::print_rc($_GET, true), $tpl);
+		$tpl = preg_replace('/<!-- _COOKIE -->/', Kernel::print_rc($_COOKIE, true), $tpl);
+		$tpl = preg_replace('/<!-- _SESSION -->/', Kernel::print_rc(Session::getAll(), true), $tpl);
+		$tpl = preg_replace(array('!/\*.*?\*/!s', "/\n\s+/", "/\n(\s*\n)+/", "!\n//.*?\n!s", "/\n\}(.+?)\n/", "/\}\s+/", "/,\n/", "/>\n/", "/\{\s*?\n/", "/\}\n/", "/;\n/"), array('', "\n", "\n", "\n", "}\\1\n", '}', ', ', '>', '{', '} ', ';'), $tpl);
+		
+		return $tpl;
 	}
 }

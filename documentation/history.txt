@@ -21,6 +21,7 @@ Framework Update History
 	- Adição de entradas de configuração para armazenamento de logs de erro do sistema em banco de dados;
 	- Adição da possibilidade de criação da tabela de log de erros do sistema caso nao exista;
 	- Inclusão de template de mensagem de erros do sistema (error_template.html);
+	- Inclusão de template para email com mensagem de erros do sistema (error_email_template.html);
 	- Melhorias na tela de listagem do log de erros armazenado em banco de dados.
 3.0.3
 	- Criação da entrada de configurações template.errors para definir nome dos templates das páginas de erros (404, 500, 503, etc.);
