@@ -273,9 +273,9 @@ class Errors
 			if (!$table = Configuration::get('system', 'system_error.table_name'))
 				$table = 'system_errors';
 			
+			restore_error_handler();
 			$db = new DB($conn);
 			if (DB::hasConnection()) {
-				restore_error_handler();
 				$db->disableReportError();
 				if (!$db->execute('SELECT id FROM '.$table.' WHERE error_code = ?', array($errorId))) {
 					if ($db->statmentErrorCode()) {
@@ -311,7 +311,7 @@ class Errors
 
 				$email = new Mail;
 				$email->to(Configuration::get('mail', 'errors_go_to'), 'System Admin');
-				$email->from(Configuration::get('mail', 'errors_go_to'), 'System Error Report');
+				$email->from(Configuration::get('mail', 'errors_go_to'), $GLOBALS['SYSTEM']['SYSTEM_NAME'].' - System Error Report');
 				$email->subject('Error on ' . $GLOBALS['SYSTEM']['SYSTEM_NAME'] . ' (release: "' . $GLOBALS['SYSTEM']['SYSTEM_VERSION'] . '" | environment: "' . ($GLOBALS['SYSTEM']['ACTIVE_ENVIRONMENT'] ? $GLOBALS['SYSTEM']['ACTIVE_ENVIRONMENT'] : $_SERVER['HTTP_HOST']) . '")' . ' - ' . ((isset($_SERVER) && isset($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : ""));
 				$email->body($errorMail);
 				$email->send();

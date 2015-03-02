@@ -8,7 +8,7 @@
  *
  *	\brief		Script da classe de acesso a banco de dados
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.6.26
+ *	\version	1.6.27
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *  \author		Allan Marques - allan.marques@ymail.com
@@ -144,8 +144,10 @@ class DB
 			);
 			unset($pdoConf, self::$conErrors[$database]);
 		} catch(\PDOException $error) {
-			var_dump($error);
-			Errors::errorHandler((int)$error->getCode(), $error->getMessage(), $error->getFile(), $error->getLine(), null);
+			$callers = debug_backtrace();
+			if (!isset($callers[1]) || $callers[1]['class'] != 'FW\Errors' || $callers[1]['function'] != 'sendReport') {
+				Errors::errorHandler((int)$error->getCode(), $error->getMessage(), $error->getFile(), $error->getLine(), null);
+			}
 		}
 
 		return self::$DB[$database]['con'];
