@@ -38,6 +38,9 @@
 /**@{*/
 
 /// Entradas para todos os ambientes
-$conf = array();
+$conf = array(
+	'system_adm_mail' => 'noreply@yourdomain.com',
+	'errors_go_to'    => 'youremail@yourdomain.com'
+);
 
 /**@}*/

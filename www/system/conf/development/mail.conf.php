@@ -38,7 +38,6 @@ $conf = array(
 	'auth_host'       => '',
 	'debug'           => 0,
 	'html_debug'      => 1,
-	'errors_go_to'    => NULL
 );
 
 /**@}*/

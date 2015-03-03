@@ -8,7 +8,7 @@
  *
  *	\brief		Classe para tratamento de erros
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.8.23
+ *	\version	1.8.24
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
@@ -311,7 +311,7 @@ class Errors
 
 				$email = new Mail;
 				$email->to(Configuration::get('mail', 'errors_go_to'), 'System Admin');
-				$email->from(Configuration::get('mail', 'errors_go_to'), $GLOBALS['SYSTEM']['SYSTEM_NAME'].' - System Error Report');
+				$email->from(Configuration::get('mail', 'system_adm_mail'), $GLOBALS['SYSTEM']['SYSTEM_NAME'].' - System Error Report');
 				$email->subject('Error on ' . $GLOBALS['SYSTEM']['SYSTEM_NAME'] . ' (release: "' . $GLOBALS['SYSTEM']['SYSTEM_VERSION'] . '" | environment: "' . ($GLOBALS['SYSTEM']['ACTIVE_ENVIRONMENT'] ? $GLOBALS['SYSTEM']['ACTIVE_ENVIRONMENT'] : $_SERVER['HTTP_HOST']) . '")' . ' - ' . ((isset($_SERVER) && isset($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : ""));
 				$email->body($errorMail);
 				$email->send();

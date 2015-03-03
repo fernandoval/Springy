@@ -38,7 +38,6 @@ $conf = array(
 	'auth_host'       => '',
 	'debug'           => 0,
 	'hlmt_debug'      => 0,
-	'errors_go_to'    => 'yourname@yourisp.com'
 );
 
 /**@}*/
