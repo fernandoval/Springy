@@ -8,7 +8,7 @@
  *  \brief		Classe driver de tratamento de templates utilizando Twig como mecanismo de renderização
  *  \see		http://twig.sensiolabs.org/
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	0.9.3 beta 3
+ *  \version	0.9.4 beta 3
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \ingroup	framework
  */
@@ -161,28 +161,29 @@ class TwigDriver implements TemplateDriverInterface
 	 */
 	private function setAutoTemplatePaths()
 	{
-		// Se o nome do template não foi informado, define como sendo a página atual
+		// Se o nome do template não foi informado, define como relativo à controladora atual
 		if ($this->templateName === NULL) {
-			// Pega o caminha relativo da página atual
+			// Pega o caminho relativo da página atual
 			$relative_path_page = URI::relativePathPage(TRUE);
+			$this->setTemplate($relative_path_page . (empty($relative_path_page) ? "" : DIRECTORY_SEPARATOR) . URI::getControllerClass());
 
-			$this->templateName = URI::getControllerClass();
+			// $this->templateName = URI::getControllerClass();
 
-			// Monta o caminho do diretório do arquivo de template
-			$path = Configuration::get('template', 'template_path') . (empty($relative_path_page) ? '' : DIRECTORY_SEPARATOR) . $relative_path_page;
+			// // Monta o caminho do diretório do arquivo de template
+			// $path = Configuration::get('template', 'template_path') . (empty($relative_path_page) ? '' : DIRECTORY_SEPARATOR) . $relative_path_page;
 
-			// Verifica se existe o diretório e dentro dele um template com o nome da página e
-			// havendo, usa como caminho relativo adicionao. Se não houver, limpa o caminho relativo.
-			if (is_dir($path) && file_exists($path . DIRECTORY_SEPARATOR . $this->templateName . self::TPL_NAME_SUFIX)) {
-				$relative_path = (empty($relative_path_page) ? '' : DIRECTORY_SEPARATOR) . $relative_path_page;
-			} else {
-				$relative_path = '';
-			}
+			// // Verifica se existe o diretório e dentro dele um template com o nome da página e
+			// // havendo, usa como caminho relativo adicionao. Se não houver, limpa o caminho relativo.
+			// if (is_dir($path) && file_exists($path . DIRECTORY_SEPARATOR . $this->templateName . self::TPL_NAME_SUFIX)) {
+				// $relative_path = (empty($relative_path_page) ? '' : DIRECTORY_SEPARATOR) . $relative_path_page;
+			// } else {
+				// $relative_path = '';
+			// }
 
-			// Ajusta os caminhos de template
-			$this->setTemplateDir( Configuration::get('template', 'template_path') . $relative_path);
-			$this->setCompileDir( Configuration::get('template', 'compiled_template_path') . $relative_path);
-			$this->setConfigDir( Configuration::get('template', 'template_config_path'));
+			// // Ajusta os caminhos de template
+			// $this->setTemplateDir( Configuration::get('template', 'template_path') . $relative_path);
+			// $this->setCompileDir( Configuration::get('template', 'compiled_template_path') . $relative_path);
+			// $this->setConfigDir( Configuration::get('template', 'template_config_path'));
 		}
 
 		// Se o arquivo de template não existir, exibe erro 404
