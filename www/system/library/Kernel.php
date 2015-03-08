@@ -8,7 +8,7 @@
  *
  *  \brief		Script da classe cerne do framework
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	1.7.44
+ *  \version	1.7.45
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *  \ingroup	framework
@@ -129,7 +129,7 @@ class Kernel
 	{
 		$return = array();
 		foreach(self::$debug as $debug) {
-			$id      = 'debug_' . str_replace('.', '', current(explode(' ', microtime())));
+			$id      = 'debug_' . mt_rand() . str_replace('.', '', current(explode(' ', microtime())));
 
 			$unit = array('b', 'KB', 'MB', 'GB', 'TB', 'PB');
 			$memoria = round($debug[0] / pow(1024, ($i = floor(log($debug[0],1024)))), 2) . ' ' . $unit[$i];
@@ -222,7 +222,7 @@ class Kernel
 					   .  '        ' . $backtrace['conteudo_linha'];
 
 				if (count($backtrace['args'])) {
-					$id     = 'args_' . str_replace('.', '', current(explode(' ', microtime())));
+					$id     = 'args_' . mt_rand() . str_replace('.', '', current(explode(' ', microtime())));
 					$saida .= '        <br />' . "\n"
 						   .  '        <a href="javascript:;" onClick="var obj=$(\'#' . $id . '\').toggle()" style="color:#06c; margin:3px 0">arguments passed to function</a>'
 						   .  '        ' . (is_array($backtrace['args']) ? '<div id="'.$id.'" style="display:none">' . self::print_rc($backtrace['args'], true) . '</div>' : $backtrace['args']);

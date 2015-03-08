@@ -8,7 +8,7 @@
  *  \brief		Classe Model para acesso a banco de dados
  *  \note		Essa classe extende a classe DB.
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	1.6.10
+ *  \version	1.7.11
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \ingroup	framework
  */
@@ -63,6 +63,8 @@ class Model extends DB implements \Iterator
 	protected $embedding = array();
 	/// Colunas para agrupamento de consultas
 	protected $groupBy = array();
+	/// Cláusula HAVING
+	protected $having = array();
 
     /**
 	 *  \brief Método construtor da classe.
@@ -133,6 +135,11 @@ class Model extends DB implements \Iterator
 						case 'ne':
 							$where[] = $field.' != ?';
 							$params[] = $key;
+							break;
+						case 'in':
+							$where[] = $field.' in ('.trim(str_repeat('?, ', count($key)), ', ').')';
+							foreach ($key as $val)
+								$params[] = $val;
 							break;
 						case 'like':
 							$where[] = $field.' LIKE ?';
@@ -496,6 +503,19 @@ class Model extends DB implements \Iterator
 	}
 
 	/**
+	 *  \brief Define atributos para a cláusula HAVING
+	 *
+	 *  Este método permite definir a cláusula HAVING para agrupamento
+	 *
+	 *  \params (array)$columns - array contendo a relação de colunas para a cláusula GROUP BY
+	 *  \note ESTE MÉTODO AINDA É EXPERIMENTAL
+	 */
+	public function having(array $conditions)
+	{
+		$this->having = $conditions;
+	}
+
+	/**
 	 *  \brief Método de consulta ao banco de dados
 	 *
 	 *  \param (array)$filter - array contendo o filtro de registros no formato 'coluna' => valor
@@ -562,7 +582,7 @@ class Model extends DB implements \Iterator
 					$select .= ', '.$join['fields'];
 				}
 				if (!isset($join['type'])) {
-					$join['type'] = 'INNER';
+					$join['type'] = 'LEFT INNER';
 				}
 				$from .= ' '.$join['type'].' JOIN '.$join['table'].' ON '.$join['on'];
 			}
@@ -577,6 +597,13 @@ class Model extends DB implements \Iterator
 		// Monta o agrupamento
 		if (!empty($this->groupBy)) {
 			$sql .= ' GROUP BY ' . implode(', ', $this->groupBy);
+		}
+
+		// Monta a cláusula HAVING de condicionamento
+		if (!empty($this->having)) {
+			$where = array();
+			$this->filter($this->having, $where, $params);
+			$sql .= ' HAVING ' . implode(' AND ', $where);
 		}
 
 		// Monta a ordenação do resultado de busca

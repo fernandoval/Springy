@@ -16,6 +16,8 @@ Framework Update History
 ------------------------------------------------------------------------------------ --- -- -
 3.0.5
 	- Correção de bug no método de auto descoberta do template, que causava inconsistência no caminho de templates quando a classe era criada com e sem parâmetros;
+	- Adição do método having na classe Model. Este método permite a utilização da cláusula SQL HAVING;
+	- Correção de bug no método de montagem de back_trace do Kernel.
 3.0.4.1
 	- Correção de bug na classe de erro quando o destinatário das mensagens de erro de sistema é um array e não uma string;
 	- Criação da entrada de configuração de email 'system_adm_mail' para o remetente de mensagens de erro do sistema.
