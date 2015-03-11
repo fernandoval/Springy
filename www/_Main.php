@@ -2,33 +2,32 @@
 /** \file
  *  FVAL PHP Framework for Web Applications
  *
- *	\copyright	Copyright (c) 2007-2013 FVAL Consultoria e Informática Ltda.\n
- *	\copyright	Copyright (c) 2007-2013 Fernando Val\n
- *	\copyright	Copyright (c) 2009-2013 Lucas Cardozo
+ *  \copyright Copyright ₢ 2007-2015 FVAL Consultoria e Informática Ltda.\n
+ *  \copyright Copyright ₢ 2007-2015 Fernando Val\n
+ *  \copyright Copyright ₢ 2009-2013 Lucas Cardozo
  *
  *  http://www.fval.com.br
  *
- *	\brief		Script de inicialização da aplicação
- *  \version	2.5.18
- *  \author		Fernando Val  - fernando.val@gmail.com
- *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
- *  \file
+ *  \brief    Script de inicialização da aplicação
+ *  \version  2.5.19
+ *  \author   Fernando Val - fernando.val@gmail.com
+ *  \author   Lucas Cardozo - lucas.cardozo@gmail.com
  *
  *  \defgroup framework Biblioteca do Framework
  *  @{
- *	@}
+ *  @}
  *  \defgroup config Configurações do sistema
  *  @{
- *	@}
+ *  @}
  *  \defgroup controllers Controladoras da aplicação
  *  @{
- *	@}
+ *  @}
  *  \defgroup app_classes Classes da aplicação
  *  @{
- *	@}
+ *  @}
  *  \defgroup templates Templates da aplicação
  *  @{
- *	@}
+ *  @}
  *
  *  \ingroup framework
  */

@@ -1,15 +1,35 @@
 {
+	"name": "fval/php-framewok",
+	"description": "FVAL PHP Framework for Web Applications",
+	"license": "MIT",
+	"type": "project",
 	"config": {
         "vendor-dir": "www/system/other"
     },
 	"extra": {
         "installer-paths": {
             "www/system/other/{$name}": ["vendor/package"]
-        }
+        },
+		"post-install": {
+			"components/jquery": {
+				"target": "www/assets/jquery"
+			},
+			"twbs/bootstrap": {
+				"target": "www/assets/bootstrap"
+			}
+		}
     },
     "require": {
-		"smarty/smarty" : "*",
-		"ircmaxell/password-compat" : "*",
-		"twig/twig" : "*"
-    }
+		"php": ">=5.3.3",
+		"smarty/smarty": "*",
+		"twig/twig": "*",
+		
+		"ircmaxell/password-compat": "*",
+		
+		"components/jquery": "2.1.3",
+		"twbs/bootstrap": "3.3.*"
+    },
+	"scripts": {
+		"post-install-cmd": "php -f post-install.php"
+	}
 }

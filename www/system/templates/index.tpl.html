@@ -1,22 +1,44 @@
+<!DOCTYPE html>
 {strip}
 <html>
 	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		
 		<title>{$SYSTEM_NAME} ({$SYSTEM_VERSION})</title>
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		
+		<!-- Bootstrap -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+		
 		{* Essa é uma boa forma de carregar arquivos estáticos como JS e CSS. Usando esse plugin de template, os arquivos serão recarregados quando você escrever novas versões deles *}
-		<script type="text/javascript" src="{files_static_version type='js' file='jquery'}"></script>
+		{* <script type="stylesheet" src="{assetFile file='css/admin.css'}"></script> *}
 		{* Esse formato também é eficiente, mas seus arquivos serão cacheados pelo navegador do usuário e você terá problema quando publicar uma nova versão deles *}
-		{* <script type="text/javascript" src="{$urlJS}/jquery.js"></script> *}
+		{* <script type="text/javascript" src="{$urlCSS}/tinymce_style.js"></script> *}
+		
+		<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+		<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+		<!--[if lt IE 9]>
+			<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+			<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+		<![endif]-->
 	</head>
 	<body>
-		<div style="text-align:center">
-			Congratulations!<br />
-			<br />
-			This is a demo page.<br />
-			Your system is running at address <a href="{$urlCurrentURL}">{$urlCurrentURL}</a><br />
-			<br />
-			Currente Date: {$date}
+		<h1>{$SYSTEM_NAME} ({$SYSTEM_VERSION})</h1>
+		
+		<div class="container text-center">
+			<p><strong>Congratulations!</strong></p>
+			<p></p>
+			<p>This is a demo page.</p>
+			<p>Your system is running at address <a href="{$urlCurrentURL}">{$urlCurrentURL}</a></p>
+			<p>Currente date: {$date}</p>
 		</div>
+	
+		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+		<!-- Latest compiled and minified JavaScript -->
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
 	</body>
 </html>
 {/strip}
