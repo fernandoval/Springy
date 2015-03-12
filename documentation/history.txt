@@ -21,7 +21,8 @@ Framework Update History
 	- Alteração dos templates de exemplo para páginas index e de erros 404, 500 e 503 para utilizar Bootstrap e jQuery carregados dos respectivos CDNs;
 	- Criado script de pós instalação/atualização para o Composer;
 	- Arquivo composer.json alterado para fazer download do Bootstrap e jQuery;
-	- Alteração na URI para permitir alteração do diretório root de controladora por configuração de rotas.
+	- Alteração na URI para permitir alteração do diretório root de controladora por configuração de rotas;
+	- Ajustes no _Main devido a depreciação de configuração de charset padrão para biblioteca mbstring.
 3.0.4.1
 	- Correção de bug na classe de erro quando o destinatário das mensagens de erro de sistema é um array e não uma string;
 	- Criação da entrada de configuração de email 'system_adm_mail' para o remetente de mensagens de erro do sistema.

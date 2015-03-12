@@ -9,7 +9,7 @@
  *  http://www.fval.com.br
  *
  *  \brief    Script de inicialização da aplicação
- *  \version  2.5.19
+ *  \version  2.5.20
  *  \author   Fernando Val - fernando.val@gmail.com
  *  \author   Lucas Cardozo - lucas.cardozo@gmail.com
  *
@@ -177,7 +177,8 @@ header('Content-Type: text/html; charset='.$GLOBALS['SYSTEM']['CHARSET'], true);
 header('Cache-Control: '.FW\Configuration::get('system', 'cache-control'), true);
 
 //ini_set('zlib.output_compression', 'on');
-ini_set('mbstring.internal_encoding', $GLOBALS['SYSTEM']['CHARSET']);
+if (phpversion() < '5.6')
+	ini_set('mbstring.internal_encoding', $GLOBALS['SYSTEM']['CHARSET']);
 ini_set('default_charset', $GLOBALS['SYSTEM']['CHARSET']);
 ini_set('date.timezone', $GLOBALS['SYSTEM']['TIMEZONE']);
 
