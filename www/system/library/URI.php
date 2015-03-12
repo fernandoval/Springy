@@ -8,7 +8,7 @@
  *
  *	\brief		Classe para tratamento de URI
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.13.24
+ *	\version	1.14.25
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
@@ -174,6 +174,8 @@ class URI
 
 		$controller = null;
 
+		$path = $GLOBALS['SYSTEM']['CONTROLER_PATH'];
+
 		// Procura a controller correta e corrige a página atual se necessário
 		$path = $GLOBALS['SYSTEM']['CONTROLER_PATH'] . (count(Kernel::controllerRoot()) ? DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, Kernel::controllerRoot()) : "");
 		$segment = 0;
@@ -220,8 +222,12 @@ class URI
 			$routes = Configuration::get('uri', 'routes');
 			if (is_array($routes)) {
 				foreach ($routes as $key => $data) {
-					if (preg_match('/^'.$key.'$/', $UriString)) {
-						$controller = $GLOBALS['SYSTEM']['CONTROLER_PATH'] . (Kernel::controllerRoot() ? DIRECTORY_SEPARATOR . Kernel::controllerRoot() : "") . DIRECTORY_SEPARATOR . $data['controller'] . '.page.php';
+					if (preg_match('/^'.$key.'$/', $UriString, $matches)) {
+						if (isset($data['root_controller']))
+							Kernel::controllerRoot($data['root_controller']);
+						if (substr($data['controller'], 0, 1) == '$')
+							$data['controller'] = $matches[(int)substr($data['controller'], 1)];
+						$controller = $GLOBALS['SYSTEM']['CONTROLER_PATH'] . (count(Kernel::controllerRoot()) ? DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, Kernel::controllerRoot()) : "") . DIRECTORY_SEPARATOR . $data['controller'] . '.page.php';
 						self::_set_class_controller($data['controller']);
 						self::setCurrentPage($data['segment']);
 						break;
