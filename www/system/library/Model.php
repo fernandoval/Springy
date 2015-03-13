@@ -8,7 +8,7 @@
  *  \brief		Classe Model para acesso a banco de dados
  *  \note		Essa classe extende a classe DB.
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	1.7.11
+ *  \version	1.8.12
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \ingroup	framework
  */
@@ -246,6 +246,14 @@ class Model extends DB implements \Iterator
 	}
 
 	/**
+	 *  \brief Limpa a relação de colunas alteradas
+	 */
+	public function clearChangedColumns()
+	{
+		$this->changedColumns = array();
+	}
+	
+	/**
 	 *  \brief Informa se o registro foi carregado com dados do banco
 	 */
 	public function isLoaded() {
@@ -330,7 +338,7 @@ class Model extends DB implements \Iterator
 			}
 		}
 
-		$this->changedColumns = array();
+		$this->clearChangedColumns();
 
 		return ($this->affectedRows() > 0);
 	}
@@ -628,7 +636,7 @@ class Model extends DB implements \Iterator
 		}
 
 		// Limpa as propriedades da classe
-		$this->changedColumns = array();
+		$this->clearChangedColumns();
 		$this->loaded = false;
 
 		// Efetua a busca

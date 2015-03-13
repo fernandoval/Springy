@@ -22,7 +22,8 @@ Framework Update History
 	- Criado script de pós instalação/atualização para o Composer;
 	- Arquivo composer.json alterado para fazer download do Bootstrap e jQuery;
 	- Alteração na URI para permitir alteração do diretório root de controladora por configuração de rotas;
-	- Ajustes no _Main devido a depreciação de configuração de charset padrão para biblioteca mbstring.
+	- Ajustes no _Main devido a depreciação de configuração de charset padrão para biblioteca mbstring, no PHP 5.6;
+	- Criado método clearChangedColumns na classe Model para permitir limpar a relação de colunas alteradas.
 3.0.4.1
 	- Correção de bug na classe de erro quando o destinatário das mensagens de erro de sistema é um array e não uma string;
 	- Criação da entrada de configuração de email 'system_adm_mail' para o remetente de mensagens de erro do sistema.
