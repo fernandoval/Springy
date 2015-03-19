@@ -8,7 +8,7 @@
  *  \brief		Classe Model para acesso a banco de dados
  *  \note		Essa classe extende a classe DB.
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	1.8.12
+ *  \version	1.9.13
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \ingroup	framework
  */
@@ -91,7 +91,7 @@ class Model extends DB implements \Iterator
 			return false;
 		}
 
-		$primary = explode(',', $this->primaryKey);
+		$primary = $this->getPKColumns();
 		foreach($primary as $column) {
 			if (!isset($this->rows[0][$column])) {
 				return false;
@@ -100,7 +100,7 @@ class Model extends DB implements \Iterator
 
 		return true;
 	}
-
+	
 	/**
 	 *  \brief Monta o filtro para a busca
 	 *
@@ -190,6 +190,24 @@ class Model extends DB implements \Iterator
     {
         return array();
     }
+
+	/**
+	 *  \brief Retorna um array com a(s) coluna(s) da chave primária
+	 */
+	public function getPKColumns()
+	{
+		if (empty($this->primaryKey)) {
+			return false;
+		}
+		elseif (is_array($this->primaryKey)) {
+			$pk = $this->primaryKey;
+		}
+		else {
+			$pk = explode(',', $this->primaryKey);
+		}
+		
+		return $pk;
+	}
 
     /**
      * \brief Retorna o container de mensagens de errors que guardará as mensagens de erros
@@ -295,7 +313,7 @@ class Model extends DB implements \Iterator
 		if ($this->loaded) {
 			if ($this->isPrimaryKeyDefined()) {
 				$pk = array();
-				$primary = explode(',', $this->primaryKey);
+				$primary = $this->getPKColumns();
 				foreach($primary as $column) {
 					$pk[] = $column.' = ?';
 					$values[] = $this->rows[0][$column];
@@ -822,9 +840,9 @@ class Model extends DB implements \Iterator
 	}
 
     /**
-     * \brief Alis de get(), para retornar columns como se fossem propriedades
-     * \param variant $name
-     * \return variant
+     *  \brief Alias de get(), para retornar columns como se fossem propriedades
+     *  \param variant $name
+     *  \return variant
      */
     public function __get($name)
     {
@@ -832,30 +850,43 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     * \brief Alias de set(), para setar columns como se fossem propriedades
-     * \param string $name
-     * \param variant $value
+     *  \brief Alias de set(), para setar columns como se fossem propriedades
+     *  \param string $name
+     *  \param variant $value
      */
     public function __set($name, $value)
     {
         $this->set($name, $value);
     }
 
+	/**
+	 *  \brief Retorna o registro atual
+	 */
     public function current()
     {
         return current($this->rows);
     }
 
+	/**
+	 *  \brief Retorna os nomes das colunas
+	 */
     public function key()
     {
         return key($this->rows);
     }
 
+	/**
+	 *  \brief Alias para reset
+	 *  \see reset
+	 */
     public function rewind()
     {
-        reset($this->rows);
+        $this->reset();
     }
 
+	/**
+	 *  \brief Verifica se o registro atual existe
+	 */
     public function valid()
     {
         return $this->current() !== false;
