@@ -7,7 +7,7 @@
  *
  *	\brief		Classe de configuração
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.3.3
+ *	\version	1.3.4
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Allan Marques - allan.marques@ymail.com
  *	\ingroup	framework
@@ -138,6 +138,7 @@ class Configuration
 				foreach($GLOBALS['SYSTEM']['ENVIRONMENT_ALIAS'] as $alias => $as) {
 					if (preg_match('/^' . $alias . '$/', $environment)) {
 						$environment = $as;
+						break;
 					}
 				}
 			}

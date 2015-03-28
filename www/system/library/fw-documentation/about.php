@@ -3,7 +3,7 @@
  *  
  *  ## FVAL PHP Framework
  *  
- *  \version 3.0.4
+ *  \version 3.0.5
  *  
  *  http://framework.fval.net.br
  *  
