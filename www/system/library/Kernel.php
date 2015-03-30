@@ -8,7 +8,7 @@
  *
  *  \brief		Script da classe cerne do framework
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	1.7.45
+ *  \version	1.7.46
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *  \ingroup	framework
@@ -60,11 +60,11 @@ class Kernel
 	 */
 	public static function controllerNamespace($controller=null)
 	{
-		if(!is_null($controller) && file_exists($controller)) {
+		if (!is_null($controller) && file_exists($controller)) {
 			$controller  = pathinfo($controller);
 			$controller = str_replace($GLOBALS['SYSTEM']['CONTROLER_PATH'], '', $controller['dirname']);
 			$controller = str_replace(DIRECTORY_SEPARATOR, '/', $controller);
-			self::$controller_namespace = trim($controller, DIRECTORY_SEPARATOR);
+			self::$controller_namespace = trim($controller, '/');
 		}
 		return self::$controller_namespace;
 	}

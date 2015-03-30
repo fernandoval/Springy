@@ -25,7 +25,10 @@ Framework Update History
 	- Ajustes no _Main devido a depreciação de configuração de charset padrão para biblioteca mbstring, no PHP 5.6;
 	- Criado método clearChangedColumns na classe Model para permitir limpar a relação de colunas alteradas;
 	- Acrescentado método Model->getPKColumns que retorna um array com as colunas PK;
-	- Correção de bug na classe Configuration.
+	- Correção de bug na classe Configuration;
+	- Correção de bug no método Kernel::controllerNamespace;
+	- Alteração na Errors para solução de problemas em sistemas que a função php_uname() está desativada;
+	- Alteração na URI para permitir a construção de URLs com caracteres em maiúsculas por causa de sistemas que o servidor web é sensitivo ao contexto.
 3.0.4.1
 	- Correção de bug na classe de erro quando o destinatário das mensagens de erro de sistema é um array e não uma string;
 	- Criação da entrada de configuração de email 'system_adm_mail' para o remetente de mensagens de erro do sistema.

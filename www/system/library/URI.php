@@ -8,7 +8,7 @@
  *
  *	\brief		Classe para tratamento de URI
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.14.25
+ *	\version	1.15.26
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
@@ -535,7 +535,7 @@ class URI
 		$uri = '';
 		for ($i=0; $i < count($segments); $i++) {
 			if ($segments[ $i ] != 'index' && $segments[ $i ] != '') {
-				$uri .= (empty($uri) ? '' : '/') . self::makeSlug($segments[ $i ], '-', '\.,|~\#');
+				$uri .= (empty($uri) ? '' : '/') . self::makeSlug($segments[ $i ], '-', '\.,|~\#', false);
 			}
 		}
 		$url .= $uri;
@@ -623,11 +623,16 @@ class URI
 	 *  @param[in] (string)$accept String contendo relação de caracteres também aceitos para montagem do slug.
 	 *  	Essa sting será usada numa expressão regular, então alguns caracteres como o ponto, precisam ser escapados.
 	 *  	Se nenhum caracter for informado, apenas letras, números e os caracteres "_" e "-" serão aceitos. Todos os demais serão removidos.
+	 *  @param[in] (bool)$lowercase Converte para letras minúsculas.
 	 *  \return Uma string com o slug
 	 */
-	public static function makeSlug($txt, $space='-', $accept="")
+	public static function makeSlug($txt, $space='-', $accept="", $lowercase=true)
 	{
-		$txt = mb_strtolower(trim($txt));
+		if ($lowercase) {
+			$txt = mb_strtolower(trim($txt));
+		} else {
+			$txt = trim($txt);
+		}
 
 		if (mb_check_encoding($txt, 'UTF-8')) {
 			$txt = Strings_UTF8::removeAccentedChars($txt);
@@ -638,7 +643,7 @@ class URI
 		$txt = mb_ereg_replace('[  ]+', ' ', $txt);
 		//$txt = mb_ereg_replace('[--]+', '-', $txt);
 		//$txt = mb_ereg_replace('[__]+', '_', $txt);
-		$txt = mb_ereg_replace('[^a-z0-9 _\-'.$accept.']', '', $txt);
+		$txt = mb_ereg_replace('[^a-zA-Z0-9 _\-'.$accept.']', '', $txt);
 		$txt = mb_ereg_replace('[ ]+', $space, $txt);
 
 		return $txt;

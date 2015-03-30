@@ -8,7 +8,7 @@
  *
  *	\brief		Classe para tratamento de erros
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.8.24
+ *	\version	1.9.25
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
@@ -137,12 +137,19 @@ class Errors
 		foreach (URI::getParams() as $var => $value) {
 			$getParams[] = $var.'='.$value;
 		}
+		
+		restore_error_handler();
+		try {
+			$uname = php_uname('n');
+		} catch (Exception $e) {
+			$uname = $_SERVER['HOST_NAME'];
+		}
 
 		if (PHP_SAPI === 'cli' || defined('STDIN')) {
 			$out = 'Error Description: ' . $msg."\n"
 				 . 'Error ID: ' . $errorId . ' ('.URI::buildURL(array('_system_bug_solved_', $errorId)).')'."\n"
 				 . 'Execution time: ' . number_format(microtime(true) - $GLOBALS['FWGV_START_TIME'], 6) . ' segundos'."\n"
-				 . 'System: ' . php_uname('n') . "\n"
+				 . 'System: ' . $uname . "\n"
 				 . 'Secure mode: ' . (ini_get('safe_mode') ? 'Yes' : 'No') . "\n"
 				 . 'Date: ' . date('Y-m-d') . "\n"
 				 . 'Time: ' . date('G:i:s') . "\n"
@@ -182,7 +189,7 @@ class Errors
 					 . '        </tr>'
 					 . '        <tr>'
 					 . '          <td style="padding:3px 2px"><label style="font-weight:bold">System:</label></td>'
-					 . '          <td style="padding:3px 2px">'.php_uname('n').'</td>'
+					 . '          <td style="padding:3px 2px">'.$uname.'</td>'
 					 . '        </tr>'
 					 . '        <tr style="background:#efefef">'
 					 . '          <td style="padding:3px 2px"><label style="font-weight:bold">HTTPS:</label></td>'
@@ -273,7 +280,6 @@ class Errors
 			if (!$table = Configuration::get('system', 'system_error.table_name'))
 				$table = 'system_errors';
 			
-			restore_error_handler();
 			$db = new DB($conn);
 			if (DB::hasConnection()) {
 				$db->disableReportError();
@@ -467,10 +473,16 @@ class Errors
 			$getParams[] = $var.'='.$value;
 		}
 		
+		try {
+			$uname = php_uname('n');
+		} catch (Exception $e) {
+			$uname = $_SERVER['HOST_NAME'];
+		}
+		
 		$tpl = preg_replace('/<!-- DESCRIPTION -->/', $msg, $tpl);
 		$tpl = preg_replace('/<!-- ERROR_ID -->/', $errorId, $tpl);
 		$tpl = preg_replace('/<!-- EXEC_TIME -->/', number_format(microtime(true) - $GLOBALS['FWGV_START_TIME'], 6), $tpl);
-		$tpl = preg_replace('/<!-- SYSTEM -->/', php_uname('n'), $tpl);
+		$tpl = preg_replace('/<!-- SYSTEM -->/', $uname, $tpl);
 		$tpl = preg_replace('/<!-- HTTPS -->/', (ini_get('safe_mode') ? 'Yes' : 'No'), $tpl);
 		$tpl = preg_replace('/<!-- DATE_TIME -->/', date('Y-m-d G:i:s'), $tpl);
 		$tpl = preg_replace('/<!-- REQUEST_URI -->/', isset($_SERVER['REQUEST_URI'])?$_SERVER['REQUEST_URI']:'empty', $tpl);
