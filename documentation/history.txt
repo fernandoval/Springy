@@ -28,7 +28,9 @@ Framework Update History
 	- Correção de bug na classe Configuration;
 	- Correção de bug no método Kernel::controllerNamespace;
 	- Alteração na Errors para solução de problemas em sistemas que a função php_uname() está desativada;
-	- Alteração na URI para permitir a construção de URLs com caracteres em maiúsculas por causa de sistemas que o servidor web é sensitivo ao contexto.
+	- Alteração na URI para permitir a construção de URLs com caracteres em maiúsculas por causa de sistemas que o servidor web é sensitivo ao contexto;
+	- Implementação do atributo embeddedObj na Model, que recebe um array estruturado e permite embutir dados de outras classes mediante a ligação de chaves estrangeiras;
+	- Adição do método setEmbeddedObj na Model para permitir alteração do atributo embeddedObj em tempo de execução.
 3.0.4.1
 	- Correção de bug na classe de erro quando o destinatário das mensagens de erro de sistema é um array e não uma string;
 	- Criação da entrada de configuração de email 'system_adm_mail' para o remetente de mensagens de erro do sistema.

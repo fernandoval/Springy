@@ -60,7 +60,7 @@ class Model extends DB implements \Iterator
 	/// Protege contra carga completa
 	protected $abortOnEmptyFilter = true;
 	/// Objetos relacionados
-	protected $embedding = array();
+	protected $embeddedObj = array();
 	/// Colunas para agrupamento de consultas
 	protected $groupBy = array();
 	/// Cláusula HAVING
@@ -508,6 +508,27 @@ class Model extends DB implements \Iterator
 	}
 
 	/**
+	 *  \brief Define o array de objetos embutidos
+	 *  
+	 *  O array de objetos embutidos deve obedecer a estrutura definida para esse atributo.
+	 *  
+	 *  Cara item do array de objetos embutidos deve ter o nome da classe do objeto como índice e
+	 *  ter como valor um array com os seguintes pares chave => valor:
+	 *  
+	 *  'attr_name' => (string) nome do atributo a ser criado como coluna no registro
+	 *  'pk' => (string) nome da coluna que é a chave primária do objeto a ser embutido
+	 *  'fk' => (string) nome da coluna no objeto atual a ser usada como chave estrangeira para busca no objeto embutido.
+	 *  
+	 *  Exemplo de array aceito:
+	 *  
+	 *  array('Parent_Table' => array('attr_name' => 'parent', 'pk' => 'id', 'fk' => 'parent_id'))
+	 */
+	public function setEmbeddedObj(array $embeddedObj)
+	{
+		$this->embeddedObj = $embeddedObj;
+	}
+	
+	/**
 	 *  \brief Define colunas para agrupamento do resultado
 	 *
 	 *  Este método permite definir a relação de colunas para a cláusula GROUP BY da consulta com o método query
@@ -545,8 +566,18 @@ class Model extends DB implements \Iterator
 	 *  \brief Método de consulta ao banco de dados
 	 *
 	 *  \param (array)$filter - array contendo o filtro de registros no formato 'coluna' => valor
+	 *  \param (array)$orderby - array contendo o filtro de registros no formato 'coluna' => 'ASC'/'DESC'
+	 *  \param (int)$offset - inteiro que define o offset de registros
+	 *  \param (int)$limit - inteiro que define o limite de registros a serem retornados
+	 *  \param (variant)$embbed - esse parâmetro pode ser um array contendo uma estrutura para montagem
+	 *    de cláusulas JOIN para a query ou um inteiro. Se omitido, nada será feito com ele.
+	 *    Se receber um valor inteiro, fará com que a pesquisa utilize o atributo $this->embeddedObj
+	 *    para alimentar as linhas com os dados dos objetos relacionados até a o nível definido por seu valor.
 	 *
 	 *  \return Retorna TRUE caso tenha efetuado a busca ou FALSE caso não tenha recebido filtros válidos.
+	 *  \note Mesmo que o método retorne TRUE, não significa que algum dado tenha sido encontrado.
+	 *    Isso representa apenas que a consulta foi efetuado com sucesso. Para saber o resultado da
+	 *    consulta, utilize os métodos de recuperação de dados.
 	 */
 	public function query(array $filter=null, array $orderby=array(), $offset=NULL, $limit=NULL, $embbed=false)
 	{
@@ -597,20 +628,45 @@ class Model extends DB implements \Iterator
 		}
 
 		// Monta os JOINs caso um array seja fornecido
+		// Example of parameter $embbed as array to be used as JOIN
+		// array(
+			// 'table_name' => array(
+				// 'join' => 'INNER',
+				// 'on' => 'table_name.id = fk_id',
+				// 'columns' => 'table_name.column1 AS table_name_column1, table_name.column2'
+			// )
+		// )
+		// or
+		// array(
+			// array(
+				// 'join' => 'INNER',
+				// 'table' => 'table_name',
+				// 'on' => 'table_name.id = fk_id',
+				// 'columns' => 'table_name.column1 AS table_name_column1, table_name.column2'
+			// )
+		// )
 		if (is_array($embbed)) {
-			// Cada item do array de JOINs deve ser um array com os índices 'fields', 'type', 'table', 'on'
-			// 'type' determina o timpo de JOIN. Exemplos: 'INNER', 'LEFT OUTER'
-			// 'fields' deve ser a lista de campos da junção a ser acrescentada ao select e deve conter o nome da tabela para evitar ambiguidade
-			// 'table' é o nome da tabela
-			// 'on' é a cláusula ON para junção das tabelas
-			foreach ($embbed as $join) {
-				if (!empty($join['fields'])) {
+			// Cada item do array de JOINs deve ser um array, cujo índice representa o nome da tabela e contendo
+			// as seguintes chaves em seu interior: 'columns', 'join' e 'on'.
+			// Cada chave do sub-array representa o seguinte:
+			//   'join' determina o tipo de JOIN. Exemplos: 'INNER', 'LEFT OUTER'.
+			//   'columns' define lista de campos, separada por vírgulas, a serem acrescidos ao SELECT.
+			//     Recomenda-se preceder cada coluna com o nome da tabela para evitar ambiguidade.
+			//   'on' é a cláusula ON para junção das tabelas.
+			foreach ($embbed as $table => $join) {
+				if (!empty($join['columns'])) {
+					$select .= ', '.$join['columns'];
+				} elseif (!empty($join['fields'])) {
 					$select .= ', '.$join['fields'];
 				}
-				if (!isset($join['type'])) {
-					$join['type'] = 'LEFT INNER';
+				if (!isset($join['join'])) {
+					if (!isset($join['type'])) {
+						$join['join'] = 'LEFT INNER';
+					} else {
+						$join['join'] = $join['type'];
+					}
 				}
-				$from .= ' '.$join['type'].' JOIN '.$join['table'].' ON '.$join['on'];
+				$from .= ' '.$join['join'].' JOIN '.(isset($join['table'])?$join['table']:$table).' ON '.$join['on'];
 			}
 		}
 
@@ -684,25 +740,47 @@ class Model extends DB implements \Iterator
 		}
 		unset($where, $params);
 
-		// if ($embbed === true && count($this->embedding)) {
-			// foreach ($this->embedding as $obj => $attr) {
-				// $keys = array();
-				// foreach ($this->rows as $row) {
-					// if (!in_array($row[$attr[1]], $keys)) {
-						// $keys[] = $row[$attr[1]];
-					// }
-				// }
-				// $embObj = new $attr[0];
-				// $embObj->query(array('id' => $keys));
-
-				// if (isset($doc[$attr[1]])) {
-					// $row[$obj] = $embObj->findOne(array('_id' => $doc[$attr[1]]));
-					// unset($embObj);
-				// } else {
-					// $row[$obj] = null;
-				// }
-			// }
-		// }
+		// Se o parâmetro $embbed for um inteiro maior que zero e o atributo embeddedObj estiver
+		// definido, o relacionamento definido pelo atributo será explorado até o enézimo nível definido por $embbed
+		// ATENÇÃO: é recomendado cuidado com o valor de $embbed para evitar loops muito grandes ou estouro de memória,
+		// pois os objetos podem relacionar-se cruzadamente causando relacionamento reverso infinito.
+		//
+		// Example embeddedObj attribute array
+		// protected $embeddedObj = array(
+		// 	'Table_Class_Child_Obj' => array(
+		//		'attr_name' => 'child_or_parent', // name of the attribute to be created on parent row
+		//		'pk' => 'id', // Name of the primary key column in this embedded object
+		//		'fk' => 'column_id', // Name of the column in parent table user to link to this embedded object
+		//	)
+		// );
+		if (is_int($embbed) && $embbed > 0 && count($this->embeddedObj)) {
+			foreach ($this->embeddedObj as $obj => $attr) {
+				$keys = array();
+				foreach ($this->rows as $idx => $row) {
+					$this->rows[$idx][ $attr['attr_name'] ] = array();
+					if ( !in_array($row[ $attr['fk'] ], $keys) ) {
+						$keys[] = $row[ $attr['fk'] ];
+					}
+				}
+				
+				$embObj = new $obj;
+				$embObj->query(
+					array(
+						$attr['pk'] => array('in' => $keys)
+					),
+					array(), 0, 0, $embbed - 1
+				);
+				while ($er = $embObj->next()) {
+					foreach ($this->rows as $idx => $row) {
+						if ($er[ $attr['pk'] ] == $row[ $attr['fk'] ]) {
+							$this->rows[$idx][ $attr['attr_name'] ][] = $er;
+						}
+					}
+				}
+				unset($embObj);
+				reset($this->rows);
+			}
+		}
 
 		return true;
 	}
