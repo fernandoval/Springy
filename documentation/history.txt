@@ -16,6 +16,8 @@ Framework Update History
 ------------------------------------------------------------------------------------ --- -- -
 RC
 	- Melhorias no script post-install.php;
+	- Adicionados métodos de gatilho triggerBeforeDelete, triggerBeforeInsert, triggerBeforeUpdate, triggerAfterDelete, triggerAfterInsert e triggerAfterUpdate na classe Model para permitir gatilhos para tratamentos antes/depois de ações de banco
+	- Correção de bug na Model quando há objetos embutidos e a consulta retorna zero linhas.
 3.0.5
 	- Correção de bug no método de auto descoberta do template, que causava inconsistência no caminho de templates quando a classe era criada com e sem parâmetros;
 	- Adição do método having na classe Model. Este método permite a utilização da cláusula SQL HAVING;

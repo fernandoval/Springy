@@ -8,7 +8,7 @@
  *  \brief		Classe Model para acesso a banco de dados
  *  \note		Essa classe extende a classe DB.
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	1.10.14
+ *  \version	1.11.15
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \ingroup	framework
  */
@@ -192,6 +192,72 @@ class Model extends DB implements \Iterator
     }
 
 	/**
+	 *  \brief Gatilho que será executado antes de um DELETE
+	 *  
+	 *  Esse método existe para ser estendido, opcionalmente, na classe herdeira
+	 *  caso algum tratamento precise ser feito antes da exclusão de um registro
+	 */
+	protected function triggerBeforeDelete()
+	{
+		return true;
+	}
+	
+	/**
+	 *  \brief Gatilho que será executado antes de um INSERT
+	 *  
+	 *  Esse método existe para ser estendido, opcionalmente, na classe herdeira
+	 *  caso algum tratamento precise ser feito antes da enclusão de um registro
+	 */
+	protected function triggerBeforeInsert()
+	{
+		return true;
+	}
+	
+	/**
+	 *  \brief Gatilho que será executado antes de um UPDATE
+	 *  
+	 *  Esse método existe para ser estendido, opcionalmente, na classe herdeira
+	 *  caso algum tratamento precise ser feito antes da alteração de um registro
+	 */
+	protected function triggerBeforeUpdate()
+	{
+		return true;
+	}
+	
+	/**
+	 *  \brief Gatilho que será executado depois de um DELETE
+	 *  
+	 *  Esse método existe para ser estendido, opcionalmente, na classe herdeira
+	 *  caso algum tratamento precise ser feito depois da exclusão de um registro
+	 */
+	protected function triggerAfterDelete()
+	{
+		return true;
+	}
+	
+	/**
+	 *  \brief Gatilho que será executado depois de um INSERT
+	 *  
+	 *  Esse método existe para ser estendido, opcionalmente, na classe herdeira
+	 *  caso algum tratamento precise ser feito depois da inclusão de um registro
+	 */
+	protected function triggerAfterInsert()
+	{
+		return true;
+	}
+	
+	/**
+	 *  \brief Gatilho que será executado depois de um UPDATE
+	 *  
+	 *  Esse método existe para ser estendido, opcionalmente, na classe herdeira
+	 *  caso algum tratamento precise ser feito depois da alteração de um registro
+	 */
+	protected function triggerAfterUpdate()
+	{
+		return true;
+	}
+	
+	/**
 	 *  \brief Retorna um array com a(s) coluna(s) da chave primária
 	 */
 	public function getPKColumns()
@@ -274,7 +340,8 @@ class Model extends DB implements \Iterator
 	/**
 	 *  \brief Informa se o registro foi carregado com dados do banco
 	 */
-	public function isLoaded() {
+	public function isLoaded()
+	{
 		return $this->loaded;
 	}
 
@@ -318,7 +385,10 @@ class Model extends DB implements \Iterator
 					$pk[] = $column.' = ?';
 					$values[] = $this->rows[0][$column];
 				}
+				if ( !$this->triggerBeforeUpdate() )
+					return false;
 				$this->execute('UPDATE '.$this->tableName.' SET '.implode(' = ?,', $columns).' = ? WHERE '.implode(' AND ', $pk), $values);
+				$this->triggerAfterUpdate();
 			}
 		}
 		else {
@@ -349,11 +419,14 @@ class Model extends DB implements \Iterator
 					$cdtFunc = '\''.date('Y-m-d H:i:s').'\'';
 			}
 
+			if ( !$this->triggerBeforeInsert() )
+				return false;
 			$this->execute('INSERT INTO '.$this->tableName.' ('.implode(', ', $columns).($this->insertDateColumn ? ', '.$this->insertDateColumn : "").') VALUES ('.rtrim(str_repeat('?,', count($values)),',').($this->insertDateColumn ? ', '.$cdtFunc : "").')', $values);
 
 			if ($this->affectedRows() > 0 && $this->lastInsertedId() && !empty($this->primaryKey) && !strpos($this->primaryKey, ',') && empty($this->rows[0][$this->primaryKey])) {
 				$this->load(array($this->primaryKey => $this->lastInsertedId()));
 			}
+			$this->triggerAfterInsert();
 		}
 
 		$this->clearChangedColumns();
@@ -388,12 +461,15 @@ class Model extends DB implements \Iterator
 			}
 
 			// Faz a exclusão lógica ou física do registro
+			if ( !$this->triggerBeforeDelete() )
+				return false;
 			if (!empty($this->deletedColumn)) {
 				array_unshift($values, 1);
 				$this->execute('UPDATE '.$this->tableName.' SET '.$this->deletedColumn.' = ? WHERE '.implode(' AND ', $pk), $values);
 			} else {
 				$this->execute('DELETE FROM '.$this->tableName.' WHERE '.implode(' AND ', $pk), $values);
 			}
+			$this->triggerAfterDelete();
 		}
 		else {
 			$where = array();
@@ -416,12 +492,14 @@ class Model extends DB implements \Iterator
 			}
 
 			// Faz a exclusão lógica ou física do(s) registro(s)
+			// $this->triggerBeforeDelete();
 			if (!empty($this->deletedColumn)) {
 				array_unshift($params, 1);
 				$this->execute('UPDATE '.$this->tableName.' SET '.$this->deletedColumn.' = ? WHERE '.implode(' AND ', $where), $params);
 			} else {
 				$this->execute('DELETE FROM '.$this->tableName.' WHERE '.implode(' AND ', $where), $params);
 			}
+			// $this->triggerAfterDelete();
 		}
 
 		return $this->affectedRows();
@@ -753,7 +831,7 @@ class Model extends DB implements \Iterator
 		//		'fk' => 'column_id', // Name of the column in parent table user to link to this embedded object
 		//	)
 		// );
-		if (is_int($embbed) && $embbed > 0 && count($this->embeddedObj)) {
+		if ( is_int($embbed) && $embbed > 0 && count($this->embeddedObj) && count($this->rows) > 0 ) {
 			foreach ($this->embeddedObj as $obj => $attr) {
 				$keys = array();
 				foreach ($this->rows as $idx => $row) {
