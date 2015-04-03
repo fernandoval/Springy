@@ -8,7 +8,7 @@
  *  \brief		Classe Model para acesso a banco de dados
  *  \note		Essa classe extende a classe DB.
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	1.9.13
+ *  \version	1.10.14
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \ingroup	framework
  */

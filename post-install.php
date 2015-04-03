@@ -8,7 +8,7 @@
  *  \copyright Copyright ₢ 2015 Fernando Val\n
  *  
  *  \brief    Post Install/Update Script for Composer
- *  \version  1.0.0
+ *  \version  1.0.1
  *  \author   Fernando Val - fernando.val@gmail.com
  *  
  *  This script is executed by Composer after the install/update process.
@@ -129,6 +129,7 @@ foreach($composer['extra']['post-install'] as $component => $data) {
 function copy_r($path, $dest)
 {
 	if (is_dir($path)) {
+		echo 'is_dir => ',$path,"\n";
 		@mkdir($dest);
 		$objects = scandir($path);
 		if (sizeof($objects) > 0) {
@@ -153,6 +154,12 @@ function copy_r($path, $dest)
 		return copy($path, $dest);
 	}
 	else {
-		return false;
+		$success = false;
+		$dest = dirname($dest);
+		foreach (glob($path) as $filename) {
+			$success = copy_r($filename, $dest.DS.basename($filename));
+			if (!$success) break;
+		}
+		return $success;
 	}
 }
