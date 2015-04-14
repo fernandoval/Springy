@@ -7,7 +7,7 @@
  *
  *	\brief		Classe de tratamento de templates
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	4.0.9
+ *	\version	4.0.10
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
@@ -230,6 +230,6 @@ class Template
 	 */
 	public function templateExists($tplName)
 	{
-		return $this->tplObj->templateExists($tplName . self::TPL_NAME_SUFIX);
+		return $this->tplObj->templateExists($tplName);
 	}
 }

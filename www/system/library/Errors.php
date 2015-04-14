@@ -8,7 +8,7 @@
  *
  *	\brief		Classe para tratamento de erros
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.9.25
+ *	\version	1.10.26
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
@@ -430,24 +430,52 @@ class Errors
 			if (PHP_SAPI === 'cli' || defined('STDIN')) {
 				echo $msg."\n";
 			} else {
-				$tpl = Configuration::get('template', 'errors.'.$errorType);
-				if ($tpl) {
-					$tpl = new Template($tpl);
-				} else {
-					$tpl = new Template('_error' . $errorType);
-				}
-
 				header('Content-type: text/html; charset=UTF-8', true, $errorType);
+				
+				$tplName = Configuration::get('template', 'errors.'.$errorType);
+				$tpl = new Template();
+				if (!$tplName) {
+					$tplName = '_error' . $errorType;
+				}
+				if ($tpl->templateExists($tplName)) {
+					$tpl->setTemplate($tplName);
 
-				$tpl->assign('urlJS',  URI::buildURL(array(Configuration::get('uri', 'js_dir')), array(), isset($_SERVER['HTTPS']), 'static'));
-				$tpl->assign('urlCSS', URI::buildURL(array(Configuration::get('uri', 'css_dir')), array(), isset($_SERVER['HTTPS']), 'static'));
-				$tpl->assign('urlIMG', URI::buildURL(array(Configuration::get('uri', 'images_dir')), array(), isset($_SERVER['HTTPS']), 'static'));
-				$tpl->assign('urlSWF', URI::buildURL(array(Configuration::get('uri', 'swf_dir')), array(), isset($_SERVER['HTTPS']), 'static'));
+					$tpl->assign('urlJS',  URI::buildURL(array(Configuration::get('uri', 'js_dir')), array(), isset($_SERVER['HTTPS']), 'static'));
+					$tpl->assign('urlCSS', URI::buildURL(array(Configuration::get('uri', 'css_dir')), array(), isset($_SERVER['HTTPS']), 'static'));
+					$tpl->assign('urlIMG', URI::buildURL(array(Configuration::get('uri', 'images_dir')), array(), isset($_SERVER['HTTPS']), 'static'));
+					$tpl->assign('urlSWF', URI::buildURL(array(Configuration::get('uri', 'swf_dir')), array(), isset($_SERVER['HTTPS']), 'static'));
 
-				$tpl->assign('errorDebug', (Configuration::get('system', 'debug') ? $msg : ''));
+					$tpl->assign('errorDebug', (Configuration::get('system', 'debug') ? $msg : ''));
 
-				$tpl->display();
-				unset($tpl);
+					$tpl->display();
+				} else {
+					echo '<!DOCTYPE html>';
+					echo '<html lang="en">';
+					echo '	<head>';
+					echo '		<meta charset="utf-8">';
+					echo '		<meta http-equiv="X-UA-Compatible" content="IE=edge">';
+					echo '		<meta name="viewport" content="width=device-width, initial-scale=1">';
+					echo '		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">';
+					echo '		<title>'.$GLOBALS['SYSTEM']['SYSTEM_NAME'].' ('.$GLOBALS['SYSTEM']['SYSTEM_VERSION'].')</title>';
+					echo '		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">';
+					echo '		<!--[if lt IE 9]>';
+					echo '			<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>';
+					echo '			<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>';
+					echo '		<![endif]-->';
+					echo '	</head>';
+					echo '	<body>';
+					echo '		<h1 class="text-center">Error '.$errorType.'</h1>';
+					if (Configuration::get('system', 'debug')) {
+						echo '		<div class="container">';
+						echo '			'.$msg;
+						echo '		</div>';
+					}
+					echo '		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>';
+					echo '		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>';
+					echo '	</body>';
+					echo '</html>';
+				}
+				unset($tpl, $tplName);
 			}
 		} else {
 			header('Content-type: application/json; charset=utf-8', true, $errorType);
