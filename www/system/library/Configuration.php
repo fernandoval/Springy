@@ -7,7 +7,7 @@
  *
  *	\brief		Classe de configuração
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.3.4
+ *	\version	1.4.5
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Allan Marques - allan.marques@ymail.com
  *	\ingroup	framework
@@ -91,6 +91,14 @@ class Configuration
 	}
 
 	/**
+	 *  \brief Pega o host acessado
+	 */
+	private static function _host()
+	{
+		return preg_replace('/([^:]+)(:\\d+)?/', '$1'.((isset($GLOBALS['SYSTEM']['CONSIDER_PORT_NUMBER']) && $GLOBALS['SYSTEM']['CONSIDER_PORT_NUMBER'])?'$2':""), isset($_SERVER['HTTP_HOST'])?$_SERVER['HTTP_HOST']:"");
+	}
+	
+	/**
 	 *  \brief Carrega o arquivo de configuração e seta o atributo de configuração
 	 */
 	private static function _load($config_file, $local)
@@ -100,8 +108,10 @@ class Configuration
 			require_once $config_file;
 			self::$confs[ $local ] = array_merge(self::$confs[ $local ], $conf);
             
-			if (isset($_SERVER['HTTP_HOST']) && isset($over_conf[$_SERVER['HTTP_HOST']])) {                
-				self::$confs[ $local ] = array_merge(self::$confs[ $local ], $over_conf[$_SERVER['HTTP_HOST']]);
+			$host = self::_host();
+			
+			if ($host && isset($over_conf[ $host ])) {                
+				self::$confs[ $local ] = array_merge(self::$confs[ $local ], $over_conf[ $host ]);
 			}
 
 			return true;
@@ -127,9 +137,9 @@ class Configuration
 			// Define o arquivo de configuração para o ambiente ativo
 			if (empty($GLOBALS['SYSTEM']['ACTIVE_ENVIRONMENT'])) {
 				if (isset($_SERVER['HTTP_HOST'])) {
-					$environment = $_SERVER['HTTP_HOST'];
+					$environment = self::_host();
 				} else {
-					$environment = 'unknowed';
+					$environment = 'unknown';
 				}
 			} else {
 				$environment = $GLOBALS['SYSTEM']['ACTIVE_ENVIRONMENT'];

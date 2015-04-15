@@ -19,7 +19,9 @@ RC
 	- Adicionados métodos de gatilho triggerBeforeDelete, triggerBeforeInsert, triggerBeforeUpdate, triggerAfterDelete, triggerAfterInsert e triggerAfterUpdate na classe Model para permitir gatilhos para tratamentos antes/depois de ações de banco
 	- Correção de bug na Model quando há objetos embutidos e a consulta retorna zero linhas;
 	- Correção de bug no método templateExists da Template;
-	- Correção de bug na classe Errors que ocorre quando o template de erro relacionado não existe.
+	- Correção de bug na classe Errors que ocorre quando o template de erro relacionado não existe;
+	- Melhorias no tratamento de HTTP_HOST para configuração de ambiente pelo host;
+	- Criação da entrada de configuração geral CONSIDER_PORT_NUMBER.
 3.0.5
 	- Correção de bug no método de auto descoberta do template, que causava inconsistência no caminho de templates quando a classe era criada com e sem parâmetros;
 	- Adição do método having na classe Model. Este método permite a utilização da cláusula SQL HAVING;

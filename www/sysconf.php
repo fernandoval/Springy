@@ -5,7 +5,7 @@
  *  \copyright	Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
  *  \copyright	Copyright (c) 2007-2015 Fernando Val\n
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	1.7.9
+ *  \version	1.8.10
  *  \author		Fernando Val  - fernando.val@gmail.com
  *
  *  \brief Configurações do cerne do sistema
@@ -25,6 +25,7 @@
  *  \li 'SYSTEM_VERSION' - Versão do sistema.
  *  \li 'ACTIVE_ENVIRONMENT' - Determina o ambiente ativo. São comumente utilizados 'development' e 'production' como valores dessa chave.
  *    Se for deixada em branco, o framework irá buscar entradas de configuração para o host acessado. Por exemplo: 'www.seusite.com.br'
+ *  \li 'CONSIDER_PORT_NUMBER' - Informa à configuração por host que a porta deve ser considerada como parte do conteúdo.
  *  \li 'ENVIRONMENT_ALIAS' - Array contendo um conjunto \c chave => \c valor, onde \c chave representa um apelido para o ambiente \c valor.
  *    A \c chave pode ser uma expressão regular.
  *  \li 'CMS' - Liga ou desliga o sistema Mini CMS.
@@ -84,6 +85,7 @@ $GLOBALS['SYSTEM'] = array(
 	'SYSTEM_VERSION' => 'Versão do Seu Projeto', 
 
 	'ACTIVE_ENVIRONMENT' => '', 
+	'CONSIDER_PORT_NUMBER' => false,
 	'ENVIRONMENT_ALIAS' => array(
 		'localhost' => 'development',
 		'127\.0\.0\.1' => 'development',
