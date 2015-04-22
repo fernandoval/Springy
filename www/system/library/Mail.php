@@ -8,15 +8,13 @@
  *
  *	\brief		Classe para envio de email
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.7.11
+ *	\version	1.8.12
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
  */
 
 namespace FW;
-
-require_once $GLOBALS['SYSTEM']['3RDPARTY_PATH'] . DIRECTORY_SEPARATOR . 'MimeMessage' . DIRECTORY_SEPARATOR . 'email_message.php';
 
 /**
  *  \brief Classe para envio de email
@@ -38,6 +36,7 @@ class Mail
 	function __construct()
 	{
 		if (Configuration::get('mail', 'method') == 'smtp') {
+			require_once $GLOBALS['SYSTEM']['3RDPARTY_PATH'] . DIRECTORY_SEPARATOR . 'MimeMessage' . DIRECTORY_SEPARATOR . 'email_message.php';
 			require_once $GLOBALS['SYSTEM']['3RDPARTY_PATH'] . DIRECTORY_SEPARATOR . 'MimeMessage' . DIRECTORY_SEPARATOR . 'smtp_message.php';
 			require_once $GLOBALS['SYSTEM']['3RDPARTY_PATH'] . DIRECTORY_SEPARATOR . 'Smtp' . DIRECTORY_SEPARATOR . 'smtp.php';
 
@@ -62,16 +61,15 @@ class Mail
 			$this->message_obj->smtp_debug = Configuration::get('mail', 'debug');
 			$this->message_obj->smtp_html_debug = Configuration::get('mail', 'html_debug');
 
-
 			if (Configuration::get('system', 'proxyhost')) {
 				$this->message_obj->smtp_http_proxy_host_name = Configuration::get('system', 'proxyhost');
 				$this->message_obj->smtp_http_proxy_host_port = Configuration::get('system', 'proxyport');
 				//$this->message_obj-> = Configuration::get('system', 'proxyusername');
 				//$this->message_obj-> = Configuration::get('system', 'proxypassword');
 			}
-
-
-		} elseif (Configuration::get('mail', 'method') == 'sendmail') {
+		}
+		elseif (Configuration::get('mail', 'method') == 'sendmail') {
+			require_once $GLOBALS['SYSTEM']['3RDPARTY_PATH'] . DIRECTORY_SEPARATOR . 'MimeMessage' . DIRECTORY_SEPARATOR . 'email_message.php';
 			require_once $GLOBALS['SYSTEM']['3RDPARTY_PATH'] . DIRECTORY_SEPARATOR . 'MimeMessage' . DIRECTORY_SEPARATOR . 'sendmail_message.php';
 
 			$this->message_obj = new \sendmail_message_class;
@@ -79,6 +77,9 @@ class Mail
 			$this->message_obj->delivery_mode = \SENDMAIL_DELIVERY_DEFAULT;
 			$this->message_obj->bulk_mail_delivery_mode = \SENDMAIL_DELIVERY_QUEUE;
 			$this->message_obj->sendmail_arguments = '';
+		}
+		elseif (Configuration::get('mail', 'method') == 'sendgrid') {
+			$this->message_obj = new \SendGrid\Email();
 		} else {
 			$this->message_obj = new \email_message_class;
 
@@ -93,7 +94,16 @@ class Mail
 	 */
 	public function setHeader($header, $value)
 	{
-		$this->message_obj->SetEncodedHeader($header, $value, $GLOBALS['SYSTEM']['CHARSET']);
+		if (Configuration::get('mail', 'method') != 'sendgrid') {
+			$this->message_obj->SetEncodedHeader($header, $value, $GLOBALS['SYSTEM']['CHARSET']);
+		} else {
+			if ($header == 'Subject') {
+				$this->message_obj->setSubject($value);
+			}
+			elseif ($header == 'ReplyTo') {
+				$this->message_obj->setReplyTo($value);
+			}
+		}
 	}
 
 	/**
@@ -101,7 +111,40 @@ class Mail
 	 */
 	public function setEmailHeader($header, $email, $name='')
 	{
-		if (is_array($email)) {
+		if (Configuration::get('mail', 'method') == 'sendgrid') {
+			if ($header == 'To') {
+				if (is_array($email)) {
+					foreach($email as $addr => $name) {
+						$this->message_obj->addTo($addr, $name);
+					}
+				} else {
+					$this->message_obj->addTo($email, $name);
+				}
+			}
+			elseif ($header == 'Cc') {
+				if (is_array($email)) {
+					foreach($email as $addr => $name) {
+						$this->message_obj->addCc($addr, $name);
+					}
+				} else {
+					$this->message_obj->addCc($email, $name);
+				}
+			}
+			elseif ($header == 'Bcc') {
+				if (is_array($email)) {
+					foreach($email as $addr => $name) {
+						$this->message_obj->addBcc($addr, $name);
+					}
+				} else {
+					$this->message_obj->addBcc($email, $name);
+				}
+			}
+			elseif ($header == 'From') {
+				$this->message_obj->setFrom($email);
+				$this->message_obj->setFromName($name);
+			}
+		}
+		elseif (is_array($email)) {
 			$this->message_obj->SetMultipleEncodedEmailHeader($header, $email, $GLOBALS['SYSTEM']['CHARSET']);
 		} else {
 			$this->message_obj->SetEncodedEmailHeader($header, $email, $name, $GLOBALS['SYSTEM']['CHARSET']);
@@ -178,17 +221,27 @@ class Mail
 		// [pt-br] Monta a parte TXT
 		if ($text) {
 			$this->text_message = $text;
-			$this->message_obj->CreateQuotedPrintableTextPart($text, $GLOBALS['SYSTEM']['CHARSET'], $this->text_part);
-			$alternative_parts[] = $this->text_part;
+			if (Configuration::get('mail', 'method') == 'sendgrid') {
+				$this->message_obj->setText($text);
+			} else {
+				$this->message_obj->CreateQuotedPrintableTextPart($text, $GLOBALS['SYSTEM']['CHARSET'], $this->text_part);
+				$alternative_parts[] = $this->text_part;
+			}
 		}
 		// [pt-br] Monta a parte HTML
 		if ($html) {
 			$this->html_message = $html;
-			$this->message_obj->CreateQuotedPrintableHTMLPart($html, $GLOBALS['SYSTEM']['CHARSET'], $this->html_part);
-			$alternative_parts[] = $this->html_part;
+			if (Configuration::get('mail', 'method') == 'sendgrid') {
+				$this->message_obj->setHtml($html);
+			} else {
+				$this->message_obj->CreateQuotedPrintableHTMLPart($html, $GLOBALS['SYSTEM']['CHARSET'], $this->html_part);
+				$alternative_parts[] = $this->html_part;
+			}
 		}
 		// [pt-br] Monta as partes alternativas
-		$this->message_obj->AddAlternativeMultipart($alternative_parts);
+		if (Configuration::get('mail', 'method') != 'sendgrid') {
+			$this->message_obj->AddAlternativeMultipart($alternative_parts);
+		}
 	}
 
 	/**
@@ -200,7 +253,11 @@ class Mail
 		$file['Name'] = $attach['name'];
 		$file['Content-Type'] = $attach['type'];
 
-		$this->message_obj->AddFilePart($file);
+		if (Configuration::get('mail', 'method') == 'sendgrid') {
+			$this->message_obj->addAttachment($attach['tmp_name']);
+		} else {
+			$this->message_obj->AddFilePart($file);
+		}
 
 		return $file;
 	}
@@ -210,7 +267,22 @@ class Mail
 	 */
 	public function send()
 	{
-		if (Configuration::get('mail', 'method') == 'sendmail') {
+		if (Configuration::get('mail', 'method') == 'sendgrid') {
+			$sendgrid = new \SendGrid(
+				Configuration::get('mail', 'user'),
+				Configuration::get('mail', 'pass')
+			);
+			
+			try {
+				$sendgrid->send($this->message_obj);
+				$error = "";
+			} catch(\SendGrid\Exception $e) {
+				$error = $e->getCode() . "\n";
+				foreach($e->getErrors() as $er) {
+					$error .= $er . "\n";
+				}
+			}
+		} elseif (Configuration::get('mail', 'method') == 'sendmail') {
 			$error = $this->message_obj->Mail($this->mail_to, $this->mail_subject, $this->text_message, '', '');
 		} else {
 			$error = $this->message_obj->Send();
