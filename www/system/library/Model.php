@@ -8,7 +8,7 @@
  *  \brief		Classe Model para acesso a banco de dados
  *  \note		Essa classe extende a classe DB.
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	1.11.15
+ *  \version	1.12.16
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \ingroup	framework
  */
@@ -35,6 +35,8 @@ class Model extends DB implements \Iterator
 	protected $tableName = '';
 	/// Relação de colunas da tabela para a consulta (pode ser uma string separada por vírgula ou um array com nos nomes das colunas)
 	protected $tableColumns = '*';
+	/// Relação de colunas calculadas pela classe
+	protected $calculatedColumns = null;
 	/// Colunas que determinam a chave primária
 	protected $primaryKey = 'id';
 	/// Nome da coluna que armazena a data de inclusão do registro (será utilizada pelo método save)
@@ -504,6 +506,48 @@ class Model extends DB implements \Iterator
 
 		return $this->affectedRows();
 	}
+	
+	/**
+	 *  \brief Faz alteração em lote
+	 *  
+	 *  EXPERIMENTAL!
+	 *  
+	 *  Permite fazer atualização de registros em lote (UPDATE)
+	 */
+	public function update(array $values, array $conditions)
+	{
+		$data = array();
+		$where = array();
+		$params = array();
+		
+		foreach ($values as $column => $value) {
+			if (in_array($column, $this->writableColumns)) {
+				if (is_callable($value)) {
+					if (isset($this->hookedColumns[$column]) && method_exists($this, $this->hookedColumns[$column])) {
+						$data[] = $column . ' = ' . call_user_func_array(array($this, $this->hookedColumns[$column]), array($value()));
+					} else {
+						$data[] = $column . ' = ' . $value();
+					}
+				} else {
+					$data[] = $column . ' = ?';
+					if (isset($this->hookedColumns[$column]) && method_exists($this, $this->hookedColumns[$column])) {
+						$params[] = call_user_func_array(array($this, $this->hookedColumns[$column]), array($value));
+					} else {
+						$params[] = $value;
+					}
+				}
+			}
+		}
+
+		// Monta o conjunto de filtros personalizado da classe herdeira
+		if (!$this->filter($conditions, $where, $params)) {
+			return false;
+		}
+		
+		$this->execute('UPDATE '.$this->tableName.' SET '.implode(', ', $data).' WHERE '.implode(' AND ', $where), $params);
+		
+		return ($this->affectedRows() > 0);
+	}
 
 	/**
 	 *  \brief Pega uma coluna ou um registro dos atributos de dados
@@ -739,7 +783,7 @@ class Model extends DB implements \Iterator
 				}
 				if (!isset($join['join'])) {
 					if (!isset($join['type'])) {
-						$join['join'] = 'LEFT INNER';
+						$join['join'] = 'INNER';
 					} else {
 						$join['join'] = $join['type'];
 					}
@@ -769,7 +813,7 @@ class Model extends DB implements \Iterator
 		// Monta a ordenação do resultado de busca
 		if (!empty($orderby)) {
 			foreach($orderby as $column => $direction) {
-				if (!strpos($column, '.')) {
+				if (!strpos($column, '.') && !strpos($column, '(')) {
 					$column = $this->tableName.'.'.$column;
 				}
 				$order[] = "$column $direction";
@@ -781,7 +825,7 @@ class Model extends DB implements \Iterator
 		}
 
 		// Monta o limitador de registros
-		if ($limit) {
+		if ($limit > 0) {
 			$sql .= ' LIMIT ?, ?';
 			$params[] = $offset;
 			$params[] = $limit;
@@ -797,7 +841,7 @@ class Model extends DB implements \Iterator
 		unset($sql);
 
 		// Faz a contagem de registros do filtro apenas se foi definido um limitador de resultador
-		if ($limit) {
+		if ($limit > 0) {
 			if ($this->driverName() == 'mysql') {
 				$this->execute('SELECT FOUND_ROWS() AS found_rows');
 			} else {
@@ -860,6 +904,20 @@ class Model extends DB implements \Iterator
 			}
 		}
 
+		// Populate de calculated columns
+		if (is_array($this->calculatedColumns) && count($this->calculatedColumns)) {
+			foreach ($this->rows as $idx => $row) {
+				foreach ($this->calculatedColumns as $column => $method) {
+					if (method_exists($this, $method)) {
+						$this->rows[$idx][$column] = $this->$method($row);
+					} else {
+						$this->rows[$idx][$column] = null;
+					}
+				}
+			}
+			reset($this->rows);
+		}
+		
 		return true;
 	}
 

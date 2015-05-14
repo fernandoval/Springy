@@ -22,7 +22,9 @@ RC
 	- Correção de bug na classe Errors que ocorre quando o template de erro relacionado não existe;
 	- Melhorias no tratamento de HTTP_HOST para configuração de ambiente pelo host;
 	- Criação da entrada de configuração geral CONSIDER_PORT_NUMBER;
-	- Implementação de integração com SendGrid Web API na classe Mail para novo método de envio 'sendgrid'.
+	- Implementação de integração com SendGrid Web API na classe Mail para novo método de envio 'sendgrid';
+	- Implementação de colunas calculadas na Model;
+	- Implementação de método update para alteração em massa na Model (experimental).
 3.0.5
 	- Correção de bug no método de auto descoberta do template, que causava inconsistência no caminho de templates quando a classe era criada com e sem parâmetros;
 	- Adição do método having na classe Model. Este método permite a utilização da cláusula SQL HAVING;
