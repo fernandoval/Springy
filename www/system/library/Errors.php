@@ -8,7 +8,7 @@
  *
  *	\brief		Classe para tratamento de erros
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.10.26
+ *	\version	2.0.27
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
@@ -25,6 +25,41 @@ use FW\Utils\Strings;
  */
 class Errors
 {
+	// List of ignores errors
+	private static $disregarded = array();
+	
+	/**
+	 *  \brief Add a error code to the list of disregarded error
+	 *  
+	 *  \param (int|array)$error - a error code os a array of errors code
+	 */
+	public static function disregard($error)
+	{
+		if (is_array($error)) {
+			foreach ($error as $errno)
+				self::disregard($errno);
+		} else {
+			if (!in_array($error, self::$disregarded))
+				self::$disregarded[] = $error;
+		}
+	}
+	
+	/**
+	 *  \brief Remove a error code from the list of disregarded error
+	 *  
+	 *  \param (int|array)$error - a error code os a array of errors code
+	 */
+	public static function regard($error)
+	{
+		if (is_array($error)) {
+			foreach ($error as $errno)
+				self::regard($errno);
+		} else {
+			if (isset(self::$disregarded[$error]))
+				unset(self::$disregarded[$error]);
+		}
+	}
+	
 	public static function ajax($errorType, $msg='')
 	{
 		self::errorHandler(E_USER_ERROR, $msg, '', '', '', $errorType);
@@ -44,6 +79,10 @@ class Errors
 	 */
 	public static function errorHandler($errno, $errstr, $errfile, $errline, $localErro, $errorType=500)
 	{
+		if (in_array($errno, self::$disregarded)) {
+			return;
+		}
+		
 		DB::rollBackAll();
 
 		switch ($errno) {
