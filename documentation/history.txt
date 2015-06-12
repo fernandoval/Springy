@@ -25,7 +25,8 @@ RC
 	- Implementação de integração com SendGrid Web API na classe Mail para novo método de envio 'sendgrid';
 	- Implementação de colunas calculadas na Model;
 	- Implementação de método update para alteração em massa na Model (experimental);
-	- Adicionados os métodos disregar($error) e regard($error) na classe Errors. Esses métodos tem por objetivo, respectivamente, adicionar e remover códigos de erros da lista de ignorados pela classe. São úteis para casos de utilização de funções que causem a ocorrência de um erro ou alerta em caso de falha, mas que não interfira no funcionamento da aplicação.
+	- Adicionados os métodos disregar($error) e regard($error) na classe Errors. Esses métodos tem por objetivo, respectivamente, adicionar e remover códigos de erros da lista de ignorados pela classe. São úteis para casos de utilização de funções que causem a ocorrência de um erro ou alerta em caso de falha, mas que não interfira no funcionamento da aplicação;
+	- Adicionada classe UUID para geração de códigos V3, V4, V5 e aleatório com base no microtime.
 3.0.5
 	- Correção de bug no método de auto descoberta do template, que causava inconsistência no caminho de templates quando a classe era criada com e sem parâmetros;
 	- Adição do método having na classe Model. Este método permite a utilização da cláusula SQL HAVING;
