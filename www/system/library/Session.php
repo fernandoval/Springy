@@ -7,7 +7,7 @@
  *
  *	\brief		Classe para tratamento de sessão
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.5.14
+ *	\version	1.5.15
  *  \author		Fernando Val  - fernando.val@gmail.com
  *	\ingroup	framework
  */
@@ -62,14 +62,16 @@ class Session
 			session_name($name);
 		}
 
-		// Verifica se há um nome de sessão setado
-		if ($name = Cookie::get(session_name())) {
-			// Verifica se há algum caracter inválido no nome da sessão e remove
-			if (preg_match('/([^A-Za-z0-9\-]+)/', $name)) {
-				Cookie::delete($name);
-				$name = preg_replace('/([^A-Za-z0-9\-]+)/', '-', $name);
-				session_name($name);
+		// Verifica se há um cookie com o nome de sessão setado
+		if ($id = Cookie::get(session_name())) {
+			// Verifica se há algum caracter inválido no id da sessão
+			if (preg_match('/([^A-Za-z0-9\-]+)/', $id)) {
+				$id = substr(md5(uniqid(mt_rand(), true)), 0, 26);
+				session_id($id);
 			}
+		} else {
+			// Se não há um cookie ou o cookie está vazio, apaga o cookie por segurança
+			Cookie::delete(session_name());
 		}
 
 		// Verifica se a sessão está em banco
@@ -79,7 +81,7 @@ class Session
 					self::$id = Cookie::get(session_name());
 				} else {
 					// self::$id = md5(time().microtime().rand(1,9999999999999999999999999));
-					self::$id = md5(uniqid(mt_rand(), true));
+					self::$id = substr(md5(uniqid(mt_rand(), true)), 0, 26);
 				}
 			}
 			Cookie::set(session_name(), self::$id, 0, '/', Configuration::get('session', 'master_domain'), false, false);
