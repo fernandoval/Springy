@@ -8,7 +8,7 @@
  *  \brief		Classe Model para acesso a banco de dados
  *  \note		Essa classe extende a classe DB.
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	1.12.16
+ *  \version	1.13.17
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \ingroup	framework
  */
@@ -423,10 +423,20 @@ class Model extends DB implements \Iterator
 
 			if ( !$this->triggerBeforeInsert() )
 				return false;
+			
 			$this->execute('INSERT INTO '.$this->tableName.' ('.implode(', ', $columns).($this->insertDateColumn ? ', '.$this->insertDateColumn : "").') VALUES ('.rtrim(str_repeat('?,', count($values)),',').($this->insertDateColumn ? ', '.$cdtFunc : "").')', $values);
 
-			if ($this->affectedRows() > 0 && $this->lastInsertedId() && !empty($this->primaryKey) && !strpos($this->primaryKey, ',') && empty($this->rows[0][$this->primaryKey])) {
-				$this->load(array($this->primaryKey => $this->lastInsertedId()));
+			if ($this->affectedRows() == 1) {
+				if ($this->lastInsertedId() && !empty($this->primaryKey) && !strpos($this->primaryKey, ',') && empty($this->rows[0][$this->primaryKey])) {
+					$this->load(array($this->primaryKey => $this->lastInsertedId()));
+				} elseif ( $this->isPrimaryKeyDefined() ) {
+					$k = array();
+					foreach ($this->getPKColumns() as $col) {
+						$k[$col] = $this->rows[0][$col];
+					}
+					$this->load($k);
+					unset($k);
+				}
 			}
 			$this->triggerAfterInsert();
 		}
