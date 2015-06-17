@@ -14,6 +14,8 @@ Developer team:
 Framework Update History
 
 ------------------------------------------------------------------------------------ --- -- -
+3.1.1
+	- Correção de bug na classe Soap_Client.
 3.1.0
 	- Melhorias no script post-install.php;
 	- Adicionados métodos de gatilho triggerBeforeDelete, triggerBeforeInsert, triggerBeforeUpdate, triggerAfterDelete, triggerAfterInsert e triggerAfterUpdate na classe Model para permitir gatilhos para tratamentos antes/depois de ações de banco
