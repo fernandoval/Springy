@@ -7,7 +7,7 @@
  *
  *	\brief		Classe para cliente SOAP
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	2.0.10
+ *	\version	2.0.11
  *  \author		Fernando Val  - fernando.val@gmail.com
  *	\ingroup	framework
  */
@@ -130,7 +130,7 @@ class SOAP_Client {
 /**
  *	\brief Classe para construção de cabeçalho de autenticação Web Service Security (WSSE)
  */
-class WsseAuthHeader extends SoapHeader {
+class WsseAuthHeader extends \SoapHeader {
 	/// namespace
 	private $wss_ns = 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd';
 
