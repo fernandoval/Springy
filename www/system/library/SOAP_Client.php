@@ -7,7 +7,7 @@
  *
  *	\brief		Classe para cliente SOAP
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	2.0.11
+ *	\version	2.0.12
  *  \author		Fernando Val  - fernando.val@gmail.com
  *	\ingroup	framework
  */
@@ -35,15 +35,18 @@ class SOAP_Client {
 		if (Configuration::get('system', 'proxyport')) $options['proxy_port'] = Configuration::get('system', 'proxyport');
 		if (Configuration::get('system', 'proxyusername')) $options['proxy_login'] = Configuration::get('system', 'proxyusername');
 		if (Configuration::get('system', 'proxypassword')) $options['proxy_password'] = Configuration::get('system', 'proxypassword');
+		$options['exceptions'] = true;
+		
 		if (empty($options['connection_timeout'])) {
 			$options['connection_timeout'] = (Configuration::get('soap', 'timeout')) ? Configuration::get('soap', 'timeout') : 20;
 		}
 		ini_set('default_socket_timeout', $options['connection_timeout']);
 
-		restore_error_handler();
+		// restore_error_handler();
 		
 		set_time_limit(0);
 
+		Errors::disregard(array(0, E_WARNING, E_ERROR));
 		try {
 			// Monta a autenticação W.S.Security
 			if ($wsse && isset($options['Username']) && isset($options['Password'])) {
@@ -61,13 +64,16 @@ class SOAP_Client {
 				$this->client->__setSoapHeaders(array($objSoapVarWSSEHeader));
 			}
 		}
-		catch (Exception $e) {
+		// catch (Exception $e) {
+		catch (\SoapFault $e) {
+			Errors::regard(array(0, E_WARNING, E_ERROR));
 			$this->error = $e->getMessage();
 			return false;
 		}
+		Errors::regard(array(0, E_WARNING, E_ERROR));
 
 		set_time_limit(30);
-		set_error_handler('FW_ErrorHandler');
+		// set_error_handler('FW_ErrorHandler');
 
 		return true;
 	}
@@ -86,18 +92,21 @@ class SOAP_Client {
 		// $params = $this->_arrayToObject($params);
 		$params = array(Kernel::objectToArray($params));
 
-		restore_error_handler();
+		// restore_error_handler();
 
+		Errors::disregard(array(0 ,E_WARNING));
 		try {
 			// $result = $this->client->$operation($params);
 			$result = $this->client->__soapCall($operation, $params, $options, $input_headers, $output_headers);
 		}
-		catch(SoapFault $exception) {
+		catch(\SoapFault $exception) {
+			Errors::regard(array(0 ,E_WARNING));
 			$result = $this->error = $exception->faultcode.' - '.$exception->faultstring;
 			return false;
 		}
+		Errors::regard(array(0 ,E_WARNING));
 
-		set_error_handler('FW_ErrorHandler');
+		// set_error_handler('FW_ErrorHandler');
 		set_time_limit(30);
 
 		return true;

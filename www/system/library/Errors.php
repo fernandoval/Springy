@@ -8,7 +8,7 @@
  *
  *	\brief		Classe para tratamento de erros
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	2.0.27
+ *	\version	2.0.28
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
@@ -146,7 +146,7 @@ class Errors
 				$printError = 'Fatal Error';
 			break;
 			default:
-				$printError = 'Unknown Error';
+				$printError = 'Unknown Error ('.$errno.')';
 			break;
 		}
 
