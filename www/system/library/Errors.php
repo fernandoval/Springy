@@ -8,7 +8,7 @@
  *
  *	\brief		Classe para tratamento de erros
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	2.0.28
+ *	\version	2.1.29
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
@@ -563,6 +563,7 @@ class Errors
 		$tpl = preg_replace('/<!-- REVERSE -->/', (Strings::getRealRemoteAddr() ? gethostbyaddr(Strings::getRealRemoteAddr()) : 'no reverse'), $tpl);
 		$tpl = preg_replace('/<!-- HTTP_USER_AGENT -->/', isset($_SERVER['HTTP_USER_AGENT'])?$_SERVER['HTTP_USER_AGENT']:"", $tpl);
 		$tpl = preg_replace('/<!-- ADDITIONAL_INFO -->/', $additionalInfo, $tpl);
+		$tpl = preg_replace('/<!-- _SERVER -->/', Kernel::print_rc($_SERVER, true), $tpl);
 		$tpl = preg_replace('/<!-- _POST -->/', Kernel::print_rc($_POST, true), $tpl);
 		$tpl = preg_replace('/<!-- _GET -->/', Kernel::print_rc($_GET, true), $tpl);
 		$tpl = preg_replace('/<!-- _COOKIE -->/', Kernel::print_rc($_COOKIE, true), $tpl);
