@@ -7,7 +7,7 @@
  *
  *	\brief		Classe de configuração
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.4.5
+ *	\version	1.4.6
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Allan Marques - allan.marques@ymail.com
  *	\ingroup	framework
@@ -95,7 +95,7 @@ class Configuration
 	 */
 	private static function _host()
 	{
-		return preg_replace('/([^:]+)(:\\d+)?/', '$1'.((isset($GLOBALS['SYSTEM']['CONSIDER_PORT_NUMBER']) && $GLOBALS['SYSTEM']['CONSIDER_PORT_NUMBER'])?'$2':""), isset($_SERVER['HTTP_HOST'])?$_SERVER['HTTP_HOST']:"");
+		return trim( preg_replace('/([^:]+)(:\\d+)?/', '$1'.((isset($GLOBALS['SYSTEM']['CONSIDER_PORT_NUMBER']) && $GLOBALS['SYSTEM']['CONSIDER_PORT_NUMBER'])?'$2':""), isset($_SERVER['HTTP_HOST'])?$_SERVER['HTTP_HOST']:""), ' ..@');
 	}
 	
 	/**
@@ -136,11 +136,13 @@ class Configuration
 		if (is_null(self::$env)) {
 			// Define o arquivo de configuração para o ambiente ativo
 			if (empty($GLOBALS['SYSTEM']['ACTIVE_ENVIRONMENT'])) {
-				if (isset($_SERVER['HTTP_HOST'])) {
-					$environment = self::_host();
+				$host = self::_host();
+				if (isset($host)) {
+					$environment = $host;
 				} else {
 					$environment = 'unknown';
 				}
+				unset($host);
 			} else {
 				$environment = $GLOBALS['SYSTEM']['ACTIVE_ENVIRONMENT'];
 			}

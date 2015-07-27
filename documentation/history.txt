@@ -15,6 +15,7 @@ Framework Update History
 
 ------------------------------------------------------------------------------------ --- -- -
 Dev
+	- Tratamento da URL para eliminar caracteres especiais do espaço (' ') ao arroba ('@') dos extremos (trim) da variável $_SERVER['HTTP_HOST'];
 	- Correção de bug na Model quando é feito inclusão de registro (INSERT) em tabela que chave primária (PK) seja composta ou não seja um inteiro autoincremental;
 	- Correção de bug na Soap_Client que causava erro na aplicação quando comunicação com servidor falha.
 3.1.2
