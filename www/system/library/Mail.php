@@ -8,7 +8,7 @@
  *
  *	\brief		Classe para envio de email
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.8.12
+ *	\version	1.8.13
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
@@ -81,6 +81,9 @@ class Mail
 		elseif (Configuration::get('mail', 'method') == 'sendgrid') {
 			$this->message_obj = new \SendGrid\Email();
 		} else {
+			require_once $GLOBALS['SYSTEM']['3RDPARTY_PATH'] . DIRECTORY_SEPARATOR . 'MimeMessage' . DIRECTORY_SEPARATOR . 'email_message.php';
+			require_once $GLOBALS['SYSTEM']['3RDPARTY_PATH'] . DIRECTORY_SEPARATOR . 'MimeMessage' . DIRECTORY_SEPARATOR . 'sendmail_message.php';
+			
 			$this->message_obj = new \email_message_class;
 
 			$this->message_obj->localhost = Configuration::get('mail', 'workstation');

@@ -8,7 +8,7 @@
  *
  *	\brief		Classe para tratamento de erros
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	2.1.28
+ *	\version	2.1.29
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
@@ -195,7 +195,7 @@ class Errors
 				 . 'Request: ' . (isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : 'indefinido') . "\n"
 				 . 'Request Method: ' . (isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : 'indefinido') . "\n"
 				 . 'Server Protocol: ' . (isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'indefinido') . "\n"
-				 . 'URL: ' . URI::get_uri_string() . '?' . implode('&', $getParams) . "\n";
+				 . 'URL: ' . URI::getURIString() . '?' . implode('&', $getParams) . "\n";
 				 // . 'Debug: ' . parent::get_debug() . "\n\n"
 				 // . 'Info: ' . print_r(parent::make_debug_backtrace(), true) . "\n\n";
 		} else {
