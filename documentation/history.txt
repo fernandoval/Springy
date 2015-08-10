@@ -18,6 +18,9 @@ Dev
 	- Tratamento da URL para eliminar caracteres especiais do espaço (' ') ao arroba ('@') dos extremos (trim) da variável $_SERVER['HTTP_HOST'];
 	- Correção de bug na Model quando é feito inclusão de registro (INSERT) em tabela que chave primária (PK) seja composta ou não seja um inteiro autoincremental;
 	- Correção de bug na Soap_Client que causava erro na aplicação quando comunicação com servidor falha.
+3.1.3
+	- Correção de bug na classe Errors em modo CLI;
+	- Correção de bug na classe Mail quando modo de envio está indefinido.
 3.1.2
 	- Inclusão do conteúdo da variável mágica do PHP $_SERVER nas mensages/templates de erro.
 3.1.1
