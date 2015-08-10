@@ -17,7 +17,10 @@ Framework Update History
 Dev
 	- Tratamento da URL para eliminar caracteres especiais do espaço (' ') ao arroba ('@') dos extremos (trim) da variável $_SERVER['HTTP_HOST'];
 	- Correção de bug na Model quando é feito inclusão de registro (INSERT) em tabela que chave primária (PK) seja composta ou não seja um inteiro autoincremental;
-	- Correção de bug na Soap_Client que causava erro na aplicação quando comunicação com servidor falha.
+	- Correção de bug na Soap_Client que causava erro na aplicação quando comunicação com servidor falha;
+	- Correção de bug na classe Configuration que sobrescrevia entradas com múltiplos níveis, apagando chaves existentes em default e não redeclaradas no ambiente;
+	- Diversas melhorias no script cmd.php para execução da aplicação em modo CLI:
+		O cmd.php passa imprimir uma ajuda de sintaxe se nenhum parâmetro for passado.
 3.1.3
 	- Correção de bug na classe Errors em modo CLI;
 	- Correção de bug na classe Mail quando modo de envio está indefinido.

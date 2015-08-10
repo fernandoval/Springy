@@ -8,18 +8,35 @@
  *
  *	\brief Script de execução via shell para crontab
  *  \warning Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version 1.2.3
+ *  \version 1.2.4
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \ingroup framework
  */
 
+if (!file_exists('sysconf.php')) {
+	echo 'Internal System Error on Startup.',"\n";
+	echo 'Required file "sysconf.php" missing.',"\n";
+}
+if (!file_exists('_Main.php')) {
+	echo 'Internal System Error on Startup.',"\n";
+	echo 'Required file "_Main.php" missing.',"\n";
+}
+
 if (!defined('STDIN') || empty($argc)) {
-	echo 'This script is runnable only on CLI mode.';
+	echo 'This script can be executed only in CLI mode.';
 	exit(998);
 }
  
 if ($argc < 2) {
-	echo 'Command missing.';
+	require('sysconf.php');
+	
+	echo $GLOBALS['SYSTEM']['SYSTEM_NAME'].' v'.$GLOBALS['SYSTEM']['SYSTEM_VERSION']."\n";
+	echo "\n";
+	echo 'ERROR: Controller command missing.',"\n";
+	echo "\n";
+	echo 'Syntax:',"\n";
+	echo '$ php -f cmd.php <controller> [--query_string <uri_string>] [--http_host <host_name>] [args...]',"\n";
+	echo "\n";
 	exit(999);
 }
 
@@ -33,18 +50,40 @@ $_SERVER['SERVER_PROTOCOL'] = 'CLI/Mode';
 $_SERVER['HTTP_HOST'] = 'cmd.shell';
 $_SERVER['DOCUMENT_ROOT'] = dirname(__FILE__);
 
-if (!empty($argv[2])) {
-	$_SERVER['REQUEST_URI']  .= '?' . $argv[2];
-	$_SERVER['QUERY_STRING'] .= '&' . $argv[2];
-	
-	foreach (explode('&', $argv[2]) as $get) {
-		$get = explode('=', $get);
-		$_GET[ $get[0] ] = $get[1];
+$arg = 1;
+while (++$arg < $argc) {
+	if ($argv[$arg] == '--query_string') {
+		$arg += 1;
+		if (isset($argv[$arg])) {
+			$_SERVER['REQUEST_URI']  .= '?' . $argv[$arg];
+			$_SERVER['QUERY_STRING'] .= '&' . $argv[$arg];
+			
+			foreach (explode('&', $argv[$arg]) as $get) {
+				$get = explode('=', $get);
+				$_GET[ $get[0] ] = $get[1];
+				unset($get);
+			}
+		}
+	} elseif ($argv[$arg] == '--http_host') {
+		$arg += 1;
+		if (isset($argv[$arg])) {
+			$_SERVER['HTTP_HOST'] = $argv[$arg];
+		}
 	}
 }
 
-if (!empty($argv[3])) {
-	$_SERVER['HTTP_HOST'] = $argv[3];
-}
+// if (!empty($argv[2])) {
+	// $_SERVER['REQUEST_URI']  .= '?' . $argv[2];
+	// $_SERVER['QUERY_STRING'] .= '&' . $argv[2];
+	
+	// foreach (explode('&', $argv[2]) as $get) {
+		// $get = explode('=', $get);
+		// $_GET[ $get[0] ] = $get[1];
+	// }
+// }
+
+// if (!empty($argv[3])) {
+	// $_SERVER['HTTP_HOST'] = $argv[3];
+// }
 
 require_once '_Main.php';

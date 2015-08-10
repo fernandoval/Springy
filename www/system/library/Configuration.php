@@ -7,7 +7,7 @@
  *
  *	\brief		Classe de configuração
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.4.6
+ *	\version	1.5.7
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Allan Marques - allan.marques@ymail.com
  *	\ingroup	framework
@@ -61,6 +61,9 @@ class Configuration
 
 	/**
 	 *  \brief Altera o valor de uma entrada de configuração
+	 *  
+	 *  Esta alteração é temporária e estará ativa apenas durante a execução da aplicação.
+	 *  Nenhuma alteração será feita nos arquivos de configuração.
 	 *
 	 *  \param[in] (string) $local - nome do arquivo de configuração
 	 *  \param[in] (string) $var - nome da entrada de configuração
@@ -103,15 +106,16 @@ class Configuration
 	 */
 	private static function _load($config_file, $local)
 	{
+
 		if (file_exists($config_file)) {
 			$conf = array();
 			require_once $config_file;
-			self::$confs[ $local ] = array_merge(self::$confs[ $local ], $conf);
+			self::$confs[ $local ] = array_replace_recursive(self::$confs[ $local ], $conf);
             
 			$host = self::_host();
 			
 			if ($host && isset($over_conf[ $host ])) {                
-				self::$confs[ $local ] = array_merge(self::$confs[ $local ], $over_conf[ $host ]);
+				self::$confs[ $local ] = array_replace_recursive(self::$confs[ $local ], $over_conf[ $host ]);
 			}
 
 			return true;
