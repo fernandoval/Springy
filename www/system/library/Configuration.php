@@ -7,7 +7,7 @@
  *
  *	\brief		Classe de configuração
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.5.7
+ *	\version	1.6.8
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Allan Marques - allan.marques@ymail.com
  *	\ingroup	framework
@@ -138,39 +138,39 @@ class Configuration
 		self::_load($GLOBALS['SYSTEM']['CONFIG_PATH'] . DIRECTORY_SEPARATOR . $local . '.default.conf.php', $local);
 
 		if (is_null(self::$env)) {
-			// Define o arquivo de configuração para o ambiente ativo
-			if (empty($GLOBALS['SYSTEM']['ACTIVE_ENVIRONMENT'])) {
-				$host = self::_host();
-				if (isset($host)) {
-					$environment = $host;
-				} else {
+			// Define environment by host?
+			if ( empty($GLOBALS['SYSTEM']['ACTIVE_ENVIRONMENT']) ) {
+				if ( !empty($GLOBALS['SYSTEM']['ENVIRONMENT_VARIABLE']) ) {
+					$environment = getenv($GLOBALS['SYSTEM']['ENVIRONMENT_VARIABLE']);
+				}
+				
+				$environment = empty($environment) ? self::_host() : $environment;
+				if ( empty($environment) ) {
 					$environment = 'unknown';
 				}
-				unset($host);
+				
+				// Verify if has an alias for host
+				if (is_array($GLOBALS['SYSTEM']['ENVIRONMENT_ALIAS']) && count($GLOBALS['SYSTEM']['ENVIRONMENT_ALIAS'])) {
+					foreach($GLOBALS['SYSTEM']['ENVIRONMENT_ALIAS'] as $alias => $as) {
+						if (preg_match('/^' . $alias . '$/', $environment)) {
+							$environment = $as;
+							break;
+						}
+					}
+				}
 			} else {
 				$environment = $GLOBALS['SYSTEM']['ACTIVE_ENVIRONMENT'];
 			}
-			if (is_array($GLOBALS['SYSTEM']['ENVIRONMENT_ALIAS']) && count($GLOBALS['SYSTEM']['ENVIRONMENT_ALIAS'])) {
-				foreach($GLOBALS['SYSTEM']['ENVIRONMENT_ALIAS'] as $alias => $as) {
-					if (preg_match('/^' . $alias . '$/', $environment)) {
-						$environment = $as;
-						break;
-					}
-				}
-			}
 
 			self::$env = $environment;
-
-		} else {
-			$environment = self::$env;
 		}
 
 		// Carreta a configuração para o ambiente ativo
-		self::_load($GLOBALS['SYSTEM']['CONFIG_PATH'] . DIRECTORY_SEPARATOR . $environment . DIRECTORY_SEPARATOR . $local . '.conf.php', $local);
+		self::_load($GLOBALS['SYSTEM']['CONFIG_PATH'] . DIRECTORY_SEPARATOR . self::$env . DIRECTORY_SEPARATOR . $local . '.conf.php', $local);
 
 		// Confere se a configuração foi carregada
 		if (empty(self::$confs[ $local ])) {
-			Errors::displayError(500, 'Missing configuration for "' . $local . '" on environment "' . $environment . '".');
+			Errors::displayError(500, 'Settings for "' . $local . '" not found in the environment "' . self::$env . '".');
 		}
 
 		return true;
