@@ -8,7 +8,7 @@
  *  \brief		Classe Model para acesso a banco de dados
  *  \note		Essa classe extende a classe DB.
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	1.13.17
+ *  \version	1.14.18
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \ingroup	framework
  */
@@ -51,8 +51,6 @@ class Model extends DB implements \Iterator
 	protected $orderColumns = array();
 	/// Propriedades do objeto
 	protected $rows = array();
-	/// Propriedades que sofreram alteração
-	protected $changedColumns = array();
 	/// Quantidade total de registros localizados no filtro
 	protected $dbNumRows = 0;
 	/// Flag de carga do banco de dados. Informa que os dados do objeto foram lidos do banco.
@@ -95,7 +93,7 @@ class Model extends DB implements \Iterator
 
 		$primary = $this->getPKColumns();
 		foreach($primary as $column) {
-			if (!isset($this->rows[0][$column])) {
+			if (!isset($this->rows[key($this->rows)][$column])) {
 				return false;
 			}
 		}
@@ -296,7 +294,10 @@ class Model extends DB implements \Iterator
      */
     public function validate()
     {
-        $data = $this->rows[0];
+		if ( !$this->valid() )
+			return false;
+		
+        $data = $this->current();
 
         $validation = Validator::make(
             $data,
@@ -332,11 +333,24 @@ class Model extends DB implements \Iterator
 	}
 
 	/**
+	 *  \brief Retorna um array das colunas alteradas no registro corrente
+	 */
+	public function changedColumns()
+	{
+		if ( $this->valid() ) {
+			return isset($this->rows[key($this->rows)]['**CHANGED**']) ? $this->rows[key($this->rows)]['**CHANGED**'] : array();
+		}
+		
+		return array();
+	}
+	
+	/**
 	 *  \brief Limpa a relação de colunas alteradas
 	 */
 	public function clearChangedColumns()
 	{
-		$this->changedColumns = array();
+		if ( $this->valid() )
+			$this->rows[key($this->rows)]['**CHANGED**'] = array();
 	}
 	
 	/**
@@ -367,25 +381,26 @@ class Model extends DB implements \Iterator
             return false;
         }
 
-		if (count($this->changedColumns) < 1) {
+		if (count($this->rows[key($this->rows)]['**CHANGED**']) < 1) {
 			return false;
 		}
 
 		$columns = array();
 		$values = array();
 
-		foreach ($this->changedColumns as $column) {
+		foreach ($this->rows[key($this->rows)]['**CHANGED**'] as $column) {
 			$columns[] = $column;
-			$values[] = $this->rows[0][$column];
+			$values[] = $this->rows[key($this->rows)][$column];
 		}
 
-		if ($this->loaded) {
+		if ( !isset($this->rows[key($this->rows)]['**NEW**']) ) {
+			// Errors::displayError(404, 'Page not found');
 			if ($this->isPrimaryKeyDefined()) {
 				$pk = array();
 				$primary = $this->getPKColumns();
 				foreach($primary as $column) {
 					$pk[] = $column.' = ?';
-					$values[] = $this->rows[0][$column];
+					$values[] = $this->rows[key($this->rows)][$column];
 				}
 				if ( !$this->triggerBeforeUpdate() )
 					return false;
@@ -427,12 +442,12 @@ class Model extends DB implements \Iterator
 			$this->execute('INSERT INTO '.$this->tableName.' ('.implode(', ', $columns).($this->insertDateColumn ? ', '.$this->insertDateColumn : "").') VALUES ('.rtrim(str_repeat('?,', count($values)),',').($this->insertDateColumn ? ', '.$cdtFunc : "").')', $values);
 
 			if ($this->affectedRows() == 1) {
-				if ($this->lastInsertedId() && !empty($this->primaryKey) && !strpos($this->primaryKey, ',') && empty($this->rows[0][$this->primaryKey])) {
+				if ($this->lastInsertedId() && !empty($this->primaryKey) && !strpos($this->primaryKey, ',') && empty($this->rows[key($this->rows)][$this->primaryKey])) {
 					$this->load(array($this->primaryKey => $this->lastInsertedId()));
 				} elseif ( $this->isPrimaryKeyDefined() ) {
 					$k = array();
 					foreach ($this->getPKColumns() as $col) {
-						$k[$col] = $this->rows[0][$col];
+						$k[$col] = $this->rows[key($this->rows)][$col];
 					}
 					$this->load($k);
 					unset($k);
@@ -597,7 +612,7 @@ class Model extends DB implements \Iterator
 
 		if (in_array($column, $this->writableColumns)) {
 			if (empty($this->rows)) {
-				$this->rows[] = array();
+				$this->rows[] = array('**NEW**' => true);
 			}
 
 			$oldvalue = isset($this->rows[key($this->rows)][$column]) ? $this->rows[key($this->rows)][$column] : null;
@@ -607,9 +622,13 @@ class Model extends DB implements \Iterator
 				$this->rows[key($this->rows)][$column] = $value;
 			}
 
-			if (key($this->rows) == 0 && $oldvalue != $value) {
-				if (!in_array($column, $this->changedColumns)) {
-					$this->changedColumns[] = $column;
+			if ($oldvalue != $value) {
+				if ( !isset($this->rows[key($this->rows)]['**CHANGED**']) ) {
+					$this->rows[key($this->rows)]['**CHANGED**'] = array();
+				}
+				
+				if ( !in_array($column, $this->rows[key($this->rows)]['**CHANGED**']) ) {
+					$this->rows[key($this->rows)]['**CHANGED**'][] = $column;
 				}
 			}
 
@@ -842,7 +861,6 @@ class Model extends DB implements \Iterator
 		}
 
 		// Limpa as propriedades da classe
-		$this->clearChangedColumns();
 		$this->loaded = false;
 
 		// Efetua a busca
