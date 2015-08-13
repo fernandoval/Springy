@@ -8,7 +8,7 @@
  *  \brief		Classe Model para acesso a banco de dados
  *  \note		Essa classe extende a classe DB.
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	1.14.18
+ *  \version	1.14.19
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \ingroup	framework
  */
@@ -394,7 +394,6 @@ class Model extends DB implements \Iterator
 		}
 
 		if ( !isset($this->rows[key($this->rows)]['**NEW**']) ) {
-			// Errors::displayError(404, 'Page not found');
 			if ($this->isPrimaryKeyDefined()) {
 				$pk = array();
 				$primary = $this->getPKColumns();
