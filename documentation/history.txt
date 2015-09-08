@@ -23,6 +23,7 @@ Dev
 	- Melhoria na classe Model para permitir editar e salvar qualquer dos registros do resultado de busca;
 	- Diversas melhorias no script cmd.php para execução da aplicação em modo CLI:
 		O cmd.php passa imprimir uma ajuda de sintaxe se nenhum parâmetro for passado.
+	- Eliminação do conceito CMS (remoção da Classe, configurações e arquivos relacionados).
 3.1.3
 	- Correção de bug na classe Errors em modo CLI;
 	- Correção de bug na classe Mail quando modo de envio está indefinido.
