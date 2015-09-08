@@ -5,7 +5,7 @@
  *  \copyright	Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
  *  \copyright	Copyright (c) 2007-2015 Fernando Val\n
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	1.9.11
+ *  \version	1.9.12
  *  \author		Fernando Val  - fernando.val@gmail.com
  *
  *  \brief Configurações do cerne do sistema
@@ -95,8 +95,6 @@ $GLOBALS['SYSTEM'] = array(
 		'homol(ogation)?' => 'development',
 		'(www\.)?seusite\.com(\.br)?' => 'production'
 	), 
-
-	'CMS' => false, 
 
 	'ROOT_PATH' => realpath(dirname(__FILE__)), 
 	'SYSTEM_PATH' => "", 

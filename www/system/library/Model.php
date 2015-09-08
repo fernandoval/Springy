@@ -8,7 +8,7 @@
  *  \brief		Classe Model para acesso a banco de dados
  *  \note		Essa classe extende a classe DB.
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	1.14.19
+ *  \version	1.14.20
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \ingroup	framework
  */
@@ -381,7 +381,7 @@ class Model extends DB implements \Iterator
             return false;
         }
 
-		if (count($this->rows[key($this->rows)]['**CHANGED**']) < 1) {
+		if ( !isset($this->rows[key($this->rows)]['**CHANGED**']) || count($this->rows[key($this->rows)]['**CHANGED**']) < 1 ) {
 			return false;
 		}
 
