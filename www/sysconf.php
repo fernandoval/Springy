@@ -5,7 +5,7 @@
  *  \copyright	Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
  *  \copyright	Copyright (c) 2007-2015 Fernando Val\n
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	1.9.12
+ *  \version	2.0.13
  *  \author		Fernando Val  - fernando.val@gmail.com
  *
  *  \brief Configurações do cerne do sistema
@@ -85,7 +85,7 @@ $GLOBALS['SYSTEM'] = array(
 	'SYSTEM_NAME' => 'Nome Do Seu Sistema', 
 	'SYSTEM_VERSION' => 'Versão do Seu Projeto', 
 
-	'ACTIVE_ENVIRONMENT' => '', 
+	'ACTIVE_ENVIRONMENT' => '',
 	'ENVIRONMENT_VARIABLE' => 'FWGV_ENVIRONMENT',
 	'CONSIDER_PORT_NUMBER' => false,
 	'ENVIRONMENT_ALIAS' => array(
@@ -94,7 +94,7 @@ $GLOBALS['SYSTEM'] = array(
 		'192\.168\.[0-9]*\.[0-9]*' => 'development',
 		'homol(ogation)?' => 'development',
 		'(www\.)?seusite\.com(\.br)?' => 'production'
-	), 
+	),
 
 	'ROOT_PATH' => realpath(dirname(__FILE__)), 
 	'SYSTEM_PATH' => "", 
@@ -109,17 +109,20 @@ $GLOBALS['SYSTEM'] = array(
 );
 
 /// Diretório do sistema
-$GLOBALS['SYSTEM']['SYSTEM_PATH'] = realpath($SYSTEM['ROOT_PATH'] . DIRECTORY_SEPARATOR . 'system');
+$GLOBALS['SYSTEM']['SYSTEM_PATH'] = realpath($GLOBALS['SYSTEM']['ROOT_PATH'] . DIRECTORY_SEPARATOR . 'system');
 /// Diretório da biblioteca do sistema
-$GLOBALS['SYSTEM']['LIBRARY_PATH'] = realpath($SYSTEM['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'library');
+$GLOBALS['SYSTEM']['LIBRARY_PATH'] = realpath($GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'library');
 /// Diretório de classes de terceiros que não são carregadas pelo autoload
-$GLOBALS['SYSTEM']['3RDPARTY_PATH'] = realpath($SYSTEM['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'other');
+$GLOBALS['SYSTEM']['3RDPARTY_PATH'] = realpath($GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'other');
 /// Diretório das controladoras
-$GLOBALS['SYSTEM']['CONTROLER_PATH'] = realpath($SYSTEM['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'controllers');
+$GLOBALS['SYSTEM']['CONTROLER_PATH'] = realpath($GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'controllers');
 /// Diretório das classes da aplicação
-$GLOBALS['SYSTEM']['CLASS_PATH'] = realpath($SYSTEM['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'classes');
-$GLOBALS['SYSTEM']['USER_CLASS_PATH'] = $SYSTEM['CLASS_PATH'];
+$GLOBALS['SYSTEM']['CLASS_PATH'] = realpath($GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'classes');
+$GLOBALS['SYSTEM']['USER_CLASS_PATH'] = $GLOBALS['SYSTEM']['CLASS_PATH'];
 /// Diretório das configurações do sistema
-$GLOBALS['SYSTEM']['CONFIG_PATH'] = realpath($SYSTEM['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'conf');
+$GLOBALS['SYSTEM']['CONFIG_PATH'] = realpath($GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'conf');
+
+/// Diretório da classe de controle de versionamento de banco de dados
+$GLOBALS['SYSTEM']['MIGRATION_PATH'] = realpath($GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'migration');
 
 /**@}*/

@@ -8,7 +8,7 @@
  *  \brief		Classe Model para acesso a banco de dados
  *  \note		Essa classe extende a classe DB.
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	1.14.20
+ *  \version	1.15.21
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \ingroup	framework
  */
@@ -668,6 +668,7 @@ class Model extends DB implements \Iterator
 	 *  'attr_name' => (string) nome do atributo a ser criado como coluna no registro
 	 *  'pk' => (string) nome da coluna que é a chave primária do objeto a ser embutido
 	 *  'fk' => (string) nome da coluna no objeto atual a ser usada como chave estrangeira para busca no objeto embutido.
+	 *  'filter' => (array) um array de filtros a serem aplicados ao objeto embutido, no mesmo formato dos filtros da classe.
 	 *  
 	 *  Exemplo de array aceito:
 	 *  
@@ -912,13 +913,21 @@ class Model extends DB implements \Iterator
 					}
 				}
 				
-				$embObj = new $obj;
-				$embObj->query(
-					array(
+				if (isset($attr['filter']) && is_array($attr['filter'])) {
+					$efilter = array_merge(
+						array(
+							$attr['pk'] => array('in' => $keys)
+						),
+						$attr['filter']
+					);
+				} else {
+					$efilter = array(
 						$attr['pk'] => array('in' => $keys)
-					),
-					array(), 0, 0, $embbed - 1
-				);
+					);
+				}
+				
+				$embObj = new $obj;
+				$embObj->query($efilter, array(), 0, 0, $embbed - 1);
 				while ($er = $embObj->next()) {
 					foreach ($this->rows as $idx => $row) {
 						if ($er[ $attr['pk'] ] == $row[ $attr['fk'] ]) {

@@ -9,7 +9,7 @@
  *  http://www.fval.com.br
  *
  *  \brief    Script de inicialização da aplicação
- *  \version  2.6.21
+ *  \version  2.7.22
  *  \author   Fernando Val - fernando.val@gmail.com
  *  \author   Lucas Cardozo - lucas.cardozo@gmail.com
  *
@@ -325,6 +325,16 @@ if (isset($ControllerClassName)) {
 			} else if ($Page == '_system_bug_solved_' && preg_match('/^[0-9a-z]{8}$/', FW\URI::getSegment(1, false))) {
 				FW\Errors::bugSolved(FW\URI::getSegment(1, false));
 			}
+		} elseif ($Page == '__migration__') {
+			// Cli mode only
+			if (!defined('STDIN') || empty($argc)) {
+				echo 'This script can be executed only in CLI mode.';
+				exit(998);
+			}
+			
+			require $GLOBALS['SYSTEM']['MIGRATION_PATH'] . DS . 'app' . DS . 'migrator.php';
+			$PageController = new FW\Migrator();
+			$PageController->run();
 		}
 	}
 

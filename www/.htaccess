@@ -8,11 +8,14 @@ RewriteRule ^(.*)$ - [F,L]
 RewriteCond %{REQUEST_URI} \__([0-9]*)\.(css|js)$ [NC]
 RewriteRule ^(.*)__([0-9]*)\.(css|js)$ $1.$3 [L]
 
-# Rewrite para dominio sem URI (ex: www.seusite.com.br/, o que faria cairia no index.php)
-RewriteCond %{REQUEST_FILENAME} -d
-RewriteRule ^$ /_Main.php?SUPERVAR=/&%{QUERY_STRING} [L]
+# Rewrite para dominio sem URI (ex: www.seusite.com.br/, o que faria cair no index.php)
+RewriteCond %{REQUEST_FILENAME} -d [OR]
+RewriteCond %{REQUEST_URI} =/ [OR]
+RewriteCond %{REQUEST_URI} =/index.php [OR]
+RewriteCond %{REQUEST_URI} =""
+RewriteRule .* /_Main.php?SUPERVAR=/&%{QUERY_STRING} [L]
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteCond %{REQUEST_URI}	!\.(gif|jpe?g|s?css|js|png|swf|ico|eot|svg|ttf|woff|otf|less|json)$ [NC]
+RewriteCond %{REQUEST_URI}	!\.(gif|jpe?g|s?css|js|png|swf|ico|eot|svg|ttf|woff|otf|less|json|txt)$ [NC]
 RewriteRule ^(.*?)$ /_Main.php?SUPERVAR=$1&%{QUERY_STRING} [L]

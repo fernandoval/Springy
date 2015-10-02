@@ -8,7 +8,7 @@
  *
  *	\brief Script de execução via shell para crontab
  *  \warning Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version 1.2.4
+ *  \version 1.2.5
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \ingroup framework
  */
@@ -71,19 +71,5 @@ while (++$arg < $argc) {
 		}
 	}
 }
-
-// if (!empty($argv[2])) {
-	// $_SERVER['REQUEST_URI']  .= '?' . $argv[2];
-	// $_SERVER['QUERY_STRING'] .= '&' . $argv[2];
-	
-	// foreach (explode('&', $argv[2]) as $get) {
-		// $get = explode('=', $get);
-		// $_GET[ $get[0] ] = $get[1];
-	// }
-// }
-
-// if (!empty($argv[3])) {
-	// $_SERVER['HTTP_HOST'] = $argv[3];
-// }
 
 require_once '_Main.php';

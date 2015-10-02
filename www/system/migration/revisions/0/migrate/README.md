@@ -1,0 +1,1 @@
+Put on this directory the script to build the database schema.

@@ -21,15 +21,27 @@
     },
     "require": {
 		"php": ">=5.3.3",
+		
 		"smarty/smarty": "*",
 		"twig/twig": "*",
-		
 		"ircmaxell/password-compat": "*",
+		"sendgrid/sendgrid": "~3.2",
 		
 		"components/jquery": "2.1.3",
 		"twbs/bootstrap": "3.3.*"
     },
 	"scripts": {
-		"post-install-cmd": "php -f post-install.php"
-	}
+		"post-install-cmd": "php -f post-install.php",
+		"post-update-cmd": "php -f post-install.php"
+	},
+	"repositories": [
+		{
+			"type": "composer",
+			"url": "http://www.phpclasses.org/"
+		},
+		{
+			"type": "composer",
+			"url": "http://www.jsclasses.org/"
+		}
+	]
 }

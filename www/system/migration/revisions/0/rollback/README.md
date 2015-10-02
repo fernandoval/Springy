@@ -1,0 +1,1 @@
+There is no rollback from revision 0

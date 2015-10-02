@@ -1,0 +1,1 @@
+This is the directory where will be saved all revision scripts
