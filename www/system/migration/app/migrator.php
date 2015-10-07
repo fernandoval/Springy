@@ -7,7 +7,7 @@
  *  
  *  \brief     Script da classe de acesso a banco de dados
  *  \warning   Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version   0.1 beta
+ *  \version   0.2.3 beta
  *  \author    Fernando Val  - fernando.val@gmail.com
  *  \ingroup   framework
  */
@@ -33,6 +33,8 @@ class Migrator extends DB
 	private $target = null;
 	private $parameter = null;
 	private $error = false;
+	private $currentRevision = array();
+	private $currRevsString = "";
 	
 	/**
 	 *  \brief Initiate the class
@@ -63,19 +65,26 @@ class Migrator extends DB
 		);
 		
 		// Verify permissions over revision control file
-		$currentRevision = $this->getCurrentRevision();
-		$this->setCurrentRevision( $currentRevision );
+		$this->loadCurrentRevision();
+		$this->saveCurrenteRevision();
 		if ($this->error !== false) {
 			$this->systemAbort($this->error);
 		}
 		
-		$this->output('Current Revision: ' . $currentRevision );
+		$this->output('Current Revision: ' . $this->currRevsString );
 		
 		// Get all revisions and check what is new
 		$allRevisions = $this->getRevisions();
 		$revisions = array();
 		foreach ($allRevisions as $revision) {
-			if (intval($revision) > $currentRevision) {
+			$found = false;
+			foreach ($this->currentRevision as $start => $end) {
+				if (intval($revision) >= $start && intval($revision) <= $end) {
+					$found = true;
+					break;
+				}
+			}
+			if (!$found) {
 				$revisions[] = $revision;
 			}
 		}
@@ -252,6 +261,7 @@ class Migrator extends DB
 		
 		foreach ($revisions as $revision) {
 			if ($revision <= $target) {
+				$this->setCurrentRevision( $revision );
 				return;
 			}
 			
@@ -278,7 +288,7 @@ class Migrator extends DB
 			
 			$this->output('Rollback to revision #' . $revision . ' applied with' . ($error ? "" : 'out') . ' errors', $error ? self::MSG_WARNING : self::MSG_INFORMATION);
 			
-			$this->setCurrentRevision( $revision );
+			$this->setCurrentRevision( $revision - 1 );
 			
 			if ($error) {
 				$this->systemAbort();
@@ -287,16 +297,81 @@ class Migrator extends DB
 	}
 
 	/**
-	 *  \brief Get the current revision from control file
+	 *  \brief Load the current revisions from control file
 	 */
-	private function getCurrentRevision()
+	private function loadCurrentRevision()
 	{
+		$this->currentRevision = array();
+		
 		// Check if revision control file exists and is writable
 		if (file_exists($this->revFile)) {
-			return intval(file_get_contents($this->revFile));
+			// return intval(file_get_contents($this->revFile));
+			$revisions = file_get_contents($this->revFile);
+			$aRevs = explode(',', $revisions);
+			foreach ($aRevs as $range) {
+				$aRange = explode('-', $range);
+				if (count($aRange) == 1) {
+					$this->currentRevision[ intval($aRange[0]) ] = intval($aRange[0]);
+				} else {
+					$this->currentRevision[ intval($aRange[0]) ] = intval($aRange[1]);
+				}
+			}
+			
+			return true;
 		}
 		
-		return 0;
+		return false;
+	}
+	
+	/**
+	 *  \brief Save the current revisions from control file
+	 */
+	private function saveCurrenteRevision()
+	{
+		$b = -1;
+		$e = -1;
+		$currRevs = "";
+		ksort($this->currentRevision, SORT_NUMERIC);
+		foreach ($this->currentRevision as $start => $end) {
+			if ($start > $e) {
+				if ($e < 0) {
+					$b = $start;
+					$e = $end;
+				} elseif ($start > ($e + 1)) {
+					if ($b == $e) {
+						$currRevs .= (string)$b . ',';
+					} else {
+						$currRevs .= (string)$b . '-' . (string)$e . ',';
+					}
+					$b = $start;
+					$e = $end;
+				} else {
+					$b = ($b < 0) ? 0 : $b;
+					$e = $end;
+				}
+			} elseif ($end > $e) {
+				$b = ($b < 0) ? 0 : $b;
+				$e = $end;
+			}
+		}
+		if ($e >= 0) {
+			if ($b == $e) {
+				$currRevs .= (string)$b;
+			} else {
+				$currRevs .= (string)$b . '-' . (string)$e;
+			}
+		}
+		
+		// Try to save
+		if ($currRevs != $this->currRevsString) {
+			$this->output('Saving control file.');
+			if (!@file_put_contents($this->revFile, $currRevs)) {
+				$this->setError('Cannot write revision file');
+			}
+			$this->currRevsString = $currRevs;
+		}
+		
+		return true;
 	}
 
 	/**
@@ -304,9 +379,11 @@ class Migrator extends DB
 	 */
     private function setCurrentRevision($revision)
     {
-        if (!@file_put_contents($this->revFile, $revision)) {
-            $this->setError('Cannot write revision file');
-        }
+		if ( !isset($this->currentRevision[$revision]) ) {
+			$this->output('Setting revision ' . $revision . ' as applied.');
+			$this->currentRevision[ $revision ] = $revision;
+			$this->saveCurrenteRevision();
+		}
     }
 	
 	/**
