@@ -8,7 +8,7 @@
  *  \brief		Classe Model para acesso a banco de dados
  *  \note		Essa classe extende a classe DB.
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	1.15.21
+ *  \version	1.16.22
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \ingroup	framework
  */
@@ -899,30 +899,39 @@ class Model extends DB implements \Iterator
 		// protected $embeddedObj = array(
 		// 	'Table_Class_Child_Obj' => array(
 		//		'attr_name' => 'child_or_parent', // name of the attribute to be created on parent row
-		//		'pk' => 'id', // Name of the primary key column in this embedded object
-		//		'fk' => 'column_id', // Name of the column in parent table user to link to this embedded object
+		//		'attr_type' => 'list|data', // type of the attribute to be created on parent row when 'list' is a array of rows and 'data' a array of columns from last row found
+		//		'column'|'fk' => 'id', // Name of the column in parent table used to link to embedded object
+		//		'found_by'|'pk' => 'parent_id', // Name of the column key on embedded object
 		//	)
 		// );
 		if ( is_int($embbed) && $embbed > 0 && count($this->embeddedObj) && count($this->rows) > 0 ) {
 			foreach ($this->embeddedObj as $obj => $attr) {
+				// Back compatibility to bug fix
+				if ( !isset($attr['column']) )
+					$attr['column'] = $attr['fk'];
+				if ( !isset($attr['found_by']) )
+					$attr['found_by'] = $attr['pk'];
+				if ( !isset($attr['attr_type']) )
+					$attr['attr_type'] = 'list';
+				
 				$keys = array();
 				foreach ($this->rows as $idx => $row) {
 					$this->rows[$idx][ $attr['attr_name'] ] = array();
-					if ( !in_array($row[ $attr['fk'] ], $keys) ) {
-						$keys[] = $row[ $attr['fk'] ];
+					if ( !in_array($row[ $attr['column'] ], $keys) ) {
+						$keys[] = $row[ $attr['column'] ];
 					}
 				}
 				
 				if (isset($attr['filter']) && is_array($attr['filter'])) {
 					$efilter = array_merge(
 						array(
-							$attr['pk'] => array('in' => $keys)
+							isset($attr['found_by']) => array('in' => $keys)
 						),
 						$attr['filter']
 					);
 				} else {
 					$efilter = array(
-						$attr['pk'] => array('in' => $keys)
+						isset($attr['found_by']) => array('in' => $keys)
 					);
 				}
 				
@@ -930,8 +939,12 @@ class Model extends DB implements \Iterator
 				$embObj->query($efilter, array(), 0, 0, $embbed - 1);
 				while ($er = $embObj->next()) {
 					foreach ($this->rows as $idx => $row) {
-						if ($er[ $attr['pk'] ] == $row[ $attr['fk'] ]) {
-							$this->rows[$idx][ $attr['attr_name'] ][] = $er;
+						if ($er[ $attr['found_by'] ] == $row[ $attr['column'] ]) {
+							if ($attr['attr_type'] == 'list') {
+								$this->rows[$idx][ $attr['attr_name'] ][] = $er;
+							} else {
+								$this->rows[$idx][ $attr['attr_name'] ] = $er;
+							}
 						}
 					}
 				}

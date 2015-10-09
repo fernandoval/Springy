@@ -21,6 +21,7 @@ Dev
 	- Correção de bug na classe Configuration que sobrescrevia entradas com múltiplos níveis, apagando chaves existentes em default e não redeclaradas no ambiente;
 	- Implementação de definição do ambiente de configuração através de variável de ambiente (default = FWGV_ENVIRONMENT), que pode ser definida na entrada 'ENVIRONMENT_VARIABLE' em sysconf.php;
 	- Melhoria na classe Model para permitir editar e salvar qualquer dos registros do resultado de busca;
+	- Melhorias no processo de objetos embutidos (embeddedObj) da Model;
 	- Diversas melhorias no script cmd.php para execução da aplicação em modo CLI:
 		O cmd.php passa imprimir uma ajuda de sintaxe se nenhum parâmetro for passado.
 	- Eliminação do conceito CMS (remoção da Classe, configurações e arquivos relacionados);
