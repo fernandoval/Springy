@@ -8,7 +8,7 @@
  *  \brief		Classe Model para acesso a banco de dados
  *  \note		Essa classe extende a classe DB.
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	1.16.22
+ *  \version	1.16.23
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \ingroup	framework
  */
@@ -925,13 +925,13 @@ class Model extends DB implements \Iterator
 				if (isset($attr['filter']) && is_array($attr['filter'])) {
 					$efilter = array_merge(
 						array(
-							isset($attr['found_by']) => array('in' => $keys)
+							$attr['found_by'] => array('in' => $keys)
 						),
 						$attr['filter']
 					);
 				} else {
 					$efilter = array(
-						isset($attr['found_by']) => array('in' => $keys)
+						$attr['found_by'] => array('in' => $keys)
 					);
 				}
 				
