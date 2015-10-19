@@ -70,15 +70,9 @@ Para determinar qual script de controle será carregado e executado, o sistema s
 
 Se nenhuma das condições acima se mostrarem verdadeiras e houver um subdiretório de nome igual ao segmento e houver mais algum segmento, o sistema passa para o próximo segmento e refaz as verificações acima. Isso repete até que um script seja elegido controladora ou esgotem-se os segmentos do URI.
 
+Caso o sistema tenha eleito uma controladora, ele a carrega para a memória e a partir daí faz as verificações de exeção da controladora (veja o próximo capítulo).
 
-O passo seguinte e o mini CMS:
-------------------------------
-
-Caso o sistema tenha eleito uma controladora, ele o carrega para a memória e a partir daí faz as verificações de exeção da controladora (veja o próximo capítulo).
-
-Não havendo uma controladora eleita, o sistema verifica se o mini CMS interno está habilitado e, em caso afirmativo, passa o controle para ele.
-
-Na eventualidade de não ter encontrado a controladora adequado e nem estar sendo usado o mini CMS, a página de erro 404 é mostrada.
+Não havendo uma controladora eleita, a página de erro 404 é mostrada.
 
 
 A pré-controladora _global:
