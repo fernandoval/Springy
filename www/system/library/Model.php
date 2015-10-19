@@ -8,7 +8,7 @@
  *  \brief		Classe Model para acesso a banco de dados
  *  \note		Essa classe extende a classe DB.
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	1.16.23
+ *  \version	1.17.24
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \ingroup	framework
  */
@@ -660,19 +660,24 @@ class Model extends DB implements \Iterator
 	/**
 	 *  \brief Define o array de objetos embutidos
 	 *  
-	 *  O array de objetos embutidos deve obedecer a estrutura definida para esse atributo.
+	 *  O array de objetos embutidos é uma estrutura que permite a consulta a execução de consultas em outros objetos e embutir
+	 *  seu resultado dentro de um atributo do registro.
 	 *  
-	 *  Cara item do array de objetos embutidos deve ter o nome da classe do objeto como índice e
-	 *  ter como valor um array com os seguintes pares chave => valor:
+	 *  Cara item do array de objetos embutidos deve ter o nome da classe do objeto como índice e ter como valor um array com
+	 *  os seguintes pares chave => valor:
 	 *  
-	 *  'attr_name' => (string) nome do atributo a ser criado como coluna no registro
-	 *  'pk' => (string) nome da coluna que é a chave primária do objeto a ser embutido
-	 *  'fk' => (string) nome da coluna no objeto atual a ser usada como chave estrangeira para busca no objeto embutido.
-	 *  'filter' => (array) um array de filtros a serem aplicados ao objeto embutido, no mesmo formato dos filtros da classe.
+	 *  'attr_name' => (string) nome do atributo a ser criado no registro
+	 *  'attr_type' => (constant)'list'|'data' determina como o atributo deve ser.
+	 *  	- 'list' (default) define que o atributo é uma lista (array) de registros;
+	 *  	- 'data' define que o atributo é um único registro do objeto embutido (array de colunas).
+	 *  'column' => (string) nome da coluna que será usada para relacionamento com o objeto embutido.
+	 *  'found_by' => (string) nome da coluna do objeto embutido que será usada como chave de busca.
+	 *  'filter' => (array) um array de filtros, opcional, a serem aplicados ao objeto embutido, no mesmo formato dos filtros da classe.
+	 *  'embbeded_obj' => (array) um array estrutura, opcional, para embutir outro objeto no objeto embutido.
 	 *  
 	 *  Exemplo de array aceito:
 	 *  
-	 *  array('Parent_Table' => array('attr_name' => 'parent', 'pk' => 'id', 'fk' => 'parent_id'))
+	 *  array('Parent_Table' => array('attr_name' => 'parent', 'type' => 'data', 'found_by' => 'id', 'column' => 'parent_id'))
 	 */
 	public function setEmbeddedObj(array $embeddedObj)
 	{
@@ -906,7 +911,7 @@ class Model extends DB implements \Iterator
 		// );
 		if ( is_int($embbed) && $embbed > 0 && count($this->embeddedObj) && count($this->rows) > 0 ) {
 			foreach ($this->embeddedObj as $obj => $attr) {
-				// Back compatibility to bug fix
+				// Back compatibility to fix a bug
 				if ( !isset($attr['column']) )
 					$attr['column'] = $attr['fk'];
 				if ( !isset($attr['found_by']) )
@@ -936,6 +941,9 @@ class Model extends DB implements \Iterator
 				}
 				
 				$embObj = new $obj;
+				if (isset($attr['embedded_obj'])) {
+					$embObj->setEmbeddedObj($attr['embedded_obj']);
+				}
 				$embObj->query($efilter, array(), 0, 0, $embbed - 1);
 				while ($er = $embObj->next()) {
 					foreach ($this->rows as $idx => $row) {
