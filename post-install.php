@@ -8,7 +8,7 @@
  *  \copyright Copyright ₢ 2015 Fernando Val\n
  *  
  *  \brief    Post Install/Update Script for Composer
- *  \version  1.0.1
+ *  \version  1.1.2
  *  \author   Fernando Val - fernando.val@gmail.com
  *  
  *  This script is executed by Composer after the install/update process.
@@ -140,7 +140,10 @@ function copy_r($path, $dest)
 				if (is_dir($path.DS.$file)) {
 					copy_r($path.DS.$file, $dest.DS.$file);
 				} else {
-					copy($path.DS.$file, $dest.DS.$file);
+					// Copy only if destination does not existis or source is newer
+					if ( !is_file($dest.DS.$file) || filemtime($path.DS.$file) > filemtime($dest.DS.$file) ) {
+						copy($path.DS.$file, $dest.DS.$file);
+					}
 				}
 			}
 		}
@@ -151,7 +154,12 @@ function copy_r($path, $dest)
 		if (!is_dir($dir)) {
 			mkdir($dir, 0755, true);
 		}
-		return copy($path, $dest);
+		// Copy only if destination does not existis or source is newer
+		if ( !is_file($dest) || filemtime($path) > filemtime($dest) ) {
+			return copy($path, $dest);
+		} else {
+			return true;
+		}
 	}
 	else {
 		$success = false;
