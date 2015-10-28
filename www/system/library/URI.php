@@ -8,7 +8,7 @@
  *
  *	\brief		Classe para tratamento de URI
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.15.26
+ *	\version	1.15.27
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
@@ -628,16 +628,16 @@ class URI
 	 */
 	public static function makeSlug($txt, $space='-', $accept="", $lowercase=true)
 	{
-		if ($lowercase) {
-			$txt = mb_strtolower(trim($txt));
-		} else {
-			$txt = trim($txt);
-		}
-
 		if (mb_check_encoding($txt, 'UTF-8')) {
 			$txt = Strings_UTF8::removeAccentedChars($txt);
 		} else {
 			$txt = Strings_ANSI::removeAccentedChars($txt);
+		}
+
+		if ($lowercase) {
+			$txt = mb_strtolower(trim($txt));
+		} else {
+			$txt = trim($txt);
 		}
 
 		$txt = mb_ereg_replace('[  ]+', ' ', $txt);

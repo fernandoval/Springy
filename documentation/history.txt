@@ -14,6 +14,10 @@ Developer team:
 Framework Update History
 
 ------------------------------------------------------------------------------------ --- -- -
+3.2.1
+	- Correção de bug no método URI::makeSlug();
+	- Correção de bug do iconv() não funcionando no métido Strings_UTF8::removeAccentedChars();
+	- Melhorias em Strings_ANSI::removeAccentedChars().
 3.2.0
 	- Tratamento da URL para eliminar caracteres especiais do espaço (' ') ao arroba ('@') dos extremos (trim) da variável $_SERVER['HTTP_HOST'];
 	- Correção de bug na Model quando é feito inclusão de registro (INSERT) em tabela que chave primária (PK) seja composta ou não seja um inteiro autoincremental;

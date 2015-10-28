@@ -8,7 +8,7 @@
  *
  *	\brief		Classe para tratamento de strings em formato UTF-8
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.6.6
+ *	\version	1.6.7
  *  \author		Fernando Val  - fernando.val@gmail.com
  *	\ingroup	framework
  */
@@ -27,11 +27,31 @@ class Strings_UTF8 extends Strings
 	 */
 	public static function removeAccentedChars($txt)
 	{
-		$txt = preg_replace('/[Øø]/u',            '0', $txt);
-		$txt = preg_replace('/[†°¢£§•¶ß®©™´¨≠±≤≥∂∑∏π∫Ω]/u', '', $txt);
-		$txt = iconv('utf-8', 'us-ascii//TRANSLIT', $txt);
+		// $txt = preg_replace('/[áàâãåäªÁÀÂÄÃª]/u', 'a', $txt);
+		// $txt = preg_replace('/[éèêëÉÈÊË]/u',      'e', $txt);
+		// $txt = preg_replace('/[íìîïÍÌÎÏ]/u',      'i', $txt);
+		// $txt = preg_replace('/[óòôõöºÓÒÔÕÖºð]/u', 'o', $txt);
+		// $txt = preg_replace('/[úùûüÚÙÛÜµ]/u',     'u', $txt);
+		// $txt = preg_replace('/[ñÑ]/u',            'n', $txt);
+		// $txt = preg_replace('/[ß]/u',             'b', $txt);
+		// $txt = preg_replace('/[çÇ]/u',            'c', $txt);
+		// $txt = preg_replace('/[Ð]/u',             'd', $txt);
+		// $txt = preg_replace('/[Šš]/u',            's', $txt);
+		// $txt = preg_replace('/[ŸÝÿ¥ýÿ]/u',        'y', $txt);
+		// $txt = preg_replace('/[Žž]/u'             'z', $txt);
+		// $txt = preg_replace('/[¹]/u',             '1', $txt);
+		// $txt = preg_replace('/[²]/u',             '2', $txt);
+		// $txt = preg_replace('/[³]/u',             '3', $txt);
+		$txt = preg_replace('/[Ææ]/u',           'ae', $txt);
+		// $txt = preg_replace('/[Øø]/u',            '0', $txt);
+		// $txt = preg_replace('/[†°¢£§•¶ß®©™´¨≠±≤≥∂∑∏π∫Ω]/u', '', $txt);
+		// // $txt = iconv('UTF-8', 'US-ASCII//TRANSLIT', $txt);
 
-		return $txt;
+		// return $txt;
+		return strtr(utf8_decode($txt), 
+			utf8_decode(
+			'ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýÿ¹²³'),
+			'SOZsozYYuAAAAAAACEEEEIIIIDNOOOOOOUUUUYsaaaaaaaceeeeiiiionoooooouuuuyy123');
 	}
 
 	/**
