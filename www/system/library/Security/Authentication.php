@@ -1,16 +1,16 @@
 <?php
 /**	\file
  *	FVAL PHP Framework for Web Applications
- *
- *  \copyright	Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
- *  \copyright	Copyright (c) 2007-2015 Fernando Val\n
- *	\copyright Copyright (c) 2014 Allan Marques
- *
- *	\brief		Gerenciador de autenticação de identidades
- *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	0.1
- *  \author		Allan Marques - allan.marques@ymail.com
- *	\ingroup	framework
+ *  
+ *  \copyright  Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
+ *  \copyright  Copyright (c) 2007-2015 Fernando Val\n
+ *	\copyright  Copyright (c) 2014 Allan Marques
+ *  
+ *	\brief      Gerenciador de autenticação de identidades
+ *	\warning    Este arquivo é parte integrante do framework e não pode ser omitido
+ *	\version    0.2
+ *  \author     Allan Marques - allan.marques@ymail.com
+ *	\ingroup    framework
  */
 namespace FW\Security;
 
@@ -46,7 +46,7 @@ class Authentication
     {
         $identitySessionData = Session::get( $this->driver->getIdentitySessionKey() );
         
-        if ($identitySessionData !== null) {
+        if (is_array($identitySessionData)) {
             $this->user = $this->driver->getDefaultIdentity();
             
             $this->user->fillFromSession($identitySessionData);
