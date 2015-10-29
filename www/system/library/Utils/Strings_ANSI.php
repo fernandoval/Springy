@@ -8,7 +8,7 @@
  *
  *	\brief		Classe para tratamento de strings em formato ANSI
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.5.5
+ *	\version	1.5.6
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
@@ -35,7 +35,10 @@ class Strings_ANSI extends Strings
 		$txt = preg_replace('/[úùûüÚÙÛÜµ]/u',     'u', $txt);
 		$txt = preg_replace('/[ñÑ]/u',            'n', $txt);
 		$txt = preg_replace('/[çÇ]/u',            'c', $txt);
+		$txt = preg_replace('/[Ð]/u',             'd', $txt);
+		$txt = preg_replace('/[Šš]/u',            's', $txt);
 		$txt = preg_replace('/[ÿ¥]/u',            'y', $txt);
+		$txt = preg_replace('/[Žž]/u'             'z', $txt);
 		$txt = preg_replace('/[¹]/u',             '1', $txt);
 		$txt = preg_replace('/[²]/u',             '2', $txt);
 		$txt = preg_replace('/[³]/u',             '3', $txt);
