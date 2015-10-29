@@ -2,16 +2,16 @@
 /**	\file
  *	FVAL PHP Framework for Web Applications
  *
- *  \copyright	Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
- *  \copyright	Copyright (c) 2007-2015 Fernando Val\n
- *	\copyright	Copyright (c) 2009-2013 Lucas Cardozo
+ *  \copyright  Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
+ *  \copyright  Copyright (c) 2007-2015 Fernando Val\n
+ *	\copyright  Copyright (c) 2009-2013 Lucas Cardozo
  *
- *	\brief		Classe para tratamento de erros
- *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	2.1.29
- *  \author		Fernando Val  - fernando.val@gmail.com
- *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
- *	\ingroup	framework
+ *	\brief      Classe para tratamento de erros
+ *	\warning    Este arquivo é parte integrante do framework e não pode ser omitido
+ *	\version    2.2.30
+ *  \author     Fernando Val  - fernando.val@gmail.com
+ *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
+ *	\ingroup    framework
  */
 
 namespace FW;
@@ -177,6 +177,18 @@ class Errors
 			$getParams[] = $var.'='.$value;
 		}
 		
+		// Verify if this type of error is reported
+		if ( $reportedErrors = Configuration::get('system', 'system_error.reported_errors') ) {
+			if ( !is_array($reportedErrors) ) {
+				$reportedErrors = explode(',', $reportedErrors);
+			}
+			$sendReport = in_array($errorType, $reportedErrors);
+		} else {
+			$sendReport = true;
+		}
+		unset($reportedErrors);
+		
+		// Mount error output information
 		restore_error_handler();
 		try {
 			$uname = php_uname('n');
@@ -312,55 +324,57 @@ class Errors
 			}
 		}
 
-		// Verifica se o erro deve ser armazenado em base de dados
-		if (Configuration::get('system', 'system_error.save_in_database')) {
-			if (!$conn = Configuration::get('system', 'system_error.db_server'))
-				$conn = 'default';
-			if (!$table = Configuration::get('system', 'system_error.table_name'))
-				$table = 'system_errors';
-			
-			$db = new DB($conn);
-			if (DB::hasConnection()) {
-				$db->disableReportError();
-				if (!$db->execute('SELECT id FROM '.$table.' WHERE error_code = ?', array($errorId))) {
-					if ($db->statmentErrorCode()) {
-						if (Configuration::get('system', 'system_error.create_table') && $sql = file_get_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'system_errors_create_table.sql')) {
-							$db->execute($sql);
-						}
-					}
-				} else {
-					$res = $db->fetchNext();
-				}
+		// Report this error to system admin?
+		if ($sendReport) {
+			// Sava the error information in database?
+			if (Configuration::get('system', 'system_error.save_in_database')) {
+				if (!$conn = Configuration::get('system', 'system_error.db_server'))
+					$conn = 'default';
+				if (!$table = Configuration::get('system', 'system_error.table_name'))
+					$table = 'system_errors';
 				
-				if ($res) {
-					$repeated = true;
-					$db->execute('UPDATE '.$table.' SET occurrences = occurrences + 1 WHERE error_code = ?', array($errorId));
-				} else {
-					$db->execute('INSERT INTO '.$table.' (error_code, description, details, occurrences) VALUES (?, ?, ?, 1)', array($errorId, $msg, $out));
+				$db = new DB($conn);
+				if (DB::hasConnection()) {
+					$db->disableReportError();
+					if (!$db->execute('SELECT id FROM '.$table.' WHERE error_code = ?', array($errorId))) {
+						if ($db->statmentErrorCode()) {
+							if (Configuration::get('system', 'system_error.create_table') && $sql = file_get_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'system_errors_create_table.sql')) {
+								$db->execute($sql);
+							}
+						}
+					} else {
+						$res = $db->fetchNext();
+					}
+					
+					if ($res) {
+						$repeated = true;
+						$db->execute('UPDATE '.$table.' SET occurrences = occurrences + 1 WHERE error_code = ?', array($errorId));
+					} else {
+						$db->execute('INSERT INTO '.$table.' (error_code, description, details, occurrences) VALUES (?, ?, ?, 1)', array($errorId, $msg, $out));
+					}
 				}
+				unset($db, $table, $conn);
 			}
-			unset($db, $table, $conn);
-		}
 
-		// Envia a mensagem de erro para o webmaster
-		// if (!in_array($errorType, array(404, 503)) && Configuration::get('mail', 'errors_go_to') && !Configuration::get('system','debug')) {
-		if (!in_array($errorType, array(404, 503)) && Configuration::get('mail', 'errors_go_to')) {
-			if (!isset($repeated)) {
-				$errorTemplate = dirname(realpath(__FILE__)) . DIRECTORY_SEPARATOR . 'error_mail_template.html';
-				if (file_exists($errorTemplate) && $errorMail = file_get_contents($errorTemplate)) {
-					$errorMail = self::_parseTemplate($errorMail, $errorId, $msg, $additionalInfo);
-				} else {
-					$errorMail = preg_replace('/\<a href="javascript\:\;" onClick="var obj=\$\(\#(.*?)\)\.toggle\(\)" style="color:#06c; margin:3px 0"\>arguments passed to function\<\/a\>/', '<span style="font-weight:bold; color:#06c; margin:3px 0">Functions arguments:</span>', $out);
-					$errorMail = preg_replace('/ style="display:none"/', '', $errorMail);
+			// Send mail message to the system administrator
+			if ( Configuration::get('mail', 'errors_go_to') ) {
+				if (!isset($repeated)) {
+					$errorTemplate = dirname(realpath(__FILE__)) . DIRECTORY_SEPARATOR . 'error_mail_template.html';
+					if (file_exists($errorTemplate) && $errorMail = file_get_contents($errorTemplate)) {
+						$errorMail = self::_parseTemplate($errorMail, $errorId, $msg, $additionalInfo);
+					} else {
+						$errorMail = preg_replace('/\<a href="javascript\:\;" onClick="var obj=\$\(\#(.*?)\)\.toggle\(\)" style="color:#06c; margin:3px 0"\>arguments passed to function\<\/a\>/', '<span style="font-weight:bold; color:#06c; margin:3px 0">Functions arguments:</span>', $out);
+						$errorMail = preg_replace('/ style="display:none"/', '', $errorMail);
+					}
+
+					$email = new Mail;
+					$email->to(Configuration::get('mail', 'errors_go_to'), 'System Admin');
+					$email->from(Configuration::get('mail', 'system_adm_mail'), $GLOBALS['SYSTEM']['SYSTEM_NAME'].' - System Error Report');
+					$email->subject('Error on ' . $GLOBALS['SYSTEM']['SYSTEM_NAME'] . ' (release: "' . $GLOBALS['SYSTEM']['SYSTEM_VERSION'] . '" | environment: "' . ($GLOBALS['SYSTEM']['ACTIVE_ENVIRONMENT'] ? $GLOBALS['SYSTEM']['ACTIVE_ENVIRONMENT'] : $_SERVER['HTTP_HOST']) . '")' . ' - ' . ((isset($_SERVER) && isset($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : ""));
+					$email->body($errorMail);
+					$email->send();
+					unset($email);
 				}
-
-				$email = new Mail;
-				$email->to(Configuration::get('mail', 'errors_go_to'), 'System Admin');
-				$email->from(Configuration::get('mail', 'system_adm_mail'), $GLOBALS['SYSTEM']['SYSTEM_NAME'].' - System Error Report');
-				$email->subject('Error on ' . $GLOBALS['SYSTEM']['SYSTEM_NAME'] . ' (release: "' . $GLOBALS['SYSTEM']['SYSTEM_VERSION'] . '" | environment: "' . ($GLOBALS['SYSTEM']['ACTIVE_ENVIRONMENT'] ? $GLOBALS['SYSTEM']['ACTIVE_ENVIRONMENT'] : $_SERVER['HTTP_HOST']) . '")' . ' - ' . ((isset($_SERVER) && isset($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : ""));
-				$email->body($errorMail);
-				$email->send();
-				unset($email);
 			}
 		}
 

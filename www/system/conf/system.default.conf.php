@@ -85,6 +85,7 @@ $conf = array(
 	'css_path'          => $GLOBALS['SYSTEM']['ROOT_PATH'] . DIRECTORY_SEPARATOR . 'css',
 	'js_path'           => $GLOBALS['SYSTEM']['ROOT_PATH'] . DIRECTORY_SEPARATOR . 'js',
 	'system_error'       => array(
+		'reported_errors'  => array(405, 406, 408, 409, 410, 412, 413, 414, 415, 416, 500, 501, 502, 504, 505),
 		'save_in_database' => false,
 		'table_name'       => 'system_errors',
 		'db_server'        => 'default',
