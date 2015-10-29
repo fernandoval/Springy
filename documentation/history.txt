@@ -14,6 +14,8 @@ Developer team:
 Framework Update History
 
 ------------------------------------------------------------------------------------ --- -- -
+development
+	- Correção de bug com sessão vazia que ocorre em usuários do Safari no MacOS.
 3.2.1
 	- Correção de bug no método URI::makeSlug();
 	- Correção de bug do iconv() não funcionando no métido Strings_UTF8::removeAccentedChars();
