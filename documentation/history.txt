@@ -17,7 +17,8 @@ development
 	- Correção de bug com sessão vazia que ocorre em usuários do Safari no MacOS;
 	- Implementada configuração system,system_error.reported_errors(array) com lista de códigos de erro que devem ser reportados ao administrador do sistema;
 	- Implementado armazenamento das variáveis de configuração do sistema na Kernel;
-	- Mudanças estruturais no script de inicialização e helper.
+	- Mudanças estruturais no script de inicialização e helper;
+	- Implementados filtros por IS e IS NOT na Model.
 3.2.1
 	- Correção de bug no método URI::makeSlug();
 	- Correção de bug do iconv() não funcionando no métido Strings_UTF8::removeAccentedChars();

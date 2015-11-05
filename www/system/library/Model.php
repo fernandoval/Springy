@@ -8,7 +8,7 @@
  *  \brief		Classe Model para acesso a banco de dados
  *  \note		Essa classe extende a classe DB.
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	1.17.24
+ *  \version	1.18.25
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \ingroup	framework
  */
@@ -140,6 +140,14 @@ class Model extends DB implements \Iterator
 							$where[] = $field.' in ('.trim(str_repeat('?, ', count($key)), ', ').')';
 							foreach ($key as $val)
 								$params[] = $val;
+							break;
+						case 'is':
+							$where[] = $field.' IS ?';
+							$params[] = $key;
+							break;
+						case 'is not':
+							$where[] = $field.' IS NOT ?';
+							$params[] = $key;
 							break;
 						case 'like':
 							$where[] = $field.' LIKE ?';
