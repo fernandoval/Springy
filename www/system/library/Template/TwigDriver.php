@@ -8,7 +8,7 @@
  *  \brief		Classe driver de tratamento de templates utilizando Twig como mecanismo de renderização
  *  \see		http://twig.sensiolabs.org/
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	0.9.4 beta 3
+ *  \version	0.10.5 beta 4
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \ingroup	framework
  */
@@ -18,6 +18,7 @@ namespace FW\Template;
 use FW\Template_Static;
 use FW\Configuration;
 use FW\URI;
+use FW\Kernel;
 
 /**
  *  \brief Classe driver de tratamento de templates utilizando Twig como mecanismo
@@ -234,9 +235,9 @@ class TwigDriver implements TemplateDriverInterface
 		$vars = array(
 			'HOST' => URI::buildURL(),
 			'CURRENT_PAGE_URI' => URI::currentPageURI(),
-			'SYSTEM_NAME' => $GLOBALS['SYSTEM']['SYSTEM_NAME'],
-			'SYSTEM_VERSION' => $GLOBALS['SYSTEM']['SYSTEM_VERSION'],
-			'ACTIVE_ENVIRONMENT' => $GLOBALS['SYSTEM']['ACTIVE_ENVIRONMENT']
+			'SYSTEM_NAME' => Kernel::systemName(),
+			'SYSTEM_VERSION' => Kernel::systemVersion(),
+			'ACTIVE_ENVIRONMENT' => Kernel::environment()
 		);
 
 		// Alimenta as variáveis padrão da aplicação

@@ -2,17 +2,22 @@
 /**	\file
  *	FVAL PHP Framework for Web Applications
  *
- *  \copyright	Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
- *	\copyright Copyright (c) 2011-2013 Lucas Cardozo
+ *  \copyright  Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
+ *  \copyright	Copyright (c) 2007-2015 Fernando Val\n
+ *	\copyright  Copyright (c) 2011-2013 Lucas Cardozo
  *
- *	\brief		Classe de construção e tratamento de objetos JSON
- *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	0.3.3
- *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
- *	\ingroup	framework
+ *	\brief      Classe de construção e tratamento de objetos JSON
+ *	\warning    Este arquivo é parte integrante do framework e não pode ser omitido
+ *	\version    1.0.4
+ *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
+ *  \author		Fernando Val  - fernando.val@gmail.com
+ *	\ingroup    framework
  */
 
 namespace FW\Utils;
+
+use FW\Configuration;
+use FW\Kernel;
 
 /**
  *  \brief Classe de construção e tratamento de objetos JSON
@@ -24,8 +29,8 @@ class JSON
 
 	public function __construct()
 	{
-		\FW\Configuration::set('system', 'ajax', true);
-		header('Content-type: application/json; charset=' . $GLOBALS['SYSTEM']['CHARSET'], true, $this->headerStatus);
+		Configuration::set('system', 'ajax', true);
+		header('Content-type: application/json; charset=' . Kernel::charset(), true, $this->headerStatus);
 	}
 
 	/**
@@ -50,7 +55,7 @@ class JSON
 	public function setHeaderStatus($status)
 	{
 		$this->headerStatus = $status;
-		header('Content-type: application/json; charset=' . $GLOBALS['SYSTEM']['CHARSET'], true, $this->headerStatus);
+		header('Content-type: application/json; charset=' . Kernel::charset(), true, $this->headerStatus);
 		header('Expires: Sat, 26 Jul 1997 05:00:00 GMT');
 		header('Last-Modified: ' . gmdate( 'D, d M Y H:i:s' ) . ' GMT');
 		header('Cache-Control: no-store, no-cache, must-revalidate');
@@ -77,8 +82,8 @@ class JSON
 	 */
 	public function printJ($andDie=true)
 	{
-		if (\FW\Configuration::get('system', 'debug')) {
-			$this->dados['debug'] = \FW\Kernel::getDebugContent();
+		if (Configuration::get('system', 'debug')) {
+			$this->dados['debug'] = Kernel::getDebugContent();
 		}
 
 		echo $this->fetch();

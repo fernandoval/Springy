@@ -8,8 +8,8 @@
  *
  *  http://www.fval.com.br
  *
- *  \brief    Script de inicialização da aplicação
- *  \version  2.7.22
+ *  \brief    System initialization script
+ *  \version  4.0.24
  *  \author   Fernando Val - fernando.val@gmail.com
  *  \author   Lucas Cardozo - lucas.cardozo@gmail.com
  *
@@ -33,130 +33,27 @@
  */
 $FWGV_START_TIME = microtime(true); // Memoriza a hora do início do processamento
 
-// Carrega a configuração global do sistema
-if (!file_exists('sysconf.php')) {
+// Kill system with internal error 500 if initial setup file does not exists
+if ( !file_exists('sysconf.php') ) {
 	header('Content-type: text/html; charset=UTF-8', true, 500);
 	die('Internal System Error on Startup');
 }
 require('sysconf.php');
 
 /**
- *	\brief Função de carga automática de classes
+ * \brief Load helper script
  */
-function fwgv_autoload($classe)
-{
-	$aclass = explode('\\', $classe);
-	if (count($aclass) > 1) {
-		if ($aclass[0] == 'FW') {
-			array_shift($aclass);
-		}
-		$file = implode(DIRECTORY_SEPARATOR, $aclass);
-	} else {
-		$file = $aclass[0];
-	}
+require 'helpers.php';
 
-	if (file_exists($GLOBALS['SYSTEM']['LIBRARY_PATH'] . DIRECTORY_SEPARATOR . $file . '.php')) {
-		require_once($GLOBALS['SYSTEM']['LIBRARY_PATH'] . DIRECTORY_SEPARATOR . $file . '.php');
-	} else {
-		// procura na user_classes
-
-		// verifica se a classe utiliza o padrão com namespace (ou classe estática)
-		// ex: class Oferta_Comercial_Static == arquivo user_classes/oferta/oferta-comercial.static.php
-
-		preg_match('/^(?<class>[A-Za-z]+)(?<subclass>.*?)(?<type>_Static)?$/', $classe, $vars);
-
-		$nameSpace = $classe = $vars['class'];
-
-		if (!empty($vars['subclass'])) {
-			$classe .= '-' . substr($vars['subclass'], 1);
-		}
-
-		if (isset($vars['type'])) {
-			$classe .= '.static';
-		} else {
-			$classe .= '.class';
-		}
-
-		// procura a classe nas Libarys
-		if (file_exists($GLOBALS['SYSTEM']['CLASS_PATH'] . DIRECTORY_SEPARATOR . $nameSpace . DIRECTORY_SEPARATOR . $classe. '.php')) {
-			require_once $GLOBALS['SYSTEM']['CLASS_PATH'] . DIRECTORY_SEPARATOR . $nameSpace . DIRECTORY_SEPARATOR . $classe . '.php';
-		} elseif (file_exists($GLOBALS['SYSTEM']['CLASS_PATH'] . DIRECTORY_SEPARATOR . $classe . '.php')) {
-			require_once $GLOBALS['SYSTEM']['CLASS_PATH'] . DIRECTORY_SEPARATOR . $classe . '.php';
-		} else {
-			$classe = $vars['class'];
-
-			if (!empty($vars['subclass'])) {
-				$classe .= '_' . substr($vars['subclass'], 1);
-			}
-
-			if (isset($vars['type'])) {
-				$classe .= '.static';
-			} else {
-				$classe .= '.class';
-			}
-
-			if (file_exists($GLOBALS['SYSTEM']['CLASS_PATH'] . DIRECTORY_SEPARATOR . $nameSpace . DIRECTORY_SEPARATOR . $classe. '.php')) {
-				require_once $GLOBALS['SYSTEM']['CLASS_PATH'] . DIRECTORY_SEPARATOR . $nameSpace . DIRECTORY_SEPARATOR . $classe . '.php';
-			} elseif (file_exists($GLOBALS['SYSTEM']['CLASS_PATH'] . DIRECTORY_SEPARATOR . $classe . '.php')) {
-				require_once $GLOBALS['SYSTEM']['CLASS_PATH'] . DIRECTORY_SEPARATOR . $classe . '.php';
-			}
-		}
-	}
-}
-
-if (!spl_autoload_register('fwgv_autoload')) {
+// Kill system with internal error 500 if can not set autoload funcion
+if ( !spl_autoload_register('fwgv_autoload') ) {
 	header('Content-type: text/html; charset=UTF-8', true, 500);
 	die('Internal System Error on Startup');
 }
 
-/**
- *  \brief Classe Exception extendida do FW
- */
-class FW_Exception extends Exception
-{
-	/// Contexto do erro
-    private $context = null;
-
-    public function __construct($code, $message, $file, $line, $context = null)
-	{
-        parent::__construct($message, $code);
-        $this->file = $file;
-        $this->line = $line;
-        $this->context = $context;
-    }
-
-	/**
-	 *  \brief Pega o contexto do erro
-	 */
-	public function getContext()
-	{
-		return $this->context;
-	}
-};
-
-/**
- *	\brief Função de tratamento de exceções
- */
-function FW_ExceptionHandler($error)
-{
-	FW\Errors::errorHandler($error->getCode(), $error->getMessage(), $error->getFile(), $error->getLine(), (method_exists($error, 'getContext') ? $error->getContext() : null));
-}
-set_exception_handler('FW_ExceptionHandler');
-
-/**
- *	\brief Função de tratamento de erros
- */
 error_reporting(E_ALL);
-function FW_ErrorHandler($errno, $errstr, $errfile, $errline, $errContext)
-{
-	FW\Errors::errorHandler($errno, $errstr, $errfile, $errline, $errContext);
-}
+set_exception_handler('FW_ExceptionHandler');
 set_error_handler('FW_ErrorHandler');
-
-/**
- * \brief Carregando arquivos de helpers
- */
-require 'helpers.php';
 
 /**
  *  \brief Carrega autoload do Composer, caso exista
@@ -170,17 +67,10 @@ if (file_exists($GLOBALS['SYSTEM']['3RDPARTY_PATH'] . DIRECTORY_SEPARATOR . 'aut
 	------------------------------------------------------------------------------------ --- -- - */
 
 ob_start();
+FW\Kernel::initiate( $GLOBALS['SYSTEM'], $FWGV_START_TIME );
 
-// Envia o content-type e o charset
-header('Content-Type: text/html; charset='.$GLOBALS['SYSTEM']['CHARSET'], true);
 // Envia o cache-control
 header('Cache-Control: '.FW\Configuration::get('system', 'cache-control'), true);
-
-//ini_set('zlib.output_compression', 'on');
-if (phpversion() < '5.6')
-	ini_set('mbstring.internal_encoding', $GLOBALS['SYSTEM']['CHARSET']);
-ini_set('default_charset', $GLOBALS['SYSTEM']['CHARSET']);
-ini_set('date.timezone', $GLOBALS['SYSTEM']['TIMEZONE']);
 
 // Resolve a URI e monta as variáveis internas
 $controller = FW\URI::parseURI();
@@ -258,7 +148,7 @@ if (!is_null($controller)) {
 // Se a classe controladora foi carregada e ela não possui sua própria classe Global, checa a existência da _global
 if (!isset($ControllerClassName) || !method_exists($ControllerClassName, '_ignore_global')) {
 	// Verifica se a controller _global existe
-	$path = $GLOBALS['SYSTEM']['CONTROLER_PATH'] . DIRECTORY_SEPARATOR . '_global.php';
+	$path = FW\Kernel::path(FW\Kernel::PATH_CONTROLLER) . DIRECTORY_SEPARATOR . '_global.php';
 	if (file_exists($path)) {
 		require_once($path);
 		if (class_exists('Global_Controller')) {

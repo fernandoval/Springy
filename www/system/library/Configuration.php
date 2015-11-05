@@ -2,15 +2,15 @@
 /**	\file
  *	FVAL PHP Framework for Web Applications
  *
- *  \copyright	Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
- *  \copyright	Copyright (c) 2007-2015 Fernando Val\n
+ *  \copyright  Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
+ *  \copyright  Copyright (c) 2007-2015 Fernando Val\n
  *
- *	\brief		Classe de configuração
- *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.6.8
- *  \author		Fernando Val  - fernando.val@gmail.com
- *  \author		Allan Marques - allan.marques@ymail.com
- *	\ingroup	framework
+ *	\brief      Classe de configuração
+ *	\warning    Este arquivo é parte integrante do framework e não pode ser omitido
+ *	\version    2.0.9
+ *  \author     Fernando Val  - fernando.val@gmail.com
+ *  \author     Allan Marques - allan.marques@ymail.com
+ *	\ingroup    framework
  */
 
 namespace FW;
@@ -24,8 +24,6 @@ class Configuration
 {
 	/// Array interno com dados de configuração
 	private static $confs = array();
-	/// Array interno com dados de configuração
-	private static $env = null;
 
 
 	/**
@@ -94,25 +92,16 @@ class Configuration
 	}
 
 	/**
-	 *  \brief Pega o host acessado
-	 */
-	private static function _host()
-	{
-		return trim( preg_replace('/([^:]+)(:\\d+)?/', '$1'.((isset($GLOBALS['SYSTEM']['CONSIDER_PORT_NUMBER']) && $GLOBALS['SYSTEM']['CONSIDER_PORT_NUMBER'])?'$2':""), isset($_SERVER['HTTP_HOST'])?$_SERVER['HTTP_HOST']:""), ' ..@');
-	}
-	
-	/**
 	 *  \brief Carrega o arquivo de configuração e seta o atributo de configuração
 	 */
 	private static function _load($config_file, $local)
 	{
-
 		if (file_exists($config_file)) {
 			$conf = array();
 			require_once $config_file;
 			self::$confs[ $local ] = array_replace_recursive(self::$confs[ $local ], $conf);
             
-			$host = self::_host();
+			$host = URI::http_host();
 			
 			if ($host && isset($over_conf[ $host ])) {                
 				self::$confs[ $local ] = array_replace_recursive(self::$confs[ $local ], $over_conf[ $host ]);
@@ -135,42 +124,14 @@ class Configuration
 		self::$confs[ $local ] = array();
 	
 		// Carrega a configuração DEFAULT para $local
-		self::_load($GLOBALS['SYSTEM']['CONFIG_PATH'] . DIRECTORY_SEPARATOR . $local . '.default.conf.php', $local);
-
-		if (is_null(self::$env)) {
-			// Define environment by host?
-			if ( empty($GLOBALS['SYSTEM']['ACTIVE_ENVIRONMENT']) ) {
-				if ( !empty($GLOBALS['SYSTEM']['ENVIRONMENT_VARIABLE']) ) {
-					$environment = getenv($GLOBALS['SYSTEM']['ENVIRONMENT_VARIABLE']);
-				}
-				
-				$environment = empty($environment) ? self::_host() : $environment;
-				if ( empty($environment) ) {
-					$environment = 'unknown';
-				}
-				
-				// Verify if has an alias for host
-				if (is_array($GLOBALS['SYSTEM']['ENVIRONMENT_ALIAS']) && count($GLOBALS['SYSTEM']['ENVIRONMENT_ALIAS'])) {
-					foreach($GLOBALS['SYSTEM']['ENVIRONMENT_ALIAS'] as $alias => $as) {
-						if (preg_match('/^' . $alias . '$/', $environment)) {
-							$environment = $as;
-							break;
-						}
-					}
-				}
-			} else {
-				$environment = $GLOBALS['SYSTEM']['ACTIVE_ENVIRONMENT'];
-			}
-
-			self::$env = $environment;
-		}
+		self::_load(Kernel::path(Kernel::PATH_CONFIGURATION) . DIRECTORY_SEPARATOR . $local . '.default.conf.php', $local);
 
 		// Carreta a configuração para o ambiente ativo
-		self::_load($GLOBALS['SYSTEM']['CONFIG_PATH'] . DIRECTORY_SEPARATOR . self::$env . DIRECTORY_SEPARATOR . $local . '.conf.php', $local);
+		self::_load(Kernel::path(Kernel::PATH_CONFIGURATION) . DIRECTORY_SEPARATOR . Kernel::environment() . DIRECTORY_SEPARATOR . $local . '.conf.php', $local);
 
 		// Confere se a configuração foi carregada
 		if (empty(self::$confs[ $local ])) {
-			Errors::displayError(500, 'Settings for "' . $local . '" not found in the environment "' . self::$env . '".');
+			Errors::displayError(500, 'Settings for "' . $local . '" not found in the environment "' . Kernel::environment() . '".');
 		}
 
 		return true;

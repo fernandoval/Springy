@@ -2,15 +2,15 @@
 /**	\file
  *  FVAL PHP Framework for Web Applications
  *
- *  \copyright	Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
- *  \copyright	Copyright (c) 2007-2015 Fernando Val\n
+ *  \copyright  Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
+ *  \copyright  Copyright (c) 2007-2015 Fernando Val\n
  *
- *  \brief		Classe driver de tratamento de templates utilizando Smarty como mecanismo de renderização
- *  \see		http://www.smarty.net/
- *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	1.0.4
- *  \author		Fernando Val  - fernando.val@gmail.com
- *  \ingroup	framework
+ *  \brief      Classe driver de tratamento de templates utilizando Smarty como mecanismo de renderização
+ *  \see        http://www.smarty.net/
+ *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
+ *  \version    1.1.5
+ *  \author     Fernando Val  - fernando.val@gmail.com
+ *  \ingroup    framework
  */
 
 namespace FW\Template;
@@ -19,6 +19,7 @@ use FW\Template_Static;
 use FW\Configuration;
 use FW\URI;
 use FW\Errors;
+use FW\Kernel;
 
 /**
  *  \brief Classe driver de tratamento de templates utilizando Smarty como mecanismo
@@ -219,9 +220,9 @@ class SmartyDriver implements TemplateDriverInterface
 		// Alimenta as variáveis CONSTANTES
 		$this->tplObj->assign('HOST', URI::buildURL());
 		$this->tplObj->assign('CURRENT_PAGE_URI', URI::currentPageURI());
-		$this->tplObj->assign('SYSTEM_NAME', $GLOBALS['SYSTEM']['SYSTEM_NAME']);
-		$this->tplObj->assign('SYSTEM_VERSION', $GLOBALS['SYSTEM']['SYSTEM_VERSION']);
-		$this->tplObj->assign('ACTIVE_ENVIRONMENT', $GLOBALS['SYSTEM']['ACTIVE_ENVIRONMENT']);
+		$this->tplObj->assign('SYSTEM_NAME', Kernel::systemName());
+		$this->tplObj->assign('SYSTEM_VERSION', Kernel::systemVersion());
+		$this->tplObj->assign('ACTIVE_ENVIRONMENT', Kernel::environment());
 
 		// Alimenta as variáveis padrão da aplicação
 		foreach (Template_Static::getDefaultVars() as $name => $value) {

@@ -2,16 +2,16 @@
 /**	\file
  *  FVAL PHP Framework for Web Applications
  *
- *  \copyright	Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
- *  \copyright	Copyright (c) 2007-2015 Fernando Val\n
- *  \copyright	Copyright (c) 2009-2013 Lucas Cardozo
+ *  \copyright  Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
+ *  \copyright  Copyright (c) 2007-2015 Fernando Val\n
+ *  \copyright  Copyright (c) 2009-2013 Lucas Cardozo
  *
- *  \brief		Script da classe cerne do framework
- *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	1.7.52
- *  \author		Fernando Val  - fernando.val@gmail.com
- *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
- *  \ingroup	framework
+ *  \brief      Script da classe cerne do framework
+ *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
+ *  \version    2.0.53
+ *  \author     Fernando Val  - fernando.val@gmail.com
+ *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
+ *  \ingroup    framework
  */
 
 namespace FW;
@@ -24,9 +24,19 @@ namespace FW;
 class Kernel
 {
 	/// Versão do framework
-	const VERSION = '3.2.1';
-	/// Array interno com dados de configuração
-	private static $confs = array();
+	const VERSION = '3.3.0';
+	
+	/// Kernel constants
+	const PATH_CLASS = 'CLASS';
+	const PATH_CONFIGURATION = 'CONFIGURATION';
+	const PATH_CONTROLLER = 'CONTROLLER';
+	const PATH_LIBRARY = 'LIBRARY';
+	const PATH_ROOT = 'ROOT';
+	const PATH_SYSTEM = 'SYSTEM';
+	const PATH_VENDOR = 'VENDOR';
+	
+	/// Start time
+	private static $startime = null;
 	/// Array com informações de debug
 	private static $debug = array();
 	/// Determina se o usuário está usando dispositivo móvel (Deprecated. Will be removed.)
@@ -38,6 +48,161 @@ class Kernel
 	/// Caminho do namespace do controller
 	private static $controller_namespace = null;
 
+	/// System environment
+	private static $environment = "";
+	/// System name
+	private static $name = 'Sistem Name';
+	/// System version
+	private static $version = array(0, 0, 0);
+	/// System path
+	private static $paths = array();
+	/// System charset
+	private static $charset = 'UTF-8';
+	
+	/**
+	 *  \brief Start system environment
+	 */
+	public static function initiate($sysconf, $startime=null)
+	{
+		ini_set('date.timezone', $sysconf['TIMEZONE']);
+		
+		self::$startime = is_null($startime) ? microtime(true) : $startime;
+		self::systemName($sysconf['SYSTEM_NAME']);
+		self::systemVersion($sysconf['SYSTEM_VERSION']);
+		self::charset($sysconf['CHARSET']);
+		self::environment(
+			$sysconf['ACTIVE_ENVIRONMENT'],
+			isset($sysconf['ENVIRONMENT_ALIAS']) ? $sysconf['ENVIRONMENT_ALIAS'] : array(),
+			isset($sysconf['ENVIRONMENT_VARIABLE']) ? $sysconf['ENVIRONMENT_VARIABLE'] : ""
+		);
+		
+		self::path(self::PATH_LIBRARY, isset($sysconf['LIBRARY_PATH']) ? $sysconf['LIBRARY_PATH'] : realpath(dirname(__FILE__)) );
+		self::path(self::PATH_SYSTEM, isset($sysconf['SYSTEM_PATH']) ? $sysconf['SYSTEM_PATH'] : realpath(self::path(self::PATH_LIBRARY) . DIRECTORY_SEPARATOR . '..') );
+		self::path(self::PATH_ROOT, isset($sysconf['ROOT_PATH']) ? $sysconf['ROOT_PATH'] : realpath(self::path(self::PATH_SYSTEM) . DIRECTORY_SEPARATOR . '..') );
+		self::path(self::PATH_CONTROLLER, isset($sysconf['CONTROLER_PATH']) ? $sysconf['CONTROLER_PATH'] : realpath(self::path(self::PATH_SYSTEM) . DIRECTORY_SEPARATOR . 'controllers') );
+		self::path(self::PATH_CLASS, isset($sysconf['CLASS_PATH']) ? $sysconf['CLASS_PATH'] : realpath(self::path(self::PATH_SYSTEM) . DIRECTORY_SEPARATOR . 'classes') );
+		self::path(self::PATH_CONFIGURATION, isset($sysconf['CONFIG_PATH']) ? $sysconf['CONFIG_PATH'] : realpath(self::path(self::PATH_SYSTEM) . DIRECTORY_SEPARATOR . 'conf') );
+		self::path(self::PATH_VENDOR, isset($sysconf['3RDPARTY_PATH']) ? $sysconf['3RDPARTY_PATH'] : realpath(self::path(self::PATH_SYSTEM) . DIRECTORY_SEPARATOR . 'other') );
+	}
+
+	/**
+	 *  \brief Return the system runtime until now
+	 */
+	public static function runTime()
+	{
+		return number_format(microtime(true) - self::$startime, 6);
+	}
+
+	/**
+	 *  \brief The system environment
+	 *  
+	 *  \param string $env - if defined, set the system environment
+	 *  \return A string containing the system environment
+	 */
+	public static function environment($env=null, $alias=array(), $envar="")
+	{
+		if ( !is_null($env) ) {
+			// Define environment by host?
+			if ( empty($env) ) {
+				if ( !empty($envar) ) {
+					$env = getenv($envar);
+				}
+				
+				$env = empty($env) ? URI::http_host() : $env;
+				if ( empty($env) ) {
+					$env = 'unknown';
+				}
+				
+				// Verify if has an alias for host
+				if (is_array($alias) && count($alias)) {
+					foreach($alias as $host => $as) {
+						if (preg_match('/^' . $host . '$/', $env)) {
+							$env = $as;
+							break;
+						}
+					}
+				}
+			}
+			
+			self::$environment = $env;
+		}
+		
+		return self::$environment;
+	}
+
+	/**
+	 *  \brief The system name
+	 *  
+	 *  \param string $name - if defined, set the system name
+	 *  \return A string containing the system name
+	 */
+	public static function systemName($name=null)
+	{
+		if ( !is_null($name) ) {
+			self::$name = $name;
+		}
+		
+		return self::$name;
+	}
+
+	/**
+	 *  \brief The system version
+	 *  
+	 *  \param $major - if defined, set the major part of the system version. Can be an array with all parts.
+	 *  \param $minor - if defined, set the minor part of the system version
+	 *  \param $build - if defined, set the build part of the system version
+	 *  \return A string containing the system version
+	 */
+	public static function systemVersion($major=null, $minor=null, $build=null)
+	{
+		if ( !is_null($major) && !is_null($minor) && !is_null($build) ) {
+			self::$version = array($major, $minor, $build);
+		} elseif ( !is_null($major) && !is_null($minor) ) {
+			self::$version = array($major, $minor);
+		} elseif ( !is_null($major) ) {
+			self::$version = array($major);
+		}
+		
+		return is_array(self::$version) ? implode('.', self::$version) : self::$version;
+	}
+
+	/**
+	 *  \brief The system charset
+	 *  
+	 *  Default UTF-8
+	 *  
+	 *  \param string $charset - if defined, set the system charset
+	 *  \return A string containing the system charset
+	 */
+	public static function charset($charset=null)
+	{
+		if ( !is_null($charset) ) {
+			self::$charset = $charset;
+			ini_set('default_charset', $charset);
+			// Send the content-type and charset header
+			header('Content-Type: text/html; charset=' . $charset, true);
+			if (phpversion() < '5.6')
+				ini_set('mbstring.internal_encoding', $charset);
+		}
+		
+		return self::$charset;
+	}
+	
+	/**
+	 *  \brief A path of the system
+	 *  
+	 *  \param string $component - the component constant
+	 *  \param string $path - if defined, change the path of the component
+	 *  \return A string containing the path of the component
+	 */
+	public static function path($component, $path=null)
+	{
+		if ( !is_null($path) ) {
+			self::$paths[ $component ] = $path;
+		}
+		
+		return isset( self::$paths[ $component ] ) ? self::$paths[ $component ] : "";
+	}
 
 	/**
 	 *  \brief Pega ou seta o root de controladoras
@@ -62,7 +227,7 @@ class Kernel
 	{
 		if (!is_null($controller) && file_exists($controller)) {
 			$controller  = pathinfo($controller);
-			$controller = str_replace($GLOBALS['SYSTEM']['CONTROLER_PATH'], '', $controller['dirname']);
+			$controller = str_replace(self::path(self::PATH_CONTROLLER), "", $controller['dirname']);
 			$controller = str_replace(DIRECTORY_SEPARATOR, '/', $controller);
 			self::$controller_namespace = trim($controller, '/');
 		}
@@ -101,7 +266,7 @@ class Kernel
 			$memoria = round($size / pow(1024, ($i = floor(log($size,1024)))), 2) . ' ' . $unit[$i];
 			unset($unit, $size);
 
-			self::debug('Runtime execution time: ' . number_format(microtime(true) - $GLOBALS['FWGV_START_TIME'], 6) . ' segundos' . "\n" . 'Maximum memory consumption: ' . $memoria, '', true, false);
+			self::debug('Runtime execution time: ' . self::runTime() . ' seconds' . "\n" . 'Maximum memory consumption: ' . $memoria, '', true, false);
 			unset($memoria);
 
 			$conteudo = ob_get_contents();

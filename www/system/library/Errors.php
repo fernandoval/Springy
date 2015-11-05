@@ -199,7 +199,7 @@ class Errors
 		if (PHP_SAPI === 'cli' || defined('STDIN')) {
 			$out = 'Error Description: ' . $msg."\n"
 				 . 'Error ID: ' . $errorId . ' ('.URI::buildURL(array('_system_bug_solved_', $errorId)).')'."\n"
-				 . 'Execution time: ' . number_format(microtime(true) - $GLOBALS['FWGV_START_TIME'], 6) . ' segundos'."\n"
+				 . 'Execution time: ' . Kernel::runTime() . ' seconds'."\n"
 				 . 'System: ' . $uname . "\n"
 				 . 'Secure mode: ' . (ini_get('safe_mode') ? 'Yes' : 'No') . "\n"
 				 . 'Date: ' . date('Y-m-d') . "\n"
@@ -236,7 +236,7 @@ class Errors
 					 . '        </tr>'
 					 . '        <tr style="background:#efefef">'
 					 . '          <td style="padding:3px 2px"><label style="font-weight:bold">Execution time:</label></td>'
-					 . '          <td style="padding:3px 2px">' . number_format(microtime(true) - $GLOBALS['FWGV_START_TIME'], 6) . ' seconds</td>'
+					 . '          <td style="padding:3px 2px">' . Kernel::runTime() . ' seconds</td>'
 					 . '        </tr>'
 					 . '        <tr>'
 					 . '          <td style="padding:3px 2px"><label style="font-weight:bold">System:</label></td>'
@@ -369,8 +369,13 @@ class Errors
 
 					$email = new Mail;
 					$email->to(Configuration::get('mail', 'errors_go_to'), 'System Admin');
-					$email->from(Configuration::get('mail', 'system_adm_mail'), $GLOBALS['SYSTEM']['SYSTEM_NAME'].' - System Error Report');
-					$email->subject('Error on ' . $GLOBALS['SYSTEM']['SYSTEM_NAME'] . ' (release: "' . $GLOBALS['SYSTEM']['SYSTEM_VERSION'] . '" | environment: "' . ($GLOBALS['SYSTEM']['ACTIVE_ENVIRONMENT'] ? $GLOBALS['SYSTEM']['ACTIVE_ENVIRONMENT'] : $_SERVER['HTTP_HOST']) . '")' . ' - ' . ((isset($_SERVER) && isset($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : ""));
+					$email->from(Configuration::get('mail', 'system_adm_mail'), Kernel::systemName() . ' - System Error Report');
+					$email->subject(
+						'Error on ' . Kernel::systemName() .
+						' v' . Kernel::systemVersion() .
+						' [' . Kernel::environment() .
+						'] at ' . URI::http_host()
+					);
 					$email->body($errorMail);
 					$email->send();
 					unset($email);
@@ -423,7 +428,7 @@ class Errors
 			'<html>',
 				'<head>',
 					'<meta charset="UTF-8">',
-					'<title>', $GLOBALS['SYSTEM']['SYSTEM_NAME'], ' version ', $GLOBALS['SYSTEM']['SYSTEM_VERSION'], ' - Occurrence Errors</title>',
+					'<title>', Kernel::systemName(), ' version ', Kernel::systemVersion(), ' - Occurrence Errors</title>',
 			
 					'<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">',
 
@@ -431,7 +436,7 @@ class Errors
 					'<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>',
 				'</head>',
 			'<body>',
-				'<div class="page-header"><h1 class="text-center">', $GLOBALS['SYSTEM']['SYSTEM_NAME'], ' <small>System Error Occurrences</small></h1></div>',
+				'<div class="page-header"><h1 class="text-center">', Kernel::systemName(), ' <small>System Error Occurrences</small></h1></div>',
 		
 				'<div class="container">',
 					'<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">';
@@ -474,7 +479,7 @@ class Errors
 	public static function printHtml($errorType, $msg)
 	{
 		// Verifica se a saída do erro não é em ajax ou json
-		//if (!Configuration::get('system', 'ajax') || !in_array('Content-type: application/json; charset=' . $GLOBALS['SYSTEM']['CHARSET'], headers_list())) {
+		//if (!Configuration::get('system', 'ajax') || !in_array('Content-type: application/json; charset=' . Kernel::charset(), headers_list())) {
 		if (!URI::isAjaxRequest()) {
 			if (ob_get_contents()) {
 				ob_clean();
@@ -509,7 +514,7 @@ class Errors
 					echo '		<meta http-equiv="X-UA-Compatible" content="IE=edge">';
 					echo '		<meta name="viewport" content="width=device-width, initial-scale=1">';
 					echo '		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">';
-					echo '		<title>'.$GLOBALS['SYSTEM']['SYSTEM_NAME'].' ('.$GLOBALS['SYSTEM']['SYSTEM_VERSION'].')</title>';
+					echo '		<title>' . Kernel::systemName() . ' (' . Kernel::systemVersion() . ')</title>';
 					echo '		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">';
 					echo '		<!--[if lt IE 9]>';
 					echo '			<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>';
@@ -562,7 +567,7 @@ class Errors
 		
 		$tpl = preg_replace('/<!-- DESCRIPTION -->/', $msg, $tpl);
 		$tpl = preg_replace('/<!-- ERROR_ID -->/', $errorId, $tpl);
-		$tpl = preg_replace('/<!-- EXEC_TIME -->/', number_format(microtime(true) - $GLOBALS['FWGV_START_TIME'], 6), $tpl);
+		$tpl = preg_replace('/<!-- EXEC_TIME -->/', Kernel::runTime(), $tpl);
 		$tpl = preg_replace('/<!-- SYSTEM -->/', $uname, $tpl);
 		$tpl = preg_replace('/<!-- HTTPS -->/', (ini_get('safe_mode') ? 'Yes' : 'No'), $tpl);
 		$tpl = preg_replace('/<!-- DATE_TIME -->/', date('Y-m-d G:i:s'), $tpl);

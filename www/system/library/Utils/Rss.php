@@ -2,19 +2,23 @@
 /**	\file
  *	FVAL PHP Framework for Web Applications
  *
- *  \copyright	Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
- *  \copyright	Copyright (c) 2007-2015 Fernando Val\n
+ *  \copyright  Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
+ *  \copyright  Copyright (c) 2007-2015 Fernando Val\n
  *
- *	\brief		Classe para criação de XML de RSS
- *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.5.6
- *  \author		Fernando Val  - fernando.val@gmail.com
- *	\ingroup	framework
+ *  \brief      Classe para criação de XML de RSS
+ *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
+ *  \version    1.6.7
+ *  \author     Fernando Val  - fernando.val@gmail.com
+ *  \ingroup    framework
+ *  
+ *  \deprecated
  */
 
 namespace FW\Utils;
 
-require_once $GLOBALS['SYSTEM']['3RDPARTY_PATH'] . DIRECTORY_SEPARATOR . 'feedcreator' . DIRECTORY_SEPARATOR . 'feedcreator.class.php';
+use FW\Kernel;
+
+require_once Kernel::path(Kernel::PATH_VENDOR) . DIRECTORY_SEPARATOR . 'feedcreator' . DIRECTORY_SEPARATOR . 'feedcreator.class.php';
 
 /**
  *  \brief Classe para criação de XML de RSS
@@ -33,7 +37,7 @@ class Rss
 		self::$rss->useCached();
 		self::$rss->link = (empty($link) ? 'http://'.$_SERVER['HTTP_HOST'] : $link);
 		self::$rss->syndicationURL = (empty($syndcationURL) ? 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF'] : $syndcationURL);
-		self::$rss->encoding = $GLOBALS['SYSTEM']['CHARSET'];
+		self::$rss->encoding = Kernel::charset();
 		if ($title)	{
 			self::title($title);
 		}

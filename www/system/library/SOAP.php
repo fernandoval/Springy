@@ -7,14 +7,14 @@
  *
  *	\brief		Classe para conexão SOAP
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	0.5.6
+ *	\version	0.6.7
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \ingroup	framework
+ *  
+ *  This class is not terminated and is experimental. Do not use.
  */
 
 namespace FW;
-
-require_once $GLOBALS['SYSTEM']['3RDPARTY_PATH'] . DIRECTORY_SEPARATOR . 'NuSOAP' . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'nusoap.php';
 
 /**
  *  \brief Classe para conexão SOAP

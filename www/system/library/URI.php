@@ -2,16 +2,16 @@
 /**	\file
  *	FVAL PHP Framework for Web Applications
  *
- *  \copyright	Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
- *  \copyright	Copyright (c) 2007-2015 Fernando Val\n
- *	\copyright Copyright (c) 2009-2013 Lucas Cardozo
+ *  \copyright  Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
+ *  \copyright  Copyright (c) 2007-2015 Fernando Val\n
+ *	\copyright  Copyright (c) 2009-2013 Lucas Cardozo
  *
- *	\brief		Classe para tratamento de URI
- *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.15.27
- *  \author		Fernando Val  - fernando.val@gmail.com
- *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
- *	\ingroup	framework
+ *	\brief      Classe para tratamento de URI
+ *	\warning    Este arquivo é parte integrante do framework e não pode ser omitido
+ *	\version    2.0.28
+ *  \author     Fernando Val  - fernando.val@gmail.com
+ *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
+ *	\ingroup    framework
  */
 
 namespace FW;
@@ -174,10 +174,8 @@ class URI
 
 		$controller = null;
 
-		$path = $GLOBALS['SYSTEM']['CONTROLER_PATH'];
-
 		// Procura a controller correta e corrige a página atual se necessário
-		$path = $GLOBALS['SYSTEM']['CONTROLER_PATH'] . (count(Kernel::controllerRoot()) ? DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, Kernel::controllerRoot()) : "");
+		$path = Kernel::path(Kernel::PATH_CONTROLLER) . (count(Kernel::controllerRoot()) ? DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, Kernel::controllerRoot()) : "");
 		$segment = 0;
 		while (self::getSegment($segment, false)) {
 			$path .= DIRECTORY_SEPARATOR . self::getSegment($segment, false);
@@ -227,7 +225,7 @@ class URI
 							Kernel::controllerRoot($data['root_controller']);
 						if (substr($data['controller'], 0, 1) == '$')
 							$data['controller'] = $matches[(int)substr($data['controller'], 1)];
-						$controller = $GLOBALS['SYSTEM']['CONTROLER_PATH'] . (count(Kernel::controllerRoot()) ? DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, Kernel::controllerRoot()) : "") . DIRECTORY_SEPARATOR . $data['controller'] . '.page.php';
+						$controller = Kernel::path(Kernel::PATH_CONTROLLER) . (count(Kernel::controllerRoot()) ? DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, Kernel::controllerRoot()) : "") . DIRECTORY_SEPARATOR . $data['controller'] . '.page.php';
 						self::_set_class_controller($data['controller']);
 						self::setCurrentPage($data['segment']);
 						break;
@@ -550,6 +548,14 @@ class URI
 		return self::_host($host) . $url . $param;
 	}
 
+	/**
+	 *  \brief Pega o host acessado
+	 */
+	public static function http_host()
+	{
+		return trim( preg_replace('/([^:]+)(:\\d+)?/', '$1'.((isset($GLOBALS['SYSTEM']['CONSIDER_PORT_NUMBER']) && $GLOBALS['SYSTEM']['CONSIDER_PORT_NUMBER'])?'$2':""), isset($_SERVER['HTTP_HOST'])?$_SERVER['HTTP_HOST']:""), ' ..@');
+	}
+	
 	/**
 	 *	\brief Retorna o host com protocolo
 	 *

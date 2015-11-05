@@ -5,7 +5,7 @@
  *  \copyright	Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
  *  \copyright	Copyright (c) 2007-2015 Fernando Val\n
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	2.0.13
+ *  \version	3.0.14
  *  \author		Fernando Val  - fernando.val@gmail.com
  *
  *  \brief Configurações do cerne do sistema
@@ -36,7 +36,6 @@
  *  \li '3RDPARTY_PATH' - Diretório da biblioteca de classes de terceiros.
  *  \li 'CONTROLER_PATH' - Diretório das classes da aplicação.
  *  \li 'CLASS_PATH' - Diretório das classes da aplicação.
- *  \li 'USER_CLASS_PATH' - [DEPRECATED] O mesmo que CLASS_PATH.
  *  \li 'CONFIG_PATH' - Diretório das configurações do sistema.
  *  \li 'CHARSET' - Charset do sistema.
  *  \li 'TIMEZONE' - Timestamp do sistema
@@ -83,9 +82,9 @@
 /// Configurações gerais do sistema
 $GLOBALS['SYSTEM'] = array(
 	'SYSTEM_NAME' => 'Nome Do Seu Sistema', 
-	'SYSTEM_VERSION' => 'Versão do Seu Projeto', 
+	'SYSTEM_VERSION' => array(1, 0, 0), 
 
-	'ACTIVE_ENVIRONMENT' => '',
+	'ACTIVE_ENVIRONMENT' => "",
 	'ENVIRONMENT_VARIABLE' => 'FWGV_ENVIRONMENT',
 	'CONSIDER_PORT_NUMBER' => false,
 	'ENVIRONMENT_ALIAS' => array(
@@ -101,7 +100,6 @@ $GLOBALS['SYSTEM'] = array(
 	'LIBRARY_PATH' => "", 
 	'CONTROLER_PATH' => "", 
 	'CLASS_PATH' => "", 
-	'USER_CLASS_PATH' => "", 
 	'CONFIG_PATH' => "", 
 
 	'CHARSET' => 'UTF-8', 
@@ -118,7 +116,6 @@ $GLOBALS['SYSTEM']['3RDPARTY_PATH'] = realpath($GLOBALS['SYSTEM']['SYSTEM_PATH']
 $GLOBALS['SYSTEM']['CONTROLER_PATH'] = realpath($GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'controllers');
 /// Diretório das classes da aplicação
 $GLOBALS['SYSTEM']['CLASS_PATH'] = realpath($GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'classes');
-$GLOBALS['SYSTEM']['USER_CLASS_PATH'] = $GLOBALS['SYSTEM']['CLASS_PATH'];
 /// Diretório das configurações do sistema
 $GLOBALS['SYSTEM']['CONFIG_PATH'] = realpath($GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'conf');
 

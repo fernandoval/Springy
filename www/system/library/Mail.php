@@ -2,16 +2,16 @@
 /**	\file
  *	FVAL PHP Framework for Web Applications
  *
- *  \copyright	Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
- *  \copyright	Copyright (c) 2007-2015 Fernando Val\n
- *	\copyright Copyright (c) 2009-2013 Lucas Cardozo
+ *  \copyright  Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
+ *  \copyright  Copyright (c) 2007-2015 Fernando Val\n
+ *	\copyright  Copyright (c) 2009-2013 Lucas Cardozo
  *
- *	\brief		Classe para envio de email
- *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.8.13
- *  \author		Fernando Val  - fernando.val@gmail.com
- *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
- *	\ingroup	framework
+ *	\brief      Classe para envio de email
+ *	\warning    Este arquivo é parte integrante do framework e não pode ser omitido
+ *	\version    1.9.14
+ *  \author     Fernando Val  - fernando.val@gmail.com
+ *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
+ *	\ingroup    framework
  */
 
 namespace FW;
@@ -36,12 +36,12 @@ class Mail
 	function __construct()
 	{
 		if (Configuration::get('mail', 'method') == 'smtp') {
-			require_once $GLOBALS['SYSTEM']['3RDPARTY_PATH'] . DIRECTORY_SEPARATOR . 'MimeMessage' . DIRECTORY_SEPARATOR . 'email_message.php';
-			require_once $GLOBALS['SYSTEM']['3RDPARTY_PATH'] . DIRECTORY_SEPARATOR . 'MimeMessage' . DIRECTORY_SEPARATOR . 'smtp_message.php';
-			require_once $GLOBALS['SYSTEM']['3RDPARTY_PATH'] . DIRECTORY_SEPARATOR . 'Smtp' . DIRECTORY_SEPARATOR . 'smtp.php';
+			require_once Kernel::path(Kernel::PATH_VENDOR) . DIRECTORY_SEPARATOR . 'MimeMessage' . DIRECTORY_SEPARATOR . 'email_message.php';
+			require_once Kernel::path(Kernel::PATH_VENDOR) . DIRECTORY_SEPARATOR . 'MimeMessage' . DIRECTORY_SEPARATOR . 'smtp_message.php';
+			require_once Kernel::path(Kernel::PATH_VENDOR) . DIRECTORY_SEPARATOR . 'Smtp' . DIRECTORY_SEPARATOR . 'smtp.php';
 
 			if (Configuration::get('mail', 'ssl') || Configuration::get('mail', 'starttls')) {
-				require_once $GLOBALS['SYSTEM']['3RDPARTY_PATH'] . DIRECTORY_SEPARATOR . 'Sasl' . DIRECTORY_SEPARATOR . 'sasl.php';
+				require_once Kernel::path(Kernel::PATH_VENDOR) . DIRECTORY_SEPARATOR . 'Sasl' . DIRECTORY_SEPARATOR . 'sasl.php';
 			}
 
 			$this->message_obj = new \smtp_message_class;
@@ -69,8 +69,8 @@ class Mail
 			}
 		}
 		elseif (Configuration::get('mail', 'method') == 'sendmail') {
-			require_once $GLOBALS['SYSTEM']['3RDPARTY_PATH'] . DIRECTORY_SEPARATOR . 'MimeMessage' . DIRECTORY_SEPARATOR . 'email_message.php';
-			require_once $GLOBALS['SYSTEM']['3RDPARTY_PATH'] . DIRECTORY_SEPARATOR . 'MimeMessage' . DIRECTORY_SEPARATOR . 'sendmail_message.php';
+			require_once Kernel::path(Kernel::PATH_VENDOR) . DIRECTORY_SEPARATOR . 'MimeMessage' . DIRECTORY_SEPARATOR . 'email_message.php';
+			require_once Kernel::path(Kernel::PATH_VENDOR) . DIRECTORY_SEPARATOR . 'MimeMessage' . DIRECTORY_SEPARATOR . 'sendmail_message.php';
 
 			$this->message_obj = new \sendmail_message_class;
 
@@ -81,8 +81,8 @@ class Mail
 		elseif (Configuration::get('mail', 'method') == 'sendgrid') {
 			$this->message_obj = new \SendGrid\Email();
 		} else {
-			require_once $GLOBALS['SYSTEM']['3RDPARTY_PATH'] . DIRECTORY_SEPARATOR . 'MimeMessage' . DIRECTORY_SEPARATOR . 'email_message.php';
-			require_once $GLOBALS['SYSTEM']['3RDPARTY_PATH'] . DIRECTORY_SEPARATOR . 'MimeMessage' . DIRECTORY_SEPARATOR . 'sendmail_message.php';
+			require_once Kernel::path(Kernel::PATH_VENDOR) . DIRECTORY_SEPARATOR . 'MimeMessage' . DIRECTORY_SEPARATOR . 'email_message.php';
+			require_once Kernel::path(Kernel::PATH_VENDOR) . DIRECTORY_SEPARATOR . 'MimeMessage' . DIRECTORY_SEPARATOR . 'sendmail_message.php';
 			
 			$this->message_obj = new \email_message_class;
 
@@ -98,7 +98,7 @@ class Mail
 	public function setHeader($header, $value)
 	{
 		if (Configuration::get('mail', 'method') != 'sendgrid') {
-			$this->message_obj->SetEncodedHeader($header, $value, $GLOBALS['SYSTEM']['CHARSET']);
+			$this->message_obj->SetEncodedHeader($header, $value, Kernel::charset());
 		} else {
 			if ($header == 'Subject') {
 				$this->message_obj->setSubject($value);
@@ -148,9 +148,9 @@ class Mail
 			}
 		}
 		elseif (is_array($email)) {
-			$this->message_obj->SetMultipleEncodedEmailHeader($header, $email, $GLOBALS['SYSTEM']['CHARSET']);
+			$this->message_obj->SetMultipleEncodedEmailHeader($header, $email, Kernel::charset());
 		} else {
-			$this->message_obj->SetEncodedEmailHeader($header, $email, $name, $GLOBALS['SYSTEM']['CHARSET']);
+			$this->message_obj->SetEncodedEmailHeader($header, $email, $name, Kernel::charset());
 		}
 	}
 
@@ -227,7 +227,7 @@ class Mail
 			if (Configuration::get('mail', 'method') == 'sendgrid') {
 				$this->message_obj->setText($text);
 			} else {
-				$this->message_obj->CreateQuotedPrintableTextPart($text, $GLOBALS['SYSTEM']['CHARSET'], $this->text_part);
+				$this->message_obj->CreateQuotedPrintableTextPart($text, Kernel::charset(), $this->text_part);
 				$alternative_parts[] = $this->text_part;
 			}
 		}
@@ -237,7 +237,7 @@ class Mail
 			if (Configuration::get('mail', 'method') == 'sendgrid') {
 				$this->message_obj->setHtml($html);
 			} else {
-				$this->message_obj->CreateQuotedPrintableHTMLPart($html, $GLOBALS['SYSTEM']['CHARSET'], $this->html_part);
+				$this->message_obj->CreateQuotedPrintableHTMLPart($html, Kernel::charset(), $this->html_part);
 				$alternative_parts[] = $this->html_part;
 			}
 		}

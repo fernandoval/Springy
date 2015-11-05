@@ -6,9 +6,8 @@ Copyright (C) 2009-2014 Lucas Cardozo
 
 http://www.fval.com.br
 
-Developer team:
+Active development team:
 	Fernando Val  - fernando.val@gmail.com
-	Lucas Cardozo - lucas.cardozo@gmail.com
 
 
 Framework Update History
@@ -16,7 +15,9 @@ Framework Update History
 ------------------------------------------------------------------------------------ --- -- -
 development
 	- Correção de bug com sessão vazia que ocorre em usuários do Safari no MacOS;
-	- Implementada configuração system,system_error.reported_errors(array) com lista de códigos de erro que devem ser reportados ao administrador do sistema.
+	- Implementada configuração system,system_error.reported_errors(array) com lista de códigos de erro que devem ser reportados ao administrador do sistema;
+	- Implementado armazenamento das variáveis de configuração do sistema na Kernel;
+	- Mudanças estruturais no script de inicialização e helper.
 3.2.1
 	- Correção de bug no método URI::makeSlug();
 	- Correção de bug do iconv() não funcionando no métido Strings_UTF8::removeAccentedChars();
