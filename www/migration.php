@@ -8,7 +8,7 @@
  *
  *	\brief   This is a database migration script
  *  \warning Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version 0.1
+ *  \version 0.2
  *  \author  Fernando Val  - fernando.val@gmail.com
  *  \ingroup framework
  */
@@ -28,6 +28,8 @@ if (!defined('STDIN') || empty($argc)) {
 	echo 'This script can be executed only in CLI mode.';
 	exit(998);
 }
+
+define('BYPASS_CONTROLLERS', true);
 
 $_GET['SUPERVAR'] = '__migration__';
 $_SERVER['QUERY_STRING'] = 'SUPERVAR=__migration__';

@@ -1,16 +1,17 @@
 <?php
 /**	\file
- *	FVAL PHP Framework for Web Applications
- *
- *  \copyright	Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
- *  \copyright	Copyright (c) 2007-2015 Fernando Val\n
- *	\copyright Copyright (c) 2014 Allan Marques
- *
- *	\brief		Validador de dados de input do usuário
- *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	0.1
- *  \author		Allan Marques - allan.marques@ymail.com
- *	\ingroup	framework
+ *  FVAL PHP Framework for Web Applications
+ *  
+ *  \copyright  Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
+ *  \copyright  Copyright (c) 2007-2015 Fernando Val\n
+ *  \copyright  Copyright (c) 2014 Allan Marques
+ *  
+ *  \brief      Validador de dados de input do usuário
+ *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
+ *  \version    0.2
+ *  \author     Allan Marques - allan.marques@ymail.com
+ *  \author     Fernando Val - fernando.val@gmail.com
+ *  \ingroup    framework
  */
 namespace FW\Validation;
 
@@ -196,15 +197,19 @@ class Validator
     }
 
     /**
-     * \brief Extrai as regras da string que às contém
-     * \param [in] (string) $rules - String representando as regras separadas por '|'
-     * \return (array)
+     *  \brief Parse the rules
+     *  \param [in] (string|array) $rules - An array or a string with the rules delimiter by pipe char '|'
+     *  \return (array) an array with parsed rules
      */
     protected function explodeRules($rules)
     {
         $explodedRules = array();
+		
+		if (is_string($rules)) {
+			$rules = explode('|', $rules);
+		}
         
-        foreach (explode('|', $rules) as $rule) {
+        foreach ($rules as $rule) {
             $explodedRules[] = $this->parseRule($rule);
         }
         

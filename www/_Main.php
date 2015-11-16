@@ -9,7 +9,7 @@
  *  http://www.fval.com.br
  *
  *  \brief    System initialization script
- *  \version  4.0.24
+ *  \version  4.1.25
  *  \author   Fernando Val - fernando.val@gmail.com
  *  \author   Lucas Cardozo - lucas.cardozo@gmail.com
  *
@@ -146,7 +146,7 @@ if (!is_null($controller)) {
 }
 
 // Se a classe controladora foi carregada e ela não possui sua própria classe Global, checa a existência da _global
-if (!isset($ControllerClassName) || !method_exists($ControllerClassName, '_ignore_global')) {
+if (!defined('BYPASS_CONTROLLERS') && (!isset($ControllerClassName) || !method_exists($ControllerClassName, '_ignore_global'))) {
 	// Verifica se a controller _global existe
 	$path = FW\Kernel::path(FW\Kernel::PATH_CONTROLLER) . DIRECTORY_SEPARATOR . '_global.php';
 	if (file_exists($path)) {
