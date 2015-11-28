@@ -8,7 +8,7 @@
  *  \brief		Classe Model para acesso a banco de dados
  *  \note		Essa classe extende a classe DB.
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	1.18.25
+ *  \version	1.19.26
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \ingroup	framework
  */
@@ -680,7 +680,10 @@ class Model extends DB implements \Iterator
 	 *  	- 'data' define que o atributo é um único registro do objeto embutido (array de colunas).
 	 *  'column' => (string) nome da coluna que será usada para relacionamento com o objeto embutido.
 	 *  'found_by' => (string) nome da coluna do objeto embutido que será usada como chave de busca.
-	 *  'filter' => (array) um array de filtros, opcional, a serem aplicados ao objeto embutido, no mesmo formato dos filtros da classe.
+	 *  'filter' => (array) um array de filtros, opcional, a serem aplicados ao objeto embutido, no mesmo formato usados no método query.
+	 *  'order' => (array) um array de ordenação, opcional, a ser aplicado ao objeto embutido, no mesmo formato usados no método query.
+	 *  'offset' => (int) o offset de registros, opcional, a ser aplicado ao objeto embutido, no mesmo formato usados no método query.
+	 *  'limit' => (int) o limite de registros, opcional, a ser aplicado ao objeto embutido, no mesmo formato usados no método query.
 	 *  'embbeded_obj' => (array) um array estrutura, opcional, para embutir outro objeto no objeto embutido.
 	 *  
 	 *  Exemplo de array aceito:
@@ -935,6 +938,7 @@ class Model extends DB implements \Iterator
 					}
 				}
 				
+				// Filter
 				if (isset($attr['filter']) && is_array($attr['filter'])) {
 					$efilter = array_merge(
 						array(
@@ -947,12 +951,30 @@ class Model extends DB implements \Iterator
 						$attr['found_by'] => array('in' => $keys)
 					);
 				}
+				// Order
+				if (isset($attr['order'])) {
+					$order = $attr['order'];
+				} else {
+					$order = array();
+				}
+				// Offset
+				if (isset($attr['offset'])) {
+					$offset = $attr['offset'];
+				} else {
+					$offset = NULL;
+				}
+				// Limit
+				if (isset($attr['limit'])) {
+					$limit = $attr['limit'];
+				} else {
+					$limit = NULL;
+				}
 				
 				$embObj = new $obj;
 				if (isset($attr['embedded_obj'])) {
 					$embObj->setEmbeddedObj($attr['embedded_obj']);
 				}
-				$embObj->query($efilter, array(), 0, 0, $embbed - 1);
+				$embObj->query($efilter, $order, $offset, $limit, $embbed - 1);
 				while ($er = $embObj->next()) {
 					foreach ($this->rows as $idx => $row) {
 						if ($er[ $attr['found_by'] ] == $row[ $attr['column'] ]) {
