@@ -18,6 +18,7 @@ development
 	- Adição dos parâmetros 'order', 'offset' e 'limit' em objetos embutidos na Model;
 	- Implementada configuração system,system_error.reported_errors(array) com lista de códigos de erro que devem ser reportados ao administrador do sistema;
 	- Implementado armazenamento das variáveis de configuração do sistema na Kernel;
+	- Implementada opção de debug de template (somente para Smarty);
 	- Mudanças estruturais no script de inicialização e helper;
 	- Implementados filtros por IS e IS NOT na Model.
 3.2.1

@@ -8,7 +8,7 @@
  *  \brief      Classe driver de tratamento de templates utilizando Smarty como mecanismo de renderização
  *  \see        http://www.smarty.net/
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    1.1.5
+ *  \version    1.2.6
  *  \author     Fernando Val  - fernando.val@gmail.com
  *  \ingroup    framework
  */
@@ -54,6 +54,8 @@ class SmartyDriver implements TemplateDriverInterface
 			$this->tplObj->error_reporting = E_ALL & ~E_NOTICE;
 			\Smarty::muteExpectedErrors();
 		}
+		$this->tplObj->debugging = Configuration::get('template', 'debug');
+		$this->tplObj->debugging_ctrl = Configuration::get('template', 'debugging_ctrl');;
 		$this->tplObj->use_sub_dirs = Configuration::get('template', 'use_sub_dirs');
 
 		$this->setCacheDir( Configuration::get('template', 'template_cached_path') );
@@ -247,6 +249,11 @@ class SmartyDriver implements TemplateDriverInterface
 			$this->tplObj->registerPlugin($func[0], $func[1], $func[2], $func[3], $func[4]);
 		}
 
+		// if ( Configuration::get('template', 'debug') ) {
+			// $this->tplObj->muteExpectedErrors();
+			// $this->tplObj->display_debug( $this->tplObj );
+		// }
+		
 		return $this->tplObj->fetch($this->templateName . self::TPL_NAME_SUFIX, $this->templateCacheId, $this->templateCompileId);
 	}
 

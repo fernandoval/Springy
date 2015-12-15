@@ -23,12 +23,9 @@
 /**@{*/
 
 /// Configurações para o ambiente de Desenvolvimento
-// $conf['development'] = array(
-	// 'template_path'          => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'templates',
-	// 'template_config_path'   => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'templates_conf',
-	// 'compiled_template_path' => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'templates_c',
-	// 'template_cached_path'   => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'templates_cached',
-	// 'use_sub_dirs'           => false
-// );
+$conf = array(
+	'debug'          => true,
+	'debugging_ctrl' => 'URL'
+);
 
 /**@}*/

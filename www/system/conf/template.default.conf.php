@@ -21,6 +21,8 @@
  *      'smarty' - para utilizar a classe Smarty como mecanismo de templates;\n
  *      'twig' - para utilizar a classe Twig como mecanismo de templates.
  *  - \c strict_variables - Quando verdadeiro a classe de templates irá ignorar variáveis inválidas e/ou indefinidas
+ *  - \c debug - Se true liga o debug de template.
+ *  - \c debugging_ctrl - Variável debugging_ctrl do Smarty. Aceita os valores 'URL' ou 'NONE'. (vide documentação do Smarty)
  *  - \c template_path - Caminho de disco do diretório de templates
  *  - \c template_config_path - Caminho de disco do diretório configuração de templates
  *  - \c compiled_template_path - Caminho de disco do diretório configuração de templates compilados
@@ -50,6 +52,8 @@
 $conf = array(
 	'template_engine'        => 'smarty',
 	'strict_variables'       => true,
+	'debug'                  => false,
+	'debugging_ctrl'         => 'NONE',
 	'template_path'          => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'templates',
 	'template_config_path'   => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'templates_conf',
 	'compiled_template_path' => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'tpl_comp',
