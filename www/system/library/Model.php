@@ -8,7 +8,7 @@
  *  \brief		Classe Model para acesso a banco de dados
  *  \note		Essa classe extende a classe DB.
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	1.19.26
+ *  \version	1.20.27
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \ingroup	framework
  */
@@ -783,15 +783,9 @@ class Model extends DB implements \Iterator
 		}
 
 		// Se há uma coluna de exclusão lógica definida, adiciona-a ao conjunto de filtros
-		if ($this->deletedColumn) {
+		if ( $this->deletedColumn && !isset($filter[$this->deletedColumn]) && !isset($filter[$this->tableName.'.'.$this->deletedColumn]) ) {
 			$where[] = $this->tableName.'.'.$this->deletedColumn.' = ?';
-			if (isset($filter[$this->deletedColumn])) {
-				$params[] = (int)$filter[$this->deletedColumn];
-			} elseif (isset($filter[$this->tableName.'.'.$this->deletedColumn])) {
-				$params[] = (int)$filter[$this->tableName.'.'.$this->deletedColumn];
-			} else {
-				$params[] = 0;
-			}
+			$params[] = 0;
 		}
 
 		// Monta os JOINs caso um array seja fornecido

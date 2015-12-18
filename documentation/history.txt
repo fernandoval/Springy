@@ -20,6 +20,7 @@ development
 	- Implementado armazenamento das variáveis de configuração do sistema na Kernel;
 	- Implementada opção de debug de template (somente para Smarty);
 	- Mudanças estruturais no script de inicialização e helper;
+	- Mudança na forma como a Model trata a existência da coluna de controle de exclusão lógina em pesquisas;
 	- Implementados filtros por IS e IS NOT na Model.
 3.2.1
 	- Correção de bug no método URI::makeSlug();
