@@ -8,7 +8,7 @@
  *  \copyright Copyright ₢ 2015 Fernando Val\n
  *  
  *  \brief    Post Install/Update Script for Composer
- *  \version  1.1.2
+ *  \version  2.0.3
  *  \author   Fernando Val - fernando.val@gmail.com
  *  
  *  This script is executed by Composer after the install/update process.
@@ -26,6 +26,10 @@
  
 define('DS', DIRECTORY_SEPARATOR);
 define('VENDOR_PATH', 'system' . DS . 'other');
+
+define('LF', "\n");
+define('CS_RESET', "\033[0m");
+define('CS_RED', "\033[31m");
 
 if (!$str = file_get_contents('composer.json')) {
 	echo 'Can\'t open composer.json file.';
@@ -76,6 +80,8 @@ foreach($composer['extra']['post-install'] as $component => $data) {
 	if (!isset($data['target']))
 		exit(0);
 	$target = $data['target'];
+	$noSubdirs = isset($data['ignore-subdirs']) && $data['ignore-subdirs'];
+	$minify = isset($data['minify']) ? $data['minify'] : 'off';
 	
 	if (is_dir($path)) {
 		if (isset($data['files'])) {
@@ -112,10 +118,15 @@ foreach($composer['extra']['post-install'] as $component => $data) {
 		if (is_array($files)) {
 			foreach($files as $file) {
 				$file = implode(DS, explode('/', $file));
-				copy_r($path.DS.$file, $destination.DS.$file);
+				if ($noSubdirs) {
+					$dstFile = array_pop(explode('/', $file));
+				} else {
+					$dstFile = $file;
+				}
+				copy_r($path.DS.$file, $destination.DS.$dstFile, $minify);
 			}
 		} else {
-			copy_r($path, $destination);
+			copy_r($path, $destination, $minify);
 		}
 	} else {
 		echo 'Component "' . $path . '" does not exists.';
@@ -126,11 +137,9 @@ foreach($composer['extra']['post-install'] as $component => $data) {
 /**
  *  \brief Recursive Copy Function
  */
-function copy_r($path, $dest)
+function copy_r($path, $dest, $minify='off')
 {
 	if (is_dir($path)) {
-		echo 'is_dir => ',$path,"\n";
-		@mkdir($dest);
 		$objects = scandir($path);
 		if (sizeof($objects) > 0) {
 			foreach ($objects as $file) {
@@ -138,11 +147,16 @@ function copy_r($path, $dest)
 					continue;
 				
 				if (is_dir($path.DS.$file)) {
-					copy_r($path.DS.$file, $dest.DS.$file);
+					copy_r($path.DS.$file, $dest.DS.$file, $minify);
 				} else {
 					// Copy only if destination does not existis or source is newer
 					if ( !is_file($dest.DS.$file) || filemtime($path.DS.$file) > filemtime($dest.DS.$file) ) {
-						copy($path.DS.$file, $dest.DS.$file);
+						if ( !is_dir($dest) ) {
+							mkdir($dest, 0775, true);
+						}
+						if ( !realCopy($path.DS.$file, $dest.DS.$file, $minify) ) {
+							echo CS_RED, '[ERROR] Can not copy (', $path.DS.$file, ') to (', $dest.DS.$file, ')', CS_RESET, LF;
+						}
 					}
 				}
 			}
@@ -152,11 +166,11 @@ function copy_r($path, $dest)
 	elseif (is_file($path)) {
 		$dir = dirname($dest);
 		if (!is_dir($dir)) {
-			mkdir($dir, 0755, true);
+			mkdir($dir, 0775, true);
 		}
 		// Copy only if destination does not existis or source is newer
 		if ( !is_file($dest) || filemtime($path) > filemtime($dest) ) {
-			return copy($path, $dest);
+			return realCopy($path, $dest, $minify);
 		} else {
 			return true;
 		}
@@ -165,9 +179,46 @@ function copy_r($path, $dest)
 		$success = false;
 		$dest = dirname($dest);
 		foreach (glob($path) as $filename) {
-			$success = copy_r($filename, $dest.DS.basename($filename));
-			if (!$success) break;
+			$success = copy_r($filename, $dest.DS.basename($filename), $minify);
+			if (!$success) {
+				echo CS_RED, '[ERROR] Copying (', $filename, ') to (', $dest.DS.basename($filename), ')', CS_RESET, LF;
+				break;
+			}
 		}
 		return $success;
 	}
+}
+
+/**
+ *  \brief Copy file minifyint if necessary
+ */
+function realCopy($source, $destiny, $minify='auto')
+{
+	if ($minify == 'auto') {
+		$minify = (substr($source, -4) == '.css' ? 'css' : (substr($source, -3) == '.js' ? 'js' : 'off'));
+	}
+	
+	$buffer = file_get_contents($source);
+	if ($buffer == false) {
+		return false;
+	}
+	
+	if ($minify == 'css') {
+		$buffer = preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $buffer);
+		$buffer = str_replace(["\r\n","\r","\n","\t",'  ','    ','     '], '', $buffer);
+		$buffer = preg_replace(['(( )+{)','({( )+)'], '{', $buffer);
+		$buffer = preg_replace(['(( )+})','(}( )+)','(;( )*})'], '}', $buffer);
+		$buffer = preg_replace(['(;( )+)','(( )+;)'], ';', $buffer);
+	} elseif ($minify == 'js') {
+		$buffer = preg_replace("/((?:\/\*(?:[^*]|(?:\*+[^*\/]))*\*+\/)|(?:\/\/.*))/", "", $buffer);
+		$buffer = str_replace(["\r\n","\r","\t","\n",'  ','    ','     '], '', $buffer);
+		$buffer = preg_replace(['(( )+\))','(\)( )+)'], ')', $buffer);
+	}
+	
+	$return = file_put_contents($destiny, $buffer);
+	if ($return !== false) {
+		chmod($destiny, 0664);
+	}
+	
+	return $return;
 }

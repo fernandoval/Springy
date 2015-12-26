@@ -21,7 +21,10 @@ development
 	- Implementada opção de debug de template (somente para Smarty);
 	- Mudanças estruturais no script de inicialização e helper;
 	- Mudança na forma como a Model trata a existência da coluna de controle de exclusão lógina em pesquisas;
-	- Implementados filtros por IS e IS NOT na Model.
+	- Implementados filtros por IS e IS NOT na Model;
+	- Melhorias no script pós instalação e atualização para Composer:
+		- Implementada opção de minificação de arquivos;
+		- Implementada opção de desconsiderar nomes dos subdiratórios durante a cópia para agrupar todos os arquivos num único local.
 3.2.1
 	- Correção de bug no método URI::makeSlug();
 	- Correção de bug do iconv() não funcionando no métido Strings_UTF8::removeAccentedChars();
