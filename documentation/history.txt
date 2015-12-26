@@ -22,6 +22,7 @@ development
 	- Mudanças estruturais no script de inicialização e helper;
 	- Mudança na forma como a Model trata a existência da coluna de controle de exclusão lógina em pesquisas;
 	- Implementados filtros por IS e IS NOT na Model;
+	- Remoção das classes RSS e FeedCreator;
 	- Melhorias no script pós instalação e atualização para Composer:
 		- Implementada opção de minificação de arquivos;
 		- Implementada opção de desconsiderar nomes dos subdiratórios durante a cópia para agrupar todos os arquivos num único local.
