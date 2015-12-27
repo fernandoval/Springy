@@ -25,7 +25,8 @@
 		"smarty/smarty": "*",
 		"twig/twig": "*",
 		"ircmaxell/password-compat": "*",
-		"sendgrid/sendgrid": "~3.2",
+		"sendgrid/sendgrid": "~4.0",
+		"phpmailer/phpmailer": "~5.2",
 		
 		"components/jquery": "2.1.3",
 		"twbs/bootstrap": "3.3.*"

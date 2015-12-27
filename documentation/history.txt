@@ -13,7 +13,7 @@ Active development team:
 Framework Update History
 
 ------------------------------------------------------------------------------------ --- -- -
-development
+3.3.0
 	- Correção de bug com sessão vazia que ocorre em usuários do Safari no MacOS;
 	- Adição dos parâmetros 'order', 'offset' e 'limit' em objetos embutidos na Model;
 	- Implementada configuração system,system_error.reported_errors(array) com lista de códigos de erro que devem ser reportados ao administrador do sistema;
@@ -22,7 +22,9 @@ development
 	- Mudanças estruturais no script de inicialização e helper;
 	- Mudança na forma como a Model trata a existência da coluna de controle de exclusão lógina em pesquisas;
 	- Implementados filtros por IS e IS NOT na Model;
+	- Nova classe de Mail e classes drivers para suporte a PHPMailer, SendGrid e MIME Message;
 	- Remoção das classes RSS e FeedCreator;
+	- Remoção das classes do Manuel Lemos;
 	- Melhorias no script pós instalação e atualização para Composer:
 		- Implementada opção de minificação de arquivos;
 		- Implementada opção de desconsiderar nomes dos subdiratórios durante a cópia para agrupar todos os arquivos num único local.

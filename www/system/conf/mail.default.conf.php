@@ -13,33 +13,45 @@
  *  
  *  As entradas de configuração dos arquivos \c mail, são utilizadas pela classe Mail, sendo que as entradas previamente definidas não podem ser omitidas
  *  caso você utilize a classe.
- *
- *  \c method - determina o método de envio de mensagens.\n
- *  	Os seguintes valores são aceitos
+ *  
+ *  \c mailers - as array with the engine mailers (see above).\n
+ *  \c default_driver - the mailers' index name for default driver. If not setted, the first index of mailers will be used.\n
+ *  
+ *  The 'mailers' configuration accept this structure: 'name' => array()
+ *  
+ *  Each named item of 'mailers' must have the following structure:
+ *  
+ *  \c driver - a sting with the mail driver name. The supported values are 'phpmailer', 'sendgrid' or 'mimemessage'.\n
+ *  \c protocol - a string with the protocol accepter by the driver. In SendGrid driver. This parameter must be into 'options' parameter.\n
  *  \li	\c smtp     - Send thru a SMTP connection
  *  \li	\c sendmail - Send using Sendmail daemon server
- *  \li	\c sendgrid - Send using SendGrid Web API.
  *  \li	\c default  - Send via PHP mail (default)
- *  \c host - SMTP server host
- *  \c port - SMTP server port (25, 465, 567)
- *  \c ssl - uses SSL (1) or not (0)
- *  \c starttls - uses StarTLS (1) or not (0)
- *  \c direct_delivery - try to deliver message directly to receipt's MTA (1) or through your relay
- *  \c exclude_address
- *  \c user - SMTP username
- *  \c realm
- *  \c workstation - do not set
- *  \c pass - SMTP password
- *  \c auth_host - do not set
- *  \c debug - turn debug messages on (1) or off (0)
- *  \c html_debug - turn debug messages HTML (1) or plain text (0). Will not work if \c debug is off.
+ *  \c host - the mail server host address. This parameter must be into 'options' parameter.\n
+ *  \c port - a integer with the server port name. This parameter must be into 'options' parameter.\n
+ *  \c cryptography - the secure connection type. Supported only by PHPMailer driver.\n
+ *  \c authenticated - a boolean value that define if authentication is needed. Supported only by PHPMailer driver.\n
+ *  \c username - username for server authentication.\n
+ *  \c password - password for server authentication.\n
+ *  \c options - as array with options for SendGrid driver.\n
+ *  \c ssl - turn use of SSL on (1) or off (0). Used only by MIME Message driver.\n
+ *  \c starttls - turn use of StarTLS on (1) or off (0). Used only by MIME Message driver.\n
+ *  \c direct_delivery - to deliver message directly to receipt's MTA (1) or through your relay. Used only by MIME Message driver.\n
+ *  \c exclude_address - Used only by MIME Message driver.\n
+ *  \c workstation - Used only by MIME Message driver.\n
+ *  \c realm - Used only by MIME Message driver.\n
+ *  \c auth_host - Used only by MIME Message driver.\n
+ *  \c debug - turns the debug mode on (1, 2 or 3) or off (0). Do not supported by SendGrid driver.\n
+ *  \c html_debug - debug output in HTML format. Used only by MIME Message driver.\n
  *  
- *  To use Sendgrid Web API method, the SendGrid-PHP library is required.
+ *  To use SendGrid Web API driver, the SendGrid-PHP packege is required.
  *  To install SendGrud-PHP with Composer, adding the following in "require" section at composer.json file:
  *  
- *  "sendgrid/sendgrid": "~3.0"
+ *  "sendgrid/sendgrid": "~4.0"
  *  
- *  Or download it from https://github.com/sendgrid/sendgrid-php
+ *  To use PHPMailer driver, the PHPMailer packege is required.
+ *  To install PHPMailer with Composer, adding the following in "require" section at composer.json file:
+ *  
+ *  "phpmailer/phpmailer": "~5.2"
  *  
  *  \see config
  *  @{

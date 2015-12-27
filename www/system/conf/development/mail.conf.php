@@ -24,20 +24,63 @@
 
 /// Configurações para o ambiente de Desenvolvimento
 $conf = array(
-	'method'          => 'default',
-	'host'            => 'localhost',
-	'port'            => '25',
-	'ssl'             => '0',
-	'starttls'        => '0',
-	'direct_delivery' => '0',
-	'exclude_address' => '',
-	'user'            => '',
-	'realm'           => '',
-	'workstation'     => '',
-	'pass'            => '',
-	'auth_host'       => '',
-	'debug'           => 0,
-	'html_debug'      => 1,
+	'default_driver' => 'phpmailer-class',
+	'mailers' => array(
+		'phpmailer-class' => array(
+			'driver'        => 'phpmailer',
+			'protocol'      => 'smtp',
+			'host'          => 'smtp.gmail.com',
+			'port'          => 587,
+			'cryptography'  => 'tls',
+			'authenticated' => true,
+			'username'      => 'you@gmail.com',
+			'password'      => 'put-your-password-here',
+			'debug'         => 0,
+		),
+		'sendgrid-api' => array(
+			'driver'        => 'sendgrid',
+			'apikey'        => 'put-the-sendgrid-api-key-here',
+			'options'       => array(
+				'protocol'  => 'https',
+				// 'host'      => 'smtp.sendgrid.net',
+				// 'endpoint'  => '/api/mail.send.json',
+				// 'port'      => null,
+			    // 'url'       => null,
+				'raise_exceptions' => false,
+				'turn_off_ssl_verification' => false
+			)
+		),
+		'sendgrid-smtp' => array(
+			'driver'        => 'sendgrid',
+			'apikey'        => "",
+			'username'      => 'put-your-sendgrid-user-here',
+			'password'      => 'put-your-sendgrid-pass-here',
+			'options'       => array(
+				'protocol'  => 'smtp',
+				'host'      => 'smtp.sendgrid.net',
+				'port'      => 465,
+				'raise_exceptions' => false,
+				'turn_off_ssl_verification' => false
+			)
+		),
+		'mimemessage' => array(
+			'driver'          => 'mimemessage',
+			'protocol'        => 'default',
+			'host'            => 'localhost',
+			'port'            => 25,
+			'ssl'             => '0',
+			'starttls'        => '0',
+			'direct_delivery' => '0',
+			'exclude_address' => '',
+			'username'        => '',
+			'password'        => '',
+			'workstation'     => '',
+			'realm'           => '',
+			'auth_host'       => null,
+			'debug'           => 0,
+			'html_debug'      => 1,
+		)
+	),
 );
 
 /**@}*/
