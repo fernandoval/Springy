@@ -7,7 +7,7 @@
  *
  *	\brief      Classe para envio de email
  *	\warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version    2.0.15
+ *	\version    2.1.16
  *  \author     Fernando Val  - fernando.val@gmail.com
  *	\ingroup    framework
  */
@@ -20,6 +20,7 @@ namespace FW;
 class Mail
 {
 	const MAIL_ENGINE_PHPMAILER = 'phpmailer';
+	const MAIL_ENGINE_SWIFTMAILER = 'swiftmailer';
 	const MAIL_ENGINE_SENDGRID = 'sendgrid';
 	const MAIL_ENGINE_MIMEMESSAGE = 'mimemessage';
 	
@@ -48,6 +49,9 @@ class Mail
 		switch (strtolower($cfg['driver'])) {
 			case self::MAIL_ENGINE_PHPMAILER:
 				$this->mailObj = new Mail\PHPMailerDriver($cfg);
+				break;
+			case self::MAIL_ENGINE_SWIFTMAILER:
+				$this->mailObj = new Mail\SwiftMailerDriver($cfg);
 				break;
 			case self::MAIL_ENGINE_SENDGRID:
 				$this->mailObj = new Mail\SendGridDriver($cfg);

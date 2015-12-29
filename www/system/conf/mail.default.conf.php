@@ -42,6 +42,7 @@
  *  \c auth_host - Used only by MIME Message driver.\n
  *  \c debug - turns the debug mode on (1, 2 or 3) or off (0). Do not supported by SendGrid driver.\n
  *  \c html_debug - debug output in HTML format. Used only by MIME Message driver.\n
+ *  \c sendmail_path - command line for Sendmail program. Used only by Swift Mailer.\n
  *  
  *  To use SendGrid Web API driver, the SendGrid-PHP packege is required.
  *  To install SendGrud-PHP with Composer, adding the following in "require" section at composer.json file:
@@ -52,6 +53,11 @@
  *  To install PHPMailer with Composer, adding the following in "require" section at composer.json file:
  *  
  *  "phpmailer/phpmailer": "~5.2"
+ *  
+ *  To use SwiftMailer driver, the Swift Mailer packege is required.
+ *  To install Swift Mailer with Composer, adding the following in "require" section at composer.json file:
+ *  
+ *  "swiftmailer/swiftmailer": "*"
  *  
  *  \see config
  *  @{

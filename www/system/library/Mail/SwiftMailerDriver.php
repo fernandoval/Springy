@@ -5,10 +5,10 @@
  *  \copyright  Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
  *  \copyright  Copyright (c) 2007-2015 Fernando Val\n
  *
- *  \brief      Class driver for use with PHPMailer class
- *  \see        https://github.com/PHPMailer/PHPMailer
+ *  \brief      Class driver for use with Swift Mailer class
+ *  \see        http://swiftmailer.org/
  *  \warning    This file is part of the framework and can not be omitted
- *  \version    1.0.1
+ *  \version    1.0.0
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \ingroup    framework
  */
@@ -20,14 +20,15 @@ use FW\Errors;
 use FW\Kernel;
 
 /**
- *  \brief Driver class for sent mail using PHPMailer class
+ *  \brief Driver class for sent mail using Swift Mailer class
  *
  *  \note This classe is a driver used by FW\Mail classe.
  *        Do not use it directly.
  */
-class PHPMailerDriver implements MailDriverInterface
+class SwiftMailerDriver implements MailDriverInterface
 {
 	private $mailObj = NULL;
+	private $tranport = NULL;
 	
 	/**
 	 *  \brief Constructor method
@@ -38,42 +39,42 @@ class PHPMailerDriver implements MailDriverInterface
 		if (!isset($cfg['protocol']))
 			throw new \Exception('Mail configuration \'protocol\' undefined');
 		
-		$this->mailObj = new \PHPMailer;
-		$this->mailObj->CharSet = Kernel::charset();
+		$this->mailObj = \Swift_Message::newInstance();
+		$this->mailObj->setCharset(Kernel::charset());
 		
 		if ($cfg['protocol'] == 'smtp') {
 			if (!isset($cfg['host']))
 				throw new \Exception('Mail configuration \'host\' undefined');
 			
-			$this->mailObj->isSMTP();
-			$this->mailObj->SMTPDebug = isset($cfg['debug']) ? $cfg['debug'] : false;
-			$this->mailObj->Debugoutput = isset($cfg['debugoutput']) ? $cfg['debugoutput'] : 'html';
-			$this->mailObj->Host = $cfg['host'];
-			$this->mailObj->Port = isset($cfg['port']) ? $cfg['port'] : 25;
-			$this->mailObj->SMTPSecure = isset($cfg['cryptography']) ? $cfg['cryptography'] : "";
-			$this->mailObj->SMTPAuth = isset($cfg['authenticated']) ? $cfg['authenticated'] : false;
-			if ($this->mailObj->SMTPAuth) {
-				$this->mailObj->Username = isset($cfg['username']) ? $cfg['username'] : "";
-				$this->mailObj->Password = isset($cfg['password']) ? $cfg['password'] : "";
+			$this->transport = \Swift_SmtpTransport::newInstance($cfg['host'], isset($cfg['port']) ? $cfg['port'] : 25);
+			
+			if (isset($cfg['cryptography']))
+				$this->transport->setEncryption( $cfg['cryptography'] );
+			if (isset($cfg['username']) && $cfg['username']) {
+				$this->transport->setUsername( $cfg['username'] );
+				$this->transport->setPassword(isset($cfg['password']) ? $cfg['password'] : "");
 			}
 		}
 		elseif ($cfg['protocol'] == 'sendmail') {
-			$this->mailObj->isSendmail();
+			$this->transport = \Swift_SendmailTransport::newInstance( isset($cfg['sendmail_path']) ? $cfg['sendmail_path'] : null );
+		}
+		elseif ($cfg['protocol'] == 'mail') {
+			$this->transport = \Swift_MailTransport::newInstance();
 		}
 		else {
-			throw new \Exception('Unsuported mail protocol');
+			throw new \Exception('Unsuported mail transport agent');
 		}
 		
 		if (Configuration::get('mail', 'errors_go_to'))
-			$this->Sender = Configuration::get('mail', 'errors_go_to');
-			$this->mailObj->addCustomHeader('Errors-To', Configuration::get('mail', 'errors_go_to'));
+			$this->mailObj->setReturnPath(Configuration::get('mail', 'errors_go_to'));
+			$this->mailObj->addTextHeader('Errors-To', Configuration::get('mail', 'errors_go_to'));
 	}
 	
 	/**
 	 *  \brief Add a standard email message header
 	 */
 	public function addHeader($header, $value){
-		$this->mailObj->addCustomHeader($header, $value);
+		$this->mailObj->addTextHeader($header, $value);
 	}
 	
 	/**
@@ -84,7 +85,7 @@ class PHPMailerDriver implements MailDriverInterface
 	 */
 	public function addTo($email, $name="")
 	{
-		$this->mailObj->addAddress($email, $name);
+		$this->mailObj->addTo($email, $name);
 	}
 	
 	/**
@@ -119,7 +120,10 @@ class PHPMailerDriver implements MailDriverInterface
 	 */
 	public function addAttachment($path, $name="", $type="", $encoding='base64')
 	{
-		$this->mailObj->addAttachment($path, $name, $encoding, $type);
+		$attachment = \Swift_Attachment::fromPath($path, $type);
+		if ($name)
+			$attachment->setFilename($name);
+		$this->mailObj->attach($attachment);
 	}
 	
 	/**
@@ -129,7 +133,7 @@ class PHPMailerDriver implements MailDriverInterface
 	 */
 	public function setSubject($subject)
 	{
-		$this->mailObj->Subject = $subject;
+		$this->mailObj->setSubject($subject);
 	}
 	
 	/**
@@ -140,7 +144,7 @@ class PHPMailerDriver implements MailDriverInterface
 	 */
 	public function setFrom($email, $name='')
 	{
-		$this->mailObj->setFrom($email, $name);
+		$this->mailObj->setFrom(array($email => $name));
 	}
 	
 	/**
@@ -151,8 +155,7 @@ class PHPMailerDriver implements MailDriverInterface
 	 */
 	public function setBody($body, $html=true)
 	{
-		$this->mailObj->isHTML($html);
-		$this->mailObj->Body = $body;
+		$this->mailObj->setBody($body, $html ? 'text/html' : 'text/plain');
 	}
 	
 	/**
@@ -160,7 +163,7 @@ class PHPMailerDriver implements MailDriverInterface
 	 */
 	public function setAlternativeBody($text)
 	{
-		$this->mailObj->AltBody = $text;
+		$this->mailObj->addPart($text, 'text/plain');
 	}
 	
 	/**
@@ -171,8 +174,9 @@ class PHPMailerDriver implements MailDriverInterface
 	{
 		$error = false;
 		
-		if ( !$this->mailObj->send() ) {
-			$error = $this->mailObj->ErrorInfo;
+		$mailer = \Swift_Mailer::newInstance($this->transport);
+		if ( !$mailer->send($this->mailObj, $failures) ) {
+			$error = $failures;
 		}
 			
 		return $error;

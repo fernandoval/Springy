@@ -13,6 +13,8 @@ Active development team:
 Framework Update History
 
 ------------------------------------------------------------------------------------ --- -- -
+dev
+	- Adicionado suporte a Swift Mailer.
 3.3.0
 	- Correção de bug com sessão vazia que ocorre em usuários do Safari no MacOS;
 	- Adição dos parâmetros 'order', 'offset' e 'limit' em objetos embutidos na Model;
