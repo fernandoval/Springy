@@ -14,7 +14,9 @@ Framework Update History
 
 ------------------------------------------------------------------------------------ --- -- -
 dev
-	- Adicionado suporte a Swift Mailer.
+	- Adicionado suporte a Swift Mailer;
+	- Encerramento de funções depreciadas;
+	- Remoção das classes Browser.
 3.3.0
 	- Correção de bug com sessão vazia que ocorre em usuários do Safari no MacOS;
 	- Adição dos parâmetros 'order', 'offset' e 'limit' em objetos embutidos na Model;

@@ -3,7 +3,7 @@
  *  
  *  ## FVAL PHP Framework
  *  
- *  \version 3.3.0
+ *  \version 3.3.1
  *  
  *  http://framework.fval.net.br
  *  
@@ -157,9 +157,3 @@
  *  
  */
 namespace FW;
-
-/**
- *  \namespace  FW.Browser
- *  \brief		Biblioteca de classes PHP-Browser de Gabriel Bull
- */
-namespace FW\Browser;

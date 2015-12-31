@@ -24,7 +24,7 @@ namespace FW;
 class Kernel
 {
 	/// Versão do framework
-	const VERSION = '3.3.0';
+	const VERSION = '3.3.1';
 	
 	/// Kernel constants
 	const PATH_CLASS = 'CLASS';
@@ -452,127 +452,37 @@ class Kernel
 	/**
 	 *  \brief Verifica se o usuário está usando um browser de dispositivo móvel
 	 *  
-	 *  Esse método está depreciado e será removido na versão 3.1.
+	 *  This method was deprecated.
 	 *  
-	 *  Use o método FW\Browser\OS::isMobile
+	 *  Use sinergi/browser-detector library from Chris Schuld & Gabriel Bull
 	 *  
-	 *  Este método verifica se o navegador do usuário é de um dispositivo móvel.
-	 *  A partir da versão 2.0 foi adiciona o conjunto de classes Browser, mais completa,
-	 *  e que permite verificar mais dados do navegador e sistema operacional.
-	 *  Veja as classes Browser\OS, Browser\Browser e Browser\Language.
-	 *  
+	 *  \see https://packagist.org/packages/sinergi/browser-detector
 	 *  \deprecated
-	 *  \see FW\Browser\OS::isMobile
+	 *  \warning This method was removed.
 	 */
-	private static function mobileDeviceDetect() {
-		// Define que não é um dispositivo móvel até que seja provado o contrário
-		self::$mobile = false;
-		// Define que não é um dispositivo móvel até que seja provado o contrário
-		self::$mobile_device = NULL;
-
-		// verifica se o USER AGENT existe (acesso via API não possui user agent)
-		if(!isset($_SERVER['HTTP_USER_AGENT'])){
-			return self::$mobile;
-		}
-
-		// Pega o valor do USER AGENT
-		$user_agent = $_SERVER['HTTP_USER_AGENT'];
-
-		switch (true) {
-			// iPad
-			case (preg_match('/ipad/i',$user_agent));
-				//$mobile_browser = $ipad; // mobile browser is either true or false depending on the setting of ipad when calling the function
-				self::$mobile = true;
-				self::$mobile_device = 'Apple iPad';
-				break;
-			// iPhone ou iPod?
-			case (preg_match('/ipod/i',$user_agent)||preg_match('/iphone/i',$user_agent));
-				self::$mobile = true;
-				self::$mobile_device = 'Apple';
-				break;
-			// Android?
-			case (preg_match('/android/i',$user_agent));
-				self::$mobile = true;
-				if(preg_match('/mobile/i',$user_agent)){
-					self::$mobile_device = 'Android Mobile';
-				} else {
-					self::$mobile_device = 'Android';
-				}
-				break;
-			// Opera Mini?
-			case (preg_match('/opera mini/i',$user_agent));
-				self::$mobile = true;
-				self::$mobile_device = 'Opera';
-				break;
-			// Blackberry?
-			case (preg_match('/blackberry/i',$user_agent));
-				self::$mobile = true;
-				self::$mobile_device = 'Blackberry';
-				break;
-			// Palm?
-			case (preg_match('/(pre\/|palm os|palm|hiptop|avantgo|plucker|xiino|blazer|elaine)/i',$user_agent));
-				self::$mobile = true;
-				self::$mobile_device = 'Palm';
-				break;
-			// Windows Mobile?
-			case (preg_match('/(iris|3g_t|windows ce|opera mobi|windows ce; smartphone;|windows ce; iemobile)/i',$user_agent));
-				self::$mobile = true;
-				self::$mobile_device = 'Windows Smartphone';
-				break;
-			// Outros dispositivos móveis conhecidos?
-			case (preg_match('/(mini 9.5|vx1000|lge |m800|e860|u940|ux840|compal|wireless| mobi|ahong|lg380|lgku|lgu900|lg210|lg47|lg920|lg840|lg370|sam-r|mg50|s55|g83|t66|vx400|mk99|d615|d763|el370|sl900|mp500|samu3|samu4|vx10|xda_|samu5|samu6|samu7|samu9|a615|b832|m881|s920|n210|s700|c-810|_h797|mob-x|sk16d|848b|mowser|s580|r800|471x|v120|rim8|c500foma:|160x|x160|480x|x640|t503|w839|i250|sprint|w398samr810|m5252|c7100|mt126|x225|s5330|s820|htil-g1|fly v71|s302|-x113|novarra|k610i|-three|8325rc|8352rc|sanyo|vx54|c888|nx250|n120|mtk |c5588|s710|t880|c5005|i;458x|p404i|s210|c5100|teleca|s940|c500|s590|foma|samsu|vx8|vx9|a1000|_mms|myx|a700|gu1100|bc831|e300|ems100|me701|me702m-three|sd588|s800|8325rc|ac831|mw200|brew |d88|htc\/|htc_touch|355x|m50|km100|d736|p-9521|telco|sl74|ktouch|m4u\/|me702|8325rc|kddi|phone|lg |sonyericsson|samsung|240x|x320|vx10|nokia|sony cmd|motorola|up.browser|up.link|mmp|symbian|smartphone|midp|wap|vodafone|o2|pocket|kindle|mobile|psp|treo)/i',$user_agent));
-				self::$mobile = true;
-				self::$mobile_device = 'Mobile matched on piped preg_match';
-				break;
-			// O dispositivo mostra sinais de suporte a text/vnd.wap.wml ou application/vnd.wap.xhtml+xml
-			case (isset($_SERVER['HTTP_ACCEPT']) && (strpos($_SERVER['HTTP_ACCEPT'],'text/vnd.wap.wml')>0 || strpos($_SERVER['HTTP_ACCEPT'],'application/vnd.wap.xhtml+xml')>0));
-				self::$mobile = true;
-				self::$mobile_device = '(WAP) Mobile matched on content accept header';
-				break;
-			// Dispositivo usa cabeçalho HTTP_X_WAP_PROFILE ou HTTP_PROFILE
-			case (isset($_SERVER['HTTP_X_WAP_PROFILE'])||isset($_SERVER['HTTP_PROFILE']));
-				self::$mobile = true;
-				self::$mobile_device = '(WAP) Mobile matched on profile headers being set';
-				break;
-			// Verifica numa lista de outros agentes
-			case (in_array(strtolower(substr($user_agent,0,4)),array('1207'=>'1207','3gso'=>'3gso','4thp'=>'4thp','501i'=>'501i','502i'=>'502i','503i'=>'503i','504i'=>'504i','505i'=>'505i','506i'=>'506i','6310'=>'6310','6590'=>'6590','770s'=>'770s','802s'=>'802s','a wa'=>'a wa','acer'=>'acer','acs-'=>'acs-','airn'=>'airn','alav'=>'alav','asus'=>'asus','attw'=>'attw','au-m'=>'au-m','aur '=>'aur ','aus '=>'aus ','abac'=>'abac','acoo'=>'acoo','aiko'=>'aiko','alco'=>'alco','alca'=>'alca','amoi'=>'amoi','anex'=>'anex','anny'=>'anny','anyw'=>'anyw','aptu'=>'aptu','arch'=>'arch','argo'=>'argo','bell'=>'bell','bird'=>'bird','bw-n'=>'bw-n','bw-u'=>'bw-u','beck'=>'beck','benq'=>'benq','bilb'=>'bilb','blac'=>'blac','c55/'=>'c55/','cdm-'=>'cdm-','chtm'=>'chtm','capi'=>'capi','cond'=>'cond','craw'=>'craw','dall'=>'dall','dbte'=>'dbte','dc-s'=>'dc-s','dica'=>'dica','ds-d'=>'ds-d','ds12'=>'ds12','dait'=>'dait','devi'=>'devi','dmob'=>'dmob','doco'=>'doco','dopo'=>'dopo','el49'=>'el49','erk0'=>'erk0','esl8'=>'esl8','ez40'=>'ez40','ez60'=>'ez60','ez70'=>'ez70','ezos'=>'ezos','ezze'=>'ezze','elai'=>'elai','emul'=>'emul','eric'=>'eric','ezwa'=>'ezwa','fake'=>'fake','fly-'=>'fly-','fly_'=>'fly_','g-mo'=>'g-mo','g1 u'=>'g1 u','g560'=>'g560','gf-5'=>'gf-5','grun'=>'grun','gene'=>'gene','go.w'=>'go.w','good'=>'good','grad'=>'grad','hcit'=>'hcit','hd-m'=>'hd-m','hd-p'=>'hd-p','hd-t'=>'hd-t','hei-'=>'hei-','hp i'=>'hp i','hpip'=>'hpip','hs-c'=>'hs-c','htc '=>'htc ','htc-'=>'htc-','htca'=>'htca','htcg'=>'htcg','htcp'=>'htcp','htcs'=>'htcs','htct'=>'htct','htc_'=>'htc_','haie'=>'haie','hita'=>'hita','huaw'=>'huaw','hutc'=>'hutc','i-20'=>'i-20','i-go'=>'i-go','i-ma'=>'i-ma','i230'=>'i230','iac'=>'iac','iac-'=>'iac-','iac/'=>'iac/','ig01'=>'ig01','im1k'=>'im1k','inno'=>'inno','iris'=>'iris','jata'=>'jata','java'=>'java','kddi'=>'kddi','kgt'=>'kgt','kgt/'=>'kgt/','kpt '=>'kpt ','kwc-'=>'kwc-','klon'=>'klon','lexi'=>'lexi','lg g'=>'lg g','lg-a'=>'lg-a','lg-b'=>'lg-b','lg-c'=>'lg-c','lg-d'=>'lg-d','lg-f'=>'lg-f','lg-g'=>'lg-g','lg-k'=>'lg-k','lg-l'=>'lg-l','lg-m'=>'lg-m','lg-o'=>'lg-o','lg-p'=>'lg-p','lg-s'=>'lg-s','lg-t'=>'lg-t','lg-u'=>'lg-u','lg-w'=>'lg-w','lg/k'=>'lg/k','lg/l'=>'lg/l','lg/u'=>'lg/u','lg50'=>'lg50','lg54'=>'lg54','lge-'=>'lge-','lge/'=>'lge/','lynx'=>'lynx','leno'=>'leno','m1-w'=>'m1-w','m3ga'=>'m3ga','m50/'=>'m50/','maui'=>'maui','mc01'=>'mc01','mc21'=>'mc21','mcca'=>'mcca','medi'=>'medi','meri'=>'meri','mio8'=>'mio8','mioa'=>'mioa','mo01'=>'mo01','mo02'=>'mo02','mode'=>'mode','modo'=>'modo','mot '=>'mot ','mot-'=>'mot-','mt50'=>'mt50','mtp1'=>'mtp1','mtv '=>'mtv ','mate'=>'mate','maxo'=>'maxo','merc'=>'merc','mits'=>'mits','mobi'=>'mobi','motv'=>'motv','mozz'=>'mozz','n100'=>'n100','n101'=>'n101','n102'=>'n102','n202'=>'n202','n203'=>'n203','n300'=>'n300','n302'=>'n302','n500'=>'n500','n502'=>'n502','n505'=>'n505','n700'=>'n700','n701'=>'n701','n710'=>'n710','nec-'=>'nec-','nem-'=>'nem-','newg'=>'newg','neon'=>'neon','netf'=>'netf','noki'=>'noki','nzph'=>'nzph','o2 x'=>'o2 x','o2-x'=>'o2-x','opwv'=>'opwv','owg1'=>'owg1','opti'=>'opti','oran'=>'oran','p800'=>'p800','pand'=>'pand','pg-1'=>'pg-1','pg-2'=>'pg-2','pg-3'=>'pg-3','pg-6'=>'pg-6','pg-8'=>'pg-8','pg-c'=>'pg-c','pg13'=>'pg13','phil'=>'phil','pn-2'=>'pn-2','pt-g'=>'pt-g','palm'=>'palm','pana'=>'pana','pire'=>'pire','pock'=>'pock','pose'=>'pose','psio'=>'psio','qa-a'=>'qa-a','qc-2'=>'qc-2','qc-3'=>'qc-3','qc-5'=>'qc-5','qc-7'=>'qc-7','qc07'=>'qc07','qc12'=>'qc12','qc21'=>'qc21','qc32'=>'qc32','qc60'=>'qc60','qci-'=>'qci-','qwap'=>'qwap','qtek'=>'qtek','r380'=>'r380','r600'=>'r600','raks'=>'raks','rim9'=>'rim9','rove'=>'rove','s55/'=>'s55/','sage'=>'sage','sams'=>'sams','sc01'=>'sc01','sch-'=>'sch-','scp-'=>'scp-','sdk/'=>'sdk/','se47'=>'se47','sec-'=>'sec-','sec0'=>'sec0','sec1'=>'sec1','semc'=>'semc','sgh-'=>'sgh-','shar'=>'shar','sie-'=>'sie-','sk-0'=>'sk-0','sl45'=>'sl45','slid'=>'slid','smb3'=>'smb3','smt5'=>'smt5','sp01'=>'sp01','sph-'=>'sph-','spv '=>'spv ','spv-'=>'spv-','sy01'=>'sy01','samm'=>'samm','sany'=>'sany','sava'=>'sava','scoo'=>'scoo','send'=>'send','siem'=>'siem','smar'=>'smar','smit'=>'smit','soft'=>'soft','sony'=>'sony','t-mo'=>'t-mo','t218'=>'t218','t250'=>'t250','t600'=>'t600','t610'=>'t610','t618'=>'t618','tcl-'=>'tcl-','tdg-'=>'tdg-','telm'=>'telm','tim-'=>'tim-','ts70'=>'ts70','tsm-'=>'tsm-','tsm3'=>'tsm3','tsm5'=>'tsm5','tx-9'=>'tx-9','tagt'=>'tagt','talk'=>'talk','teli'=>'teli','topl'=>'topl','hiba'=>'hiba','up.b'=>'up.b','upg1'=>'upg1','utst'=>'utst','v400'=>'v400','v750'=>'v750','veri'=>'veri','vk-v'=>'vk-v','vk40'=>'vk40','vk50'=>'vk50','vk52'=>'vk52','vk53'=>'vk53','vm40'=>'vm40','vx98'=>'vx98','virg'=>'virg','vite'=>'vite','voda'=>'voda','vulc'=>'vulc','w3c '=>'w3c ','w3c-'=>'w3c-','wapj'=>'wapj','wapp'=>'wapp','wapu'=>'wapu','wapm'=>'wapm','wig '=>'wig ','wapi'=>'wapi','wapr'=>'wapr','wapv'=>'wapv','wapy'=>'wapy','wapa'=>'wapa','waps'=>'waps','wapt'=>'wapt','winc'=>'winc','winw'=>'winw','wonu'=>'wonu','x700'=>'x700','xda2'=>'xda2','xdag'=>'xdag','yas-'=>'yas-','your'=>'your','zte-'=>'zte-','zeto'=>'zeto','acs-'=>'acs-','alav'=>'alav','alca'=>'alca','amoi'=>'amoi','aste'=>'aste','audi'=>'audi','avan'=>'avan','benq'=>'benq','bird'=>'bird','blac'=>'blac','blaz'=>'blaz','brew'=>'brew','brvw'=>'brvw','bumb'=>'bumb','ccwa'=>'ccwa','cell'=>'cell','cldc'=>'cldc','cmd-'=>'cmd-','dang'=>'dang','doco'=>'doco','eml2'=>'eml2','eric'=>'eric','fetc'=>'fetc','hipt'=>'hipt','http'=>'http','ibro'=>'ibro','idea'=>'idea','ikom'=>'ikom','inno'=>'inno','ipaq'=>'ipaq','jbro'=>'jbro','jemu'=>'jemu','java'=>'java','jigs'=>'jigs','kddi'=>'kddi','keji'=>'keji','kyoc'=>'kyoc','kyok'=>'kyok','leno'=>'leno','lg-c'=>'lg-c','lg-d'=>'lg-d','lg-g'=>'lg-g','lge-'=>'lge-','libw'=>'libw','m-cr'=>'m-cr','maui'=>'maui','maxo'=>'maxo','midp'=>'midp','mits'=>'mits','mmef'=>'mmef','mobi'=>'mobi','mot-'=>'mot-','moto'=>'moto','mwbp'=>'mwbp','mywa'=>'mywa','nec-'=>'nec-','newt'=>'newt','nok6'=>'nok6','noki'=>'noki','o2im'=>'o2im','opwv'=>'opwv','palm'=>'palm','pana'=>'pana','pant'=>'pant','pdxg'=>'pdxg','phil'=>'phil','play'=>'play','pluc'=>'pluc','port'=>'port','prox'=>'prox','qtek'=>'qtek','qwap'=>'qwap','rozo'=>'rozo','sage'=>'sage','sama'=>'sama','sams'=>'sams','sany'=>'sany','sch-'=>'sch-','sec-'=>'sec-','send'=>'send','seri'=>'seri','sgh-'=>'sgh-','shar'=>'shar','sie-'=>'sie-','siem'=>'siem','smal'=>'smal','smar'=>'smar','sony'=>'sony','sph-'=>'sph-','symb'=>'symb','t-mo'=>'t-mo','teli'=>'teli','tim-'=>'tim-','tosh'=>'tosh','treo'=>'treo','tsm-'=>'tsm-','upg1'=>'upg1','upsi'=>'upsi','vk-v'=>'vk-v','voda'=>'voda','vx52'=>'vx52','vx53'=>'vx53','vx60'=>'vx60','vx61'=>'vx61','vx70'=>'vx70','vx80'=>'vx80','vx81'=>'vx81','vx83'=>'vx83','vx85'=>'vx85','wap-'=>'wap-','wapa'=>'wapa','wapi'=>'wapi','wapp'=>'wapp','wapr'=>'wapr','webc'=>'webc','whit'=>'whit','winw'=>'winw','wmlb'=>'wmlb','xda-'=>'xda-',)));
-				self::$mobile = true;
-				self::$mobile_device = '(WAP) Mobile matched on in_array';
-				break;
-		}
-
-		// tell adaptation services (transcoders and proxies) to not alter the content based on user agent as it's already being managed by this script
-		// header('Cache-Control: no-transform'); // http://mobiforge.com/developing/story/setting-http-headers-advise-transcoding-proxies
-		// header('Vary: User-Agent, Accept'); // http://mobiforge.com/developing/story/setting-http-headers-advise-transcoding-proxies
-
-		return self::$mobile;
+	private static function mobileDeviceDetect()
+	{
+		throw new \Exception('Deprecated method');
 	}
 
 	/**
 	 *	\brief Informa se o usuário está usando um dispositivo móvel
 	 *  
-	 *  Esse método está depreciado e será removido na versão 3.1.
+	 *  This method was deprecated.
 	 *  
-	 *  Use o método FW\Browser\OS::getOS
+	 *  Use sinergi/browser-detector library from Chris Schuld & Gabriel Bull
 	 *  
-	 *  Este método verifica se o navegador do usuário é de um dispositivo móvel.
-	 *  A partir da versão 2.0 foi adiciona o conjunto de classes Browser, mais completa,
-	 *  e que permite verificar mais dados do navegador e sistema operacional.
-	 *  Veja as classes Browser\OS, Browser\Browser e Browser\Language.
-	 *  
+	 *  \see https://packagist.org/packages/sinergi/browser-detector
 	 *  \deprecated
-	 *  \see FW\Browser\OS::getOS
+	 *  \warning This method was removed.
 	 */
 	public static function getMobileDevice()
 	{
-		if (self::$mobile === NULL) {
-			self::mobileDeviceDetect();
-		}
-		return (self::$mobile) ? (self::$mobile_device) : (self::$mobile);
+		throw new \Exception('Deprecated method');
 	}
 
 	/**
-	 *	\brief Copyright do Framework
+	 *  \brief Copyright page
 	 */
 	public static function printCopyright()
 	{
@@ -585,49 +495,47 @@ class Kernel
 		echo '<head>';
 		echo '<title>FVAL PHP Framework for Web Applications - About</title>';
 		echo '<style type="text/css">';
-		echo 'body { padding:20px 40px;border:0;margin:0;background-color:#25567B;color:#fff;font-family:arial;font-size:11px;text-align:center; }';
+		echo 'body { padding:20px 40px;border:0;margin:0;background-color:#0F3E06;color:#fff;font-family:arial;font-size:11px;text-align:center; }';
 		echo 'a, a:link, a:active, a:visited { text-decoration:none;color:#3F92D2; }';
 		echo 'a:hover { color:#0B61A4; }';
-		echo '.logo { display:block;padding:0;border:0;border-bottom:1px solid #fff;margin:0 auto;width:500px;height:70px;background:transparent url(data:image/png;base64,'.self::_img_logo().') no-repeat left top; }';
-		echo '.logo a { display:block;color:#fff;padding:0;border:0;margin:0 0 0 150px;height:59px;line-height:59px;vertical-align:middle;font-size:150%;font-weight:bold; }';
+		echo '.logo { display:block;padding:0 0 5px 0;border:0;border-bottom:1px solid #fff;margin:0;height:50px; }';
+		echo '.logo a { display:block;color:#fff;padding:0;border:0;margin:0;height:50px;line-height:50px;vertical-align:middle;font-size:150%;font-weight:bold; }';
+		echo '.logo img { vertical-align:middle; }';
+		echo '.logo span { color:#FF9900; }';
+		echo '.class { color:#F9F7BD; }';
+		echo '.fw { color:#A2A2A2; }';
+		echo '.slash { color:#888; }';
+		echo '.version { color:#62E44C; }';
+		echo '.description { color:#CCC; }';
 		echo 'table { padding:0;border:0;margin:0 auto;cell-padding:0; }';
 		echo 'tr { padding:0;border:0;margin:0; }';
 		echo 'td { padding:0 5px 0 0;border:0;text-align:left;cell-padding:0; }';
 		echo '</style>';
 		echo '</head>';
 		echo '<body>';
-		echo '<h1 class="logo"><a href="https://github.com/fernandoval/FVAL-PHP-Framework">FVAL PHP Framework</a></h1>';
-		echo '<p>Este projeto foi desenvolvido utilizando o <strong><a href="https://github.com/fernandoval/FVAL-PHP-Framework">FVAL PHP Framework</a> for Web Applications v'.self::VERSION.'</strong> para PHP.<br /></p>';
-		echo '<p><strong>Este framework foi escrito por</strong></p><p>';
-		echo 'Fernando Val - fernando at fval dot com dot br<br />';
-		echo 'Lucas Cardozo - lucas dot cardozo at live dot com</p>';
+		echo '<h1 class="logo"><a href="https://github.com/fernandoval/FVAL-PHP-Framework"><img src="data:image/png;base64,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" title=""> <span>FVAL</span> PHP Framework</a></h1>';
+		echo '<p>Release <span class="version">'.self::VERSION.'</span></strong>.<br /></p>';
+		
+		echo '<p>Simply a micro framework for smart <a href="http://php.net">PHP</a> developers.</p>';
+		
+		echo '<p class="description">KISS is our philosophy. KISS is good. KISS is a principle. So write codes with KISS in your mind and <a href="https://en.wikipedia.org/wiki/KISS_principle">keep it simple, silly</a>.</p>';
 
-		echo '<p><strong>Biblioteca de classes do framework</strong></p><table align="center">';
+		echo '<p><strong>List of the library classes:</strong></p><table align="center">';
 		$d = rtrim(dirname(__FILE__), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
-		$fv = self::_list_classes($d, 'FW');
-		ksort($fv);
-		foreach ($fv as $k => $v) {
-			echo '<tr><td>'.$v['n'].'</td><td>'.$v['v'].($v['b']?'</td><td>'.$v['b']:"").'</td></tr>';
+		foreach (self::_list_classes($d, 'FW') as $k => $v) {
+			echo '<tr><td>'.str_replace('\\','<span class="slash">\\</span>',str_replace('FW\\','<span class="fw">FW</span>\\',str_replace('class ', '<span class="class">class</span> ', str_replace('interface ', '<span class="class">interface</span> ', $v['n'])))).'</td><td class="version">'.$v['v'].($v['b']?'</td><td class="description">'.$v['b']:"").'</td></tr>';
 		}
 		echo '</table>';
 
-		echo '<p><strong>Classes Inclusas nesse framework</strong></p><p>';
+		echo '<p><strong>This framework was created by</strong></p><p>';
+		echo 'Fernando Val - fernando at fval dot com dot br<br />';
+		echo 'Lucas Cardozo - lucas dot cardozo at live dot com</p>';
 		
-		try {
-			$s = new \Smarty;
-			echo $s::SMARTY_VERSION . ' - Smarty Template Engine (c) 2002 New Digital Group, Inc.<br />';
-			unset($s);
-		} catch (Exception $e) {
-		}
+		echo '<p class="description">This framework is Open Source and distributed under <a href="https://opensource.org/licenses/MIT">MIT</a> license.</p>';
+
+		echo '</p><p><a href="http://fval.com.br"><img src="data:image/png;base64,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" title="Powered by FVAL"></a></p>';
 		
-		echo 'Sending e-mail messages via SMTP protocol v1.41 (c) 1999-2009 Manuel Lemos<br />';
-		echo 'MIME E-mail message composing and sending v1.92 (c) 1999-2004 Manuel Lemos<br />';
-		echo 'MIME E-mail message composing and sending using Sendmail v1.18 (c) 1999-2004 Manuel Lemos<br />';
-		echo 'MIME E-mail message composing and sending via SMTP v1.36 (c) 1999-2004 Manuel Lemos<br />';
-		echo 'Simple Authentication and Security Layer client v1.11 (c) 2001-2005 Manuel Lemos<br />';
-		// echo 'NuSOAP - Web Services Toolkit for PHP v1.123 (c) 2002 NuSphere Corporation<br />';
-		echo 'FeedCreator v1.7.2 (c) Kai Blankenhorn<br />';
-		echo '</p></body>';
+		echo '</body>';
 		echo '</html>';
 
 		exit(0);
@@ -661,11 +569,7 @@ class Kernel
 				}
 			}
 		}
+		ksort($fv);
 		return $fv;
-	}
-	
-	private static function _img_logo()
-	{
-		return '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';
 	}
 }
