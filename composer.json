@@ -1,6 +1,6 @@
 {
 	"name": "fval/php-framewok",
-	"description": "FVAL PHP Framework for Web Applications",
+	"description": "FVAL PHP Framework",
 	"license": "MIT",
 	"type": "project",
 	"config": {
@@ -20,7 +20,7 @@
 		}
     },
     "require": {
-		"php": ">=5.3.3",
+		"php": ">=5.4.0",
 		
 		"smarty/smarty": "*",
 		"twig/twig": "*",

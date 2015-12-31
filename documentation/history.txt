@@ -1,13 +1,17 @@
 FVAL PHP Framework for Web Applications
 
-Copyright (C) 2007-2015 FVAL - Consultoria e Informática Ltda.
-Copyright (C) 2007-2015 Fernando Val
-Copyright (C) 2009-2014 Lucas Cardozo
+Sobre o framework:
+------------------
 
-http://www.fval.com.br
+O FVAL PHP Framework for Web Applications foi projetado para ser um framework de desenvolvimentos de aplicações web em PHP no formato MVC, leve, de fácil aprendizado, rico em recursos, adaptável e de execução ágil.
 
-Active development team:
-	Fernando Val  - fernando.val@gmail.com
+Este framework nasceu a partir de um projeto pessoal de Fernando Val, desenvolvido em 2005, para facilitação de desenvolvimento de projetos e sites baseados em PHP. Em 2007 o projeto foi totalmente reescrito e ganhou orientação a objetos, ainda mantendo-se a compabilidade com a versão 4 do PHP.
+
+No ano de 2008 Lucas Cardozo agregou nova estrutura e recursos ao projeto, transformando-o num micro-framework, utilizado nos projetos da equipe de desenvolvedores PHP liderada por Fernando. Entretanto não havia uma classe com suporte a múltiplas plataformas de sistemas gerenciadores de bancos de dados (SGBD) e apenas o MySQL era suportado.
+
+O framework foi finalmente compilado, remodelado e reestruturado, transformando-se em plataforma MVC, utilizando a classe [Smarty](http://www.smarty.net) como mecanismo de renderização das visões (views), em 2009 por Fernando. O suporte ao PHP 4 foi abandonado e o PHP 5.0 passou a ser menor versão admissível para utilização do framework. A classe de bando de dados [adoDB](http://adodb.sourceforge.net) foi adicionada para suporte a múltiplos SGBD.
+
+Em 2011 a classe adoDB foi abandonada e o mecanismo PDO (PHP Data Objects) foi adotado. Dessa forma a menor versão suportada para utilização do framework passou a ser a 5.1.
 
 
 Framework Update History
