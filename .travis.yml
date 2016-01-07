@@ -6,4 +6,5 @@ php:
   - '7.0'
   - hhvm
   - nightly
-composer install
+install:
+  - composer install
