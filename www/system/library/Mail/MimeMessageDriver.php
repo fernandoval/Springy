@@ -8,7 +8,7 @@
  *  \brief      Class driver for use with Manuel Lemos' MIME e-mail message class
  *  \see        http://www.phpclasses.org/package/9-PHP-PHP-mailer-to-compose-and-send-MIME-messages.html
  *  \warning    This file is part of the framework and can not be omitted
- *  \version    1.0.0
+ *  \version    1.0.1
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \ingroup    framework
  */
@@ -40,8 +40,8 @@ class MimeMessageDriver implements MailDriverInterface
 		'Subject' => "",
 	);
 	private $mailHeaders = array(
-		'From' = "",
-		'Sender' = "",
+		'From' => "",
+		'Sender' => "",
 		'To' => array(),
 		'Cc' => array(),
 		'Bcc' => array(),

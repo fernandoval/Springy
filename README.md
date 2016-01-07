@@ -1,5 +1,7 @@
 # FVAL PHP Framework #
 
+[![Build Status](https://travis-ci.org/fernandoval/FVAL-PHP-Framework.svg?branch=master)](https://travis-ci.org/fernandoval/FVAL-PHP-Framework)
+
 A micro framework for smart PHP developers.
 
 ### What is this ###

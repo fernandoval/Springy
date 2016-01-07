@@ -7,7 +7,7 @@
  *
  *	\brief     Autoload initialization script for PHPUnit
  *	\warning   Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version   0.1
+ *	\version   0.2
  *  \author    Fernando Val - fernando.val@gmail.com
  *	\ingroup   tests
  */
