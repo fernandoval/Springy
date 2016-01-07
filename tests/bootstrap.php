@@ -21,3 +21,10 @@ require(HELPERS);
 if ( !spl_autoload_register('fwgv_autoload') ) {
 	die('Internal System Error on Startup');
 }
+
+/**
+ *  \brief Carrega autoload do Composer, caso exista
+ */
+if (file_exists($GLOBALS['SYSTEM']['3RDPARTY_PATH'] . DIRECTORY_SEPARATOR . 'autoload.php')) {
+	require $GLOBALS['SYSTEM']['3RDPARTY_PATH'] . DIRECTORY_SEPARATOR . 'autoload.php';
+}
