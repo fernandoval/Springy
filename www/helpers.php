@@ -1,6 +1,6 @@
 <?php
 /** \file
- *  FVAL PHP Framework for Web Applications
+ *  FVAL PHP Framework for Web Applications.
  *  
  *  \copyright  Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
  *  \copyright  Copyright (c) 2007-2015 Fernando Val\n
@@ -20,17 +20,16 @@
 /**------------------------------------------------------------
  *  Constants
  *-------------------------------------------------------------*/
-if ( !defined('DS') ) {
+if (!defined('DS')) {
     define('DS', DIRECTORY_SEPARATOR);
 }
-
 
 /**------------------------------------------------------------
  *  Functions
  *-------------------------------------------------------------*/
 
 /**
- *  \brief Get shared container application instance
+ *  \brief Get shared container application instance.
  *
  *  Retorna a instância compartilhada do container da aplicação
  *  ou um serviço registrado com o nome passado por parâmetro. * 
@@ -40,17 +39,17 @@ if ( !defined('DS') ) {
  */
 function app($service = null)
 {
-    if ( $service ) {
+    if ($service) {
         return app()->resolve($service);
     }
-    
+
     return FW\Core\Application::sharedInstance();
 }
 
 /**
  *  \brief An alias for FW\Configuration::get() method
  *  \param string $key
- *  \return mixed
+ *  \return mixed.
  */
 function config_get($key)
 {
@@ -60,7 +59,7 @@ function config_get($key)
 /**
  *  \brief An alias for FW\Configuration::set() method
  *  \param string $key
- *  \param mixed $val
+ *  \param mixed $val.
  */
 function config_set($key, $val)
 {
@@ -70,7 +69,7 @@ function config_set($key, $val)
 /**
  *  \brief Global SYSTEM variable wrapper
  *  \param string $key
- *  \return mixed
+ *  \return mixed.
  */
 function sysconf($key)
 {
@@ -82,9 +81,9 @@ function sysconf($key)
  *  \param string $txt
  *  \param string $name
  *  \param boolean $highlight
- *  \param boolean $revert
+ *  \param boolean $revert.
  */
-function debug($txt, $name='', $highlight=true, $revert=true)
+function debug($txt, $name = '', $highlight = true, $revert = true)
 {
     FW\Kernel::debug($txt, $name, $highlight, $revert);
 }
@@ -92,19 +91,21 @@ function debug($txt, $name='', $highlight=true, $revert=true)
 /**
  *  \brief A var_dump and die help functin
  *  \param mixed $var
- *  \param boolean $die
+ *  \param boolean $die.
  */
 function dd($var, $die = true)
 {
     echo '<pre>';
     var_dump($var);
     echo '</pre>';
-    
-    if ($die) die;
+
+    if ($die) {
+        die;
+    }
 }
 
 /**
- *  \brief Return the object (WTF?)
+ *  \brief Return the object (WTF?).
  */
 function with($object)
 {
@@ -112,109 +113,109 @@ function with($object)
 }
 
 /**
- *	\brief Framework autoload function
+ *	\brief Framework autoload function.
  */
 function fwgv_autoload($class)
 {
-	$aclass = explode('\\', $class);
-	if (count($aclass) > 1) {
-		if ($aclass[0] == 'FW') {
-			array_shift($aclass);
-		}
-		$file = implode(DIRECTORY_SEPARATOR, $aclass);
-	} else {
-		$file = $aclass[0];
-	}
+    $aclass = explode('\\', $class);
+    if (count($aclass) > 1) {
+        if ($aclass[0] == 'FW') {
+            array_shift($aclass);
+        }
+        $file = implode(DIRECTORY_SEPARATOR, $aclass);
+    } else {
+        $file = $aclass[0];
+    }
 
-	if (file_exists(sysconf('LIBRARY_PATH') . DIRECTORY_SEPARATOR . $file . '.php')) {
-		require_once(sysconf('LIBRARY_PATH') . DIRECTORY_SEPARATOR . $file . '.php');
-	} else {
-		// procura na user_classes
+    if (file_exists(sysconf('LIBRARY_PATH').DIRECTORY_SEPARATOR.$file.'.php')) {
+        require_once sysconf('LIBRARY_PATH').DIRECTORY_SEPARATOR.$file.'.php';
+    } else {
+        // procura na user_classes
 
-		// verifica se a classe utiliza o padrão com namespace (ou classe estática)
-		// ex: class Oferta_Comercial_Static == arquivo user_classes/oferta/oferta-comercial.static.php
+        // verifica se a classe utiliza o padrão com namespace (ou classe estática)
+        // ex: class Oferta_Comercial_Static == arquivo user_classes/oferta/oferta-comercial.static.php
 
-		preg_match('/^(?<class>[A-Za-z]+)(?<subclass>.*?)(?<type>_Static)?$/', $class, $vars);
+        preg_match('/^(?<class>[A-Za-z]+)(?<subclass>.*?)(?<type>_Static)?$/', $class, $vars);
 
-		$nameSpace = $class = $vars['class'];
+        $nameSpace = $class = $vars['class'];
 
-		if (!empty($vars['subclass'])) {
-			$class .= '-' . substr($vars['subclass'], 1);
-		}
+        if (!empty($vars['subclass'])) {
+            $class .= '-'.substr($vars['subclass'], 1);
+        }
 
-		if (isset($vars['type'])) {
-			$class .= '.static';
-		} else {
-			$class .= '.class';
-		}
+        if (isset($vars['type'])) {
+            $class .= '.static';
+        } else {
+            $class .= '.class';
+        }
 
-		// procura a classe nas Libarys
-		if (file_exists(sysconf('CLASS_PATH') . DIRECTORY_SEPARATOR . $nameSpace . DIRECTORY_SEPARATOR . $class. '.php')) {
-			require_once sysconf('CLASS_PATH') . DIRECTORY_SEPARATOR . $nameSpace . DIRECTORY_SEPARATOR . $class . '.php';
-		} elseif (file_exists(sysconf('CLASS_PATH') . DIRECTORY_SEPARATOR . $class . '.php')) {
-			require_once sysconf('CLASS_PATH') . DIRECTORY_SEPARATOR . $class . '.php';
-		} else {
-			$class = $vars['class'];
+        // procura a classe nas Libarys
+        if (file_exists(sysconf('CLASS_PATH').DIRECTORY_SEPARATOR.$nameSpace.DIRECTORY_SEPARATOR.$class.'.php')) {
+            require_once sysconf('CLASS_PATH').DIRECTORY_SEPARATOR.$nameSpace.DIRECTORY_SEPARATOR.$class.'.php';
+        } elseif (file_exists(sysconf('CLASS_PATH').DIRECTORY_SEPARATOR.$class.'.php')) {
+            require_once sysconf('CLASS_PATH').DIRECTORY_SEPARATOR.$class.'.php';
+        } else {
+            $class = $vars['class'];
 
-			if (!empty($vars['subclass'])) {
-				$class .= '_' . substr($vars['subclass'], 1);
-			}
+            if (!empty($vars['subclass'])) {
+                $class .= '_'.substr($vars['subclass'], 1);
+            }
 
-			if (isset($vars['type'])) {
-				$class .= '.static';
-			} else {
-				$class .= '.class';
-			}
+            if (isset($vars['type'])) {
+                $class .= '.static';
+            } else {
+                $class .= '.class';
+            }
 
-			if (file_exists(sysconf('CLASS_PATH') . DIRECTORY_SEPARATOR . $nameSpace . DIRECTORY_SEPARATOR . $class. '.php')) {
-				require_once sysconf('CLASS_PATH') . DIRECTORY_SEPARATOR . $nameSpace . DIRECTORY_SEPARATOR . $class . '.php';
-			} elseif (file_exists(sysconf('CLASS_PATH') . DIRECTORY_SEPARATOR . $class . '.php')) {
-				require_once sysconf('CLASS_PATH') . DIRECTORY_SEPARATOR . $class . '.php';
-			}
-		}
-	}
+            if (file_exists(sysconf('CLASS_PATH').DIRECTORY_SEPARATOR.$nameSpace.DIRECTORY_SEPARATOR.$class.'.php')) {
+                require_once sysconf('CLASS_PATH').DIRECTORY_SEPARATOR.$nameSpace.DIRECTORY_SEPARATOR.$class.'.php';
+            } elseif (file_exists(sysconf('CLASS_PATH').DIRECTORY_SEPARATOR.$class.'.php')) {
+                require_once sysconf('CLASS_PATH').DIRECTORY_SEPARATOR.$class.'.php';
+            }
+        }
+    }
 }
 
 /**
- *	\brief Exception error handler
+ *	\brief Exception error handler.
  */
 function FW_ExceptionHandler($error)
 {
-	FW\Errors::errorHandler($error->getCode(), $error->getMessage(), $error->getFile(), $error->getLine(), (method_exists($error, 'getContext') ? $error->getContext() : null));
+    FW\Errors::errorHandler($error->getCode(), $error->getMessage(), $error->getFile(), $error->getLine(), (method_exists($error, 'getContext') ? $error->getContext() : null));
 }
 
 /**
- *	\brief Error handler
+ *	\brief Error handler.
  */
 function FW_ErrorHandler($errno, $errstr, $errfile, $errline, $errContext)
 {
-	FW\Errors::errorHandler($errno, $errstr, $errfile, $errline, $errContext);
+    FW\Errors::errorHandler($errno, $errstr, $errfile, $errline, $errContext);
 }
 
 /**
- *  \brief Framework Exception class
+ *  \brief Framework Exception class.
  */
 class FW_Exception extends Exception
 {
-	/// Contexto do erro
+    /// Contexto do erro
     private $context = null;
 
-	/**
-	 *  \brief Constructor method
-	 */
+    /**
+     *  \brief Constructor method.
+     */
     public function __construct($code, $message, $file, $line, $context = null)
-	{
+    {
         parent::__construct($message, $code);
         $this->file = $file;
         $this->line = $line;
         $this->context = $context;
     }
 
-	/**
-	 *  \brief Return the errot context
-	 */
-	public function getContext()
-	{
-		return $this->context;
-	}
+    /**
+     *  \brief Return the errot context.
+     */
+    public function getContext()
+    {
+        return $this->context;
+    }
 };

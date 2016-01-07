@@ -1,6 +1,6 @@
 <?php
 /**	\file
- *	FVAL PHP Framework for Web Applications
+ *	FVAL PHP Framework for Web Applications.
  *
  *  \copyright	Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
  *  \copyright	Copyright (c) 2007-2015 Fernando Val\n
@@ -12,7 +12,6 @@
  *  \author		Mauricio Bastos <mbastos@gmail.com>
  *	\ingroup	framework
  */
- 
 namespace FW;
 
 /**
@@ -65,13 +64,14 @@ namespace FW;
  * </pre>
  *
  * @see        CreditCardValidation (Original Name: CreditCardValidationSolution)::validateCreditCard()
- * @package    CreditCardValidation (Original Name: CreditCardValidationSolution)
+ *
  * @author     Daniel Convissor <danielc@analysisandsolutions.com>
  * @copyright  The Analysis and Solutions Company, 2002-2006
+ *
  * @version    $Name: rel-5-14 $ $Id: ccvs.inc,v 1.25 2009/02/06 04:41:22 danielc Exp $
+ *
  * @link       http://www.analysisandsolutions.com/software/ccvs/ccvs.htm
  */
-
 
 /**
  * Ensures credit card information is keyed in correctly.
@@ -79,40 +79,43 @@ namespace FW;
  * <p>Complete usage information is in the validateCreditCard() method.</p>
  *
  * @see        validateCreditCard()
- * @package    CreditCardValidation (Original Name: CreditCardValidationSolution)
+ *
  * @author     Daniel Convissor <danielc@analysisandsolutions.com>
  * @copyright  The Analysis and Solutions Company, 2002-2006
+ *
  * @version    $Name: rel-5-14 $
+ *
  * @link       http://www.analysisandsolutions.com/software/ccvs/ccvs.htm
+ *
  * @license    http://www.analysisandsolutions.com/software/license.htm Simple Public License
  */
-class CreditCardValidation {
-
-    /**
+class CreditCardValidation
+{
+    /*
      * The credit card number with all non-numeric characters removed.
      * @var  string
      */
-    var $CCVSNumber = '';
+    public $CCVSNumber = '';
 
-    /**
+    /*
      * The first four digits of the card.
      * @var  string
      */
-    var $CCVSNumberLeft = '';
-	
-	/**
-	 * The first six digits of card
-	 * @var  string 
-	 */
-    var $CCVSNumberLeft6 = '';
-	
-    /**
+    public $CCVSNumberLeft = '';
+
+    /*
+     * The first six digits of card
+     * @var  string 
+     */
+    public $CCVSNumberLeft6 = '';
+
+    /*
      * The card's last four digits.
      * @var  string
      */
-    var $CCVSNumberRight = '';
+    public $CCVSNumberRight = '';
 
-    /**
+    /*
      * The name of the type of card presented.
      *
      * <p>Automatically determined from the first four digits of the
@@ -120,9 +123,9 @@ class CreditCardValidation {
      *
      * @var  string
      */
-    var $CCVSType = '';
+    public $CCVSType = '';
 
-    /**
+    /*
      * The card's expiration date.
      *
      * <p>Presented only if the <var>RequireExp</var> parameter is
@@ -132,14 +135,13 @@ class CreditCardValidation {
      *
      * @var  string
      */
-    var $CCVSExpiration = '';
+    public $CCVSExpiration = '';
 
-    /**
+    /*
      * String explaining the first problem detected, if any.
      * @var  string
      */
-    var $CCVSError = '';
-
+    public $CCVSError = '';
 
     /**
      * Ensures credit card information is keyed in correctly.
@@ -193,66 +195,72 @@ class CreditCardValidation {
      * assisted. Neil Fraser helped a bit on the Perl version.  Steve
      * Horsley, Roedy Green and Jon Skeet provided tips on the Java Edition.</p>
      *
-     * @param   string   $Number      the number of the credit card to
-     *                                  validate.
-     * @param   string   $Language    the ISO 639-1 two letter code of
-     *                                  the language for error messages.
-     * @param   array    $Accepted    credit card types you accept.  If
-     *                                  not used in function call, all
-     *                                  known cards are accepted.  Set
-     *                                  it before calling the function: <br /><kbd>
-     *                                  $A = array('Visa', 'JCB');
-     *                                  </kbd><br />
-     *                                       Known types:        <ul>
-     *                                  <li> American Express    </li>
-     *                                  <li> Australian BankCard </li>
-     *                                  <li> Carte Blanche       </li>
-     *                                  <li> Diners Club         </li>
-     *                                  <li> Discover/Novus      </li>
-     *                                  <li> JCB                 </li>
-     *                                  <li> MasterCard          </li>
-     *                                  <li> Visa                </li></ul>
-     * @param   string   $RequireExp  should the expiration date be
-     *                                  checked?  Y or N.
-     * @param   integer  $Month       the card's expiration month
-     *                                  in M, 0M or MM foramt.
-     * @param   integer  $Year        the card's expiration year in YYYY format.
-     * @return  boolean  TRUE if everything is fine.  FALSE if problems.
+     * @param string $Number     the number of the credit card to
+     *                           validate.
+     * @param string $Language   the ISO 639-1 two letter code of
+     *                           the language for error messages.
+     * @param array  $Accepted   credit card types you accept.  If
+     *                           not used in function call, all
+     *                           known cards are accepted.  Set
+     *                           it before calling the function: <br /><kbd>
+     *                           $A = array('Visa', 'JCB');
+     *                           </kbd><br />
+     *                           Known types:        <ul>
+     *                           <li> American Express    </li>
+     *                           <li> Australian BankCard </li>
+     *                           <li> Carte Blanche       </li>
+     *                           <li> Diners Club         </li>
+     *                           <li> Discover/Novus      </li>
+     *                           <li> JCB                 </li>
+     *                           <li> MasterCard          </li>
+     *                           <li> Visa                </li></ul>
+     * @param string $RequireExp should the expiration date be
+     *                           checked?  Y or N.
+     * @param int    $Month      the card's expiration month
+     *                           in M, 0M or MM foramt.
+     * @param int    $Year       the card's expiration year in YYYY format.
+     *
+     * @return bool TRUE if everything is fine.  FALSE if problems.
      *
      * @version    $Name: rel-5-14 $
+     *
      * @author     Daniel Convissor <danielc@analysisandsolutions.com>
      * @copyright  The Analysis and Solutions Company, 2002-2006
+     *
      * @link       http://www.analysisandsolutions.com/software/ccvs/ccvs.htm
      * @link       http://www.loc.gov/standards/iso639-2/langcodes.html
      * @link       http://www.analysisandsolutions.com/donate/
+     *
      * @license    http://www.analysisandsolutions.com/software/license.htm Simple Public License
      */
-    function validateCreditCard($Number, $Language='en', $Accepted='',
-                                  $RequireExp='N', $Month='', $Year='') {
-
-        $this->CCVSNumber      = '';
-        $this->CCVSNumberLeft  = '';
+    public function validateCreditCard($Number, $Language = 'en', $Accepted = '',
+                                  $RequireExp = 'N', $Month = '', $Year = '')
+    {
+        $this->CCVSNumber = '';
+        $this->CCVSNumberLeft = '';
         $this->CCVSNumberLeft6 = '';
         $this->CCVSNumberRight = '';
-        $this->CCVSType        = '';
-        $this->CCVSExpiration  = '';
-        $this->CCVSError       = '';
+        $this->CCVSType = '';
+        $this->CCVSExpiration = '';
+        $this->CCVSError = '';
 
         // Import the language preferences.
 
-        $Path = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'CreditCardValidation';
-		
-        if (!file_exists($Path . DIRECTORY_SEPARATOR . 'ccvs_'.$Language.'.inc')) {
+        $Path = dirname(__FILE__).DIRECTORY_SEPARATOR.'CreditCardValidation';
+
+        if (!file_exists($Path.DIRECTORY_SEPARATOR.'ccvs_'.$Language.'.inc')) {
             $this->CCVSError = "The $Language language file can't be found";
-            return FALSE;
+
+            return false;
         }
-        include $Path . DIRECTORY_SEPARATOR . 'ccvs_'.$Language.'.inc';
+        include $Path.DIRECTORY_SEPARATOR.'ccvs_'.$Language.'.inc';
 
         // Catch malformed input.
 
         if (empty($Number) || !is_string($Number)) {
             $this->CCVSError = $CCVSErrNumberString;
-            return FALSE;
+
+            return false;
         }
 
         // Ensure number doesn't overrun.
@@ -263,11 +271,11 @@ class CreditCardValidation {
 
         // Set up variables.
 
-        $this->CCVSNumberLeft  = substr($this->CCVSNumber, 0, 4);
+        $this->CCVSNumberLeft = substr($this->CCVSNumber, 0, 4);
         $this->CCVSNumberLeft6 = substr($this->CCVSNumber, 0, 6);
         $this->CCVSNumberRight = substr($this->CCVSNumber, -4);
-        $NumberLength          = strlen($this->CCVSNumber);
-        $DoChecksum            = 'Y';
+        $NumberLength = strlen($this->CCVSNumber);
+        $DoChecksum = 'Y';
 
         // Determine the card type and appropriate length.
 
@@ -280,14 +288,12 @@ class CreditCardValidation {
         } elseif (($this->CCVSNumberLeft >= 3800) && ($this->CCVSNumberLeft <= 3889)) {
             $this->CCVSType = 'Diners Club';
             $ShouldLength = 14;
-
         } elseif (($this->CCVSNumberLeft >= 3400) && ($this->CCVSNumberLeft <= 3499)) {
             $this->CCVSType = 'American Express';
             $ShouldLength = 15;
         } elseif (($this->CCVSNumberLeft >= 3700) && ($this->CCVSNumberLeft <= 3799)) {
             $this->CCVSType = 'American Express';
             $ShouldLength = 15;
-
         } elseif (($this->CCVSNumberLeft >= 3088) && ($this->CCVSNumberLeft <= 3094)) {
             $this->CCVSType = 'JCB';
             $ShouldLength = 16;
@@ -306,7 +312,6 @@ class CreditCardValidation {
         } elseif (($this->CCVSNumberLeft >= 3528) && ($this->CCVSNumberLeft <= 3589)) {
             $this->CCVSType = 'JCB';
             $ShouldLength = 16;
-
         } elseif (($this->CCVSNumberLeft >= 6360) && ($this->CCVSNumberLeft <= 6369)) {
             $this->CCVSType = 'ELO';
             $ShouldLength = 16;
@@ -314,8 +319,8 @@ class CreditCardValidation {
             $this->CCVSType = 'ELO';
             $ShouldLength = 16;
         } elseif (($this->CCVSNumberLeft6 == 438935) || ($this->CCVSNumberLeft6 == 451416) ||
-				  ($this->CCVSNumberLeft6 == 504175) || ($this->CCVSNumberLeft6 == 636297) ||
-				  ($this->CCVSNumberLeft6 == 627780) || ($this->CCVSNumberLeft6 == 636368)) {
+                  ($this->CCVSNumberLeft6 == 504175) || ($this->CCVSNumberLeft6 == 636297) ||
+                  ($this->CCVSNumberLeft6 == 627780) || ($this->CCVSNumberLeft6 == 636368)) {
             $this->CCVSType = 'ELO';
             $ShouldLength = 16;
         } elseif (($this->CCVSNumberLeft6 >= 401170) && ($this->CCVSNumberLeft6 <= 401179)) {
@@ -324,11 +329,9 @@ class CreditCardValidation {
         } elseif (($this->CCVSNumberLeft6 >= 457630) && ($this->CCVSNumberLeft6 <= 457639)) {
             $this->CCVSType = 'ELO';
             $ShouldLength = 16;
-
         } elseif (($this->CCVSNumberLeft >= 3890) && ($this->CCVSNumberLeft <= 3899)) {
             $this->CCVSType = 'Carte Blanche';
             $ShouldLength = 14;
-
         } elseif (($this->CCVSNumberLeft >= 4000) && ($this->CCVSNumberLeft <= 4999)) {
             $this->CCVSType = 'Visa';
             if ($NumberLength > 14) {
@@ -337,58 +340,55 @@ class CreditCardValidation {
                 $ShouldLength = 13;
             } else {
                 $this->CCVSError = $CCVSErrVisa14;
-                return FALSE;
-            }
 
+                return false;
+            }
         } elseif (($this->CCVSNumberLeft >= 5100) && ($this->CCVSNumberLeft <= 5599)) {
             $this->CCVSType = 'MasterCard';
             $ShouldLength = 16;
-
         } elseif ($this->CCVSNumberLeft == 5610) {
             $this->CCVSType = 'Australian BankCard';
             $ShouldLength = 16;
-
         } elseif ($this->CCVSNumberLeft == 6011) {
             $this->CCVSType = 'Discover/Novus';
             $ShouldLength = 16;
-
         } else {
             $this->CCVSError = sprintf($CCVSErrUnknown, $this->CCVSNumberLeft);
-            return FALSE;
-        }
 
+            return false;
+        }
 
         // Check acceptance.
 
         if (!empty($Accepted)) {
             if (!is_array($Accepted)) {
                 $this->CCVSError = $CCVSErrAccepted;
-                return FALSE;
+
+                return false;
             }
             if (!in_array($this->CCVSType, $Accepted)) {
                 $this->CCVSError = sprintf($CCVSErrNoAccept, $this->CCVSType);
-                return FALSE;
+
+                return false;
             }
         }
 
-
         // Check length.
 
-        if ($NumberLength <> $ShouldLength) {
+        if ($NumberLength != $ShouldLength) {
             $Missing = $NumberLength - $ShouldLength;
             if ($Missing < 0) {
                 $this->CCVSError = sprintf($CCVSErrShort, abs($Missing));
             } else {
                 $this->CCVSError = sprintf($CCVSErrLong, $Missing);
             }
-            return FALSE;
-        }
 
+            return false;
+        }
 
         // Mod10 checksum process...
 
         if ($DoChecksum == 'Y') {
-
             $Checksum = 0;
 
             /*
@@ -416,48 +416,53 @@ class CreditCardValidation {
 
             if ($Checksum % 10 != 0) {
                 $this->CCVSError = $CCVSErrChecksum;
-                return FALSE;
+
+                return false;
             }
         }
-
 
         // Expiration date process...
 
         if ($RequireExp == 'Y') {
-
             if (empty($Month) || !is_string($Month)) {
                 $this->CCVSError = $CCVSErrMonthString;
-                return FALSE;
+
+                return false;
             }
 
             if (!preg_match('/^(0?[1-9]|1[0-2])$/', $Month)) {
                 $this->CCVSError = $CCVSErrMonthFormat;
-                return FALSE;
+
+                return false;
             }
 
             if (empty($Year) || !is_string($Year)) {
                 $this->CCVSError = $CCVSErrYearString;
-                return FALSE;
+
+                return false;
             }
 
             if (!preg_match('/^[0-9]{4}$/', $Year)) {
                 $this->CCVSError = $CCVSErrYearFormat;
-                return FALSE;
+
+                return false;
             }
 
             if ($Year < date('Y')) {
                 $this->CCVSError = $CCVSErrExpired;
-                return FALSE;
+
+                return false;
             } elseif ($Year == date('Y')) {
                 if ($Month < date('m')) {
                     $this->CCVSError = $CCVSErrExpired;
-                    return FALSE;
+
+                    return false;
                 }
             }
 
-            $this->CCVSExpiration = sprintf('%02d', $Month) . substr($Year, -2);
+            $this->CCVSExpiration = sprintf('%02d', $Month).substr($Year, -2);
         }
 
-        return TRUE;
+        return true;
     }
 }

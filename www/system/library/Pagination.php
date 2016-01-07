@@ -1,6 +1,6 @@
 <?php
 /**	\file
- *	FVAL PHP Framework for Web Applications
+ *	FVAL PHP Framework for Web Applications.
  *
  *	\copyright	Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.
  *	\copyright	Copyright (c) 2007-2015 Fernando Val
@@ -12,11 +12,10 @@
  *	\author		Fernando Val <fernando.val@gmail.com>
  *	\ingroup	framework
  */
-
 namespace FW;
 
 /**
- *  \brief		A single pagination class
+ *  \brief		A single pagination class.
  *  
  *	\b License:		[pt-BR] : Esta classe é Open Source e distribuida sob a licença GPL.\n
  *					[en-US] : This class is Open Source and distributed under GPL license.
@@ -61,23 +60,23 @@ namespace FW;
 class Pagination
 {
     /// Array contendo os links das página / page link array
-    private $PagesLink = array();
-	/// Define a página atual / current page number
+    private $PagesLink = [];
+    /// Define a página atual / current page number
     private $CurrentPage = 1;
     /// Define a quantidade de páginas / total page number
     private $LastPage = 1;
     /// Define quantas páginas serão navegáveis para os lados a partir da página atual / number of sided pages
     private $BesidePages = 5;
-	/// Define a quantidade total de registros / total lines
-	private $nunRows = 0;
-	/// Define a quantidade de registros a serem exibidos por página / lines per page
-	private $nunRowsPerPage = 15;
+    /// Define a quantidade total de registros / total lines
+    private $nunRows = 0;
+    /// Define a quantidade de registros a serem exibidos por página / lines per page
+    private $nunRowsPerPage = 15;
     /// Define o hyperlink dos navegadores / site link
     private $siteLink = '';
-	/// Usado para indicar o local da página na URL ex: / page number macro
-	/// $siteLink = 'http://www.site.com/pag/busca/[page]';
-	/// $siteLink = 'http://www.site.com/?page=pag&search=busca&page=[page]';
-	private $tagLink = '[page]';
+    /// Usado para indicar o local da página na URL ex: / page number macro
+    /// $siteLink = 'http://www.site.com/pag/busca/[page]';
+    /// $siteLink = 'http://www.site.com/?page=pag&search=busca&page=[page]';
+    private $tagLink = '[page]';
     /// Código HTML com a navegação / HTML code
     private $HTML = '';
     /// Texto a ser mostrado como separador para primeira e última páginas / first/last page separator
@@ -93,151 +92,151 @@ class Pagination
     /// Texto a ser mostrado no link para a príxima página / next page text
     private $NextText = '&raquo;';
 
-	/**
-	 *  \brief Constructor
-	 */
-	public function __construct()
-	{
-		if (isset($_REQUEST['pag']) && is_numeric($_REQUEST['pag'])) {
-			$this->setCurrentPage($_REQUEST['pag']);
-		}
-	}
+    /**
+     *  \brief Constructor.
+     */
+    public function __construct()
+    {
+        if (isset($_REQUEST['pag']) && is_numeric($_REQUEST['pag'])) {
+            $this->setCurrentPage($_REQUEST['pag']);
+        }
+    }
 
-	/**
-	 *  \brief Set tag link
-	 */
-	public function setTagLink($tag)
-	{
-		$this->tagLink = $tag;
-	}
+    /**
+     *  \brief Set tag link.
+     */
+    public function setTagLink($tag)
+    {
+        $this->tagLink = $tag;
+    }
 
-	/**
-	 *  \brief Get tag link
-	 */
-	public function getTagLink()
-	{
-		return $this->tagLink;
-	}
+    /**
+     *  \brief Get tag link.
+     */
+    public function getTagLink()
+    {
+        return $this->tagLink;
+    }
 
-	/**
-	 *  \brief Set site link
-	 */
-	public function setSiteLink($link, $qs=array())
-	{
-		if (is_array($link)) {
-			if (isset($_SERVER['HTTPS'])) {
-				$this->siteLink = str_replace(urlencode($this->tagLink), $this->tagLink, URI::buildURL($link, array_merge($qs, array('pag' => $this->tagLink)), true, 'secure'));
-			} else {
-				$this->siteLink = str_replace(urlencode($this->tagLink), $this->tagLink, URI::buildURL($link, array_merge($qs, array('pag' => $this->tagLink))));
-			}
-		} else {
-			$this->siteLink = $link;
-		}
-	}
+    /**
+     *  \brief Set site link.
+     */
+    public function setSiteLink($link, $qs = [])
+    {
+        if (is_array($link)) {
+            if (isset($_SERVER['HTTPS'])) {
+                $this->siteLink = str_replace(urlencode($this->tagLink), $this->tagLink, URI::buildURL($link, array_merge($qs, ['pag' => $this->tagLink]), true, 'secure'));
+            } else {
+                $this->siteLink = str_replace(urlencode($this->tagLink), $this->tagLink, URI::buildURL($link, array_merge($qs, ['pag' => $this->tagLink])));
+            }
+        } else {
+            $this->siteLink = $link;
+        }
+    }
 
-	/**
-	 *  \brief Set current page
-	 */
-	public function setCurrentPage($pgatual)
-	{
-		$this->CurrentPage = $pgatual;
-	}
+    /**
+     *  \brief Set current page.
+     */
+    public function setCurrentPage($pgatual)
+    {
+        $this->CurrentPage = $pgatual;
+    }
 
-	/**
-	 *  \brief Get current page
-	 */
-	public function getCurrentPage()
-	{
-		return ($this->CurrentPage == 0 ? 1 : $this->CurrentPage);
-	}
+    /**
+     *  \brief Get current page.
+     */
+    public function getCurrentPage()
+    {
+        return $this->CurrentPage == 0 ? 1 : $this->CurrentPage;
+    }
 
-	/**
-	 *  \brief Set number of pages beside current page
-	 */
-	public function setBesidePages($BesidePages)
-	{
-		$this->BesidePages = $BesidePages;
-	}
+    /**
+     *  \brief Set number of pages beside current page.
+     */
+    public function setBesidePages($BesidePages)
+    {
+        $this->BesidePages = $BesidePages;
+    }
 
-	/**
-	 *  \brief Get number os beside pages
-	 */
-	public function getBesidePages()
-	{
-		return $this->BesidePages;
-	}
+    /**
+     *  \brief Get number os beside pages.
+     */
+    public function getBesidePages()
+    {
+        return $this->BesidePages;
+    }
 
-	/**
-	 *  \brief Set total line number
-	 */
-	public function setNumRows($rows)
-	{
-		$this->nunRows = $rows;
-	}
+    /**
+     *  \brief Set total line number.
+     */
+    public function setNumRows($rows)
+    {
+        $this->nunRows = $rows;
+    }
 
-	/**
-	 *  \brief Get total line number
-	 */
-	public function getNumRows()
-	{
-		return $this->nunRows;
-	}
+    /**
+     *  \brief Get total line number.
+     */
+    public function getNumRows()
+    {
+        return $this->nunRows;
+    }
 
-	/**
-	 *  \brief Set number of lines per page
-	 */
-	public function setRowsPerPage($qtd)
-	{
-		$this->nunRowsPerPage = $qtd;
-	}
+    /**
+     *  \brief Set number of lines per page.
+     */
+    public function setRowsPerPage($qtd)
+    {
+        $this->nunRowsPerPage = $qtd;
+    }
 
-	/**
-	 * \brief Get number of lines per page
-	 */
-	public function getRowsPerPage()
-	{
-		return $this->nunRowsPerPage;
-	}
+    /**
+     * \brief Get number of lines per page.
+     */
+    public function getRowsPerPage()
+    {
+        return $this->nunRowsPerPage;
+    }
 
-	/**
-	 *  \brief Set previous string text
-	 */
-	public function setPreviousText($txt)
-	{
-		$this->PreviousText = $txt;
-	}
+    /**
+     *  \brief Set previous string text.
+     */
+    public function setPreviousText($txt)
+    {
+        $this->PreviousText = $txt;
+    }
 
-	/**
-	 *  \brief Set next string text
-	 */
-	public function setNextText($txt)
-	{
-		$this->NextText = $txt;
-	}
+    /**
+     *  \brief Set next string text.
+     */
+    public function setNextText($txt)
+    {
+        $this->NextText = $txt;
+    }
 
-	/**
-	 *  \brief Calculate total page number
-	 */
-	private function calculateNumPages()
-	{
+    /**
+     *  \brief Calculate total page number.
+     */
+    private function calculateNumPages()
+    {
         $this->LastPage = ceil($this->nunRows / $this->nunRowsPerPage);
     }
 
-	/**
-	 *  \brief Parses the pagination
-	 */
+    /**
+     *  \brief Parses the pagination.
+     */
     public function parse()
-	{
-		$this->calculateNumPages();
+    {
+        $this->calculateNumPages();
 
-		$this->PagesLink['pages'] = array();
+        $this->PagesLink['pages'] = [];
         $this->PagesLink['currpage'] = $this->CurrentPage;
         $this->PagesLink['IndTotal'] = $this->LastPage;
         $this->PagesLink['currpageF'] = number_format($this->CurrentPage, 0);
         $this->PagesLink['IndTotF'] = number_format($this->LastPage, 0);
 
-		// Verifica se tem navagação pra página anterior
-		$this->PagesLink['previous'] = ($this->CurrentPage > 1 ? str_replace($this->tagLink, ($this->CurrentPage - 1), $this->siteLink) : '');
+        // Verifica se tem navagação pra página anterior
+        $this->PagesLink['previous'] = ($this->CurrentPage > 1 ? str_replace($this->tagLink, ($this->CurrentPage - 1), $this->siteLink) : '');
 
         // Verifica se mostra navegador para primeira página
         if (($this->CurrentPage - $this->BesidePages > 0) && ($this->LastPage > ($this->BesidePages * 2 + 1))) {
@@ -276,9 +275,9 @@ class Pagination
 
         // Monta o conteúdo central do navegador
         for ($x = $this->CurrentPage - $dec; $x <= $this->CurrentPage + $inc; $x++) {
-			if ($x == 0) {
-				continue;
-			}
+            if ($x == 0) {
+                continue;
+            }
 
             $this->PagesLink['pages'][$x] = ($x == $this->CurrentPage) ? '' : str_replace($this->tagLink, $x, $this->siteLink);
         }
@@ -293,37 +292,38 @@ class Pagination
         return $this->PagesLink;
     }
 
-	/**
-	 *  \brief Make HTML format of pagination
-	 */
+    /**
+     *  \brief Make HTML format of pagination.
+     */
     public function makeHtml()
-	{
+    {
         $this->parse();
 
-		if (count($this->PagesLink['pages']) == 1) {
-			return;
-		}
-        
-        $separator = '<li ' . ($this->SeparatorClass ? 'class="disabled '.$this->SeparatorClass.'"' : '') . '><a href="#">'.$this->SeparatorText.'</a></li>';
-        $previous  = empty($this->PagesLink['previous'])  ? '' : '<li><a href="'.$this->PagesLink['previous'].'" class="'.$this->NavigatorClass.'">'.$this->PreviousText.'</a></li> ';
-        $next      = empty($this->PagesLink['next'])  ? '' : '<li><a href="'.$this->PagesLink['next'].'" class="'.$this->NavigatorClass.'">'.$this->NextText.'</a></li>';
-        $first     = empty($this->PagesLink['first']) ? '' : '<li><a href="'.$this->PagesLink['first'].'" class="'.$this->NavigatorClass.'">1</a></li>';
-        $last      = empty($this->PagesLink['last'])  ? '' : '<li><a href="'.$this->PagesLink['last'].'" class="'.$this->NavigatorClass.'">'.$this->LastPage.'</a></li>';
-        $middle    = '';
-
-        foreach($this->PagesLink['pages'] as $Page => $Link) {
-            $middle .= empty($Link) ? '<li ' . ($this->CurrentPageClass ? 'class="'.$this->CurrentPageClass.'"' : '') . '><a href="#">'.$Page.'</a></li>' : '<li><a href="'.$Link.'" class="'.$this->NavigatorClass.'">'.$Page.'</a></li>';
+        if (count($this->PagesLink['pages']) == 1) {
+            return;
         }
 
-        $this->HTML = '<ul class="pagination">'.$previous.$first.(!empty($first)?$separator:'').$middle.(!empty($last)?$separator:'').$last.$next.'</ul>';
+        $separator = '<li '.($this->SeparatorClass ? 'class="disabled '.$this->SeparatorClass.'"' : '').'><a href="#">'.$this->SeparatorText.'</a></li>';
+        $previous = empty($this->PagesLink['previous'])  ? '' : '<li><a href="'.$this->PagesLink['previous'].'" class="'.$this->NavigatorClass.'">'.$this->PreviousText.'</a></li> ';
+        $next = empty($this->PagesLink['next'])  ? '' : '<li><a href="'.$this->PagesLink['next'].'" class="'.$this->NavigatorClass.'">'.$this->NextText.'</a></li>';
+        $first = empty($this->PagesLink['first']) ? '' : '<li><a href="'.$this->PagesLink['first'].'" class="'.$this->NavigatorClass.'">1</a></li>';
+        $last = empty($this->PagesLink['last'])  ? '' : '<li><a href="'.$this->PagesLink['last'].'" class="'.$this->NavigatorClass.'">'.$this->LastPage.'</a></li>';
+        $middle = '';
+
+        foreach ($this->PagesLink['pages'] as $Page => $Link) {
+            $middle .= empty($Link) ? '<li '.($this->CurrentPageClass ? 'class="'.$this->CurrentPageClass.'"' : '').'><a href="#">'.$Page.'</a></li>' : '<li><a href="'.$Link.'" class="'.$this->NavigatorClass.'">'.$Page.'</a></li>';
+        }
+
+        $this->HTML = '<ul class="pagination">'.$previous.$first.(!empty($first) ? $separator : '').$middle.(!empty($last) ? $separator : '').$last.$next.'</ul>';
+
         return $this->HTML;
     }
 
-	/**
-	 *  \brief Print the HTML format
-	 */
+    /**
+     *  \brief Print the HTML format.
+     */
     public function show()
-	{
+    {
         echo $this->makeHTML();
     }
 }

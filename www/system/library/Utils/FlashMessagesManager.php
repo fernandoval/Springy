@@ -1,6 +1,6 @@
 <?php
 /**	\file
- *	FVAL PHP Framework for Web Applications
+ *	FVAL PHP Framework for Web Applications.
  *
  *  \copyright	Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
  *  \copyright	Copyright (c) 2007-2015 Fernando Val\n
@@ -19,9 +19,9 @@ use FW\Session;
 
 /**
  * \brief		Classe que gerenciar dados flash de sessão, ou seja, 
- *              dados que ficam disponíveis por somente um request
+ *              dados que ficam disponíveis por somente um request.
  */
-class FlashMessagesManager 
+class FlashMessagesManager
 {
     /// Mensagens de erros guardados no ultimo request
     protected $oldErrors;
@@ -33,43 +33,43 @@ class FlashMessagesManager
     protected $newMessages;
     /// Nome identificador das mensagens na sessão
     protected $flashKey = '__FLASHDATA__';
-    
+
     /**
-     * \brief Construtor da classe
+     * \brief Construtor da classe.
      */
-    public function __construct() 
+    public function __construct()
     {
-        $this->oldErrors = new MessageContainer;
-        $this->oldMessages = new MessageContainer;
-        $this->newErrors =  new MessageContainer;
-        $this->newMessages = new MessageContainer;
-        
+        $this->oldErrors = new MessageContainer();
+        $this->oldMessages = new MessageContainer();
+        $this->newErrors = new MessageContainer();
+        $this->newMessages = new MessageContainer();
+
         $this->loadLastSessionData();
         // Remove os dados da sessão guardados no último request
         Session::unregister($this->flashKey);
     }
-    
+
     /**
      * \brief Seta o container de mensagens de erros que serão guardados para o próximo request
-     * \param [in] (\FW\Utils\MessageContainer) $errors - Container de mensagem de erros
+     * \param [in] (\FW\Utils\MessageContainer) $errors - Container de mensagem de erros.
      */
     public function setErrors(MessageContainer $errors)
     {
         $this->newErrors = $errors;
     }
-    
+
     /**
      * \brief Retorna o container de mensagens de erros que serão guardados para o próximo request
-     * \return (\FW\Utils\MessageContainer)
+     * \return (\FW\Utils\MessageContainer).
      */
     public function errors()
     {
         return $this->newErrors;
     }
-    
+
     /**
      * \brief Seta o container de mensagens genéricas que serão guardadas para o próximo request
-     * \param [in] (\FW\Utils\MessageContainer) $errors - Container de mensagem de erros
+     * \param [in] (\FW\Utils\MessageContainer) $errors - Container de mensagem de erros.
      */
     public function setMessages(MessageContainer $messages)
     {
@@ -78,7 +78,7 @@ class FlashMessagesManager
 
     /**
      * \brief Retorna o container de mensagens genéricas que serão guardadas para o próximo request
-     * \return (\FW\Utils\MessageContainer)
+     * \return (\FW\Utils\MessageContainer).
      */
     public function messages()
     {
@@ -87,62 +87,62 @@ class FlashMessagesManager
 
     /**
      * \brief Retorna o container de mensagens de erros que foram guardados no último request
-     * \return (\FW\Utils\MessageContainer)
+     * \return (\FW\Utils\MessageContainer).
      */
     public function lastErrors()
     {
         return $this->oldErrors;
     }
-    
+
     /**
      * \brief Retorna o container de mensagens genéricas que foram guardadas no último request
-     * \return (\FW\Utils\MessageContainer)
+     * \return (\FW\Utils\MessageContainer).
      */
     public function lastMessages()
     {
         return $this->oldMessages;
     }
-    
+
     /**
-     * \brief Carrega os containers de mensagens que foram guardanos no último request, se existirem
+     * \brief Carrega os containers de mensagens que foram guardanos no último request, se existirem.
      */
     protected function loadLastSessionData()
     {
         $sessionData = Session::get($this->flashKey);
-        
-        if ( isset($sessionData['errors']) ) {
-            $this->oldErrors->setMessages( $sessionData['errors'] );
+
+        if (isset($sessionData['errors'])) {
+            $this->oldErrors->setMessages($sessionData['errors']);
         }
-        
-        if ( isset($sessionData['messages']) ) {
-            $this->oldMessages->setMessages( $sessionData['messages'] );
+
+        if (isset($sessionData['messages'])) {
+            $this->oldMessages->setMessages($sessionData['messages']);
         }
     }
-    
+
     /**
-     * \brief Guarda as mensagens para serem carregadas no próximo request
+     * \brief Guarda as mensagens para serem carregadas no próximo request.
      */
     protected function registerSessionData()
     {
-        $flashData = array();
-        
-        if ( $this->newErrors->hasAny() ) {
+        $flashData = [];
+
+        if ($this->newErrors->hasAny()) {
             $flashData['errors'] = $this->newErrors->getMessages();
         }
-        
-        if ( $this->newMessages->hasAny() ) {
+
+        if ($this->newMessages->hasAny()) {
             $flashData['messages'] = $this->newMessages->getMessages();
         }
-        
-        if ( ! empty($flashData) ) {
+
+        if (!empty($flashData)) {
             Session::set($this->flashKey, $flashData);
         }
     }
-    
+
     /**
-     * \brief Destrutor da classe
+     * \brief Destrutor da classe.
      */
-    public function __destruct() 
+    public function __destruct()
     {
         $this->registerSessionData();
     }

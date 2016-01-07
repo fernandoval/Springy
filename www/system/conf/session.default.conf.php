@@ -1,6 +1,6 @@
 <?php
 /** \file
- *  \brief Configurações de sessão
+ *  \brief Configurações de sessão.
  *
  *  \warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
@@ -9,7 +9,7 @@
 
 /**
  *  \defgroup sessioncfg Configurações de SESSÃO
- *  \ingroup config
+ *  \ingroup config.
  *  
  *  As entradas de configuração dos arquivos \c session, são utilizadas pela classe Session, sendo que as entradas previamente definidas não podem ser omitidas
  *  sob risco da classe não funcionar.
@@ -31,13 +31,14 @@
  *  - \c update_column - define o nome da coluna da data de atualização da sessão (quando o tipo de controle for 'db')
  *  
  *  \see config
+ *
  *  @{
  *  @}
  */
 
 /**
  *  \defgroup sessioncfg_default Configurações de SESSÃO para todos os ambientes
- *  \ingroup sessioncfg
+ *  \ingroup sessioncfg.
  *  
  *  As entradas colocadas nesse arquivo serão aplicadas a todos os ambientes do sistema.
  *  
@@ -48,6 +49,6 @@
 /**@{*/
 
 /// Entradas para todos os ambientes
-$conf = array();
+$conf = [];
 
 /**@}*/

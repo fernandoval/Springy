@@ -1,6 +1,6 @@
 <?php
 /** \file
- *  \brief Configurações da classe de templates
+ *  \brief Configurações da classe de templates.
  *
  *  \warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
@@ -9,7 +9,7 @@
 
 /**
  *  \defgroup templatecfg_development Configurações da classe de templates para o ambiente 'development'
- *  \ingroup templatecfg
+ *  \ingroup templatecfg.
  *  
  *  As entradas colocadas nesse arquivo serão aplicadas apenas ao ambiente 'development'.
  *  
@@ -23,9 +23,9 @@
 /**@{*/
 
 /// Configurações para o ambiente de Desenvolvimento
-$conf = array(
-	'debug'          => true,
-	'debugging_ctrl' => 'URL'
-);
+$conf = [
+    'debug'          => true,
+    'debugging_ctrl' => 'URL',
+];
 
 /**@}*/

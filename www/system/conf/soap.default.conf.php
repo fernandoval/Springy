@@ -1,6 +1,6 @@
 <?php
 /** \file
- *  \brief Configurações da classe SOAP
+ *  \brief Configurações da classe SOAP.
  *
  *  \warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
@@ -10,7 +10,7 @@
 
 /**
  *  \defgroup soapcfg Configurações da classe SOAP
- *  \ingroup config
+ *  \ingroup config.
  *  
  *  As entradas de configuração dos arquivos \c soap, são utilizadas pela classe SOAP, SOAP_Server e SOAP_Client,
  *  sendo que as entradas previamente definidas não podem ser omitidas sob risco dessas classes não funcionarem.
@@ -22,13 +22,14 @@
  *	- \c timeout - determina o timeout em segundos
  *  
  *  \see config
+ *
  *  @{
  *  @}
  **/
 
 /**
  *  \defgroup soapcfg_default Configurações da classe SOAP para todos os ambientes
- *  \ingroup soapcfg
+ *  \ingroup soapcfg.
  *  
  *  As entradas colocadas nesse arquivo serão aplicadas a todos os ambientes do sistema.
  *  
@@ -39,6 +40,6 @@
 /**@{*/
 
 /// Entradas para todos os ambientes
-$conf = array ();
+$conf =  [];
 
 /**@}*/

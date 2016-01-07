@@ -1,6 +1,6 @@
 <?php
 /**	\file
- *	FVAL PHP Framework for Web Applications
+ *	FVAL PHP Framework for Web Applications.
  *
  *  \copyright	Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
  *  \copyright	Copyright (c) 2007-2015 Fernando Val\n
@@ -14,11 +14,11 @@
  */
 namespace FW\Security;
 
-interface AclUserInterface 
+interface AclUserInterface
 {
     /**
      * \brief Retorna a permissão do usuário para a permissão indicada
-     * \param [in] (string) $aclObjectName - Nome do objeto reprensentando a permissão
+     * \param [in] (string) $aclObjectName - Nome do objeto reprensentando a permissão.
      */
     public function getPermissionFor($aclObjectName);
 }

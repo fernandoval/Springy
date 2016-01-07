@@ -1,6 +1,6 @@
 <?php
 /** \file
- *  \brief Configurações da classe de templates
+ *  \brief Configurações da classe de templates.
  *
  *  \warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
@@ -9,7 +9,7 @@
 
 /**
  *  \addtogroup templatecfg Configurações da classe de templates
- *  \ingroup config
+ *  \ingroup config.
  *  
  *  As entradas de configuração dos arquivos \c template, são utilizadas pela classe Template, sendo que as entradas previamente definidas não podem ser omitidas
  *  sob risco de dano à aplicação.
@@ -32,13 +32,14 @@
  *      Diretórios contendo milhares de arquivos criam problema de performance porque, nesses casos, o sistema de arquivos do sistema operacional demora a responder.
  *  
  *  \see config
+ *
  *  @{
  *  @}
  */
 
 /**
  *  \defgroup templatecfg_default Configurações da classe de templates para todos os ambientes
- *  \ingroup templatecfg
+ *  \ingroup templatecfg.
  *  
  *  As entradas colocadas nesse arquivo serão aplicadas a todos os ambientes do sistema.
  *  
@@ -49,21 +50,21 @@
 /**@{*/
 
 /// Configurações para todos os ambientes
-$conf = array(
-	'template_engine'        => 'smarty',
-	'strict_variables'       => true,
-	'debug'                  => false,
-	'debugging_ctrl'         => 'NONE',
-	'template_path'          => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'templates',
-	'template_config_path'   => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'templates_conf',
-	'compiled_template_path' => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'tpl_comp',
-	'template_cached_path'   => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'tpl_cache',
-	'use_sub_dirs'           => false,
-	'errors'                 => array(
-		404 => '_error404',
-		500 => '_error500',
-		503 => '_error503'
-	)
-);
+$conf = [
+    'template_engine'        => 'smarty',
+    'strict_variables'       => true,
+    'debug'                  => false,
+    'debugging_ctrl'         => 'NONE',
+    'template_path'          => $GLOBALS['SYSTEM']['SYSTEM_PATH'].DIRECTORY_SEPARATOR.'templates',
+    'template_config_path'   => $GLOBALS['SYSTEM']['SYSTEM_PATH'].DIRECTORY_SEPARATOR.'templates_conf',
+    'compiled_template_path' => $GLOBALS['SYSTEM']['SYSTEM_PATH'].DIRECTORY_SEPARATOR.'tpl_comp',
+    'template_cached_path'   => $GLOBALS['SYSTEM']['SYSTEM_PATH'].DIRECTORY_SEPARATOR.'tpl_cache',
+    'use_sub_dirs'           => false,
+    'errors'                 => [
+        404 => '_error404',
+        500 => '_error500',
+        503 => '_error503',
+    ],
+];
 
 /**@}*/

@@ -1,6 +1,6 @@
 <?php
 /** \file
- *  \brief Configurações gerais do sistema
+ *  \brief Configurações gerais do sistema.
  *
  *  \warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
@@ -9,7 +9,7 @@
 
 /**
  *  \defgroup systemcfg_development Configurações do cerne para o ambiente \c 'development'
- *  \ingroup systemcfg
+ *  \ingroup systemcfg.
  *  
  *  As entradas colocadas nesse arquivo serão aplicadas apenas ao ambiente 'development'.
  *  
@@ -23,16 +23,16 @@
 /**@{*/
 
 /// Configurações para o ambiente de Desenvolvimento
-$conf = array(
-	'debug'             => true,
-	'maintenance'       => false,
-	'rewrite_url'       => true,
-	'cache'             => false,
-	'cache-control'     => 'no-cache',
-	'authentication'    => array(),
-	'system_error'      => array(
-		'save_in_database' => false
-	)
-);
+$conf = [
+    'debug'             => true,
+    'maintenance'       => false,
+    'rewrite_url'       => true,
+    'cache'             => false,
+    'cache-control'     => 'no-cache',
+    'authentication'    => [],
+    'system_error'      => [
+        'save_in_database' => false,
+    ],
+];
 
 /**@}*/

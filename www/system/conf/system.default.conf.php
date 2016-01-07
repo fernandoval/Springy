@@ -1,6 +1,6 @@
 <?php
 /** \file
- *  \brief Configurações gerais do sistema
+ *  \brief Configurações gerais do sistema.
  *
  *  \warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
@@ -9,7 +9,7 @@
 
 /**
  *  \addtogroup systemcfg Configurações do cerne
- *  \ingroup config
+ *  \ingroup config.
  *  
  *  As entradas de configuração dos arquivos \c system, são aplicadas ao sistema como um todo, sendo que as entradas previamente definidas não podem ser omitidas
  *  sob risco de dano à aplicação.
@@ -57,13 +57,14 @@
  *  www.meusite.com.br/?{$dba_user}=off
  *  
  *  \see config
+ *
  *  @{
  *  @}
  */
 
 /**
  *  \addtogroup systemcfg_default Configurações do cerne para todos os ambientes
- *  \ingroup systemcfg
+ *  \ingroup systemcfg.
  *  
  *  As entradas colocadas nesse arquivo serão aplicadas a todos os ambientes do sistema.
  *  
@@ -74,23 +75,23 @@
 /**@{*/
 
 /// Configurações para todos os ambientes
-$conf = array(
-	'ignore_deprecated' => false,
-	'developer_user'    => '',
-	'developer_pass'    => '',
-	'dba_user'          => '',
-	'bug_authentication' => array(),
-	'assets_path'       => $GLOBALS['SYSTEM']['ROOT_PATH'] . DIRECTORY_SEPARATOR . 'assets',
-	'controller_path'   => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'controllers',
-	'css_path'          => $GLOBALS['SYSTEM']['ROOT_PATH'] . DIRECTORY_SEPARATOR . 'css',
-	'js_path'           => $GLOBALS['SYSTEM']['ROOT_PATH'] . DIRECTORY_SEPARATOR . 'js',
-	'system_error'       => array(
-		'reported_errors'  => array(405, 406, 408, 409, 410, 412, 413, 414, 415, 416, 500, 501, 502, 504, 505),
-		'save_in_database' => false,
-		'table_name'       => 'system_errors',
-		'db_server'        => 'default',
-		'create_table'     => true
-	)
-);
+$conf = [
+    'ignore_deprecated'  => false,
+    'developer_user'     => '',
+    'developer_pass'     => '',
+    'dba_user'           => '',
+    'bug_authentication' => [],
+    'assets_path'        => $GLOBALS['SYSTEM']['ROOT_PATH'].DIRECTORY_SEPARATOR.'assets',
+    'controller_path'    => $GLOBALS['SYSTEM']['SYSTEM_PATH'].DIRECTORY_SEPARATOR.'controllers',
+    'css_path'           => $GLOBALS['SYSTEM']['ROOT_PATH'].DIRECTORY_SEPARATOR.'css',
+    'js_path'            => $GLOBALS['SYSTEM']['ROOT_PATH'].DIRECTORY_SEPARATOR.'js',
+    'system_error'       => [
+        'reported_errors'  => [405, 406, 408, 409, 410, 412, 413, 414, 415, 416, 500, 501, 502, 504, 505],
+        'save_in_database' => false,
+        'table_name'       => 'system_errors',
+        'db_server'        => 'default',
+        'create_table'     => true,
+    ],
+];
 
 /**@}*/

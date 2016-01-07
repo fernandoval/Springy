@@ -1,6 +1,6 @@
 <?php
 /** \file
- *  \brief Configurações da classe URI
+ *  \brief Configurações da classe URI.
  *
  *  \warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
@@ -9,7 +9,7 @@
 
 /**
  *  \defgroup uricfg_development Configurações da classe de tratamento de URI/URL para o ambiente 'development'
- *  \ingroup uricfg
+ *  \ingroup uricfg.
  *  
  *  As entradas colocadas nesse arquivo serão aplicadas apenas ao ambiente 'development'.
  *  
@@ -23,23 +23,23 @@
 /**@{*/
 
 /// Configurações para o ambiente de Desenvolvimento
-$conf = array(
-	'host_controller_path' => array(
-		'host.seusite.localhost' => array('diretorio'),
-	),
-	'dynamic' => $_SERVER['HTTP_HOST'],
-	'static'  => $_SERVER['HTTP_HOST'],
-	'secure'  => $_SERVER['HTTP_HOST']
-);
+$conf = [
+    'host_controller_path' => [
+        'host.seusite.localhost' => ['diretorio'],
+    ],
+    'dynamic' => $_SERVER['HTTP_HOST'],
+    'static'  => $_SERVER['HTTP_HOST'],
+    'secure'  => $_SERVER['HTTP_HOST'],
+];
 
 /// Configurações sobrescritas para hosts específicos (EXEMPLO)
-$over_conf = array(
-	'host.seusite.localhost' => array (
-		'dynamic'          => 'http://host.seusite.localhost',
-		'prevalidate_controller' => array(
-			'mycontroller' => array('command' => 404, 'segments' => 2, 'validate' => array('/^[a-z0-9\-]+$/', '/^[0-9]+$/')),
-		),
-	)
-);
+$over_conf = [
+    'host.seusite.localhost' =>  [
+        'dynamic'                => 'http://host.seusite.localhost',
+        'prevalidate_controller' => [
+            'mycontroller' => ['command' => 404, 'segments' => 2, 'validate' => ['/^[a-z0-9\-]+$/', '/^[0-9]+$/']],
+        ],
+    ],
+];
 
 /**@}*/
