@@ -1,6 +1,6 @@
 <?php
 /**	\file
- *	FVAL PHP Framework for Web Applications
+ *	FVAL PHP Framework for Web Applications.
  *
  *  \copyright	Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
  *  \copyright	Copyright (c) 2007-2015 Fernando Val\n
@@ -12,224 +12,224 @@
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
  */
-
 namespace FW;
 
 /**
- *  \brief Classe de tratamento de templates
+ *  \brief Classe de tratamento de templates.
  *
  *  \note Esta classe utiliza os drivers de template conforme definido no arquivo de configuração.
  */
 class Template
 {
-	const TPL_ENGINE_SMARTY = 'smarty';
-	const TPL_ENGINE_TWIG = 'twig';
-	
-	private $tplObj = NULL;
+    const TPL_ENGINE_SMARTY = 'smarty';
+    const TPL_ENGINE_TWIG = 'twig';
 
-	/**
-	 *	\brief Inicializa a classe de template
-	 */
-	public function __construct($tpl=NULL)
-	{
-		if (!$driver = Configuration::get('template', 'template_engine')) {
-			$driver = self::TPL_ENGINE_SMARTY;
-		}
-		
-		// Inicializa a classe de template
-		switch (strtolower($driver)) {
-			case self::TPL_ENGINE_SMARTY:
-				$this->tplObj = new Template\SmartyDriver($tpl);
-				break;
-			case self::TPL_ENGINE_TWIG:
-				$this->tplObj = new Template\TwigDriver($tpl);
-				break;
-			default:
-				Errors::displayError('500', 'Template engine not implemented');
-		}
-		
-		return true;
-	}
-	
-	/**
-	 *  \brief Destrói o objeto
-	 */
-	public function __destruct()
-	{
-		unset($this->tplObj);
-	}
+    private $tplObj = null;
 
-	/**
-	 *	\brief Define o local dos arquivos de template
-	 */
-	public function setTemplateDir($path)
-	{
-		return $this->tplObj->setTemplateDir($path);
-	}
+    /**
+     *	\brief Inicializa a classe de template.
+     */
+    public function __construct($tpl = null)
+    {
+        if (!$driver = Configuration::get('template', 'template_engine')) {
+            $driver = self::TPL_ENGINE_SMARTY;
+        }
 
-	/**
-	 *	\brief Define o local dos arquivos de template compilados
-	 */
-	public function setCompileDir($path)
-	{
-		return $this->tplObj->setCompileDir($path);
-	}
+        // Inicializa a classe de template
+        switch (strtolower($driver)) {
+            case self::TPL_ENGINE_SMARTY:
+                $this->tplObj = new Template\SmartyDriver($tpl);
+                break;
+            case self::TPL_ENGINE_TWIG:
+                $this->tplObj = new Template\TwigDriver($tpl);
+                break;
+            default:
+                Errors::displayError('500', 'Template engine not implemented');
+        }
 
-	/**
-	 *	\brief Define o local dos arquivos .conf usados nas tpls
-	 */
-	public function setConfigDir($path)
-	{
-		return $this->tplObj->setConfigDir($path);
-	}
+        return true;
+    }
 
-	/**
-	 *	\brief Define o local dos arquivos de template cacheados
-	 */
-	public function setCacheDir($path)
-	{
-		return $this->tplObj->setCacheDir($path);
-	}
+    /**
+     *  \brief Destrói o objeto.
+     */
+    public function __destruct()
+    {
+        unset($this->tplObj);
+    }
 
-	/**
-	 *	\brief Verifica o template ideal de acordo com a página
-	 */
-	private function setAutoTemplatePaths()
-	{
-		return $this->tplObj->setAutoTemplatePaths();
-	}
+    /**
+     *	\brief Define o local dos arquivos de template.
+     */
+    public function setTemplateDir($path)
+    {
+        return $this->tplObj->setTemplateDir($path);
+    }
 
-	/**
-	 *	\brief Verifica se o template está cacheado
-	 *
-	 * @return boolean
-	 */
-	public function isCached()
-	{
-		return $this->tplObj->isCached();
-	}
+    /**
+     *	\brief Define o local dos arquivos de template compilados.
+     */
+    public function setCompileDir($path)
+    {
+        return $this->tplObj->setCompileDir($path);
+    }
 
-	/**
-	 *	\brief Define o cacheamento dos templates
-	 *
-	 * @
-	 */
-	public function setCaching($value='current')
-	{
-		return $this->tplObj->setCaching($value);
-	}
+    /**
+     *	\brief Define o local dos arquivos .conf usados nas tpls.
+     */
+    public function setConfigDir($path)
+    {
+        return $this->tplObj->setConfigDir($path);
+    }
 
-	public function setCacheLifetime($seconds)
-	{
-		$this->tplObj->setCacheLifetime($seconds);
-	}
+    /**
+     *	\brief Define o local dos arquivos de template cacheados.
+     */
+    public function setCacheDir($path)
+    {
+        return $this->tplObj->setCacheDir($path);
+    }
 
-	/**
-	 *	\brief Retorna a página montada
-	 */
-	public function fetch()
-	{
-		return $this->tplObj->fetch();
-	}
+    /**
+     *	\brief Verifica o template ideal de acordo com a página.
+     */
+    private function setAutoTemplatePaths()
+    {
+        return $this->tplObj->setAutoTemplatePaths();
+    }
 
-	/**
-	 *	\brief Faz a saída da página montada
-	 *
-	 * @return String
-	 */
-	public function display()
-	{
-		echo $this->tplObj->fetch();
-	}
+    /**
+     *	\brief Verifica se o template está cacheado.
+     *
+     * @return bool
+     */
+    public function isCached()
+    {
+        return $this->tplObj->isCached();
+    }
 
-	/**
-	 *	\brief Define o arquivos de template
-	 * @param String $tpl Nome do template, sem extenção do arquivo
-	 */
-	public function setTemplate($tpl)
-	{
-		return $this->tplObj->setTemplate($tpl);
-	}
+    /**
+     *	\brief Define o cacheamento dos templates.
+     *
+     * @
+     */
+    public function setCaching($value = 'current')
+    {
+        return $this->tplObj->setCaching($value);
+    }
 
-	/**
-	 *	\brief Define o id do cache
-	 */
-	public function setCacheId($id)
-	{
-		return $this->tplObj->setCacheId($id);
-	}
+    public function setCacheLifetime($seconds)
+    {
+        $this->tplObj->setCacheLifetime($seconds);
+    }
 
-	/**
-	 *	\brief Define o id da compilação
-	 */
-	public function setCompileId($id)
-	{
-		return $this->tplObj->setCompileId($id);
-	}
+    /**
+     *	\brief Retorna a página montada.
+     */
+    public function fetch()
+    {
+        return $this->tplObj->fetch();
+    }
 
-	/**
-	 *	\brief Define uma variável do template
-	 */
-	public function assign($var, $value=null, $nocache=false)
-	{
-		return $this->tplObj->assign($var, $value, $nocache);
-	}
+    /**
+     *	\brief Faz a saída da página montada.
+     *
+     * @return string
+     */
+    public function display()
+    {
+        echo $this->tplObj->fetch();
+    }
 
-	/**
-	 *	\brief Método statico que define um pluguin para todas as instancias da Template
-	 */
-	public function registerPlugin($type, $name, $callback, $cacheable=NULL, $cache_attrs=NULL)
-	{
-		return $this->tplObj->registerPlugin($type, $name, $callback, $cacheable, $cache_attrs);
-	}
+    /**
+     *	\brief Define o arquivos de template.
+     *
+     * @param string $tpl Nome do template, sem extenção do arquivo
+     */
+    public function setTemplate($tpl)
+    {
+        return $this->tplObj->setTemplate($tpl);
+    }
 
-	/**
-	 *	\brief Limpa uma variável do template
-	 */
-	public function clearAssign($var)
-	{
-		return $this->tplObj->clearAssign($var);
-	}
+    /**
+     *	\brief Define o id do cache.
+     */
+    public function setCacheId($id)
+    {
+        return $this->tplObj->setCacheId($id);
+    }
 
-	/**
-	 *	\brief clears the entire template cache
-	 *
-	 *	As an optional parameter, you can supply a minimum age in seconds the cache files must be before they will get cleared.
-	 */
-	public function clearAllCache($expire_time)
-	{
-		return $this->tplObj->clearAllCache($expire_time);
-	}
+    /**
+     *	\brief Define o id da compilação.
+     */
+    public function setCompileId($id)
+    {
+        return $this->tplObj->setCompileId($id);
+    }
 
-	/**
-	 *	\brief Limpa o cache para o template corrente
-	 */
-	public function clearCache($expireTime=NULL)
-	{
-		return $this->tplObj->clearCache($expireTime);
-	}
+    /**
+     *	\brief Define uma variável do template.
+     */
+    public function assign($var, $value = null, $nocache = false)
+    {
+        return $this->tplObj->assign($var, $value, $nocache);
+    }
 
-	/**
-	 *	\brief Limpa a versão compilada do template atual
-	 */
-	public function clearCompiled($expTime)
-	{
-		return $this->tplObj->clearCompiled($expTime);
-	}
+    /**
+     *	\brief Método statico que define um pluguin para todas as instancias da Template.
+     */
+    public function registerPlugin($type, $name, $callback, $cacheable = null, $cache_attrs = null)
+    {
+        return $this->tplObj->registerPlugin($type, $name, $callback, $cacheable, $cache_attrs);
+    }
 
-	/**
-	 *	\brief Limpa variável de config definida
-	 */
-	public function clearConfig($var)
-	{
-		return $this->tplObj->clearConfig($var);
-	}
+    /**
+     *	\brief Limpa uma variável do template.
+     */
+    public function clearAssign($var)
+    {
+        return $this->tplObj->clearAssign($var);
+    }
 
-	/**
-	 *	\brief Verifica se um arquivo de template existe
-	 */
-	public function templateExists($tplName)
-	{
-		return $this->tplObj->templateExists($tplName);
-	}
+    /**
+     *	\brief clears the entire template cache.
+     *
+     *	As an optional parameter, you can supply a minimum age in seconds the cache files must be before they will get cleared.
+     */
+    public function clearAllCache($expire_time)
+    {
+        return $this->tplObj->clearAllCache($expire_time);
+    }
+
+    /**
+     *	\brief Limpa o cache para o template corrente.
+     */
+    public function clearCache($expireTime = null)
+    {
+        return $this->tplObj->clearCache($expireTime);
+    }
+
+    /**
+     *	\brief Limpa a versão compilada do template atual.
+     */
+    public function clearCompiled($expTime)
+    {
+        return $this->tplObj->clearCompiled($expTime);
+    }
+
+    /**
+     *	\brief Limpa variável de config definida.
+     */
+    public function clearConfig($var)
+    {
+        return $this->tplObj->clearConfig($var);
+    }
+
+    /**
+     *	\brief Verifica se um arquivo de template existe.
+     */
+    public function templateExists($tplName)
+    {
+        return $this->tplObj->templateExists($tplName);
+    }
 }

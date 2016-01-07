@@ -1,6 +1,6 @@
 <?php
 /** \file
- *  FVAL PHP Framework for Web Applications
+ *  FVAL PHP Framework for Web Applications.
  *  
  *  \copyright	Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
  *  \copyright	Copyright (c) 2007-2015 Fernando Val\n
@@ -13,106 +13,117 @@
  *  
  *  This class is not terminated and is experimental. Do not use.
  */
-
 namespace FW;
 
 /**
- *  \brief Classe para conexão SOAP
+ *  \brief Classe para conexão SOAP.
  *  
  *  \warning Esta classe ainda está sendo desenvolvida e é experimental. Não a utilize.
  */
-class SOAP {
-	/// Objeto NuSOAP
-	private $client = NULL;
-	/// Configuração: endereço do host de proxy
-	private $proxyhost = '';
-	/// Configuração: porta do proxy
-	private $proxyport = '';
-	/// Configuração: usuário de acesso ao proxy (caso seja proxy autenticado)
-	private $proxyusername = '';
-	/// Configuração: senha de acesso ao proxy (caso seja proxy autenticado)
-	private $proxypassword = '';
+class SOAP
+{
+    /// Objeto NuSOAP
+    private $client = null;
+    /// Configuração: endereço do host de proxy
+    private $proxyhost = '';
+    /// Configuração: porta do proxy
+    private $proxyport = '';
+    /// Configuração: usuário de acesso ao proxy (caso seja proxy autenticado)
+    private $proxyusername = '';
+    /// Configuração: senha de acesso ao proxy (caso seja proxy autenticado)
+    private $proxypassword = '';
 
-	/**
-	 *	\brief Construtor da classe agregadora
-	 */
-	function __construct($endpoint='', $wsdl=false) {
-		// Pega os dados de proxy da configuração
-		$this->proxyhost     = Configuration::get('soap', 'proxyhost');
-		$this->proxyport     = Configuration::get('soap', 'proxyport');
-		$this->proxyusername = Configuration::get('soap', 'proxyusername');
-		$this->proxypassword = Configuration::get('soap', 'proxypassword');
-	}
+    /**
+     *	\brief Construtor da classe agregadora.
+     */
+    public function __construct($endpoint = '', $wsdl = false)
+    {
+        // Pega os dados de proxy da configuração
+        $this->proxyhost = Configuration::get('soap', 'proxyhost');
+        $this->proxyport = Configuration::get('soap', 'proxyport');
+        $this->proxyusername = Configuration::get('soap', 'proxyusername');
+        $this->proxypassword = Configuration::get('soap', 'proxypassword');
+    }
 
-	/**
-	 *	\brief Construtor da classe cliente
-	 */
-	function clientCreate($endpoint='', $wsdl=false) {
-		// Cria o cliente de SOAP
-		$this->client = new \nusoap_client($endpoint, $wsdl, $this->proxyhost, $this->proxyport, $this->proxyusername, $this->proxypassword);
+    /**
+     *	\brief Construtor da classe cliente.
+     */
+    public function clientCreate($endpoint = '', $wsdl = false)
+    {
+        // Cria o cliente de SOAP
+        $this->client = new \nusoap_client($endpoint, $wsdl, $this->proxyhost, $this->proxyport, $this->proxyusername, $this->proxypassword);
 
-		// Pega o erro, caso tenha havido
-		$err = $this->client->getError();
+        // Pega o erro, caso tenha havido
+        $err = $this->client->getError();
 
-		if ($err) {
-			return false;
-		}
+        if ($err) {
+            return false;
+        }
 
-		$this->client->useHTTPPersistentConnection();
+        $this->client->useHTTPPersistentConnection();
 
-		return true;
-	}
+        return true;
+    }
 
-	/**
-	 *	\brief Pega o último erro
-	 */
-	function getClientError() {
-		return $this->client->getError();
-	}
+    /**
+     *	\brief Pega o último erro.
+     */
+    public function getClientError()
+    {
+        return $this->client->getError();
+    }
 
-	/**
-	 *	\brief Pega o resultado do debug
-	 */
-	function getClientDebug() {
-		return $this->client->getDebug();
-	}
+    /**
+     *	\brief Pega o resultado do debug.
+     */
+    public function getClientDebug()
+    {
+        return $this->client->getDebug();
+    }
 
-	/**
-	 *	\brief Faz uma chamada SOAP
-	 */
-	public function clientCall(&$result, $operation, $params=array(), $namespace='http://tempuri.org', $soapAction='', $headers=false, $rpcParams=NULL, $style='rpc', $use='encoded') {
-		$result = $this->client->call($operation, $params, $namespace, $soapAction, $headers, $rpcParams, $style, $use);
-		if ($this->client->fault) {
-			return false;
-		} else {
-			$err = $this->client->getError();
-			if ($err) {
-				$result = $err;
-				return false;
-			}
-		}
-		return true;
-	}
+    /**
+     *	\brief Faz uma chamada SOAP.
+     */
+    public function clientCall(&$result, $operation, $params = [], $namespace = 'http://tempuri.org', $soapAction = '', $headers = false, $rpcParams = null, $style = 'rpc', $use = 'encoded')
+    {
+        $result = $this->client->call($operation, $params, $namespace, $soapAction, $headers, $rpcParams, $style, $use);
+        if ($this->client->fault) {
+            return false;
+        } else {
+            $err = $this->client->getError();
+            if ($err) {
+                $result = $err;
 
-	/**
-	 *	\brief Define se tenta usar conexão cURL se possível
-	 *	@param[in] bool $useCURL: Tenta usar conexão cURL?
-	 */
-	public function setClientUseCurl($useCURL) {
-		$this->client->setUseCurl($useCURL);
-	}
+                return false;
+            }
+        }
 
-	/**
-	 *	\brief For creating serializable abstractions of native PHP types.
-	 */
-	public function soapval($name='soapval', $type, $value=-1, $element_ns=false, $type_ns=false, $attributes=false) {
-		return new \soapval($name, $type, $value, $element_ns, $type_ns, $attributes);
-	}
-	
-	/**
-	 *	\brief Define o encoding.
-	 */
-	public function setSOAPEncoding($encoding) {
-		$this->client->soap_defencoding = $encoding;
-	}
+        return true;
+    }
+
+    /**
+     *	\brief Define se tenta usar conexão cURL se possível.
+     *
+     *	@param[in] bool $useCURL: Tenta usar conexão cURL?
+     */
+    public function setClientUseCurl($useCURL)
+    {
+        $this->client->setUseCurl($useCURL);
+    }
+
+    /**
+     *	\brief For creating serializable abstractions of native PHP types.
+     */
+    public function soapval($name, $type, $value = -1, $element_ns = false, $type_ns = false, $attributes = false)
+    {
+        return new \soapval($name, $type, $value, $element_ns, $type_ns, $attributes);
+    }
+
+    /**
+     *	\brief Define o encoding.
+     */
+    public function setSOAPEncoding($encoding)
+    {
+        $this->client->soap_defencoding = $encoding;
+    }
 }

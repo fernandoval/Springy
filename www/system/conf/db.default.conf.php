@@ -1,6 +1,6 @@
 <?php
 /** \file
- *  \brief Configurações de acesso a banco de dados
+ *  \brief Configurações de acesso a banco de dados.
  *
  *  \warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
@@ -9,7 +9,7 @@
 
 /**
  *  \defgroup dbcfg Configurações de acesso a banco de dados
- *  \ingroup config
+ *  \ingroup config.
  *  
  *  As entradas de configuração dos arquivos \c db, são utilizadas pela classe DB, sendo que as entradas previamente definidas não podem ser omitidas
  *  sob risco de dano à aplicação.
@@ -45,13 +45,14 @@
  *  \li \c cache > server_port - Porta do servidor memcached
  *  
  *  \see config
+ *
  *  @{
  *  @}
  */
 
 /**
  *  \defgroup dbcfg_default Configurações de acesso a banco de dados para todos os ambientes
- *  \ingroup dbcfg
+ *  \ingroup dbcfg.
  *  
  *  As entradas colocadas nesse arquivo serão aplicadas a todos os ambientes do sistema.
  *  
@@ -62,6 +63,6 @@
 /**@{*/
 
 /// Entradas para todos os ambientes
-$conf = array();
+$conf = [];
 
 /**@}*/

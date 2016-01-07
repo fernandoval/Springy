@@ -1,6 +1,6 @@
 <?php
 /**	\file
- *	FVAL PHP Framework for Web Applications
+ *	FVAL PHP Framework for Web Applications.
  *
  *  \copyright	Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
  *  \copyright	Copyright (c) 2007-2015 Fernando Val\n
@@ -31,7 +31,6 @@
  *  $DB = new PDO('mysql:host=localhost;dbname=db;charset=utf8', 'root', ''); *
  *  \endcode
  */
-
 namespace FW\Container;
 
 use ArrayAccess;
@@ -39,7 +38,7 @@ use Closure;
 use InvalidArgumentException;
 
 /**
- * \brief		Classe de container para inversão de controle (Dependecy Injection)
+ * \brief		Classe de container para inversão de controle (Dependecy Injection).
  */
 class DIContainer implements ArrayAccess
 {
@@ -69,12 +68,12 @@ class DIContainer implements ArrayAccess
      */
     public function __construct()
     {
-        $this->registeredKeys = array();
-        $this->params = array();
-        $this->factories = array();
-        $this->factoriesExtensions = array();
-        $this->sharedInstances = array();
-        $this->sharedInstancesFactories = array();
+        $this->registeredKeys = [];
+        $this->params = [];
+        $this->factories = [];
+        $this->factoriesExtensions = [];
+        $this->sharedInstances = [];
+        $this->sharedInstancesFactories = [];
     }
 
     /**
@@ -115,7 +114,7 @@ class DIContainer implements ArrayAccess
      */
     public function param($key)
     {
-        if ( isset($this->params[$key]) ) {
+        if (isset($this->params[$key])) {
             return $this->params[$key];
         }
 
@@ -143,21 +142,21 @@ class DIContainer implements ArrayAccess
      * \return Retorna o resultado gerado pela factory e suas extensões.
      * \throws \InvalidArgumentException
      */
-    public function make($key, array $params = array())
+    public function make($key, array $params = [])
     {
-        if ( ! isset($this->factories[$key]) ) {
+        if (!isset($this->factories[$key])) {
             throw new InvalidArgumentException("The '{$key}' key was not registered as a factory.");
         }
 
-        if ( !empty($params) ) {//Se houver parâmetros passá-los para a closure do serviço
+        if (!empty($params)) {//Se houver parâmetros passá-los para a closure do serviço
             $result = call_user_func_array($this->factories[$key], $params);
         } else {//Caso contrário, passar esta instância de container como parâmetro para a closure
             $result = call_user_func($this->factories[$key], $this);
         }
 
         //Se houver extensões registradas para esta chave identificadora
-        if ( isset($this->factoriesExtensions[$key]) ) {
-            foreach($this->factoriesExtensions[$key] as $extension) {//Executar todas passando o próprio resultado e esta instância de container como parâmeetro
+        if (isset($this->factoriesExtensions[$key])) {
+            foreach ($this->factoriesExtensions[$key] as $extension) {//Executar todas passando o próprio resultado e esta instância de container como parâmeetro
                 $result = call_user_func($extension, $result, $this);
             }
         }
@@ -174,7 +173,7 @@ class DIContainer implements ArrayAccess
      */
     public function extend($key, Closure $extension)
     {
-        if ( ! isset($this->factories[$key]) ) {
+        if (!isset($this->factories[$key])) {
             throw new InvalidArgumentException("The '{$key}' key was not registered as a factory.");
         }
 
@@ -195,15 +194,17 @@ class DIContainer implements ArrayAccess
         if ($key instanceof Closure) {
             return call_user_func($key, $this);
         }
-        
+
         $this->registeredKeys[$key] = static::TYPE_SHARED;
 
         if ($instance instanceof Closure) { //Se instância for uma closure, então a instância a ser registrada será o resutado dessa closure.
-            $this->sharedInstancesFactories[$key] = $instance; return;
-        }elseif ( !is_object($instance) ) { //Somente instâncias de classes são permitidas, exceção é disparada
-            throw new InvalidArgumentException("The argument passed is not an instance of an object.");
+            $this->sharedInstancesFactories[$key] = $instance;
+
+            return;
+        } elseif (!is_object($instance)) { //Somente instâncias de classes são permitidas, exceção é disparada
+            throw new InvalidArgumentException('The argument passed is not an instance of an object.');
         }
-        
+
         $this->sharedInstances[$key] = $instance;
 
         return $instance;
@@ -218,16 +219,16 @@ class DIContainer implements ArrayAccess
      */
     public function shared($key)
     {
-        if ( isset($this->sharedInstancesFactories[$key]) ) { //Lazy loading as instancias compartilhadas.
+        if (isset($this->sharedInstancesFactories[$key])) { //Lazy loading as instancias compartilhadas.
             $this->sharedInstances[$key] = call_user_func($this->sharedInstancesFactories[$key], $this);
-            
+
             unset($this->sharedInstancesFactories[$key]);
         }
-        
-        if ( isset($this->sharedInstances[$key]) ) {
+
+        if (isset($this->sharedInstances[$key])) {
             return $this->sharedInstances[$key];
         }
-        
+
         throw new InvalidArgumentException("The '{$key}' key was not registered as a shared instance.");
     }
 
@@ -241,7 +242,7 @@ class DIContainer implements ArrayAccess
     {
         return $this->offsetExists($key);
     }
-    
+
     /**
      * \brief Retorna a dependencia independente do seu tipo.
      * 
@@ -251,10 +252,10 @@ class DIContainer implements ArrayAccess
      */
     public function resolve($key)
     {
-        if ( ! isset($this->registeredKeys[$key]) ) {
+        if (!isset($this->registeredKeys[$key])) {
             throw new InvalidArgumentException("The '{$key}' key was not registered as a dependency.");
         }
-        
+
         switch ($this->registeredKeys[$key]) {
             case static::TYPE_FACTORY:
                 return $this->make($key);
@@ -314,11 +315,15 @@ class DIContainer implements ArrayAccess
         }
 
         if ($value instanceof Closure) { //Se for uma closure, faz o bind
-            $this->bind($offset, $value); return;
+            $this->bind($offset, $value);
+
+            return;
         }
 
         if (is_object($value)) { //Se é uma instância
-            $this->instance($offset, $value); return;
+            $this->instance($offset, $value);
+
+            return;
         }
 
         //Parâmetro
@@ -349,7 +354,7 @@ class DIContainer implements ArrayAccess
 
     /**
      * \brief Cria e retorna uma nova instância de classe
-     * \return DIContainer
+     * \return DIContainer.
      */
     public static function newInstance()
     {

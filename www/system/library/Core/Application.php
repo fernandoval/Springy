@@ -1,6 +1,6 @@
 <?php
 /**	\file
- *	FVAL PHP Framework for Web Applications
+ *	FVAL PHP Framework for Web Applications.
  *
  *  \copyright	Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
  *  \copyright	Copyright (c) 2007-2015 Fernando Val\n
@@ -18,7 +18,7 @@ use FW\Container\DIContainer;
 use FW\Events\Mediator;
 
 /**
- * \brief Classe container de dependências de toda aplicação
+ * \brief Classe container de dependências de toda aplicação.
  */
 class Application extends DIContainer
 {
@@ -26,9 +26,10 @@ class Application extends DIContainer
     protected static $sharedInstance;
 
     /**
-     * \brief Construtor da classe
+     * \brief Construtor da classe.
      */
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
 
         $this->bindDefaultDependencies();
@@ -39,7 +40,7 @@ class Application extends DIContainer
      * \param [in] (string) $event - Nome do evento
      * \param [in] (variant) $handler - Handler do evento
      * \param [in] (int) $priority - Prioridade do handler, maior melhor.
-     * \return \FW\Core\Application
+     * \return \FW\Core\Application.
      */
     public function on($event, $handler, $priority = 0)
     {
@@ -51,7 +52,7 @@ class Application extends DIContainer
     /**
      * \brief Remove o registro de um handler de eventos
      * \param [in] (string) $event - Nome do evento
-     * \return \FW\Core\Application
+     * \return \FW\Core\Application.
      */
     public function off($event)
     {
@@ -65,31 +66,32 @@ class Application extends DIContainer
      *        com os dados passados por parametro para cada handler
      * \param [in] (type) $event
      * \param [in] (type) $data
-     * \return (array)
+     * \return (array).
      */
-    public function fire($event, $data = array())
+    public function fire($event, $data = [])
     {
         return $this->resolve('events')->fire($event, $data);
     }
-    
+
     /**
-     * \brief Retorna a instancia compartilhada desta classe
+     * \brief Retorna a instancia compartilhada desta classe.
+     *
      * @return \FW\Core\Application
      */
     public static function sharedInstance()
     {
-        if ( ! static::$sharedInstance) {
+        if (!static::$sharedInstance) {
             static::$sharedInstance = new static();
         }
 
         return static::$sharedInstance;
     }
-    
+
     /**
-     * \brief Registra as dependências padrões da aplicação
+     * \brief Registra as dependências padrões da aplicação.
      */
     protected function bindDefaultDependencies()
     {
-         $this->instance('events', new Mediator($this));
+        $this->instance('events', new Mediator($this));
     }
 }

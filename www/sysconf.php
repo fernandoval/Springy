@@ -1,6 +1,6 @@
 <?php
 /** \file
- *  FVAL PHP Framework for Web Applications
+ *  FVAL PHP Framework for Web Applications.
  *
  *  \copyright	Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
  *  \copyright	Copyright (c) 2007-2015 Fernando Val\n
@@ -12,7 +12,7 @@
  */
 
 /**
- *  \addtogroup config
+ *  \addtogroup config.
  *  
  *  O script \c sysconf.php é o arquivo de configuração geral do sistema. Nele estão as entradas de definição do nome e versão do sistema,
  *  ambiente, caminhos dos diretórios do sistema, charset e timezone.
@@ -53,10 +53,10 @@
  *  Exemplo:
  *  
  *  \code{.php}
-	$conf = array(
-		'entrada' => 'valor',
-		'outra_configuracao' => 'valor da outra configuracao'
-	); \endcode
+ $conf = array(
+ 'entrada' => 'valor',
+ 'outra_configuracao' => 'valor da outra configuracao'
+ ); \endcode
  *  
  *  É possível sobrescrever as configurações para determinados hosts de sua aplicação, utilizando a variável \c $over_conf, que é um array
  *  contendo no primeiro nível de índices o nome do host para o qual se deseja sobrescrever determinada(s) entrada(s) de configuração,
@@ -65,61 +65,60 @@
  *  Exemplo:
  *  
  *  \code{.php}
-	$over_conf = array(
-		'host.meudominio.com' => array(
-			'entrada1' => 'novo valor',
-			'entrada2' => 'outro novo valor'
-		)
-	); \endcode
+ $over_conf = array(
+ 'host.meudominio.com' => array(
+ 'entrada1' => 'novo valor',
+ 'entrada2' => 'outro novo valor'
+ )
+ ); \endcode
  *  
  *  Os arquivos pré-distribuídos com o framework são de uso interno das classes e não podem ser renomeados ou omitidos.
  *  
  *  Seu sistema poderá possuir arquivos de configuração específicos, bastando obedecer o formato e a estrutura de nomes e diretórios.
- *  
  */
 /**@{*/
 
 /// Configurações gerais do sistema
-$GLOBALS['SYSTEM'] = array(
-	'SYSTEM_NAME' => 'Nome Do Seu Sistema', 
-	'SYSTEM_VERSION' => array(1, 0, 0), 
+$GLOBALS['SYSTEM'] = [
+    'SYSTEM_NAME'    => 'Nome Do Seu Sistema',
+    'SYSTEM_VERSION' => [1, 0, 0],
 
-	'ACTIVE_ENVIRONMENT' => "",
-	'ENVIRONMENT_VARIABLE' => 'FWGV_ENVIRONMENT',
-	'CONSIDER_PORT_NUMBER' => false,
-	'ENVIRONMENT_ALIAS' => array(
-		'localhost' => 'development',
-		'127\.0\.0\.1' => 'development',
-		'192\.168\.[0-9]*\.[0-9]*' => 'development',
-		'homol(ogation)?' => 'development',
-		'(www\.)?seusite\.com(\.br)?' => 'production'
-	),
+    'ACTIVE_ENVIRONMENT'   => '',
+    'ENVIRONMENT_VARIABLE' => 'FWGV_ENVIRONMENT',
+    'CONSIDER_PORT_NUMBER' => false,
+    'ENVIRONMENT_ALIAS'    => [
+        'localhost'                   => 'development',
+        '127\.0\.0\.1'                => 'development',
+        '192\.168\.[0-9]*\.[0-9]*'    => 'development',
+        'homol(ogation)?'             => 'development',
+        '(www\.)?seusite\.com(\.br)?' => 'production',
+    ],
 
-	'ROOT_PATH' => realpath(dirname(__FILE__)), 
-	'SYSTEM_PATH' => "", 
-	'LIBRARY_PATH' => "", 
-	'CONTROLER_PATH' => "", 
-	'CLASS_PATH' => "", 
-	'CONFIG_PATH' => "", 
+    'ROOT_PATH'      => realpath(dirname(__FILE__)),
+    'SYSTEM_PATH'    => '',
+    'LIBRARY_PATH'   => '',
+    'CONTROLER_PATH' => '',
+    'CLASS_PATH'     => '',
+    'CONFIG_PATH'    => '',
 
-	'CHARSET' => 'UTF-8', 
-	'TIMEZONE' => 'America/Sao_Paulo', 
-);
+    'CHARSET'  => 'UTF-8',
+    'TIMEZONE' => 'America/Sao_Paulo',
+];
 
 /// Diretório do sistema
-$GLOBALS['SYSTEM']['SYSTEM_PATH'] = realpath($GLOBALS['SYSTEM']['ROOT_PATH'] . DIRECTORY_SEPARATOR . 'system');
+$GLOBALS['SYSTEM']['SYSTEM_PATH'] = realpath($GLOBALS['SYSTEM']['ROOT_PATH'].DIRECTORY_SEPARATOR.'system');
 /// Diretório da biblioteca do sistema
-$GLOBALS['SYSTEM']['LIBRARY_PATH'] = realpath($GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'library');
+$GLOBALS['SYSTEM']['LIBRARY_PATH'] = realpath($GLOBALS['SYSTEM']['SYSTEM_PATH'].DIRECTORY_SEPARATOR.'library');
 /// Diretório de classes de terceiros que não são carregadas pelo autoload
-$GLOBALS['SYSTEM']['3RDPARTY_PATH'] = realpath($GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'other');
+$GLOBALS['SYSTEM']['3RDPARTY_PATH'] = realpath($GLOBALS['SYSTEM']['SYSTEM_PATH'].DIRECTORY_SEPARATOR.'other');
 /// Diretório das controladoras
-$GLOBALS['SYSTEM']['CONTROLER_PATH'] = realpath($GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'controllers');
+$GLOBALS['SYSTEM']['CONTROLER_PATH'] = realpath($GLOBALS['SYSTEM']['SYSTEM_PATH'].DIRECTORY_SEPARATOR.'controllers');
 /// Diretório das classes da aplicação
-$GLOBALS['SYSTEM']['CLASS_PATH'] = realpath($GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'classes');
+$GLOBALS['SYSTEM']['CLASS_PATH'] = realpath($GLOBALS['SYSTEM']['SYSTEM_PATH'].DIRECTORY_SEPARATOR.'classes');
 /// Diretório das configurações do sistema
-$GLOBALS['SYSTEM']['CONFIG_PATH'] = realpath($GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'conf');
+$GLOBALS['SYSTEM']['CONFIG_PATH'] = realpath($GLOBALS['SYSTEM']['SYSTEM_PATH'].DIRECTORY_SEPARATOR.'conf');
 
 /// Diretório da classe de controle de versionamento de banco de dados
-$GLOBALS['SYSTEM']['MIGRATION_PATH'] = realpath($GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'migration');
+$GLOBALS['SYSTEM']['MIGRATION_PATH'] = realpath($GLOBALS['SYSTEM']['SYSTEM_PATH'].DIRECTORY_SEPARATOR.'migration');
 
 /**@}*/

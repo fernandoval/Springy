@@ -1,6 +1,6 @@
 <?php
 /** \file
- *  \brief Configurações de acesso a banco de dados
+ *  \brief Configurações de acesso a banco de dados.
  *
  *  \warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
@@ -9,7 +9,7 @@
 
 /**
  *  \defgroup dbcfg_production Configurações de acesso a banco de dados para o ambiente 'production'
- *  \ingroup dbcfg
+ *  \ingroup dbcfg.
  *  
  *  As entradas colocadas nesse arquivo serão aplicadas apenas ao ambiente 'production'.
  *  
@@ -23,26 +23,26 @@
 /**@{*/
 
 /// Configurações para o ambiente de Produção
-$conf = array(
-	'round_robin' => array(
-		'type' => 'memcached',
-		'server_addr' => 'youmemcachedserver.localnetwork',
-		'server_port' => 11211
-	),
-	'cache' => array(
-		'type' => 'off',
-		'server_addr' => 'youmemcachedserver.localnetwork',
-		'server_port' => 11211
-	),
-	'default' => array(
-		'database_type' => 'mysql',
-		'host_name'     => '',
-		'user_name'     => '',
-		'password'      => '',
-		'database'      => '',
-		'charset'       => 'utf8',
-		'persistent'    => false
-	)
-);
+$conf = [
+    'round_robin' => [
+        'type'        => 'memcached',
+        'server_addr' => 'youmemcachedserver.localnetwork',
+        'server_port' => 11211,
+    ],
+    'cache' => [
+        'type'        => 'off',
+        'server_addr' => 'youmemcachedserver.localnetwork',
+        'server_port' => 11211,
+    ],
+    'default' => [
+        'database_type' => 'mysql',
+        'host_name'     => '',
+        'user_name'     => '',
+        'password'      => '',
+        'database'      => '',
+        'charset'       => 'utf8',
+        'persistent'    => false,
+    ],
+];
 
 /**@}*/

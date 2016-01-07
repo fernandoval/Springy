@@ -1,6 +1,6 @@
 <?php
 /** \file
- *  \brief Configurações de acesso a banco de dados
+ *  \brief Configurações de acesso a banco de dados.
  *
  *  \warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
@@ -9,7 +9,7 @@
 
 /**
  *  \defgroup dbcfg_development Configurações de acesso a banco de dados para o ambiente 'development'
- *  \ingroup dbcfg
+ *  \ingroup dbcfg.
  *  
  *  As entradas colocadas nesse arquivo serão aplicadas apenas ao ambiente 'development'.
  *  
@@ -23,26 +23,26 @@
 /**@{*/
 
 /// Configurações para o ambiente de Desenvolvimento
-$conf = array(
-	'round_robin' => array(
-		'type' => 'file',
-		'server_addr' => $GLOBALS['SYSTEM']['SYSTEM_PATH'] . DIRECTORY_SEPARATOR . 'tpl_comp',
-		'server_port' => 11211
-	),
-	'cache' => array(
-		'type' => 'off',
-		'server_addr' => '127.0.0.1',
-		'server_port' => 11211
-	),
-	'default' => array(
-		'database_type' => 'mysql',
-		'host_name'     => '',
-		'user_name'     => '',
-		'password'      => '',
-		'database'      => '',
-		'charset'       => 'utf8',
-		'persistent'    => false
-	)
-);
+$conf = [
+    'round_robin' => [
+        'type'        => 'file',
+        'server_addr' => $GLOBALS['SYSTEM']['SYSTEM_PATH'].DIRECTORY_SEPARATOR.'tpl_comp',
+        'server_port' => 11211,
+    ],
+    'cache' => [
+        'type'        => 'off',
+        'server_addr' => '127.0.0.1',
+        'server_port' => 11211,
+    ],
+    'default' => [
+        'database_type' => 'mysql',
+        'host_name'     => '',
+        'user_name'     => '',
+        'password'      => '',
+        'database'      => '',
+        'charset'       => 'utf8',
+        'persistent'    => false,
+    ],
+];
 
 /**@}*/

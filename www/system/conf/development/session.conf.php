@@ -1,6 +1,6 @@
 <?php
 /** \file
- *  \brief Configurações de sessão
+ *  \brief Configurações de sessão.
  *
  *  \warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
@@ -9,7 +9,7 @@
 
 /**
  *  \defgroup sessioncfg_development Configurações de SESSÃO para o ambiente 'development'
- *  \ingroup sessioncfg
+ *  \ingroup sessioncfg.
  *  
  *  As entradas colocadas nesse arquivo serão aplicadas apenas ao ambiente 'development'.
  *  
@@ -23,16 +23,16 @@
 /**@{*/
 
 /// Configurações para o ambiente de Desenvolvimento
-$conf = array(
-	'type'          => 'std',
-	'server_addr'   => '127.0.0.1',
-	'server_port'   => 11211,
-	'master_domain' => "",
-	'expires'       => 120,
-	'table_name'    => 'sessao_usuario',
-	'id_column'     => 'id_sessao',
-	'value_column'  => 'valor',
-	'update_column' => 'data_atualizacao'
-);
+$conf = [
+    'type'          => 'std',
+    'server_addr'   => '127.0.0.1',
+    'server_port'   => 11211,
+    'master_domain' => '',
+    'expires'       => 120,
+    'table_name'    => 'sessao_usuario',
+    'id_column'     => 'id_sessao',
+    'value_column'  => 'valor',
+    'update_column' => 'data_atualizacao',
+];
 
 /**@}*/

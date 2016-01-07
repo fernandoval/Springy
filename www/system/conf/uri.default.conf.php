@@ -1,6 +1,6 @@
 <?php
 /** \file
- *  \brief Configurações da classe URI
+ *  \brief Configurações da classe URI.
  *
  *  \warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
@@ -10,7 +10,7 @@
 
 /**
  *  \defgroup uricfg Configurações da classe de tratamento de URI/URL
- *  \ingroup config
+ *  \ingroup config.
  *  
  *  As entradas de configuração dos arquivos \c uri, são utilizadas pela classe URI, sendo que as entradas previamente definidas não podem ser omitidas
  *  sob risco de dano à aplicação.
@@ -71,13 +71,14 @@
  *  - 'secure' - Host seguro do site. Ex.: 'https://www.seusite.com'
  *  
  *  \see config
+ *
  *  @{
  *  @}
  */
 
 /**
  *  \defgroup uricfg_default Configurações da classe de tratamento de URI/URL para todos os ambientes
- *  \ingroup uricfg
+ *  \ingroup uricfg.
  *  
  *  As entradas colocadas nesse arquivo serão aplicadas a todos os ambientes do sistema.
  *  
@@ -88,36 +89,36 @@
 /**@{*/
 
 /// Configurações para todos os ambientes
-$conf = array(
-	'routes' => array(
-		'home(\/)*(\?(.*))*' => array('segment' => 0, 'controller' => 'index'),
-	),
-	'redirects' => array(
-		'404' => array('segments' => array(), 'get' => array(), 'force_rewrite' => false, 'host' => 'dynamic', 'type' => 301),
-	),
-	'prevalidate_controller' => array(
-		'mycontroller' => array('command' => 301, 'segments' => 2),
-		'myothercontroller' => array('command' => 404, 'segments' => 2, 'validate' => array('/^[a-z0-9\-]+$/', '/^[0-9]+$/')),
-	),
-	'system_root'                     => '/',
-	'register_method_set_common_urls' => null,
-	// URLs comuns do site
-	'common_urls'                     => array(
-		'urlAssets' => array(array('assets'), array(), false, 'static', true),
-		'urlCSS' => array(array('assets', 'css'), array(), false, 'static', true),
-		'urlJS' => array(array('assets', 'js'), array(), false, 'static', true),
-		'urlHome' => array(array()),
-		'urlLogin' => array(array('login'), array(), false, 'secure', true),
-		'urlLogout' => array(array('logout'), array(), false, 'secure', true)
-	),
-	'redirect_last_slash'             => true,
-	'force_slash_on_index'            => true,
-	'ignored_segments'                => 0,
-	'assets_dir'                      => 'assets',
-	'js_dir'                          => 'js',
-	'css_dir'                         => 'css',
-	'images_dir'                      => 'images',
-	'swf_dir'                         => 'swf'
-);
+$conf = [
+    'routes' => [
+        'home(\/)*(\?(.*))*' => ['segment' => 0, 'controller' => 'index'],
+    ],
+    'redirects' => [
+        '404' => ['segments' => [], 'get' => [], 'force_rewrite' => false, 'host' => 'dynamic', 'type' => 301],
+    ],
+    'prevalidate_controller' => [
+        'mycontroller'      => ['command' => 301, 'segments' => 2],
+        'myothercontroller' => ['command' => 404, 'segments' => 2, 'validate' => ['/^[a-z0-9\-]+$/', '/^[0-9]+$/']],
+    ],
+    'system_root'                     => '/',
+    'register_method_set_common_urls' => null,
+    // URLs comuns do site
+    'common_urls'                     => [
+        'urlAssets' => [['assets'], [], false, 'static', true],
+        'urlCSS'    => [['assets', 'css'], [], false, 'static', true],
+        'urlJS'     => [['assets', 'js'], [], false, 'static', true],
+        'urlHome'   => [[]],
+        'urlLogin'  => [['login'], [], false, 'secure', true],
+        'urlLogout' => [['logout'], [], false, 'secure', true],
+    ],
+    'redirect_last_slash'             => true,
+    'force_slash_on_index'            => true,
+    'ignored_segments'                => 0,
+    'assets_dir'                      => 'assets',
+    'js_dir'                          => 'js',
+    'css_dir'                         => 'css',
+    'images_dir'                      => 'images',
+    'swf_dir'                         => 'swf',
+];
 
 /**@}*/

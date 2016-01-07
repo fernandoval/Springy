@@ -1,7 +1,6 @@
 <?php
 /** \mainpage
- *  
- *  ## FVAL PHP Framework
+ *  ## FVAL PHP Framework.
  *  
  *  \version 3.3.1
  *  
@@ -154,6 +153,5 @@
  *  
  *  \namespace  FW
  *  \brief		Biblioteca de classes do framework
- *  
  */
 namespace FW;

@@ -1,6 +1,6 @@
 <?php
 /**	\file
- *	FVAL PHP Framework for Web Applications
+ *	FVAL PHP Framework for Web Applications.
  *
  *  \copyright	Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
  *  \copyright	Copyright (c) 2007-2015 Fernando Val\n
@@ -39,90 +39,91 @@
  *	Para baixar a classe original use o seguinte endereço:
  *	http://www.phpclasses.org/browse.html/package/1025.html
  */
-
 namespace FW;
 
 /**
  *  \brief Classe para pegar arquivos de toda uma árvore de diretórios
  *	\author (c) Ilya Nemihin
- *	\author Fernando Val - fernando.val@gmail.com
+ *	\author Fernando Val - fernando.val@gmail.com.
  */
 class DeepDir
 {
-	private $dir     = NULL;
-	private $files   = NULL;
-	private $error   = NULL;
-	private $dirFILO = NULL;
+    private $dir = null;
+    private $files = null;
+    private $error = null;
+    private $dirFILO = null;
 
-	/**
-	 *	\brief Método construtor
-	 */
-	public function __construct($dir='.')
-	{
-		$this->dirFILO = array();
-		$this->setDir($dir);
-	}
+    /**
+     *	\brief Método construtor.
+     */
+    public function __construct($dir = '.')
+    {
+        $this->dirFILO = [];
+        $this->setDir($dir);
+    }
 
-	/**
-	 *	\brief Define o diretório
-	 */
-	public function setDir($dir)
-	{
-		$this->dir = $dir;
-		$this->files = array();
-		$this->error = false;
-		$this->dirFILO = array();
-		array_push($this->dirFILO, $this->dir);
-	}
+    /**
+     *	\brief Define o diretório.
+     */
+    public function setDir($dir)
+    {
+        $this->dir = $dir;
+        $this->files = [];
+        $this->error = false;
+        $this->dirFILO = [];
+        array_push($this->dirFILO, $this->dir);
+    }
 
-	/**
-	 *	\brief Pega o último erro encontrado
-	 */
-	public function getError()
-	{
-		return $this->error;
-	}
-	
-	/**
-	 *	\brief Pega os arquivos encontrados
-	 *	\return Retorna um \c array contendo a árvore de diretórios
-	 */
-	public function getFiles()
-	{
-		return $this->files;
-	}
+    /**
+     *	\brief Pega o último erro encontrado.
+     */
+    public function getError()
+    {
+        return $this->error;
+    }
 
-	/**
-	 *	\brief Carrega a árvore de diretórios
-	 */
-	public function load()
-	{
-		while ($this->curDir = array_pop($this->dirFILO)) {
-			$this->loadFromCurDir();
-		}
-	}
+    /**
+     *	\brief Pega os arquivos encontrados
+     *	\return Retorna um \c array contendo a árvore de diretórios.
+     */
+    public function getFiles()
+    {
+        return $this->files;
+    }
 
-	/**
-	 *	\brief Carrega a relação de arquivos e diretórios do diretório corrente
-	 */
-	private function loadFromCurDir()
-	{
-		if ($handle = @opendir($this->curDir)) {
-			while (false !== ($file = readdir($handle))) {
-				if ($file == "." || $file == "..") continue;
-				$filePath = $this->curDir . '/' . $file;
-				$fileType = filetype($filePath);
-				if ($fileType == 'dir') {
-					array_push($this->dirFILO, $filePath);
-					continue;
-				}
-				$this->files[] = $filePath;
-			}
-			closedir($handle);
-		}
-		else {
-			$this->error = 'error open dir "'.$this->curDir.'"';
-			return false;
-		}
-	}
+    /**
+     *	\brief Carrega a árvore de diretórios.
+     */
+    public function load()
+    {
+        while ($this->curDir = array_pop($this->dirFILO)) {
+            $this->loadFromCurDir();
+        }
+    }
+
+    /**
+     *	\brief Carrega a relação de arquivos e diretórios do diretório corrente.
+     */
+    private function loadFromCurDir()
+    {
+        if ($handle = @opendir($this->curDir)) {
+            while (false !== ($file = readdir($handle))) {
+                if ($file == '.' || $file == '..') {
+                    continue;
+                }
+                $filePath = $this->curDir.'/'.$file;
+                $fileType = filetype($filePath);
+                if ($fileType == 'dir') {
+                    array_push($this->dirFILO, $filePath);
+                    continue;
+                }
+                $this->files[] = $filePath;
+            }
+            closedir($handle);
+        } else {
+            $this->error = 'error open dir "'.$this->curDir.'"';
+
+            return false;
+        }
+    }
 }

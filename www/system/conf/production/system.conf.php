@@ -1,6 +1,6 @@
 <?php
 /** \file
- *  \brief Configurações gerais do sistema
+ *  \brief Configurações gerais do sistema.
  *
  *  \warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
@@ -9,7 +9,7 @@
 
 /**
  *  \addtogroup systemcfg_production Configurações do cerne para o ambiente \c 'production'
- *  \ingroup systemcfg
+ *  \ingroup systemcfg.
  *  
  *  As entradas colocadas nesse arquivo serão aplicadas apenas ao ambiente 'production'.
  *  
@@ -23,13 +23,13 @@
 /**@{*/
 
 /// Configurações para o ambiente de Produção
-$conf = array(
-	'debug'             => false,
-	'maintenance'       => false,
-	'rewrite_url'       => true,
-	'cache'             => false,
-	'cache-control'     => 'private, must-revalidate',
-	'authentication'    => array(),
-);
+$conf = [
+    'debug'             => false,
+    'maintenance'       => false,
+    'rewrite_url'       => true,
+    'cache'             => false,
+    'cache-control'     => 'private, must-revalidate',
+    'authentication'    => [],
+];
 
 /**@}*/

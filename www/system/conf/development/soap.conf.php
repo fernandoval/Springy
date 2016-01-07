@@ -1,6 +1,6 @@
 <?php
 /** \file
- *  \brief Configurações da classe SOAP
+ *  \brief Configurações da classe SOAP.
  *
  *  \warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
@@ -9,7 +9,7 @@
 
 /**
  *  \defgroup soapcfg_development Configurações da classe SOAP para o ambiente 'development'
- *  \ingroup soapcfg
+ *  \ingroup soapcfg.
  *  
  *  As entradas colocadas nesse arquivo serão aplicadas apenas ao ambiente 'development'.
  *  
@@ -23,9 +23,9 @@
 /**@{*/
 
 /// Entradas para o ambiente de Desenvolvimento
-$conf = array (
-	'useCURL' => false,
-	'timeout' => 15
-);
+$conf =  [
+    'useCURL' => false,
+    'timeout' => 15,
+];
 
 /**@}*/

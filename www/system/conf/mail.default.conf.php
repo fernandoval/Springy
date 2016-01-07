@@ -1,6 +1,6 @@
 <?php
 /** \file
- *  \brief Configurações da classe de envio de email
+ *  \brief Configurações da classe de envio de email.
  *
  *  \warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
@@ -9,7 +9,7 @@
 
 /**
  *  \defgroup emailcfg Configurações da classe de envio de email
- *  \ingroup config
+ *  \ingroup config.
  *  
  *  As entradas de configuração dos arquivos \c mail, são utilizadas pela classe Mail, sendo que as entradas previamente definidas não podem ser omitidas
  *  caso você utilize a classe.
@@ -60,13 +60,14 @@
  *  "swiftmailer/swiftmailer": "*"
  *  
  *  \see config
+ *
  *  @{
  *  @}
  */
 
 /**
  *  \defgroup emailcfg_default Configurações da classe de envio de email para todos os ambientes
- *  \ingroup emailcfg
+ *  \ingroup emailcfg.
  *  
  *  As entradas colocadas nesse arquivo serão aplicadas a todos os ambientes do sistema.
  *  
@@ -77,13 +78,13 @@
 /**@{*/
 
 /// Entradas para todos os ambientes
-$conf = array(
-	// Mail to notify system errors (used by framework)
-	'errors_go_to'    => 'youremail@yourdomain.com',
-	
-	// System Admin (used by framework)
-	'system_adm_mail' => 'noreply@yourdomain.com',
-	'system_adm_name' => 'System Admin',
-);
+$conf = [
+    // Mail to notify system errors (used by framework)
+    'errors_go_to'    => 'youremail@yourdomain.com',
+
+    // System Admin (used by framework)
+    'system_adm_mail' => 'noreply@yourdomain.com',
+    'system_adm_name' => 'System Admin',
+];
 
 /**@}*/

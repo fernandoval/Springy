@@ -1,6 +1,6 @@
 <?php
 /**	\file
- *	FVAL PHP Framework for Web Applications
+ *	FVAL PHP Framework for Web Applications.
  *
  *  \copyright Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
  *  \copyright Copyright (c) 2007-2015 Fernando Val\n
@@ -12,26 +12,25 @@
  *  \author    Allan Marques - allan.marques@ymail.com
  *	\ingroup   tests
  */
-
 use FW\Utils\MessageContainer;
 
 class MessageContainerTest extends PHPUnit_Framework_TestCase
 {
     protected $msgContainer;
-    
+
     public function setUp()
     {
-        $this->msgContainer = new MessageContainer;
+        $this->msgContainer = new MessageContainer();
     }
-    
+
     public function testMessageGetsFormated()
     {
-        $this->msgContainer->setMessages(array('errors' => 'Erro!'));
+        $this->msgContainer->setMessages(['errors' => 'Erro!']);
         $msg = $this->msgContainer->get('errors', '<li>:msg</li>');
-        
-        $this->assertEquals(array('<li>Erro!</li>'), $msg);
+
+        $this->assertEquals(['<li>Erro!</li>'], $msg);
     }
-    
+
     public function testMultipleMessagesGetsFormated()
     {
         $this->msgContainer->add('errors', 'Erro1');
@@ -39,21 +38,21 @@ class MessageContainerTest extends PHPUnit_Framework_TestCase
         $this->msgContainer->add('errors', 'Erro3');
 
         $msg = $this->msgContainer->get('errors', '<li>:msg</li>');
-        
-        $this->assertEquals(array('<li>Erro1</li>','<li>Erro2</li>','<li>Erro3</li>'), $msg);
+
+        $this->assertEquals(['<li>Erro1</li>', '<li>Erro2</li>', '<li>Erro3</li>'], $msg);
     }
-    
+
     public function testGetJustFirstMessageOfAType()
     {
         $this->msgContainer->add('errors', 'Erro1');
         $this->msgContainer->add('errors', 'Erro2');
         $this->msgContainer->add('errors', 'Erro3');
-        
+
         $msg = $this->msgContainer->first('errors', '<li>:msg</li>');
-        
+
         $this->assertEquals('<li>Erro1</li>', $msg);
     }
-    
+
     public function testGetsAllMessages()
     {
         $this->msgContainer->add('errors', 'Erro');
@@ -61,13 +60,13 @@ class MessageContainerTest extends PHPUnit_Framework_TestCase
         $this->msgContainer->add('warning', 'Warning');
 
         $msg = $this->msgContainer->all('<li>:msg</li>');
-        
+
         $this->assertEquals(
-            array(
-                '<li>Erro</li>', 
-                '<li>Success</li>', 
-                '<li>Warning</li>'
-            ), 
+            [
+                '<li>Erro</li>',
+                '<li>Success</li>',
+                '<li>Warning</li>',
+            ],
             $msg
         );
     }

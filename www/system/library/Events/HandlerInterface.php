@@ -1,6 +1,6 @@
 <?php
 /**	\file
- *	FVAL PHP Framework for Web Applications
+ *	FVAL PHP Framework for Web Applications.
  *
  *  \copyright	Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
  *  \copyright	Copyright (c) 2007-2015 Fernando Val\n
@@ -15,7 +15,7 @@
 namespace FW\Events;
 
 /**
- * \brief Interface para classes handlers de eventos
+ * \brief Interface para classes handlers de eventos.
  */
 interface HandlerInterface
 {
@@ -23,4 +23,4 @@ interface HandlerInterface
      * \brief Registra esta classe como handlers nos evetnos necessários.
      */
     public function subscribes(Mediator $mediator);
-} 
+}
