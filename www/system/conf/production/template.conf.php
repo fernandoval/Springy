@@ -1,13 +1,13 @@
 <?php
 /** \file
- *  \brief Configurações da classe de templates
+ *  \brief Configurações da classe de templates.
  *
  *  \warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
  *  \copyright Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.
  */
 
-/*
+/**
  *  \addtogroup templatecfg Configurações da classe de templates
  *  \defgroup templatecfg_production Configurações da classe de templates para o ambiente 'production'
  *  \ingroup templatecfg
@@ -24,8 +24,8 @@
 /**@{*/
 
 /// Configurações para o ambiente de Produção
-// $conf = [
-    // 'debug' => false,
-// ];
+$conf = [
+    'debug' => false,
+];
 
 /**@}*/
