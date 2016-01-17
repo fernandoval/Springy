@@ -8,7 +8,7 @@
  *  \copyright Copyright ₢ 2015 Fernando Val\n
  *  
  *  \brief    Post Install/Update Script for Composer
- *  \version  2.0.3
+ *  \version  2.1.4
  *  \author   Fernando Val - fernando.val@gmail.com
  *  
  *  This script is executed by Composer after the install/update process.
@@ -24,7 +24,6 @@
  *  \ingroup framework
  */
 define('DS', DIRECTORY_SEPARATOR);
-define('VENDOR_PATH', 'system'.DS.'other');
 
 define('LF', "\n");
 define('CS_RESET', "\033[0m");
@@ -73,10 +72,15 @@ if (!isset($composer['extra'])) {
 if (!isset($composer['extra']['post-install'])) {
     exit(0);
 }
+if (!isset($composer['config']) || !isset($composer['config']['vendor-dir'])) {
+	$vendorDir = 'vendor';
+} else {
+    $vendorDir = $composer['config']['vendor-dir'];
+}
 
 // foreach($require as $component => $target) {
 foreach ($composer['extra']['post-install'] as $component => $data) {
-    $path = VENDOR_PATH.DS.implode(DS, explode('/', $component));
+    $path = $vendorDir.DS.implode(DS, explode('/', $component));
 
     if (!isset($data['target'])) {
         exit(0);
@@ -90,13 +94,13 @@ foreach ($composer['extra']['post-install'] as $component => $data) {
             $files = $data['files'];
         } elseif (file_exists($path.DS.'bower.json')) {
             if (!$str = file_get_contents($path.DS.'bower.json')) {
-                echo 'Can\'t open "'.$path.DS.'bower.json" file.';
+                echo CS_RED, 'Can\'t open "'.$path.DS.'bower.json" file.', LF;
                 exit(1);
             }
 
             $bower = json_decode($str, true);
             if (!isset($bower['main'])) {
-                echo 'Main section does not exists in "'.$path.DS.'bower.json" file.';
+                echo CS_RED, 'Main section does not exists in "'.$path.DS.'bower.json" file.', LF;
                 exit(1);
             }
 
@@ -112,7 +116,7 @@ foreach ($composer['extra']['post-install'] as $component => $data) {
         $destination = implode(DS, explode('/', $target));
         if (!is_dir($destination)) {
             if (!mkdir($destination, 0755, true)) {
-                echo 'Can\'t create "'.$destination.'" directory.';
+                echo CS_RED, 'Can\'t create "'.$destination.'" directory.', LF;
                 exit(1);
             }
         }
@@ -131,7 +135,7 @@ foreach ($composer['extra']['post-install'] as $component => $data) {
             copy_r($path, $destination, $minify);
         }
     } else {
-        echo 'Component "'.$path.'" does not exists.';
+        echo CS_RED, 'Component "'.$path.'" does not exists.', LF;
         exit(1);
     }
 }

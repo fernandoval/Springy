@@ -8,7 +8,7 @@
  *
  *	\brief		Classe com métodos para diversos tipos de tratamento e validação de dados string
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	0.9.11
+ *	\version	0.9.12
  *  \author		Fernando Val  - fernando.val@gmail.com
  *	\ingroup	framework
  */
@@ -346,11 +346,13 @@ class Strings
             return false;
         }
 
+        $digito = [];
+        
         // PEGA O DIGITO VERIFIACADOR
         $dv_informado = substr($cpf, 9, 2);
 
         for ($i = 0; $i <= 8; $i++) {
-            $digito[$i] = substr($cpf, $i, 1);
+            $digito[$i] = intval(substr($cpf, $i, 1));
         }
 
         // CALCULA O VALOR DO 10º DIGITO DE VERIFICAÇÃO

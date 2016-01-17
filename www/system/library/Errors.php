@@ -8,7 +8,7 @@
  *
  *	\brief      Classe para tratamento de erros
  *	\warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version    2.2.30
+ *  \version    2.2.31
  *  \author     Fernando Val  - fernando.val@gmail.com
  *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup    framework
@@ -308,19 +308,19 @@ class Errors
                      .'        </tr>'
                      .'        <tr>'
                      .'          <td valign="top" style="padding:3px 2px"><label style="font-weight:bold">_POST</label></td>'
-                     .'          <td style="padding:3px 2px">'.Kernel::print_rc($_POST, true).'</td>'
+                     .'          <td style="padding:3px 2px">'.Kernel::print_rc($_POST).'</td>'
                      .'        </tr>'
                      .'        <tr>'
                      .'          <td valign="top" style="padding:3px 2px"><label style="font-weight:bold">_GET</label></td>'
-                     .'          <td style="padding:3px 2px">'.Kernel::print_rc($_GET, true).'</td>'
+                     .'          <td style="padding:3px 2px">'.Kernel::print_rc($_GET).'</td>'
                      .'        </tr>'
                      .'        <tr>'
                      .'          <td valign="top" style="padding:3px 2px"><label style="font-weight:bold">_COOKIE</label></td>'
-                     .'          <td style="padding:3px 2px">'.Kernel::print_rc($_COOKIE, true).'</td>'
+                     .'          <td style="padding:3px 2px">'.Kernel::print_rc($_COOKIE).'</td>'
                      .'        </tr>'
                      .'        <tr>'
                      .'          <td valign="top" style="padding:3px 2px"><label style="font-weight:bold">_SESSION</label></td>'
-                     .'          <td style="padding:3px 2px">'.Kernel::print_rc(Session::getAll(), true).'</td>'
+                     .'          <td style="padding:3px 2px">'.Kernel::print_rc(Session::getAll()).'</td>'
                      .'        </tr>'
                      .'      </table>'
                      .'    </td>'
@@ -593,11 +593,11 @@ class Errors
         $tpl = preg_replace('/<!-- REVERSE -->/', (Strings::getRealRemoteAddr() ? gethostbyaddr(Strings::getRealRemoteAddr()) : 'no reverse'), $tpl);
         $tpl = preg_replace('/<!-- HTTP_USER_AGENT -->/', isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '', $tpl);
         $tpl = preg_replace('/<!-- ADDITIONAL_INFO -->/', $additionalInfo, $tpl);
-        $tpl = preg_replace('/<!-- _SERVER -->/', Kernel::print_rc($_SERVER, true), $tpl);
-        $tpl = preg_replace('/<!-- _POST -->/', Kernel::print_rc($_POST, true), $tpl);
-        $tpl = preg_replace('/<!-- _GET -->/', Kernel::print_rc($_GET, true), $tpl);
-        $tpl = preg_replace('/<!-- _COOKIE -->/', Kernel::print_rc($_COOKIE, true), $tpl);
-        $tpl = preg_replace('/<!-- _SESSION -->/', Kernel::print_rc(Session::getAll(), true), $tpl);
+        $tpl = preg_replace('/<!-- _SERVER -->/', Kernel::print_rc($_SERVER), $tpl);
+        $tpl = preg_replace('/<!-- _POST -->/', Kernel::print_rc($_POST), $tpl);
+        $tpl = preg_replace('/<!-- _GET -->/', Kernel::print_rc($_GET), $tpl);
+        $tpl = preg_replace('/<!-- _COOKIE -->/', Kernel::print_rc($_COOKIE), $tpl);
+        $tpl = preg_replace('/<!-- _SESSION -->/', Kernel::print_rc(Session::getAll()), $tpl);
         $tpl = preg_replace(['!/\*.*?\*/!s', "/\n\s+/", "/\n(\s*\n)+/", "!\n//.*?\n!s", "/\n\}(.+?)\n/", "/\}\s+/", "/,\n/", "/>\n/", "/\{\s*?\n/", "/\}\n/", "/;\n/"], ['', "\n", "\n", "\n", "}\\1\n", '}', ', ', '>', '{', '} ', ';'], $tpl);
 
         return $tpl;

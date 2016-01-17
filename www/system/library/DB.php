@@ -8,7 +8,7 @@
  *
  *	\brief		Script da classe de acesso a banco de dados
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.6.27
+ *  \version    1.6.28
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *  \author		Allan Marques - allan.marques@ymail.com
@@ -21,7 +21,7 @@ namespace FW;
  *  
  *  Esta classe é dinâmica, porém alguns de seus controles são estáticos.
  *  
- *	\note		Esta classe usa a PHP Data Object (PDO) para acesso a banco de dados
+ *	\note Esta classe usa a PHP Data Object (PDO) para acesso a banco de dados.
  */
 class DB
 {
@@ -279,9 +279,9 @@ class DB
 
         if (isset($this->LastQuery)) {
             if (PHP_SAPI === 'cli' || defined('STDIN')) {
-                $sqlError = htmlentities((is_object($this->LastQuery) ? $this->LastQuery->__toString() : $this->LastQuery))."\n".'Parametros: '.Kernel::print_rc($this->LastValues, true);
+                $sqlError = htmlentities((is_object($this->LastQuery) ? $this->LastQuery->__toString() : $this->LastQuery))."\n".'Parametros: '.Kernel::print_rc($this->LastValues);
             } else {
-                $sqlError = '<pre>'.htmlentities((is_object($this->LastQuery) ? $this->LastQuery->__toString() : $this->LastQuery)).'</pre><br /> Parametros:<br />'.Kernel::print_rc($this->LastValues, true);
+                $sqlError = '<pre>'.htmlentities((is_object($this->LastQuery) ? $this->LastQuery->__toString() : $this->LastQuery)).'</pre><br /> Parametros:<br />'.Kernel::print_rc($this->LastValues);
             }
         } else {
             $sqlError = 'Still this connection was not executed some instruction SQL using.';
@@ -325,7 +325,7 @@ class DB
         unset($sqlError);
 
         Errors::sendReport(
-            '<span style="color:#FF0000">'.$msg.'</span> - '.'('.$errorInfo[1].') '.$errorInfo[2].($exception ? '<br />'.$exception->getMessage() : '').'<br /><pre>'.$this->LastQuery.'</pre><br />Valores: '.Kernel::print_rc($this->LastValues, true),
+            '<span style="color:#FF0000">'.$msg.'</span> - '.'('.$errorInfo[1].') '.$errorInfo[2].($exception ? '<br />'.$exception->getMessage() : '').'<br /><pre>'.$this->LastQuery.'</pre><br />Valores: '.Kernel::print_rc($this->LastValues),
             500,
             hash('crc32', $msg.$errorInfo[1].$this->LastQuery), // error id
             $htmlError
@@ -526,7 +526,7 @@ class DB
             Kernel::debug(
                 '<pre>'.
                     $this->LastQuery.
-                '</pre><br />Valores: '.Kernel::print_rc($this->LastValues, true).'<br />'.
+                '</pre><br />Valores: '.Kernel::print_rc($this->LastValues).'<br />'.
                 'Affected Rows: '.$this->affectedRows().'<br />'.
                 'DB: '.(isset($conf['database']) ? $conf['database'] : 'não informado'), 'SQL #'.self::$sqlNum, false);
         }

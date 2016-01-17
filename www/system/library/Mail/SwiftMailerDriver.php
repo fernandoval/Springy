@@ -8,7 +8,7 @@
  *  \brief      Class driver for use with Swift Mailer class
  *  \see        http://swiftmailer.org/
  *  \warning    This file is part of the framework and can not be omitted
- *  \version    1.0.0
+ *  \version    1.0.1
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \ingroup    framework
  */
@@ -27,7 +27,6 @@ use FW\Kernel;
 class SwiftMailerDriver implements MailDriverInterface
 {
     private $mailObj = null;
-    private $tranport = null;
 
     /**
      *  \brief Constructor method

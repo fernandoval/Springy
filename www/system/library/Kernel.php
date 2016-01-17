@@ -8,7 +8,7 @@
  *
  *  \brief      Script da classe cerne do framework
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    2.0.53
+ *  \version    2.0.54
  *  \author     Fernando Val  - fernando.val@gmail.com
  *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
  *  \ingroup    framework
@@ -40,8 +40,6 @@ class Kernel
     private static $debug = [];
     /// Determina se o usuário está usando dispositivo móvel (Deprecated. Will be removed.)
     private static $mobile = null;
-    /// Determina o tipo de dispositivo móvel (Deprecated. Will be removed.)
-    private static $mobile_device = null;
     /// Determina o root de controladoras
     private static $controller_root = [];
     /// Caminho do namespace do controller
@@ -325,10 +323,9 @@ class Kernel
      *	\brief Imprime os detalhes de uma variável em cores.
      *
      *	\param[in] (variant) $par - variável
-     *	\param[in] (bool) $return - sem utilização
      *	\return Retorna uma string HTML
      */
-    public static function print_rc($par, $return = false)
+    public static function print_rc($par)
     {
         if (is_object($par)) {
             if (method_exists($par, '__toString')) {
@@ -393,7 +390,7 @@ class Kernel
                     $id = 'args_'.mt_rand().str_replace('.', '', current(explode(' ', microtime())));
                     $saida .= '        <br />'."\n"
                            .'        <a href="javascript:;" onClick="var obj=$(\'#'.$id.'\').toggle()" style="color:#06c; margin:3px 0">arguments passed to function</a>'
-                           .'        '.(is_array($backtrace['args']) ? '<div id="'.$id.'" style="display:none">'.self::print_rc($backtrace['args'], true).'</div>' : $backtrace['args']);
+                           .'        '.(is_array($backtrace['args']) ? '<div id="'.$id.'" style="display:none">'.self::print_rc($backtrace['args']).'</div>' : $backtrace['args']);
                 }
                 $saida .= '      </li>';
                 $li++;
@@ -546,13 +543,13 @@ class Kernel
         exit(0);
     }
 
-    private static function _list_classes($d, $ns)
+    private static function _list_classes($dir, $nameSpace)
     {
         $fv = [];
-        if ($r = opendir($d)) {
+        if ($r = opendir($dir)) {
             while (($f = readdir($r)) !== false) {
-                if (filetype($d.$f) == 'file' && substr($f, -4) == '.php') {
-                    $fc = file($d.$f);
+                if (filetype($dir.$f) == 'file' && substr($f, -4) == '.php') {
+                    $fc = file($dir.$f);
                     $v = ['b' => '', 'v' => '', 'n' => ''];
                     while (list(, $l) = each($fc)) {
                         if (preg_match('/\*(\s*)[\\\\|@]brief[\s|\t]{1,}(.*)((\r)*(\n))$/', $l, $a)) {
@@ -560,15 +557,15 @@ class Kernel
                         } elseif (preg_match('/\*([\s|\t]*)\\\\version[\s|\t]{1,}(.*)((\r)*(\n))$/', $l, $a)) {
                             $v['v'] = trim($a[2]);
                         } elseif (preg_match('/^(class|interface)[\s|\t]{1,}([a-zA-Z0-9_]+)(\s*)(extends)*(\s*)([a-zA-Z0-9_]*)(\s*)(\\{*)/', $l, $a)) {
-                            $v['n'] = $a[1].' '.$ns.'\\'.trim($a[2]);
+                            $v['n'] = $a[1].' '.$nameSpace.'\\'.trim($a[2]);
                             break;
                         }
                     }
                     if ($v['n'] && $v['v']) {
                         $fv[$v['n']] = $v;
                     }
-                } elseif (!in_array($f, ['.', '..']) && filetype($d.$f) == 'dir') {
-                    $fv = array_merge($fv, self::_list_classes($d.$f.DIRECTORY_SEPARATOR, $ns.'\\'.$f));
+                } elseif (!in_array($f, ['.', '..']) && filetype($dir.$f) == 'dir') {
+                    $fv = array_merge($fv, self::_list_classes($dir.$f.DIRECTORY_SEPARATOR, $nameSpace.'\\'.$f));
                 }
             }
         }
