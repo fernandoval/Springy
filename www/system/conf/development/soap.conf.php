@@ -4,7 +4,7 @@
  *
  *  \warning Este arquivo é parte integrante do framework e não pode ser omitido
  *
- *  \copyright	Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
+ *  \copyright Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
  */
 
 /**
@@ -23,7 +23,7 @@
 /**@{*/
 
 /// Entradas para o ambiente de Desenvolvimento
-$conf =  [
+$conf = [
     'useCURL' => false,
     'timeout' => 15,
 ];

@@ -1,16 +1,16 @@
 <?php
-/**	\file
- *	FVAL PHP Framework for Web Applications.
+/** \file
+ *  FVAL PHP Framework for Web Applications.
  *
- *  \copyright	Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
- *  \copyright	Copyright (c) 2007-2015 Fernando Val\n
- *	\copyright Copyright (c) 2009-2013 Lucas Cardozo
+ *  \copyright  Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
+ *  \copyright  Copyright (c) 2007-2015 Fernando Val\n
+ *  \copyright  Copyright (c) 2009-2013 Lucas Cardozo
  *
- *	\brief		Classe com métodos para diversos tipos de tratamento e validação de dados string
- *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.9.13
- *  \author		Fernando Val  - fernando.val@gmail.com
- *	\ingroup	framework
+ *  \brief      Classe com métodos para diversos tipos de tratamento e validação de dados string
+ *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
+ *  \version    0.9.14
+ *  \author     Fernando Val - fernando.val@gmail.com
+ *  \ingroup    framework
  */
 namespace FW\Utils;
 
@@ -20,13 +20,13 @@ namespace FW\Utils;
 class Strings
 {
     /**
-     *	\brief Verifica se uma string está codificada em UTF-8.
+     *  \brief Verifica se uma string está codificada em UTF-8.
      *
-     *	@param $str - string
+     *  @param $str - string
      *
-     *	\note Esta foi escrita por javalc6@gmail.com e disponibilizada pelo autor na documentação do PHP
+     *  \note Esta foi escrita por javalc6@gmail.com e disponibilizada pelo autor na documentação do PHP
      *
-     *	In order to check if a string is encoded correctly in utf-8, I suggest the following function, that implements the RFC3629 better than mb_check_encoding()
+     *  In order to check if a string is encoded correctly in utf-8, I suggest the following function, that implements the RFC3629 better than mb_check_encoding()
      */
     public static function checkUTF8($str)
     {
@@ -63,10 +63,10 @@ class Strings
     }
 
     /**
-     *	\brief Verifica se um endereço de email.
+     *  \brief Verifica se um endereço de email.
      *
-     *	@param string $email - email a ser validado
-     *	@param bool $checkDNS - determina se a existência do domínio do email deve ser verificado
+     *  @param string $email - email a ser validado
+     *  @param bool $checkDNS - determina se a existência do domínio do email deve ser verificado
      */
     public static function validateEmailAddress($email, $checkDNS = true)
     {
@@ -81,7 +81,7 @@ class Strings
     }
 
     /**
-     *	\brief Verifica se é um slug válido.
+     *  \brief Verifica se é um slug válido.
      */
     public static function validateSlug($txt)
     {
@@ -89,12 +89,12 @@ class Strings
     }
 
     /**
-     *	\brief Valida um texto qualquer, verificanso se tem um tamanho mínimo e máximo desejado.
-     *	O método também remove todas as TAGs HTML que o texto possua.
+     *  \brief Valida um texto qualquer, verificanso se tem um tamanho mínimo e máximo desejado.
+     *  O método também remove todas as TAGs HTML que o texto possua.
      *
-     *	@param string $txt - Texto a ser validado
-     *	@param int $min - Tamanho mínimo esperado para o texto (default=3).
-     *	@param int $max - Tamanho máximo que o texto pode ter. Se deixar em branco permite textos de tamanho infinito.
+     *  @param string $txt - Texto a ser validado
+     *  @param int $min - Tamanho mínimo esperado para o texto (default=3).
+     *  @param int $max - Tamanho máximo que o texto pode ter. Se deixar em branco permite textos de tamanho infinito.
      */
     public static function validateText(&$txt, $min = 3, $max = false)
     {
@@ -106,14 +106,14 @@ class Strings
 
     /**
      *  \brief Retorna o endereço IP remoto real.
-     *  
+     *
      *  Existem certas situações em que o verdadeiro IP do visitante fica mascarado quando o servidor de aplicação
      *  está por trás de um firewall ou balanceador de carga. Nesses casos é necessário fazer certas verificações em
      *  lugar de pegar apenas o valor da vairável $_SERVER['REMOTE_ADDR'].
-     *  
+     *
      *  Este método tenta recuperar o real IP do visitante, fazendo verificações e garantindo que nenhum valor de IP
      *  inválido seja retornado.
-     *  
+     *
      *  \return Retorna uma string contendo o IP real do host que fez a requisição.
      */
     public static function getRealRemoteAddr()
@@ -156,10 +156,10 @@ class Strings
     }
 
     /**
-     *	\brief Gena um identificador único global (globally unique identifier - GUID).
+     *  \brief Gena um identificador único global (globally unique identifier - GUID).
      *
-     *	\note Esta função foi copiada da contribuição de Alix Axel para a documentação do PHP
-     *	em http://php.net/manual/en/function.com-create-guid.php
+     *  \note Esta função foi copiada da contribuição de Alix Axel para a documentação do PHP
+     *  em http://php.net/manual/en/function.com-create-guid.php
      */
     public static function guid()
     {
@@ -171,11 +171,11 @@ class Strings
     }
 
     /**
-     *	\brief Converte um IPv4 em valor inteiro.
+     *  \brief Converte um IPv4 em valor inteiro.
      *
      *  @param string $ipv4 - endereço ip
      *
-     *	@return Retorna um valor inteiro
+     *  @return Retorna um valor inteiro
      */
     public static function ipv4ToNumber($ipv4)
     {
@@ -190,7 +190,7 @@ class Strings
     }
 
     /**
-     *	\brief Troca caracteres acentuados por não acentuado.
+     *  \brief Troca caracteres acentuados por não acentuado.
      */
     public static function removeAccentedChars($txt)
     {
@@ -203,7 +203,7 @@ class Strings
 
     /* As funções abaixo ainda estão em processo de migração para o framework e não devem ser utilizadas */
 
-    /* 
+    /*
      * @param[in] (string)$numero - variável a ser validado
      * @param[in] (string)$tamanho - quantidade máxima de caracteres [0-9] aceitos. Se for passado vazio (''), será infinito
      * @param[in] (string)$minimo - quantidade mínima de caracteres [0-9] aceitos
@@ -217,11 +217,11 @@ class Strings
     }
 
     /**
-     *	\brief Valida uma data no formato dd/mm/yyyy.
+     *  \brief Valida uma data no formato dd/mm/yyyy.
      *
-     *	Só serão consideradas válidas datas de 01/01/1900 até 31/12/2199.
+     *  Só serão consideradas válidas datas de 01/01/1900 até 31/12/2199.
      *
-     *	@param[in] (string)$data - data no formato d/m/Y
+     *  @param[in] (string)$data - data no formato d/m/Y
      */
     public static function data($data)
     {
@@ -255,7 +255,7 @@ class Strings
      *  Essa função não tem muito sentido em existir. Está sendo mantida apenas
      *  para compatibilidade com versões anteriores do framework.
      *
-     *	Ela foi criada por causa da função nunca agregada, mas mantida sem
+     *  Ela foi criada por causa da função nunca agregada, mas mantida sem
      *  documentação, denominada senha, que verifica apenas os tamanhos
      *  mínimo e máximo de um string fornecido.
      *
@@ -310,7 +310,7 @@ class Strings
         }
 
         $digito = [];
-        
+
         // PEGA O DIGITO VERIFIACADOR
         $dv_informado = substr($cpf, 9, 2);
 

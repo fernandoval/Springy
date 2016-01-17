@@ -1,17 +1,17 @@
 <?php
-/**	\file
- *	FVAL PHP Framework for Web Applications.
+/** \file
+ *  FVAL PHP Framework for Web Applications.
  *
  *  \copyright  Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
  *  \copyright  Copyright (c) 2007-2015 Fernando Val\n
- *	\copyright  Copyright (c) 2009-2013 Lucas Cardozo
+ *  \copyright  Copyright (c) 2009-2013 Lucas Cardozo
  *
- *	\brief      Classe para tratamento de URI
- *	\warning    Este arquivo é parte integrante do framework e não pode ser omitido
+ *  \brief      Classe para tratamento de URI
+ *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
  *  \version    2.0.29
  *  \author     Fernando Val  - fernando.val@gmail.com
  *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
- *	\ingroup    framework
+ *  \ingroup    framework
  */
 namespace FW;
 
@@ -20,7 +20,7 @@ use FW\Utils\Strings_UTF8;
 
 /**
  *  \brief Classe para tratamento de URI.
- *  
+ *
  *  Esta classe é estática e invocada automaticamente pelo framework.
  */
 class URI
@@ -39,9 +39,9 @@ class URI
     private static $class_controller = null;
 
     /**
-     *	\brief Lê a URLs (em modo re-write) e inicializa a variável $uri_string interna.
+     *  \brief Lê a URLs (em modo re-write) e inicializa a variável $uri_string interna.
      *
-     *	\return \c true se houve sucesso no processo e \c false em caso contrário
+     *  \return \c true se houve sucesso no processo e \c false em caso contrário
      */
     private static function _fetch_uri_string()
     {
@@ -90,7 +90,7 @@ class URI
     }
 
     /**
-     *	\brief Define o nome da classe da controller.
+     *  \brief Define o nome da classe da controller.
      */
     private static function _set_class_controller($classname)
     {
@@ -98,9 +98,9 @@ class URI
     }
 
     /**
-     *	\brief Lê a URLs (em modo re-write) e transforma em variáveis $_GET.
+     *  \brief Lê a URLs (em modo re-write) e transforma em variáveis $_GET.
      *
-     *	\note Este método não retorna valor
+     *  \note Este método não retorna valor
      */
     public static function parseURI()
     {
@@ -267,7 +267,7 @@ class URI
     }
 
     /**
-     *	\brief Valida a quantidade de segmentos da URI conforme a controladora.
+     *  \brief Valida a quantidade de segmentos da URI conforme a controladora.
      */
     public static function validateURI()
     {
@@ -311,9 +311,9 @@ class URI
     }
 
     /**
-     *	\brief Retorna o nome da classe da controller.
+     *  \brief Retorna o nome da classe da controller.
      *
-     *	\return O nome da classe da controller
+     *  \return O nome da classe da controller
      */
     public static function getControllerClass()
     {
@@ -321,9 +321,9 @@ class URI
     }
 
     /**
-     *	\brief Retorna a URI atual.
+     *  \brief Retorna a URI atual.
      *
-     *	\return A string da URI
+     *  \return A string da URI
      */
     public static function getURIString()
     {
@@ -331,9 +331,9 @@ class URI
     }
 
     /**
-     *	\brief Retorna a página atual.
+     *  \brief Retorna a página atual.
      *
-     *	\return O segmento que representa a página atual
+     *  \return O segmento que representa a página atual
      */
     public static function currentPage()
     {
@@ -341,9 +341,9 @@ class URI
     }
 
     /**
-     *	\brief Retorna o caminho relativo da página atual.
+     *  \brief Retorna o caminho relativo da página atual.
      *
-     *	\return Uma string contendo o caminho relativo à página atual
+     *  \return Uma string contendo o caminho relativo à página atual
      */
     public static function relativePathPage($consider_controller_root = false)
     {
@@ -356,9 +356,9 @@ class URI
     }
 
     /**
-     *	\brief Retorna a URI da página atual.
+     *  \brief Retorna a URI da página atual.
      *
-     *	\returns Uma string contendo a URI da página atual
+     *  \returns Uma string contendo a URI da página atual
      */
     public static function currentPageURI()
     {
@@ -366,10 +366,10 @@ class URI
     }
 
     /**
-     *	\brief Define o segmento relativo à página atual.
+     *  \brief Define o segmento relativo à página atual.
      *
      *  \param[in] $segment_num número relativo ao segmento da URI
-     *	\return \c trus se definiu o segmento relativo à página atual e \c false em caso contrário
+     *  \return \c trus se definiu o segmento relativo à página atual e \c false em caso contrário
      */
     public static function setCurrentPage($segment_num)
     {
@@ -383,12 +383,12 @@ class URI
     }
 
     /**
-     *	\brief Retorna o segmento da URI selecionado.
+     *  \brief Retorna o segmento da URI selecionado.
      *
-     *  \param[in] $segment_num O número do segmento desejado
-     *	@param[in] $relative_to_page Flag (true/false) que determina se o segmento desejado é
-     *		relativo ao segmento que determina a página atual. Default = true
-     *	\return o valor do segmento ou \c false caso o segmento não exista
+     *  \param[in] $segment_num O número do segmento desejado.
+     *  \param[in] $relative_to_page Flag (true/false) que determina se o segmento desejado é
+     *  	relativo ao segmento que determina a página atual. Default = true.
+     *  \return o valor do segmento ou \c false caso o segmento não exista.
      */
     public static function getSegment($segment_num, $relative_to_page = true, $consider_controller_root = false)
     {
@@ -406,10 +406,10 @@ class URI
     }
 
     /**
-     *	\brief Retorna o segmento ignorado da URI selecionado.
+     *  \brief Retorna o segmento ignorado da URI selecionado.
      *
      *  \param[in] $segment_num O número do segmento desejado
-     *	\return o valor do segmento ignorado ou \c false caso o segmento não exista
+     *  \return o valor do segmento ignorado ou \c false caso o segmento não exista
      */
     public static function getIgnoredSegment($segment_num)
     {
@@ -421,9 +421,9 @@ class URI
     }
 
     /**
-     *	\brief Retorna todos os segmentos.
+     *  \brief Retorna todos os segmentos.
      *
-     *	\return um array contendo todos os segmentos
+     *  \return um array contendo todos os segmentos
      */
     public static function getAllSegments()
     {
@@ -431,9 +431,9 @@ class URI
     }
 
     /**
-     *	\brief Retorna todos os segmentos ignorados.
+     *  \brief Retorna todos os segmentos ignorados.
      *
-     *	\return um array contendo todos os segmentos ignorados
+     *  \return um array contendo todos os segmentos ignorados
      */
     public static function getAllIgnoredSegments()
     {
@@ -441,10 +441,10 @@ class URI
     }
 
     /**
-     *	\brief Adiciona um novo segmento de URI.
+     *  \brief Adiciona um novo segmento de URI.
      *
      *  \param[in] $segment String contendo o valor do segmento
-     *	\return \c true se tiver sucesso e \c false em caso contrário
+     *  \return \c true se tiver sucesso e \c false em caso contrário
      */
     public static function addSegment($segment)
     {
@@ -458,11 +458,11 @@ class URI
     }
 
     /**
-     *	\brief Insere um novo segmento de URI.
+     *  \brief Insere um novo segmento de URI.
      *
      *  \param[in] (int) $position Inteiro contendo a posição de inserção
      *  \param[in] (string) $segment String contendo o valor do segmento
-     *	\return \c true se tiver sucesso e \c false em caso contrário
+     *  \return \c true se tiver sucesso e \c false em caso contrário
      */
     public static function insertSegment($position, $segment)
     {
@@ -476,10 +476,10 @@ class URI
     }
 
     /**
-     *	\brief Retorna o valor de um parâmetro GET.
+     *  \brief Retorna o valor de um parâmetro GET.
      *
      *  \param[i] $var String contendo o nome da variável desesada
-     *	\return O valor da variável, caso exista, ou \c false caso a variável não exista
+     *  \return O valor da variável, caso exista, ou \c false caso a variável não exista
      */
     public static function _GET($var)
     {
@@ -491,8 +491,8 @@ class URI
     }
 
     /**
-     *	\brief get_param é um apelido para _GET
-     *	\see _GET.
+     *  \brief get_param é um apelido para _GET
+     *  \see _GET.
      */
     public static function getParam($var)
     {
@@ -500,8 +500,8 @@ class URI
     }
 
     /**
-     *	\brief retorna todo o _GET
-     *	\see _GET.
+     *  \brief retorna todo o _GET
+     *  \see _GET.
      */
     public static function getParams()
     {
@@ -519,7 +519,7 @@ class URI
     }
 
     /**
-     *	\brief Define o valor de um parâmetro.
+     *  \brief Define o valor de um parâmetro.
      *
      *  \param[in] $var String contendo o nome da variável a ser definida
      *  \param[in] $value O valor da variável
@@ -530,12 +530,12 @@ class URI
     }
 
     /**
-     *	\brief Monta uma URL.
+     *  \brief Monta uma URL.
      *
      *  \param[in] $segments Array contendo os segmentos da URI
      *  \param[in] $query Array contendo as variáveis a serem passadas via na URL GET
      *  \param[in] $forceRewrite flag (true/false) que determina se o formato SEF deve ser forçado
-     *	\return Uma \c string contendo a URL
+     *  \return Uma \c string contendo a URL
      */
     public static function buildURL($segments = [], $query = [], $forceRewrite = false, $host = 'dynamic', $include_ignores_segments = true)
     {
@@ -578,10 +578,10 @@ class URI
     }
 
     /**
-     *	\brief Retorna o host com protocolo.
+     *  \brief Retorna o host com protocolo.
      *
      *  \param[in] $host String contendo o host com ou sem o protocolo, ou a entrada de configuração do host
-     *	\return Retorna a string contendo o protocolo e o host
+     *  \return Retorna a string contendo o protocolo e o host
      */
     private static function _host($host = 'dynamic')
     {
@@ -597,12 +597,12 @@ class URI
     }
 
     /**
-     *	\brief Codifica os parâmetros GET de uma URI.
+     *  \brief Codifica os parâmetros GET de uma URI.
      *
      *  \param[in] $query Array contendo os parâmetros chave => valor
      *  \param[in] $key Nome da chave para quando query possuir apenas os valores
      *  \param[out] $param variável de retorno da query string
-     *	\return Void
+     *  \return Void
      */
     private static function encode_param($query, $key, &$param)
     {
@@ -616,15 +616,15 @@ class URI
     }
 
     /**
-     *	\brief Manda o header de redirecionamento para uma URL.
+     *  \brief Manda o header de redirecionamento para uma URL.
      *
-     *	Este método envia o cabeçalho (header) de redirecionamento para o usuário e termina a
-     *	execução do sistema.
+     *  Este método envia o cabeçalho (header) de redirecionamento para o usuário e termina a
+     *  execução do sistema.
      *
      *  \param[in] $url A URL para qual o usuário deve ser redirecionado
      *  \param[in] $header Um inteiro com o código de redirecionamento
-     *		(302 = permanente, 301 = temporário, etc.).\n
-     *		Se omitido usa 302 por padrão.
+     *  	(302 = permanente, 301 = temporário, etc.).\n
+     *  	Se omitido usa 302 por padrão.
      */
     public static function redirect($url, $header = 302)
     {
@@ -683,7 +683,7 @@ class URI
      *  \brief Informa se a requisição recebida foi um Ajax.
      *
      *  Verifica se a requisição recebida contém HTTP_X_REQUESTED_WITH no cabeçalho do pacote.
-     *	Test to see if a request contains the HTTP_X_REQUESTED_WITH header.
+     *  Test to see if a request contains the HTTP_X_REQUESTED_WITH header.
      *
      *  @return (bool) Retorna true ou false
      */

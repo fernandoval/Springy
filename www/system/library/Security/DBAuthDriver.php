@@ -8,7 +8,7 @@
  *
  *  \brief      Driver de autenticação que utiliza o banco de dados como storage
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.1.1
+ *  \version    0.1.2
  *  \author     Allan Marques - allan.marques@ymail.com
  *  \ingroup    framework
  */
@@ -50,7 +50,7 @@ class DBAuthDriver implements AuthDriverInterface
 
     /**
      *  \brief Retorna o hasher da senha de autenticação.
-     *  \return (\FW\Security\HasherInterface)
+     *  \return (\FW\Security\HasherInterface).
      */
     public function getHasher()
     {

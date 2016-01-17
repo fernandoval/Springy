@@ -1,26 +1,26 @@
 <?php
 /** \file
  *  FVAL PHP Framework for Web Applications.
- *  
+ *
  *  Post Install/Update Script for Composer
- *  
+ *
  *  \copyright Copyright ₢ 2015 FVAL Consultoria e Informática Ltda.\n
  *  \copyright Copyright ₢ 2015 Fernando Val\n
- *  
+ *
  *  \brief    Post Install/Update Script for Composer
- *  \version  2.1.4
+ *  \version  2.1.5
  *  \author   Fernando Val - fernando.val@gmail.com
- *  
+ *
  *  This script is executed by Composer after the install/update process.
- *  
+ *
  *  The composer.json file is loaded and the "extra" section is used to it's configuration.
- *  
+ *
  *  If the script find a "post-install" section inside the "extra" section, it do a copy of files
  *  downloaded by Composer to the "target" defined for every "vendor/package" listed.
- *  
+ *
  *  If there is no "files" defined for every "vendor/package", their bower.json file is used by
  *  this script to decide which files will be copied.
- *  
+ *
  *  \ingroup framework
  */
 define('DS', DIRECTORY_SEPARATOR);
@@ -73,7 +73,7 @@ if (!isset($composer['extra']['post-install'])) {
     exit(0);
 }
 if (!isset($composer['config']) || !isset($composer['config']['vendor-dir'])) {
-	$vendorDir = 'vendor';
+    $vendorDir = 'vendor';
 } else {
     $vendorDir = $composer['config']['vendor-dir'];
 }
