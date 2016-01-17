@@ -20,26 +20,26 @@
  *  Exemplo de código PHP de como usar a entrada \c 'register_method_set_common_urls':
  *  
  *  \code{.php}
- *  $conf = array(
- *      'register_method_set_common_urls' => array(
+ *  $conf = [
+ *      'register_method_set_common_urls' => [
  *          'class' => 'Url1',
  *          'method' => 'setCommon',
  *          'static' => true
- *      ), // executa: Url1::setCommon()
- *  );
- *  $conf = array(
- *      'register_method_set_common_urls' => array(
+ *      ], // executa: Url1::setCommon()
+ *  ];
+ *  $conf = [
+ *      'register_method_set_common_urls' => [
  *          'class' => 'Urls',
  *          'method' => 'setCommon',
  *          'static' => false
- *      ), // executa: (new Urls())->setCommon()
- *  );
- *  $conf = array(
- *      'register_method_set_common_urls' => array(
+ *      ], // executa: (new Urls())->setCommon()
+ *  ];
+ *  $conf = [
+ *      'register_method_set_common_urls' => [
  *          'class' => 'Urls',
  *          'static' => false
- *      ), // executa: new Urls()
- *  );
+ *      ], // executa: new Urls()
+ *  ];
  *  \endcode
  *
  *  Entradas de configuração:

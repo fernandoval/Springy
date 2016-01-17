@@ -17,10 +17,13 @@ Em 2011 a classe adoDB foi abandonada e o mecanismo PDO (PHP Data Objects) foi a
 Framework Update History
 
 ------------------------------------------------------------------------------------ --- -- -
-dev
+3.3.1
 	- Adicionado suporte a Swift Mailer;
 	- Encerramento de funções depreciadas;
-	- Remoção das classes Browser.
+	- Remoção das classes Browser;
+	- Adicionadas classes de teste para parte do framework (o trabalho está apenas começando);
+	- Ajustes de codificação para ficar em harmonia com PSR;
+	- Documentação em inglês (let's go translate and write everything needed).
 3.3.0
 	- Correção de bug com sessão vazia que ocorre em usuários do Safari no MacOS;
 	- Adição dos parâmetros 'order', 'offset' e 'limit' em objetos embutidos na Model;
