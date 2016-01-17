@@ -10,7 +10,7 @@
 /**
  *  \addtogroup templatecfg Configurações da classe de templates
  *  \defgroup templatecfg_production Configurações da classe de templates para o ambiente 'production'
- *  \ingroup templatecfg
+ *  \ingroup templatecfg.
  *  
  *  As entradas colocadas nesse arquivo serão aplicadas apenas ao ambiente 'production'.
  *  
