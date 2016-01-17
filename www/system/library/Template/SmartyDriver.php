@@ -1,5 +1,5 @@
 <?php
-/**	\file
+/** \file
  *  FVAL PHP Framework for Web Applications.
  *
  *  \copyright  Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
@@ -9,7 +9,7 @@
  *  \see        http://www.smarty.net/
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
  *  \version    1.2.6
- *  \author     Fernando Val  - fernando.val@gmail.com
+ *  \author     Fernando Val - fernando.val@gmail.com
  *  \ingroup    framework
  */
 namespace FW\Template;
@@ -43,7 +43,7 @@ class SmartyDriver implements TemplateDriverInterface
     private $templateFuncs = [];
 
     /**
-     *	\brief Inicializa a classe de template.
+     *  \brief Inicializa a classe de template.
      */
     public function __construct($tpl = null)
     {
@@ -112,7 +112,7 @@ class SmartyDriver implements TemplateDriverInterface
     }
 
     /**
-     *	\brief Define o local dos arquivos de template.
+     *  \brief Define o local dos arquivos de template.
      */
     public function setTemplateDir($path)
     {
@@ -120,7 +120,7 @@ class SmartyDriver implements TemplateDriverInterface
     }
 
     /**
-     *	\brief Define o local dos arquivos de template compilados.
+     *  \brief Define o local dos arquivos de template compilados.
      */
     public function setCompileDir($path)
     {
@@ -128,7 +128,7 @@ class SmartyDriver implements TemplateDriverInterface
     }
 
     /**
-     *	\brief Define o local dos arquivos .conf usados nas tpls.
+     *  \brief Define o local dos arquivos .conf usados nas tpls.
      */
     public function setConfigDir($path)
     {
@@ -136,7 +136,7 @@ class SmartyDriver implements TemplateDriverInterface
     }
 
     /**
-     *	\brief Define o local dos arquivos de template cacheados.
+     *  \brief Define o local dos arquivos de template cacheados.
      */
     public function setCacheDir($path)
     {
@@ -144,7 +144,7 @@ class SmartyDriver implements TemplateDriverInterface
     }
 
     /**
-     *	\brief Verifica o template ideal de acordo com a página.
+     *  \brief Verifica o template ideal de acordo com a página.
      */
     private function setAutoTemplatePaths()
     {
@@ -182,7 +182,7 @@ class SmartyDriver implements TemplateDriverInterface
     }
 
     /**
-     *	\brief Verifica se o template está cacheado.
+     *  \brief Verifica se o template está cacheado.
      *
      * @return bool
      */
@@ -192,7 +192,7 @@ class SmartyDriver implements TemplateDriverInterface
     }
 
     /**
-     *	\brief Define o cacheamento dos templates.
+     *  \brief Define o cacheamento dos templates.
      *
      * @
      */
@@ -257,7 +257,7 @@ class SmartyDriver implements TemplateDriverInterface
     }
 
     /**
-     *	\brief Define o arquivos de template.
+     *  \brief Define o arquivos de template.
      *
      * @param string $tpl Nome do template, sem extenção do arquivo
      */
@@ -275,23 +275,23 @@ class SmartyDriver implements TemplateDriverInterface
     }
 
     /**
-     *	\brief Define o id do cache.
+     *  \brief Define o id do cache.
      */
-    public function setCacheId($id)
+    public function setCacheId($cid)
     {
-        $this->templateCacheId = $id;
+        $this->templateCacheId = $cid;
     }
 
     /**
-     *	\brief Define o id da compilação.
+     *  \brief Define o id da compilação.
      */
-    public function setCompileId($id)
+    public function setCompileId($cid)
     {
-        $this->templateCompileId = $id;
+        $this->templateCompileId = $cid;
     }
 
     /**
-     *	\brief Define uma variável do template.
+     *  \brief Define uma variável do template.
      */
     public function assign($var, $value = null, $nocache = false)
     {
@@ -305,7 +305,7 @@ class SmartyDriver implements TemplateDriverInterface
     }
 
     /**
-     *	\brief Método statico que define um pluguin para todas as instancias da Template.
+     *  \brief Método statico que define um pluguin para todas as instancias da Template.
      */
     public function registerPlugin($type, $name, $callback, $cacheable = null, $cache_attrs = null)
     {
@@ -313,7 +313,7 @@ class SmartyDriver implements TemplateDriverInterface
     }
 
     /**
-     *	\brief Limpa uma variável do template.
+     *  \brief Limpa uma variável do template.
      */
     public function clearAssign($var)
     {
@@ -321,9 +321,9 @@ class SmartyDriver implements TemplateDriverInterface
     }
 
     /**
-     *	\brief clears the entire template cache.
+     *  \brief clears the entire template cache.
      *
-     *	As an optional parameter, you can supply a minimum age in seconds the cache files must be before they will get cleared.
+     *  As an optional parameter, you can supply a minimum age in seconds the cache files must be before they will get cleared.
      */
     public function clearAllCache($expire_time)
     {
@@ -331,7 +331,7 @@ class SmartyDriver implements TemplateDriverInterface
     }
 
     /**
-     *	\brief Limpa o cache para o template corrente.
+     *  \brief Limpa o cache para o template corrente.
      */
     public function clearCache($expireTime = null)
     {
@@ -339,7 +339,7 @@ class SmartyDriver implements TemplateDriverInterface
     }
 
     /**
-     *	\brief Limpa a versão compilada do template atual.
+     *  \brief Limpa a versão compilada do template atual.
      */
     public function clearCompiled($expTime)
     {
@@ -347,7 +347,7 @@ class SmartyDriver implements TemplateDriverInterface
     }
 
     /**
-     *	\brief Limpa variável de config definida.
+     *  \brief Limpa variável de config definida.
      */
     public function clearConfig($var)
     {
@@ -355,7 +355,7 @@ class SmartyDriver implements TemplateDriverInterface
     }
 
     /**
-     *	\brief Verifica se um arquivo de template existe.
+     *  \brief Verifica se um arquivo de template existe.
      */
     public function templateExists($tplName)
     {

@@ -1,16 +1,16 @@
 <?php
-/**	\file
- *	FVAL PHP Framework for Web Applications.
+/** \file
+ *  FVAL PHP Framework for Web Applications.
  *
- *  \copyright	Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
- *  \copyright	Copyright (c) 2007-2015 Fernando Val\n
- *	\copyright Copyright (c) 2014 Allan Marques
+ *  \copyright  Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
+ *  \copyright  Copyright (c) 2007-2015 Fernando Val\n
+ *  \copyright  Copyright (c) 2014 Allan Marques
  *
- *	\brief		Interface para padronizar os drivers de autenticação de identidades
- *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	0.1
- *  \author		Allan Marques - allan.marques@ymail.com
- *	\ingroup	framework
+ *  \brief      Interface para padronizar os drivers de autenticação de identidades
+ *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
+ *  \version    0.1.1
+ *  \author     Allan Marques - allan.marques@ymail.com
+ *  \ingroup    framework
  */
 namespace FW\Security;
 
@@ -55,5 +55,5 @@ interface AuthDriverInterface
      * \brief Retorna a identidade pelo ID que à identifica
      * \return (\FW\Security\IdentityInterface).
      */
-    public function getIdentityById($id);
+    public function getIdentityById($iid);
 }

@@ -8,7 +8,7 @@
  *  \brief		Classe Model para acesso a banco de dados
  *  \note		Essa classe extende a classe DB.
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	1.20.27
+ *  \version    1.20.28
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \ingroup	framework
  */
@@ -274,12 +274,12 @@ class Model extends DB implements \Iterator
         if (empty($this->primaryKey)) {
             return false;
         } elseif (is_array($this->primaryKey)) {
-            $pk = $this->primaryKey;
+            $tpk = $this->primaryKey;
         } else {
-            $pk = explode(',', $this->primaryKey);
+            $tpk = explode(',', $this->primaryKey);
         }
 
-        return $pk;
+        return $tpk;
     }
 
     /**
@@ -405,16 +405,16 @@ class Model extends DB implements \Iterator
 
         if (!isset($this->rows[key($this->rows)]['**NEW**'])) {
             if ($this->isPrimaryKeyDefined()) {
-                $pk = [];
+                $apk = [];
                 $primary = $this->getPKColumns();
                 foreach ($primary as $column) {
-                    $pk[] = $column.' = ?';
+                    $apk[] = $column.' = ?';
                     $values[] = $this->rows[key($this->rows)][$column];
                 }
                 if (!$this->triggerBeforeUpdate()) {
                     return false;
                 }
-                $this->execute('UPDATE '.$this->tableName.' SET '.implode(' = ?,', $columns).' = ? WHERE '.implode(' AND ', $pk), $values);
+                $this->execute('UPDATE '.$this->tableName.' SET '.implode(' = ?,', $columns).' = ? WHERE '.implode(' AND ', $apk), $values);
                 $this->triggerAfterUpdate();
             }
         } else {
@@ -490,10 +490,10 @@ class Model extends DB implements \Iterator
             }
 
             // Monta a chave primária
-            $pk = [];
+            $apk = [];
             $primary = explode(',', $this->primaryKey);
             foreach ($primary as $column) {
-                $pk[] = $column.' = ?';
+                $apk[] = $column.' = ?';
                 $values[] = $this->rows[0][$column];
             }
 
@@ -503,9 +503,9 @@ class Model extends DB implements \Iterator
             }
             if (!empty($this->deletedColumn)) {
                 array_unshift($values, 1);
-                $this->execute('UPDATE '.$this->tableName.' SET '.$this->deletedColumn.' = ? WHERE '.implode(' AND ', $pk), $values);
+                $this->execute('UPDATE '.$this->tableName.' SET '.$this->deletedColumn.' = ? WHERE '.implode(' AND ', $apk), $values);
             } else {
-                $this->execute('DELETE FROM '.$this->tableName.' WHERE '.implode(' AND ', $pk), $values);
+                $this->execute('DELETE FROM '.$this->tableName.' WHERE '.implode(' AND ', $apk), $values);
             }
             $this->triggerAfterDelete();
         } else {

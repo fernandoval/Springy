@@ -8,7 +8,7 @@
  *
  *	\brief		Classe com métodos para diversos tipos de tratamento e validação de dados string
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	0.9.12
+ *  \version    0.9.13
  *  \author		Fernando Val  - fernando.val@gmail.com
  *	\ingroup	framework
  */
@@ -173,20 +173,20 @@ class Strings
     /**
      *	\brief Converte um IPv4 em valor inteiro.
      *
-     *	@param string $ip - endereço ip
+     *  @param string $ipv4 - endereço ip
      *
      *	@return Retorna um valor inteiro
      */
-    public static function ipv4ToNumber($ip)
+    public static function ipv4ToNumber($ipv4)
     {
         // Sepada os octetos do IP
-        $m = explode('.', $ip);
-        if (count($m) < 4) {
-            $m = [127, 0, 0, 1];
+        $parts = explode('.', $ipv4);
+        if (count($parts) < 4) {
+            $parts = [127, 0, 0, 1];
         }
 
         // Calcula o valor do IP
-        return (16777216 * (int) $m[0]) + (65536 * (int) $m[1]) + (256 * (int) $m[2]) + (int) $m[3];
+        return (16777216 * (int) $parts[0]) + (65536 * (int) $parts[1]) + (256 * (int) $parts[2]) + (int) $parts[3];
     }
 
     /**
@@ -202,13 +202,6 @@ class Strings
     }
 
     /* As funções abaixo ainda estão em processo de migração para o framework e não devem ser utilizadas */
-
-    public static function bigText(&$txt, $notStripTags = '')
-    {
-        $txt = trim(strip_tags($txt, $notStripTags));
-
-        return !empty($txt);
-    }
 
     /* 
      * @param[in] (string)$numero - variável a ser validado
@@ -279,23 +272,6 @@ class Strings
         return preg_match('/^(.){'.$minSize.','.$maxSize.'}$/', $string);
     }
 
-    /**
-     *  \brief [DEPRECATED] Sinônimo para password
-     *  \deprecated
-     *  \see password.
-     */
-    public static function senha($senha, $minSize = 5, $maxSize = 16)
-    {
-        return self::sizeMatch($senha, $minSize, $maxSize);
-    }
-
-    public static function ie($ie)
-    {
-        $ie = str_replace('/', '', str_replace('-', '', str_replace('.', '', $ie)));
-
-        return is_numeric($ie);
-    }
-
     public static function cep(&$cep)
     {
         $cep = preg_replace('/[-.]/', '', $cep);
@@ -312,19 +288,6 @@ class Strings
     }
 
     /* *** */
-
-    public static function form_id($to, $code)
-    {
-        return \FW\Session::get('_FORM_CAPTCHA_'.strtoupper($to)) == base64_decode($code);
-    }
-
-    public static function generate_form_id($to)
-    {
-        $id = md5($to).md5(Session::getId()).md5(uniqid(rand(), true));
-        \FW\Session::set('_FORM_CAPTCHA_'.strtoupper($to), $id);
-
-        return base64_encode($id);
-    }
 
     private static function checkIsFake($string, $length)
     {
@@ -447,48 +410,5 @@ class Strings
         }
 
         return true;
-    }
-
-    /**
-     * Método que valida a google maps.
-     *
-     * @param string $url
-     *
-     * @return bool true||false
-     */
-    public static function validarMaps($url)
-    {
-        $domin = '';
-        $urls = explode('/', $url);
-
-        foreach ($urls as $url) {
-            if (preg_match('/maps.google.com.br|maps.google.com/i', $url)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * função que retorna a quantidade de dias entre 2 datas.
-     *
-     * @param string $data1, $data 2, $tipo 31/12/2013 ou 2012-12-31
-     *
-     * @return int Dias
-     */
-    public static function qtdDias($dataIni, $dataFim)
-    {
-        if (strpos($dataIni, '/')) {
-            $dataIni = \DateTime::createFromFormat('d/m/Y', $dataIni);
-            $dataFim = \DateTime::createFromFormat('d/m/Y', $dataFim);
-        } elseif (strpos($dataIni, '-')) {
-            $dataIni = \DateTime::createFromFormat('Y-m-d', $dataIni);
-            $dataFim = \DateTime::createFromFormat('Y-m-d', $dataFim);
-        } else {
-            return false;
-        }
-
-        return $dataIni->diff($dataFim)->days;
     }
 }

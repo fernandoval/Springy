@@ -1,16 +1,16 @@
 <?php
-/**	\file
+/** \file
  *  FVAL PHP Framework for Web Applications.
  *
- *  \copyright	Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
- *  \copyright	Copyright (c) 2007-2015 Fernando Val\n
+ *  \copyright  Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
+ *  \copyright  Copyright (c) 2007-2015 Fernando Val\n
  *
- *  \brief		Classe driver de tratamento de templates utilizando Twig como mecanismo de renderização
- *  \see		http://twig.sensiolabs.org/
- *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	0.10.5 beta 4
- *  \author		Fernando Val  - fernando.val@gmail.com
- *  \ingroup	framework
+ *  \brief      Classe driver de tratamento de templates utilizando Twig como mecanismo de renderização
+ *  \see        http://twig.sensiolabs.org/
+ *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
+ *  \version    0.10.6 beta 4
+ *  \author     Fernando Val - fernando.val@gmail.com
+ *  \ingroup    framework
  */
 namespace FW\Template;
 
@@ -43,7 +43,7 @@ class TwigDriver implements TemplateDriverInterface
     private $templateFuncs = [];
 
     /**
-     *	\brief Inicializa a classe de template.
+     *  \brief Inicializa a classe de template.
      */
     public function __construct($tpl = null)
     {
@@ -120,7 +120,7 @@ class TwigDriver implements TemplateDriverInterface
     }
 
     /**
-     *	\brief Define o local dos arquivos de template.
+     *  \brief Define o local dos arquivos de template.
      */
     public function setTemplateDir($path)
     {
@@ -149,7 +149,7 @@ class TwigDriver implements TemplateDriverInterface
     }
 
     /**
-     *	\brief Define o local dos arquivos de template cacheados.
+     *  \brief Define o local dos arquivos de template cacheados.
      */
     public function setCacheDir($path)
     {
@@ -157,7 +157,7 @@ class TwigDriver implements TemplateDriverInterface
     }
 
     /**
-     *	\brief Verifica o template ideal de acordo com a página.
+     *  \brief Verifica o template ideal de acordo com a página.
      */
     private function setAutoTemplatePaths()
     {
@@ -224,7 +224,7 @@ class TwigDriver implements TemplateDriverInterface
     }
 
     /**
-     *	\brief Retorna a página montada.
+     *  \brief Retorna a página montada.
      */
     public function fetch()
     {
@@ -287,9 +287,9 @@ class TwigDriver implements TemplateDriverInterface
      *  \note A pesar de implementado, esse método não tem função,
      *        pois o Twig controla internamente o id de controle do cache.
      */
-    public function setCacheId($id)
+    public function setCacheId($cid)
     {
-        $this->templateCacheId = $id;
+        $this->templateCacheId = $cid;
     }
 
     /**
@@ -298,13 +298,13 @@ class TwigDriver implements TemplateDriverInterface
      *        pois o Twig não dá controle sobre id de compilação dos
      *        templates.
      */
-    public function setCompileId($id)
+    public function setCompileId($cid)
     {
-        $this->templateCompileId = $id;
+        $this->templateCompileId = $cid;
     }
 
     /**
-     *	\brief Define uma variável do template.
+     *  \brief Define uma variável do template.
      */
     public function assign($var, $value = null, $nocache = false)
     {
@@ -318,7 +318,7 @@ class TwigDriver implements TemplateDriverInterface
     }
 
     /**
-     *	\brief Método statico que define um pluguin para todas as instancias da Template.
+     *  \brief Método statico que define um pluguin para todas as instancias da Template.
      */
     public function registerPlugin($type, $name, $callback, $cacheable = null, $cache_attrs = null)
     {
@@ -326,7 +326,7 @@ class TwigDriver implements TemplateDriverInterface
     }
 
     /**
-     *	\brief Limpa uma variável do template.
+     *  \brief Limpa uma variável do template.
      */
     public function clearAssign($var)
     {
@@ -334,9 +334,9 @@ class TwigDriver implements TemplateDriverInterface
     }
 
     /**
-     *	\brief clears the entire template cache.
+     *  \brief clears the entire template cache.
      *
-     *	As an optional parameter, you can supply a minimum age in seconds the cache files must be before they will get cleared.
+     *  As an optional parameter, you can supply a minimum age in seconds the cache files must be before they will get cleared.
      */
     public function clearAllCache($expire_time)
     {
@@ -344,7 +344,7 @@ class TwigDriver implements TemplateDriverInterface
     }
 
     /**
-     *	\brief Limpa o cache para o template corrente.
+     *  \brief Limpa o cache para o template corrente.
      */
     public function clearCache($expireTime = null)
     {
@@ -352,7 +352,7 @@ class TwigDriver implements TemplateDriverInterface
     }
 
     /**
-     *	\brief Limpa a versão compilada do template atual.
+     *  \brief Limpa a versão compilada do template atual.
      */
     public function clearCompiled($expTime)
     {
@@ -369,7 +369,7 @@ class TwigDriver implements TemplateDriverInterface
     }
 
     /**
-     *	\brief Verifica se um arquivo de template existe.
+     *  \brief Verifica se um arquivo de template existe.
      */
     public function templateExists($tplName)
     {

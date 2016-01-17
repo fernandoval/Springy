@@ -1,23 +1,23 @@
 <?php
-/**	\file
- *	FVAL PHP Framework for Web Applications.
+/** \file
+ *  FVAL PHP Framework for Web Applications.
  *
- *  \copyright	Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
- *  \copyright	Copyright (c) 2007-2015 Fernando Val\n
- *	\copyright Copyright (c) 2014 Allan Marques
+ *  \copyright  Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
+ *  \copyright  Copyright (c) 2007-2015 Fernando Val\n
+ *  \copyright  Copyright (c) 2014 Allan Marques
  *
- *	\brief		Driver de autenticação que utiliza o banco de dados como storage
- *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	0.1
- *  \author		Allan Marques - allan.marques@ymail.com
- *	\ingroup	framework
+ *  \brief      Driver de autenticação que utiliza o banco de dados como storage
+ *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
+ *  \version    0.1.1
+ *  \author     Allan Marques - allan.marques@ymail.com
+ *  \ingroup    framework
  */
 namespace FW\Security;
 
 use FW\Core\Application;
 
 /**
- * \brief		Driver de autenticação que utiliza o banco de dados como storage.
+ * \brief        Driver de autenticação que utiliza o banco de dados como storage.
  */
 class DBAuthDriver implements AuthDriverInterface
 {
@@ -29,9 +29,9 @@ class DBAuthDriver implements AuthDriverInterface
     protected $lastValidIdentity;
 
     /**
-     * \brief COnstrutor da classe
-     * \param [in] (\FW\Security\HasherInterface) $hasher
-     * \param [in] (\FW\Security\IdentityInterface) $identity.
+     *  \brief Construtor da classe
+     *  \param [in] (\FW\Security\HasherInterface) $hasher
+     *  \param [in] (\FW\Security\IdentityInterface) $identity.
      */
     public function __construct(HasherInterface $hasher = null, IdentityInterface $identity = null)
     {
@@ -40,8 +40,8 @@ class DBAuthDriver implements AuthDriverInterface
     }
 
     /**
-     * \brief Seta o hasher da senha de autenticação
-     * \param [in] (\FW\Security\HasherInterface) $hasher.
+     *  \brief Seta o hasher da senha de autenticação
+     *  \param [in] (\FW\Security\HasherInterface) $hasher.
      */
     public function setHasher(HasherInterface $hasher)
     {
@@ -49,9 +49,8 @@ class DBAuthDriver implements AuthDriverInterface
     }
 
     /**
-     * \brief Retorna o hasher da senha de autenticação.
-     *
-     * @return (\FW\Security\HasherInterface)
+     *  \brief Retorna o hasher da senha de autenticação.
+     *  \return (\FW\Security\HasherInterface)
      */
     public function getHasher()
     {
@@ -59,8 +58,8 @@ class DBAuthDriver implements AuthDriverInterface
     }
 
     /**
-     * \brief Seta a identidade que será o tipo padrão para realizar a autenticação
-     * \param [in] (\FW\Security\IdentityInterface) $identity - Tipo padrão de identidade.
+     *  \brief Seta a identidade que será o tipo padrão para realizar a autenticação
+     *  \param [in] (\FW\Security\IdentityInterface) $identity - Tipo padrão de identidade.
      */
     public function setDefaultIdentity(IdentityInterface $identity)
     {
@@ -68,20 +67,20 @@ class DBAuthDriver implements AuthDriverInterface
     }
 
     /**
-     * \brief Retorna a identidade pelo ID que à identifica
-     * \return (\FW\Security\IdentityInterface).
+     *  \brief Retorna a identidade pelo ID que à identifica
+     *  \return (\FW\Security\IdentityInterface).
      */
-    public function getIdentityById($id)
+    public function getIdentityById($iid)
     {
         $idField = $this->identity->getIdField();
-        $this->identity->loadByCredencials([$idField => $id]);
+        $this->identity->loadByCredencials([$idField => $iid]);
 
         return $this->identity;
     }
 
     /**
-     * \brief Retorna a última identidade a passar com sucesso pela autenticação
-     * \return (\FW\Security\IdentityInterface).
+     *  \brief Retorna a última identidade a passar com sucesso pela autenticação
+     *  \return (\FW\Security\IdentityInterface).
      */
     public function getLastValidIdentity()
     {
@@ -89,8 +88,8 @@ class DBAuthDriver implements AuthDriverInterface
     }
 
     /**
-     * \brief Retorna o o nome identificador da sessão da identidade
-     * \return (string).
+     *  \brief Retorna o o nome identificador da sessão da identidade
+     *  \return (string).
      */
     public function getIdentitySessionKey()
     {
@@ -98,10 +97,10 @@ class DBAuthDriver implements AuthDriverInterface
     }
 
     /**
-     * \brief Verifica se o login e o password da identidade atual são válidos
-     * \param [in] (string) $login - Login da identidade
-     * \param [in] (string) $password - Senha da identidade
-     * return (bool).
+     *  \brief Verifica se o login e o password da identidade atual são válidos
+     *  \param [in] (string) $login - Login da identidade
+     *  \param [in] (string) $password - Senha da identidade
+     *  return (bool).
      */
     public function isValid($login, $password)
     {
@@ -126,8 +125,8 @@ class DBAuthDriver implements AuthDriverInterface
     }
 
     /**
-     * \brief Retorna a identidade tipo padrão para realizar a autenticação
-     * \return (\FW\Security\IdentityInterface).
+     *  \brief Retorna a identidade tipo padrão para realizar a autenticação
+     *  \return (\FW\Security\IdentityInterface).
      */
     public function getDefaultIdentity()
     {

@@ -8,7 +8,7 @@
  *
  *  \brief      Script da classe cerne do framework
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    2.0.54
+ *  \version    2.0.55
  *  \author     Fernando Val  - fernando.val@gmail.com
  *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
  *  \ingroup    framework
@@ -263,7 +263,7 @@ class Kernel
         if (!defined('STDIN') && Configuration::get('system', 'debug') == true && !Configuration::get('system', 'sys_ajax')) {
             $size = memory_get_peak_usage(true);
             $unit = ['b', 'KB', 'MB', 'GB', 'TB', 'PB'];
-            $memoria = round($size / pow(1024, ($i = floor(log($size, 1024)))), 2).' '.$unit[$i];
+            $memoria = round($size / pow(1024, ($idx = floor(log($size, 1024)))), 2).' '.$unit[$idx];
             unset($unit, $size);
 
             self::debug('Runtime execution time: '.self::runTime().' seconds'."\n".'Maximum memory consumption: '.$memoria, '', true, false);
@@ -294,10 +294,10 @@ class Kernel
     {
         $return = [];
         foreach (self::$debug as $debug) {
-            $id = 'debug_'.mt_rand().str_replace('.', '', current(explode(' ', microtime())));
+            $did = 'debug_'.mt_rand().str_replace('.', '', current(explode(' ', microtime())));
 
             $unit = ['b', 'KB', 'MB', 'GB', 'TB', 'PB'];
-            $memoria = round($debug[0] / pow(1024, ($i = floor(log($debug[0], 1024)))), 2).' '.$unit[$i];
+            $memoria = round($debug[0] / pow(1024, ($idx = floor(log($debug[0], 1024)))), 2).' '.$unit[$idx];
 
             $return[] = '
 			<div class="debug_info">
@@ -308,8 +308,8 @@ class Kernel
 				  <tr>
 					<td width="50%" valign="top"> '.($debug[2] ? self::print_rc($debug[3]) : $debug[3]).'</td>
 					<td width="50%" valign="top">
-						<a href="javascript:;" onclick="var obj=$(\'#'.$id.'\').toggle()">Debug BackTrace</a>
-						<div id="'.$id.'" style="display:none">'.self::makeDebugBacktrace($debug[4]).'</div></td>
+						<a href="javascript:;" onclick="var obj=$(\'#'.$did.'\').toggle()">Debug BackTrace</a>
+						<div id="'.$did.'" style="display:none">'.self::makeDebugBacktrace($debug[4]).'</div></td>
 				  </tr>
 				</table>
 			</div>
@@ -362,43 +362,36 @@ class Kernel
 
             $linhas = explode('<br />', str_replace('<br /></span>', '</span><br />', highlight_string(file_get_contents($value['file']), true)));
             $aDados[] = [
-                'arquivo'        => $value['file'],
-                'linha'          => $value['line'],
-                'args'           => isset($value['args']) ? $value['args'] : 'Sem argumentos passados',
-                'conteudo_linha' => trim(preg_replace('/^(&nbsp;)+/', '', $linhas[ $value['line'] - 1 ])),
+                'file'    => $value['file'],
+                'line'    => $value['line'],
+                'args'    => isset($value['args']) ? $value['args'] : 'Without arguments',
+                'content' => trim(preg_replace('/^(&nbsp;)+/', '', $linhas[$value['line'] - 1])),
             ];
         }
 
-        $tr = 0;
-        $saida = '    <ul style="font-family:Arial, Helvetica, sans-serif; font-size:12px">';
-        $i = 0;
-        $li = 0;
+        $result = '<ul style="font-family:Arial, Helvetica, sans-serif; font-size:12px">';
+        $htmlLI = 0;
 
         foreach ($aDados as $key => $backtrace) {
-            if ($backtrace['linha'] > 0) {
-                $backtrace['conteudo_linha'] = preg_replace('/^<\/span>/', '', trim($backtrace['conteudo_linha']));
-                if (!preg_match('/<\/span>$/', $backtrace['conteudo_linha'])) {
-                    $backtrace['conteudo_linha'] .= '</span>';
+            if ($backtrace['line'] > 0) {
+                $backtrace['content'] = preg_replace('/^<\/span>/', '', trim($backtrace['content']));
+                if (!preg_match('/<\/span>$/', $backtrace['content'])) {
+                    $backtrace['content'] .= '</span>';
                 }
 
-                $linha = sprintf('[%05d]', $backtrace['linha']);
-                $saida .= '      <li style="margin-bottom: 5px; '.($li + 1 < count($aDados) ? 'border-bottom:1px dotted #000; padding-bottom:5px' : '').'">'
-                       .'        <span style="'.($i == 1 ? ' color:#F00; ' : '').'"><b>'.$linha.'</b>&nbsp;<b>'.$backtrace['arquivo'].'</b></span><br />'
-                       .'        '.$backtrace['conteudo_linha'];
+                $line = sprintf('[%05d]', $backtrace['line']);
+                $result .= '<li style="margin-bottom: 5px; '.($htmlLI + 1 < count($aDados) ? 'border-bottom:1px dotted #000; padding-bottom:5px' : '').'"><span><b>'.$line.'</b>&nbsp;<b>'.$backtrace['file'].'</b></span><br />'.$backtrace['content'];
 
                 if (count($backtrace['args'])) {
-                    $id = 'args_'.mt_rand().str_replace('.', '', current(explode(' ', microtime())));
-                    $saida .= '        <br />'."\n"
-                           .'        <a href="javascript:;" onClick="var obj=$(\'#'.$id.'\').toggle()" style="color:#06c; margin:3px 0">arguments passed to function</a>'
-                           .'        '.(is_array($backtrace['args']) ? '<div id="'.$id.'" style="display:none">'.self::print_rc($backtrace['args']).'</div>' : $backtrace['args']);
+                    $aid = 'args_'.mt_rand().str_replace('.', '', current(explode(' ', microtime())));
+                    $result .= '<br /><a href="javascript:;" onClick="var obj=$(\'#'.$aid.'\').toggle()" style="color:#06c; margin:3px 0">arguments passed to function</a>'.(is_array($backtrace['args']) ? '<div id="'.$aid.'" style="display:none">'.self::print_rc($backtrace['args']).'</div>' : $backtrace['args']);
                 }
-                $saida .= '      </li>';
-                $li++;
+                $result .= '      </li>';
+                $htmlLI++;
             }
-            $tr++;
         }
 
-        return $saida.'</ul>';
+        return $result.'</ul>';
     }
 
     /**
@@ -545,32 +538,32 @@ class Kernel
 
     private static function _list_classes($dir, $nameSpace)
     {
-        $fv = [];
-        if ($r = opendir($dir)) {
-            while (($f = readdir($r)) !== false) {
-                if (filetype($dir.$f) == 'file' && substr($f, -4) == '.php') {
-                    $fc = file($dir.$f);
-                    $v = ['b' => '', 'v' => '', 'n' => ''];
-                    while (list(, $l) = each($fc)) {
-                        if (preg_match('/\*(\s*)[\\\\|@]brief[\s|\t]{1,}(.*)((\r)*(\n))$/', $l, $a)) {
-                            $v['b'] = trim($a[2]);
-                        } elseif (preg_match('/\*([\s|\t]*)\\\\version[\s|\t]{1,}(.*)((\r)*(\n))$/', $l, $a)) {
-                            $v['v'] = trim($a[2]);
-                        } elseif (preg_match('/^(class|interface)[\s|\t]{1,}([a-zA-Z0-9_]+)(\s*)(extends)*(\s*)([a-zA-Z0-9_]*)(\s*)(\\{*)/', $l, $a)) {
-                            $v['n'] = $a[1].' '.$nameSpace.'\\'.trim($a[2]);
+        $fver = [];
+        if ($rdir = opendir($dir)) {
+            while (($file = readdir($rdir)) !== false) {
+                if (filetype($dir.$file) == 'file' && substr($file, -4) == '.php') {
+                    $far = file($dir.$file);
+                    $ver = ['b' => '', 'v' => '', 'n' => ''];
+                    while (list(, $lst) = each($far)) {
+                        if (preg_match('/\*(\s*)[\\\\|@]brief[\s|\t]{1,}(.*)((\r)*(\n))$/', $lst, $arr)) {
+                            $ver['b'] = trim($arr[2]);
+                        } elseif (preg_match('/\*([\s|\t]*)\\\\version[\s|\t]{1,}(.*)((\r)*(\n))$/', $lst, $arr)) {
+                            $ver['v'] = trim($arr[2]);
+                        } elseif (preg_match('/^(class|interface)[\s|\t]{1,}([a-zA-Z0-9_]+)(\s*)(extends)*(\s*)([a-zA-Z0-9_]*)(\s*)(\\{*)/', $lst, $arr)) {
+                            $ver['n'] = $arr[1].' '.$nameSpace.'\\'.trim($arr[2]);
                             break;
                         }
                     }
-                    if ($v['n'] && $v['v']) {
-                        $fv[$v['n']] = $v;
+                    if ($ver['n'] && $ver['v']) {
+                        $fver[$ver['n']] = $ver;
                     }
-                } elseif (!in_array($f, ['.', '..']) && filetype($dir.$f) == 'dir') {
-                    $fv = array_merge($fv, self::_list_classes($dir.$f.DIRECTORY_SEPARATOR, $nameSpace.'\\'.$f));
+                } elseif (!in_array($file, ['.', '..']) && filetype($dir.$file) == 'dir') {
+                    $fver = array_merge($fver, self::_list_classes($dir.$file.DIRECTORY_SEPARATOR, $nameSpace.'\\'.$file));
                 }
             }
         }
-        ksort($fv);
+        ksort($fver);
 
-        return $fv;
+        return $fver;
     }
 }

@@ -1,16 +1,16 @@
 <?php
-/**	\file
- *	FVAL PHP Framework for Web Applications.
+/** \file
+ *  FVAL PHP Framework for Web Applications.
  *
- *  \copyright	Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
- *  \copyright	Copyright (c) 2007-2015 Fernando Val\n
- *	\copyright Copyright (c) 2009-2013 Lucas Cardozo
+ *  \copyright  Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
+ *  \copyright  Copyright (c) 2007-2015 Fernando Val\n
+ *  \copyright  Copyright (c) 2009-2013 Lucas Cardozo
  *
- *	\brief		Interface para driver de tratamento de templates
- *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.0.0
- *  \author		Fernando Val  - fernando.val@gmail.com
- *	\ingroup	framework
+ *  \brief      Interface para driver de tratamento de templates
+ *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
+ *  \version    1.0.1
+ *  \author     Fernando Val - fernando.val@gmail.com
+ *  \ingroup    framework
  */
 namespace FW\Template;
 
@@ -25,34 +25,34 @@ interface TemplateDriverInterface
     // const TPL_NAME_SUFIX = '.tpl.html';
 
     /**
-     *	\brief Define o local dos arquivos de template.
+     *  \brief Define o local dos arquivos de template.
      */
     public function setTemplateDir($path);
 
     /**
-     *	\brief Define o local dos arquivos de template compilados.
+     *  \brief Define o local dos arquivos de template compilados.
      */
     public function setCompileDir($path);
 
     /**
-     *	\brief Define o local dos arquivos .conf usados nas tpls.
+     *  \brief Define o local dos arquivos .conf usados nas tpls.
      */
     public function setConfigDir($path);
 
     /**
-     *	\brief Define o local dos arquivos de template cacheados.
+     *  \brief Define o local dos arquivos de template cacheados.
      */
     public function setCacheDir($path);
 
     /**
-     *	\brief Verifica se o template está cacheado.
+     *  \brief Verifica se o template está cacheado.
      *
      * @return bool
      */
     public function isCached();
 
     /**
-     *	\brief Define o cacheamento dos templates.
+     *  \brief Define o cacheamento dos templates.
      *
      *  @
      */
@@ -61,66 +61,66 @@ interface TemplateDriverInterface
     public function setCacheLifetime($seconds);
 
     /**
-     *	\brief Retorna a página montada.
+     *  \brief Retorna a página montada.
      */
     public function fetch();
 
     /**
-     *	\brief Define o arquivos de template.
+     *  \brief Define o arquivos de template.
      *
      * @param string $tpl Nome do template, sem extenção do arquivo
      */
     public function setTemplate($tpl);
 
     /**
-     *	\brief Define o id do cache.
+     *  \brief Define o id do cache.
      */
-    public function setCacheId($id);
+    public function setCacheId($cid);
 
     /**
-     *	\brief Define o id da compilação.
+     *  \brief Define o id da compilação.
      */
-    public function setCompileId($id);
+    public function setCompileId($cid);
 
     /**
-     *	\brief Define uma variável do template.
+     *  \brief Define uma variável do template.
      */
     public function assign($var, $value = null, $nocache = false);
 
     /**
-     *	\brief Método statico que define um pluguin para todas as instancias da Template.
+     *  \brief Método statico que define um pluguin para todas as instancias da Template.
      */
     public function registerPlugin($type, $name, $callback, $cacheable = null, $cache_attrs = null);
 
     /**
-     *	\brief Limpa uma variável do template.
+     *  \brief Limpa uma variável do template.
      */
     public function clearAssign($var);
 
     /**
-     *	\brief clears the entire template cache.
+     *  \brief clears the entire template cache.
      *
-     *	As an optional parameter, you can supply a minimum age in seconds the cache files must be before they will get cleared.
+     *  As an optional parameter, you can supply a minimum age in seconds the cache files must be before they will get cleared.
      */
     public function clearAllCache($expire_time);
 
     /**
-     *	\brief Limpa o cache para o template corrente.
+     *  \brief Limpa o cache para o template corrente.
      */
     public function clearCache($expireTime = null);
 
     /**
-     *	\brief Limpa a versão compilada do template atual.
+     *  \brief Limpa a versão compilada do template atual.
      */
     public function clearCompiled($expTime);
 
     /**
-     *	\brief Limpa variável de config definida.
+     *  \brief Limpa variável de config definida.
      */
     public function clearConfig($var);
 
     /**
-     *	\brief Verifica se um arquivo de template existe.
+     *  \brief Verifica se um arquivo de template existe.
      */
     public function templateExists($tplName);
 }
