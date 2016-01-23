@@ -2,8 +2,8 @@
 /**	\file
  *  FVAL PHP Framework for Web Applications.
  *
- *  \copyright  Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
- *  \copyright  Copyright (c) 2007-2015 Fernando Val\n
+ *  \copyright  Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
+ *  \copyright  Copyright (c) 2007-2016 Fernando Val\n
  *
  *  \brief      Class driver for use with Manuel Lemos' MIME e-mail message class
  *  \see        http://www.phpclasses.org/package/9-PHP-PHP-mailer-to-compose-and-send-MIME-messages.html

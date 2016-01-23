@@ -9,7 +9,7 @@
  *  http://www.fval.com.br
  *
  *  \brief    System initialization script
- *  \version  4.1.25
+ *  \version  4.1.26
  *  \author   Fernando Val - fernando.val@gmail.com
  *  \author   Lucas Cardozo - lucas.cardozo@gmail.com
  *
@@ -231,11 +231,6 @@ if (isset($ControllerClassName)) {
 
     // Nenhuma controller definida e não está usando CMS ou não há artigo correspondente
     FW\Errors::displayError(404, FW\URI::relativePathPage().'/'.FW\URI::currentPage());
-}
-
-// se o template estiver carregado, imprime
-if (isset($tpl)) {
-    $tpl->display();
 }
 
 // se tiver algum debug, utiliza-o

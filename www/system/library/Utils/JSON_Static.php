@@ -2,7 +2,7 @@
 /**	\file
  *	FVAL PHP Framework for Web Applications.
  *
- *  \copyright	Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
+ *  \copyright	Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
  *	\copyright Copyright (c) 2009-2013 Lucas Cardozo
  *
  *	\brief		Classe stática para tratamento JSON

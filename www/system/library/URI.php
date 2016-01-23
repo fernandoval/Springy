@@ -2,8 +2,8 @@
 /** \file
  *  FVAL PHP Framework for Web Applications.
  *
- *  \copyright  Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
- *  \copyright  Copyright (c) 2007-2015 Fernando Val\n
+ *  \copyright  Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
+ *  \copyright  Copyright (c) 2007-2016 Fernando Val\n
  *  \copyright  Copyright (c) 2009-2013 Lucas Cardozo
  *
  *  \brief      Classe para tratamento de URI
@@ -623,8 +623,8 @@ class URI
      *
      *  \param[in] $url A URL para qual o usuário deve ser redirecionado
      *  \param[in] $header Um inteiro com o código de redirecionamento
-     *  	(302 = permanente, 301 = temporário, etc.).\n
-     *  	Se omitido usa 302 por padrão.
+     *      (302 = permanente, 301 = temporário, etc.).\n
+     *      Se omitido usa 302 por padrão.
      */
     public static function redirect($url, $header = 302)
     {
@@ -651,8 +651,8 @@ class URI
      *  \param[in] (string)$txt Expressão a ser convertida em slug.
      *  \paran[in] (string)$space Caracter que será usado para substituir os espaços na expressão. Se omitodo será usado o caracter "-" como padrão.
      *  \param[in] (string)$accept String contendo relação de caracteres também aceitos para montagem do slug.
-     *  	Essa sting será usada numa expressão regular, então alguns caracteres como o ponto, precisam ser escapados.
-     *  	Se nenhum caracter for informado, apenas letras, números e os caracteres "_" e "-" serão aceitos. Todos os demais serão removidos.
+     *      Essa sting será usada numa expressão regular, então alguns caracteres como o ponto, precisam ser escapados.
+     *      Se nenhum caracter for informado, apenas letras, números e os caracteres "_" e "-" serão aceitos. Todos os demais serão removidos.
      *  \param[in] (bool)$lowercase Converte para letras minúsculas.
      *  \return Uma string com o slug
      */

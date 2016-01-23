@@ -1,18 +1,18 @@
 <?php
-/**	\file
- *	FVAL PHP Framework for Web Applications.
- *
- *  \copyright	Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
- *  \copyright	Copyright (c) 2007-2015 Fernando Val\n
- *	\copyright Copyright (c) 2009-2013 Lucas Cardozo
- *
- *	\brief		Script da classe de acesso a banco de dados
- *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    1.6.28
- *  \author		Fernando Val  - fernando.val@gmail.com
- *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
- *  \author		Allan Marques - allan.marques@ymail.com
- *	\ingroup	framework
+/** \file
+ *  FVAL PHP Framework for Web Applications.
+ *  
+ *  \copyright  Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
+ *  \copyright  Copyright (c) 2007-2016 Fernando Val\n
+ *  \copyright  Copyright (c) 2009-2013 Lucas Cardozo
+ *  
+ *  \brief      Script da classe de acesso a banco de dados
+ *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
+ *  \version    1.7.27
+ *  \author     Fernando Val  - fernando.val@gmail.com
+ *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
+ *  \author     Allan Marques - allan.marques@ymail.com
+ *  \ingroup    framework
  */
 namespace FW;
 
@@ -26,17 +26,17 @@ namespace FW;
 class DB
 {
     /// Guarda os IDs de conexão com os SGBDs
-    private static $DB = [];
+    private static $conectionIds = [];
     /// SQL Resource
-    private $SQLRes = null;
+    private $resSQL = null;
     /// Tempo em segundos da validade do cache
     private $cacheExpires = null;
     /// Cache dos registros
     private $cacheStatement = null;
     /// Último comando executado
-    private $LastQuery = '';
+    private $lastQuery = '';
     /// Valores do Último comando executado
-    private $LastValues = null;
+    private $lastValues = null;
     /// Código do erro ocorrido no execute
     private $sqlErrorCode = null;
     /// Informações do erro ocorrido no execute
@@ -48,9 +48,9 @@ class DB
     /// Entrada de configuração de banco atual
     private $database = false;
     /// Flag de habilitação do relatório de erros
-    private $report_error = true;
+    private $reportError = true;
     /// Flag do modo debug
-    private static $db_debug = false;
+    private static $dbDebug = false;
     /// Controle de falhas de conexão
     private static $conErrors = [];
 
@@ -64,9 +64,9 @@ class DB
      *  \param $cache_expires tempo em segundo de cacheamento de consultas.
      *    Default = null (sem cache)
      */
-    public function __construct($database = 'default', $cache_expires = null)
+    public function __construct($database = 'default', $cacheExpires = null)
     {
-        $this->cacheExpires = $cache_expires;
+        $this->cacheExpires = $cacheExpires;
         $this->database = $database;
         $this->dataConnect = $this->connect($this->database);
     }
@@ -78,9 +78,9 @@ class DB
      */
     public function __destruct()
     {
-        if (!is_null($this->SQLRes)) {
-            $this->SQLRes->closeCursor();
-            $this->SQLRes = null;
+        if (!is_null($this->resSQL)) {
+            $this->resSQL->closeCursor();
+            $this->resSQL = null;
         }
     }
 
@@ -99,8 +99,8 @@ class DB
         }
 
         // Verifica se a instância já está definida e conectada
-        if (isset(self::$DB[$database])) {
-            return self::$DB[$database]['con'];
+        if (isset(self::$conectionIds[$database])) {
+            return self::$conectionIds[$database]['con'];
         }
 
         // Lê as configurações de acesso ao banco de dados
@@ -132,7 +132,7 @@ class DB
 
         //	a instância de conexão é estática, para nao criar uma nova a cada nova instãncia da classe
         try {
-            self::$DB[$database] = [
+            self::$conectionIds[$database] = [
                 'con' => new \PDO(
                     $conf['database_type'].':host='.$conf['host_name'].';dbname='.$conf['database'],
                     $conf['user_name'],
@@ -149,7 +149,7 @@ class DB
             }
         }
 
-        return self::$DB[$database]['con'];
+        return self::$conectionIds[$database]['con'];
     }
 
     /**
@@ -165,45 +165,45 @@ class DB
     private function _round_robin($database, $dbconf)
     {
         // Lê as configurações de controle de round robin
-        $rr = Configuration::get('db', 'round_robin');
+        $roundRobin = Configuration::get('db', 'round_robin');
 
         // Efetua controle de round robin por Memcached
-        if ($rr['type'] == 'memcached') {
-            $mc = new \Memcached();
-            $mc->addServer($rr['server_addr'], $rr['server_port']);
+        if ($roundRobin['type'] == 'memcached') {
+            $memCached = new \Memcached();
+            $memCached->addServer($roundRobin['server_addr'], $roundRobin['server_port']);
 
             // Define o próximo servidor do pool
-            if (!($actual = (int) $mc->get('dbrr_'.$database))) {
+            if (!($actual = (int) $memCached->get('dbrr_'.$database))) {
                 $actual = 0;
             }
             if (++$actual >= count($dbconf['host_name'])) {
                 $actual = 0;
             }
 
-            $mc->set('dbrr_'.$database, $actual, 0);
+            $memCached->set('dbrr_'.$database, $actual, 0);
         }
         // Efetua controle de round robin em arquivo
-        elseif ($rr['type'] == 'file') {
+        elseif ($roundRobin['type'] == 'file') {
             // Define o próximo servidor do pool
-            if ((!file_exists($rr['server_addr'].DIRECTORY_SEPARATOR.'dbrr_'.$database)) || !($actual = (int) file_get_contents($rr['server_addr'].DIRECTORY_SEPARATOR.'dbrr_'.$database))) {
+            if ((!file_exists($roundRobin['server_addr'].DIRECTORY_SEPARATOR.'dbrr_'.$database)) || !($actual = (int) file_get_contents($roundRobin['server_addr'].DIRECTORY_SEPARATOR.'dbrr_'.$database))) {
                 $actual = 0;
             }
             if (++$actual >= count($dbconf['host_name'])) {
                 $actual = 0;
             }
 
-            file_put_contents($rr['server_addr'].DIRECTORY_SEPARATOR.'dbrr_'.$database, $actual);
+            file_put_contents($roundRobin['server_addr'].DIRECTORY_SEPARATOR.'dbrr_'.$database, $actual);
         } else {
             return false;
         }
 
         // Tenta conectar ao banco e retorna o resultado
-        self::$DB[$database] = [
+        self::$conectionIds[$database] = [
             'con'    => $this->connect($dbconf['host_name'][$actual]),
             'dbName' => $dbconf['host_name'][$actual],
         ];
 
-        return self::$DB[$database]['con'];
+        return self::$conectionIds[$database]['con'];
     }
 
     /**
@@ -214,7 +214,7 @@ class DB
      */
     public static function connected($database = 'default')
     {
-        return !isset(self::$conErrors[$database]) && isset(self::$DB[$database]) && self::$DB[$database]['con'];
+        return !isset(self::$conErrors[$database]) && isset(self::$conectionIds[$database]) && self::$conectionIds[$database]['con'];
     }
 
     /**
@@ -224,7 +224,8 @@ class DB
      */
     public static function hasConnection($database = 'default')
     {
-        return self::connected($database);
+        throw new \Exception('Deprecated method');
+        // return self::connected($database);
     }
 
     /**
@@ -234,61 +235,71 @@ class DB
     {
         if (static::connected($this->database)) {
             ///	a instância de conexão é estática, para não criar uma nova a cada nova instância da classe
-            unset(self::$DB[$this->database]['con']);
+            unset(self::$conectionIds[$this->database]['con']);
             $this->dataConnect = false;
         }
-        unset(self::$DB[$this->database]);
+        unset(self::$conectionIds[$this->database]);
     }
 
     /**
+     *  \brief The status of error report.
+     *  \param $status - if defined set the report of errors on (true) or off (false).
+     *  \return (bool) the current status.
+     */
+    public function errorReportStatus($status = null)
+    {
+        if (is_bool($status)) {
+            $this->reportError = $status;
+        }
+        
+        return $this->reportError;
+    }
+    
+    /**
      *  \brief Desabilita o report de erros.
-     *
-     *  \return DB
+     *  \deprecated
+     *  \see errorReportStatus.
+     *  \return (bool) the current status
      */
     public function disableReportError()
     {
-        $this->report_error = false;
-
-        return $this;
+        return $this->errorReportStatus(false);
     }
 
     /**
      *  \brief Habilita o report de erros.
-     *
-     *  \return DB
+     *  \deprecated
+     *  \see errorReportStatus.
+     *  \return (bool) the current status
      */
     public function enableReportError()
     {
-        $this->report_error = true;
-
-        return $this;
+        return $this->errorReportStatus(true);
     }
 
     /**
-     *	\brief Reporta a ocorrência de erro para o Webmaster.
-     *
-     *	Método para alerta de erros. Também envia e-mails com informações sobre o erro e grava-o em um arquivo de Log.
+     *	\brief Send the error occurrency to the Webmaster.
      */
     private function reportError($msg, \PDOException $exception = null)
     {
-        if (!$this->report_error) {
+        if (!$this->reportError) {
             return;
         }
-        // [pt-br] Lê as configurações de acesso ao banco de dados
+        // Read the database access configurations
         $conf = Configuration::get('db', $this->database);
 
-        if (isset($this->LastQuery)) {
+        if (isset($this->lastQuery)) {
             if (PHP_SAPI === 'cli' || defined('STDIN')) {
-                $sqlError = htmlentities((is_object($this->LastQuery) ? $this->LastQuery->__toString() : $this->LastQuery))."\n".'Parametros: '.Kernel::print_rc($this->LastValues);
+                $sqlError = htmlentities((is_object($this->lastQuery) ? $this->lastQuery->__toString() : $this->lastQuery))."\n".'Parametros: '.Kernel::print_rc($this->lastValues);
             } else {
-                $sqlError = '<pre>'.htmlentities((is_object($this->LastQuery) ? $this->LastQuery->__toString() : $this->LastQuery)).'</pre><br /> Parametros:<br />'.Kernel::print_rc($this->LastValues);
+                $sqlError = '<pre>'.htmlentities((is_object($this->lastQuery) ? $this->lastQuery->__toString() : $this->lastQuery)).'</pre><br /> Parametros:<br />'.Kernel::print_rc($this->lastValues);
             }
         } else {
             $sqlError = 'Still this connection was not executed some instruction SQL using.';
         }
 
-        if ($this->SQLRes) {
-            $errorInfo = $this->SQLRes->errorInfo();
+        if ($this->resSQL) {
+            $errorInfo = $this->resSQL->errorInfo();
         } elseif ($this->dataConnect) {
             $errorInfo = $this->dataConnect->errorInfo();
         } else {
@@ -324,14 +335,13 @@ class DB
         }
         unset($sqlError);
 
+        // Send the report of error and kill the application
         Errors::sendReport(
-            '<span style="color:#FF0000">'.$msg.'</span> - '.'('.$errorInfo[1].') '.$errorInfo[2].($exception ? '<br />'.$exception->getMessage() : '').'<br /><pre>'.$this->LastQuery.'</pre><br />Valores: '.Kernel::print_rc($this->LastValues),
+            '<span style="color:#FF0000">'.$msg.'</span> - '.'('.$errorInfo[1].') '.$errorInfo[2].($exception ? '<br />'.$exception->getMessage() : '').'<br /><pre>'.$this->lastQuery.'</pre><br />Valores: '.Kernel::print_rc($this->lastValues),
             500,
-            hash('crc32', $msg.$errorInfo[1].$this->LastQuery), // error id
+            hash('crc32', $msg.$errorInfo[1].$this->lastQuery), // error id
             $htmlError
         );
-
-        die;
     }
 
     /**
@@ -339,8 +349,7 @@ class DB
      */
     public static function debug($debug)
     {
-        self::$db_debug = $debug;
-        Kernel::debug('DEBUG DE BANCO DE DADOS: '.($debug ? 'LIGADO' : 'DESLIGADO'));
+        self::$dbDebug = $debug;
     }
 
     /**
@@ -382,11 +391,9 @@ class DB
      */
     public static function rollBackAll()
     {
-        foreach (self::$DB as $db => $v) {
+        foreach (self::$conectionIds as $db => $v) {
             if ($v['con']->inTransaction()) {
-                Kernel::debug('DB '.$db.' rollback start');
                 $v['con']->rollBack();
-                Kernel::debug('DB '.$db.' rollback done!');
             }
         }
     }
@@ -416,16 +423,16 @@ class DB
         self::$sqlNum++;
 
         // Verifica se está sendo usado o recurso de contagem de linhas encontrados da última consulta do MySQL e cria um comando único
-        if ((is_int($this->cacheExpires) || is_int($cache_expires)) && strtoupper(substr(ltrim($sql), 0, 19)) == 'SELECT FOUND_ROWS()' && strtoupper(substr(ltrim($this->LastQuery), 0, 7)) == 'SELECT ') {
-            $this->LastQuery = $sql.'; /* '.md5(implode('//', array_merge([$this->LastQuery], $this->LastValues))).' */';
+        if ((is_int($this->cacheExpires) || is_int($cache_expires)) && strtoupper(substr(ltrim($sql), 0, 19)) == 'SELECT FOUND_ROWS()' && strtoupper(substr(ltrim($this->lastQuery), 0, 7)) == 'SELECT ') {
+            $this->lastQuery = $sql.'; /* '.md5(implode('//', array_merge([$this->lastQuery], $this->lastValues))).' */';
         } else {
-            $this->LastQuery = $sql;
+            $this->lastQuery = $sql;
         }
 
         if (($sql instanceof DBSelect) || ($sql instanceof DBInsert) || ($sql instanceof DBUpdate) || ($sql instanceof DBDelete)) {
-            $this->LastValues = $sql->getAllValues();
+            $this->lastValues = $sql->getAllValues();
         } else {
-            $this->LastValues = $where_v;
+            $this->lastValues = $where_v;
             $where_v = [];
         }
 
@@ -436,11 +443,11 @@ class DB
         // Limpa o que estiver em memória e tiver sido carregado de cache
         $this->cacheStatement = null;
         // Configuração de cache está ligada?
-        if (is_array($this->LastValues) && is_array($dbcache) && isset($dbcache['type']) && $dbcache['type'] == 'memcached') {
-            $cacheKey = md5(implode('//', array_merge([$this->LastQuery], $this->LastValues)));
-            $this->SQLRes = null;
+        if (is_array($this->lastValues) && is_array($dbcache) && isset($dbcache['type']) && $dbcache['type'] == 'memcached') {
+            $cacheKey = md5(implode('//', array_merge([$this->lastQuery], $this->lastValues)));
+            $this->resSQL = null;
             // O comando é um SELECT e é para guardar em cache?
-            if ((is_int($this->cacheExpires) || is_int($cache_expires)) && strtoupper(substr(ltrim($this->LastQuery), 0, 7)) == 'SELECT ') {
+            if ((is_int($this->cacheExpires) || is_int($cache_expires)) && strtoupper(substr(ltrim($this->lastQuery), 0, 7)) == 'SELECT ') {
                 try {
                     $mc = new \Memcached();
                     $mc->addServer($dbcache['server_addr'], $dbcache['server_port']);
@@ -456,18 +463,18 @@ class DB
 
         // Se o resultado não foi pego do cache, consulta o banco
         if (is_null($this->cacheStatement)) {
-            if (($this->SQLRes = $this->dataConnect->prepare($this->LastQuery)) === false) {
-                $this->sqlErrorCode = $this->SQLRes->errorCode();
-                $this->sqlErrorInfo = $this->SQLRes->errorInfo();
+            if (($this->resSQL = $this->dataConnect->prepare($this->lastQuery)) === false) {
+                $this->sqlErrorCode = $this->resSQL->errorCode();
+                $this->sqlErrorInfo = $this->resSQL->errorInfo();
                 $this->reportError('Can\'t prepare query.');
 
                 return false;
             }
 
-            if (count($this->LastValues)) {
+            if (count($this->lastValues)) {
                 $numeric = 0;
 
-                foreach ($this->LastValues as $key => $where) {
+                foreach ($this->lastValues as $key => $where) {
                     switch (gettype($where)) {
                         case 'boolean':
                             $param = \PDO::PARAM_BOOL;
@@ -484,18 +491,18 @@ class DB
                     }
 
                     if (is_numeric($key)) {
-                        $this->SQLRes->bindValue(++$numeric, $where, $param);
+                        $this->resSQL->bindValue(++$numeric, $where, $param);
                     } else {
-                        $this->SQLRes->bindValue(':'.$key, $where, $param);
+                        $this->resSQL->bindValue(':'.$key, $where, $param);
                     }
                 }
                 unset($key, $where, $param, $numeric);
             }
 
-            $this->SQLRes->closeCursor();
-            if ($this->SQLRes->execute() === false) {
-                $this->sqlErrorCode = $this->SQLRes->errorCode();
-                $this->sqlErrorInfo = $this->SQLRes->errorInfo();
+            $this->resSQL->closeCursor();
+            if ($this->resSQL->execute() === false) {
+                $this->sqlErrorCode = $this->resSQL->errorCode();
+                $this->sqlErrorInfo = $this->resSQL->errorInfo();
                 $this->reportError('Can\'t execute query.');
 
                 return false;
@@ -504,29 +511,29 @@ class DB
             // Configuração de cache está ligada?
             if (is_array($dbcache) && isset($dbcache['type']) && $dbcache['type'] == 'memcached') {
                 // O comando é um SELECT e é para guardar em cache?
-                if ((is_int($this->cacheExpires) || is_int($cache_expires)) && strtoupper(substr(ltrim($this->LastQuery), 0, 7)) == 'SELECT ') {
+                if ((is_int($this->cacheExpires) || is_int($cache_expires)) && strtoupper(substr(ltrim($this->lastQuery), 0, 7)) == 'SELECT ') {
                     try {
                         $mc = new \Memcached();
                         $mc->addServer($dbcache['server_addr'], $dbcache['server_port']);
                         $this->cacheStatement = $this->get_all();
                         $mc->set('cacheDB_'.$cacheKey, $this->cacheStatement, min(is_int($cache_expires) ? $cache_expires : 86400, is_int($this->cacheExpires) ? $this->cacheExpires : 86400));
                         unset($mc);
-                        $this->SQLRes->closeCursor();
-                        $this->SQLRes = null;
+                        $this->resSQL->closeCursor();
+                        $this->resSQL = null;
                     } catch (Exception $e) {
-                        Kernel::debug($this->LastQuery, 'Erro: '.$e->getMessage());
+                        Kernel::debug($this->lastQuery, 'Erro: '.$e->getMessage());
                     }
                 }
             }
         }
 
-        if (self::$db_debug || Configuration::get('system', 'sql_debug')) {
-            $conf = Configuration::get('db', self::$DB[$this->database]['dbName']);
+        if (self::$dbDebug || Configuration::get('system', 'sql_debug')) {
+            $conf = Configuration::get('db', self::$conectionIds[$this->database]['dbName']);
 
             Kernel::debug(
                 '<pre>'.
-                    $this->LastQuery.
-                '</pre><br />Valores: '.Kernel::print_rc($this->LastValues).'<br />'.
+                    $this->lastQuery.
+                '</pre><br />Valores: '.Kernel::print_rc($this->lastValues).'<br />'.
                 'Affected Rows: '.$this->affectedRows().'<br />'.
                 'DB: '.(isset($conf['database']) ? $conf['database'] : 'não informado'), 'SQL #'.self::$sqlNum, false);
         }
@@ -539,7 +546,7 @@ class DB
      */
     public function lastQuery()
     {
-        return $this->LastQuery;
+        return $this->lastQuery;
     }
 
     /**
@@ -601,7 +608,7 @@ class DB
      */
     public function lastInsertedId($indice = '')
     {
-        return $this->dataConnect->lastInsertId(((!$indice && $this->LastQuery instanceof DBInsert) ? $this->LastQuery->getTable().'_id_seq' : $indice));
+        return $this->dataConnect->lastInsertId(((!$indice && $this->lastQuery instanceof DBInsert) ? $this->lastQuery->getTable().'_id_seq' : $indice));
     }
 
     /**
@@ -609,7 +616,7 @@ class DB
      */
     public function affectedRows()
     {
-        return $this->SQLRes->rowCount();
+        return $this->resSQL->rowCount();
     }
 
     /**
@@ -632,8 +639,8 @@ class DB
     public function fetchAll($resultType = \PDO::FETCH_ASSOC)
     {
         if (is_null($this->cacheStatement)) {
-            if ($this->SQLRes) {
-                return $this->SQLRes->fetchAll($resultType);
+            if ($this->resSQL) {
+                return $this->resSQL->fetchAll($resultType);
             }
         } else {
             return $this->cacheStatement;
@@ -658,8 +665,8 @@ class DB
     public function fetchFirst($resultType = \PDO::FETCH_ASSOC)
     {
         if (is_null($this->cacheStatement)) {
-            if ($this->SQLRes) {
-                return $this->SQLRes->fetch($resultType, \PDO::FETCH_ORI_FIRST);
+            if ($this->resSQL) {
+                return $this->resSQL->fetch($resultType, \PDO::FETCH_ORI_FIRST);
             }
         } else {
             return reset($this->cacheStatement);
@@ -674,8 +681,8 @@ class DB
     public function fetchPrev($resultType = \PDO::FETCH_ASSOC)
     {
         if (is_null($this->cacheStatement)) {
-            if ($this->SQLRes) {
-                return $this->SQLRes->fetch($resultType, \PDO::FETCH_ORI_PRIOR);
+            if ($this->resSQL) {
+                return $this->resSQL->fetch($resultType, \PDO::FETCH_ORI_PRIOR);
             }
         } else {
             return prev($this->cacheStatement);
@@ -690,8 +697,8 @@ class DB
     public function fetchNext($resultType = \PDO::FETCH_ASSOC)
     {
         if (is_null($this->cacheStatement)) {
-            if ($this->SQLRes) {
-                return $this->SQLRes->fetch($resultType);
+            if ($this->resSQL) {
+                return $this->resSQL->fetch($resultType);
             }
         } else {
             if ($r = each($this->cacheStatement)) {
@@ -708,8 +715,8 @@ class DB
     public function fetchLast($resultType = \PDO::FETCH_ASSOC)
     {
         if (is_null($this->cacheStatement)) {
-            if ($this->SQLRes) {
-                return $this->SQLRes->fetch($resultType, \PDO::FETCH_ORI_LAST);
+            if ($this->resSQL) {
+                return $this->resSQL->fetch($resultType, \PDO::FETCH_ORI_LAST);
             }
         } else {
             return end($this->cacheStatement);
@@ -724,8 +731,8 @@ class DB
     public function getColumn($var = 0)
     {
         if (is_null($this->cacheStatement)) {
-            if ($this->SQLRes && is_numeric($var)) {
-                return $this->SQLRes->fetchColumn($var);
+            if ($this->resSQL && is_numeric($var)) {
+                return $this->resSQL->fetchColumn($var);
             }
         } else {
             if ($r = each($this->cacheStatement)) {

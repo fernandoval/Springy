@@ -1,21 +1,21 @@
 <?php
-/**  \file
- *  FVAL PHP Framework for Web Applications.
+/**	\file
+ *	FVAL PHP Framework for Web Applications.
  *
- *  \copyright  Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
- *  \copyright  Copyright (c) 2007-2015 Fernando Val\n
+ *  \copyright	Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
+ *  \copyright	Copyright (c) 2007-2016 Fernando Val\n
  *
- *  \brief      Classe para tratamento de sessão
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
+ *	\brief		Classe para tratamento de sessão
+ *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
  *  \version    1.5.16
- *  \author     Fernando Val - fernando.val@gmail.com
- *  \ingroup    framework
+ *  \author		Fernando Val  - fernando.val@gmail.com
+ *	\ingroup	framework
  */
 namespace FW;
 
 /**
  *  \brief Classe para tratamento de sessão.
- *
+ *  
  *  Esta classe é estática e invocada automaticamente pelo framework.
  */
 class Session
@@ -42,7 +42,7 @@ class Session
     private static $data = [];
 
     /**
-     *  \brief Inicia a sessão.
+     *	\brief Inicia a sessão.
      */
     public static function start($name = null)
     {
@@ -130,7 +130,7 @@ class Session
     }
 
     /**
-     *  \brief Salva uma sessão em banco ou memcached.
+     *	\brief Salva uma sessão em banco ou memcached.
      */
     public static function _save_db_session()
     {
@@ -163,7 +163,7 @@ class Session
     }
 
     /**
-     *  \brief Informa se a variável de sessão está definida.
+     *	\brief Informa se a variável de sessão está definida.
      */
     public static function defined($var)
     {
@@ -173,7 +173,7 @@ class Session
     }
 
     /**
-     *  \brief Coloca um valor em variável de sessão.
+     *	\brief Coloca um valor em variável de sessão.
      */
     public static function set($var, $value)
     {
@@ -187,7 +187,7 @@ class Session
     }
 
     /**
-     *  \brief Pega o valor de uma variável de sessão.
+     *	\brief Pega o valor de uma variável de sessão.
      */
     public static function get($var)
     {
@@ -203,9 +203,9 @@ class Session
     }
 
     /**
-     *  \brief Retorna todos os dados armazenados na sessão.
+     *	\brief Retorna todos os dados armazenados na sessão.
      *
-     *  \return retorna \c array() se tiver sucesso ou \c NULL se não houver sessão
+     *	\return retorna \c array() se tiver sucesso ou \c NULL se não houver sessão
      */
     public static function getAll()
     {
@@ -221,9 +221,9 @@ class Session
     }
 
     /**
-     *  \brief Pega o ID da sessão.
+     *	\brief Pega o ID da sessão.
      *
-     *  \return retorna o ID da sessão ativa
+     *	\return retorna o ID da sessão ativa
      */
     public static function getId()
     {
@@ -233,7 +233,7 @@ class Session
     }
 
     /**
-     *  \brief Remove uma variável de sessão.
+     *	\brief Remove uma variável de sessão.
      */
     public static function unregister($var)
     {

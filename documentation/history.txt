@@ -17,6 +17,10 @@ Em 2011 a classe adoDB foi abandonada e o mecanismo PDO (PHP Data Objects) foi a
 Framework Update History
 
 ------------------------------------------------------------------------------------ --- -- -
+dev
+	- Adicionado método Errors::setHook($error, $hook) para permitir hook em caso de erro.
+		- $error pode ser o código do erro ou 'default' para todos os erros;
+		- $hook se refer ao nome de uma função (string) ou método de uma classe. Para o segundo caso, seu valor deve ser um array no formato [(object) objeto, (string) método].
 3.3.1
 	- Adicionado suporte a Swift Mailer;
 	- Encerramento de funções depreciadas;

@@ -1,16 +1,16 @@
 <?php
-/**	\file
+/** \file
  *  FVAL PHP Framework for Web Applications.
  *
- *  \copyright	Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
- *  \copyright	Copyright (c) 2007-2015 Fernando Val\n
+ *  \copyright  Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
+ *  \copyright  Copyright (c) 2007-2016 Fernando Val\n
  *
- *  \brief		Classe Model para acesso a banco de dados
- *  \note		Essa classe extende a classe DB.
- *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
+ *  \brief      Classe Model para acesso a banco de dados
+ *  \note       Essa classe extende a classe DB.
+ *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
  *  \version    1.20.28
- *  \author		Fernando Val  - fernando.val@gmail.com
- *  \ingroup	framework
+ *  \author     Fernando Val - fernando.val@gmail.com
+ *  \ingroup    framework
  */
 namespace FW;
 
@@ -202,7 +202,7 @@ class Model extends DB implements \Iterator
 
     /**
      *  \brief Gatilho que será executado antes de um DELETE.
-     *  
+     *
      *  Esse método existe para ser estendido, opcionalmente, na classe herdeira
      *  caso algum tratamento precise ser feito antes da exclusão de um registro
      */
@@ -213,7 +213,7 @@ class Model extends DB implements \Iterator
 
     /**
      *  \brief Gatilho que será executado antes de um INSERT.
-     *  
+     *
      *  Esse método existe para ser estendido, opcionalmente, na classe herdeira
      *  caso algum tratamento precise ser feito antes da enclusão de um registro
      */
@@ -224,7 +224,7 @@ class Model extends DB implements \Iterator
 
     /**
      *  \brief Gatilho que será executado antes de um UPDATE.
-     *  
+     *
      *  Esse método existe para ser estendido, opcionalmente, na classe herdeira
      *  caso algum tratamento precise ser feito antes da alteração de um registro
      */
@@ -235,7 +235,7 @@ class Model extends DB implements \Iterator
 
     /**
      *  \brief Gatilho que será executado depois de um DELETE.
-     *  
+     *
      *  Esse método existe para ser estendido, opcionalmente, na classe herdeira
      *  caso algum tratamento precise ser feito depois da exclusão de um registro
      */
@@ -246,7 +246,7 @@ class Model extends DB implements \Iterator
 
     /**
      *  \brief Gatilho que será executado depois de um INSERT.
-     *  
+     *
      *  Esse método existe para ser estendido, opcionalmente, na classe herdeira
      *  caso algum tratamento precise ser feito depois da inclusão de um registro
      */
@@ -257,7 +257,7 @@ class Model extends DB implements \Iterator
 
     /**
      *  \brief Gatilho que será executado depois de um UPDATE.
-     *  
+     *
      *  Esse método existe para ser estendido, opcionalmente, na classe herdeira
      *  caso algum tratamento precise ser feito depois da alteração de um registro
      */
@@ -477,7 +477,7 @@ class Model extends DB implements \Iterator
      *  Promove a exclusão física ou lógica de registros
      *
      *  \param (array)$filter - filtro dos registros a serem deletados.
-     *  	Se omitido (ou null), default, deleta o registro carregado na classe
+     *      Se omitido (ou null), default, deleta o registro carregado na classe
      *  \return Retorna o número de linhas afetadas ou FALSE em caso contrário.
      */
     public function delete(array $filter = null)
@@ -544,9 +544,9 @@ class Model extends DB implements \Iterator
 
     /**
      *  \brief Faz alteração em lote.
-     *  
+     *
      *  EXPERIMENTAL!
-     *  
+     *
      *  Permite fazer atualização de registros em lote (UPDATE)
      */
     public function update(array $values, array $conditions)
@@ -670,17 +670,17 @@ class Model extends DB implements \Iterator
 
     /**
      *  \brief Define o array de objetos embutidos.
-     *  
+     *
      *  O array de objetos embutidos é uma estrutura que permite a consulta a execução de consultas em outros objetos e embutir
      *  seu resultado dentro de um atributo do registro.
-     *  
+     *
      *  Cara item do array de objetos embutidos deve ter o nome da classe do objeto como índice e ter como valor um array com
      *  os seguintes pares chave => valor:
-     *  
+     *
      *  'attr_name' => (string) nome do atributo a ser criado no registro
      *  'attr_type' => (constant)'list'|'data' determina como o atributo deve ser.
-     *  	- 'list' (default) define que o atributo é uma lista (array) de registros;
-     *  	- 'data' define que o atributo é um único registro do objeto embutido (array de colunas).
+     *      - 'list' (default) define que o atributo é uma lista (array) de registros;
+     *      - 'data' define que o atributo é um único registro do objeto embutido (array de colunas).
      *  'column' => (string) nome da coluna que será usada para relacionamento com o objeto embutido.
      *  'found_by' => (string) nome da coluna do objeto embutido que será usada como chave de busca.
      *  'filter' => (array) um array de filtros, opcional, a serem aplicados ao objeto embutido, no mesmo formato usados no método query.
@@ -688,9 +688,9 @@ class Model extends DB implements \Iterator
      *  'offset' => (int) o offset de registros, opcional, a ser aplicado ao objeto embutido, no mesmo formato usados no método query.
      *  'limit' => (int) o limite de registros, opcional, a ser aplicado ao objeto embutido, no mesmo formato usados no método query.
      *  'embbeded_obj' => (array) um array estrutura, opcional, para embutir outro objeto no objeto embutido.
-     *  
+     *
      *  Exemplo de array aceito:
-     *  
+     *
      *  array('Parent_Table' => array('attr_name' => 'parent', 'type' => 'data', 'found_by' => 'id', 'column' => 'parent_id'))
      */
     public function setEmbeddedObj(array $embeddedObj)
@@ -910,12 +910,12 @@ class Model extends DB implements \Iterator
         //
         // Example embeddedObj attribute array
         // protected $embeddedObj = array(
-        // 	'Table_Class_Child_Obj' => array(
-        //		'attr_name' => 'child_or_parent', // name of the attribute to be created on parent row
-        //		'attr_type' => 'list|data', // type of the attribute to be created on parent row when 'list' is a array of rows and 'data' a array of columns from last row found
-        //		'column'|'fk' => 'id', // Name of the column in parent table used to link to embedded object
-        //		'found_by'|'pk' => 'parent_id', // Name of the column key on embedded object
-        //	)
+        //     'Table_Class_Child_Obj' => array(
+        //        'attr_name' => 'child_or_parent', // name of the attribute to be created on parent row
+        //        'attr_type' => 'list|data', // type of the attribute to be created on parent row when 'list' is a array of rows and 'data' a array of columns from last row found
+        //        'column'|'fk' => 'id', // Name of the column in parent table used to link to embedded object
+        //        'found_by'|'pk' => 'parent_id', // Name of the column key on embedded object
+        //    )
         // );
         if (is_int($embbed) && $embbed > 0 && count($this->embeddedObj) && count($this->rows) > 0) {
             foreach ($this->embeddedObj as $obj => $attr) {
