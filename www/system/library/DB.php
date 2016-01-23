@@ -1,11 +1,11 @@
 <?php
 /** \file
  *  FVAL PHP Framework for Web Applications.
- *  
+ *
  *  \copyright  Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
  *  \copyright  Copyright (c) 2007-2016 Fernando Val\n
  *  \copyright  Copyright (c) 2009-2013 Lucas Cardozo
- *  
+ *
  *  \brief      Script da classe de acesso a banco de dados
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
  *  \version    1.7.27
@@ -18,9 +18,9 @@ namespace FW;
 
 /**
  *  \brief Classe para acesso a banco de dados.
- *  
+ *
  *  Esta classe é dinâmica, porém alguns de seus controles são estáticos.
- *  
+ *
  *	\note Esta classe usa a PHP Data Object (PDO) para acesso a banco de dados.
  */
 class DB
@@ -251,15 +251,15 @@ class DB
         if (is_bool($status)) {
             $this->reportError = $status;
         }
-        
+
         return $this->reportError;
     }
-    
+
     /**
      *  \brief Desabilita o report de erros.
      *  \deprecated
      *  \see errorReportStatus.
-     *  \return (bool) the current status
+     *  \return (bool) the current status.
      */
     public function disableReportError()
     {
@@ -270,7 +270,7 @@ class DB
      *  \brief Habilita o report de erros.
      *  \deprecated
      *  \see errorReportStatus.
-     *  \return (bool) the current status
+     *  \return (bool) the current status.
      */
     public function enableReportError()
     {

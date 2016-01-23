@@ -409,7 +409,7 @@ class Errors
 
         self::printHtml($errorType, $out);
     }
-    
+
     public static function setHook($error, $hook)
     {
         self::$hooks[$error] = $hook;
