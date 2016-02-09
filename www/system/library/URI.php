@@ -8,7 +8,7 @@
  *
  *  \brief      Classe para tratamento de URI
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    2.0.29
+ *  \version    2.1.30
  *  \author     Fernando Val  - fernando.val@gmail.com
  *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
  *  \ingroup    framework
@@ -508,6 +508,14 @@ class URI
         return self::$get_params;
     }
 
+    /**
+     *  \brief Return the request method
+     */
+    public static function requestMethod()
+    {
+        return (isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : ((PHP_SAPI === 'cli' || defined('STDIN')) ? 'CIL' : ''));
+    }
+    
     /**
      *  \brief remove um parametro do _GET.
      *

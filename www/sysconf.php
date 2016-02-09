@@ -2,10 +2,10 @@
 /** \file
  *  FVAL PHP Framework for Web Applications.
  *
- *  \copyright	Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
- *  \copyright	Copyright (c) 2007-2015 Fernando Val\n
+ *  \copyright	Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
+ *  \copyright	Copyright (c) 2007-2016 Fernando Val\n
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	3.0.14
+ *  \version	3.1.15
  *  \author		Fernando Val  - fernando.val@gmail.com
  *
  *  \brief Configurações do cerne do sistema
@@ -110,7 +110,7 @@ $GLOBALS['SYSTEM']['SYSTEM_PATH'] = realpath($GLOBALS['SYSTEM']['ROOT_PATH'].DIR
 /// Diretório da biblioteca do sistema
 $GLOBALS['SYSTEM']['LIBRARY_PATH'] = realpath($GLOBALS['SYSTEM']['SYSTEM_PATH'].DIRECTORY_SEPARATOR.'library');
 /// Diretório de classes de terceiros que não são carregadas pelo autoload
-$GLOBALS['SYSTEM']['3RDPARTY_PATH'] = realpath($GLOBALS['SYSTEM']['SYSTEM_PATH'].DIRECTORY_SEPARATOR.'other');
+$GLOBALS['SYSTEM']['3RDPARTY_PATH'] = realpath($GLOBALS['SYSTEM']['SYSTEM_PATH'].DIRECTORY_SEPARATOR.'vendor');
 /// Diretório das controladoras
 $GLOBALS['SYSTEM']['CONTROLER_PATH'] = realpath($GLOBALS['SYSTEM']['SYSTEM_PATH'].DIRECTORY_SEPARATOR.'controllers');
 /// Diretório das classes da aplicação

@@ -8,7 +8,7 @@
  *
  *  \brief      Classe para tratamento de erros
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    2.2.32
+ *  \version    2.2.33
  *  \author     Fernando Val  - fernando.val@gmail.com
  *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
  *  \ingroup    framework
@@ -179,7 +179,7 @@ class Errors
     {
         $getParams = [];
         foreach (URI::getParams() as $var => $value) {
-            $getParams[] = $var.'='.$value;
+            $getParams[] = $var.'='.(is_array($value) ? json_encode($value) : $value);
         }
 
         // Verify if this type of error is reported
@@ -591,7 +591,7 @@ class Errors
     {
         $getParams = [];
         foreach (URI::getParams() as $var => $value) {
-            $getParams[] = $var.'='.$value;
+            $getParams[] = $var.'='.(is_array($value) ? json_encode($value) : $value);
         }
 
         try {

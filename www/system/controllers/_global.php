@@ -5,7 +5,7 @@
  *	Essa classe sempre é construída, independente da controladora chamada.
  *
  *	\ingroup	controllers
- *	\copyright	Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.
+ *	\copyright	Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.
  *  \author		Fernando Val  - fernando.val@gmail.com
  */
 class Global_Controller

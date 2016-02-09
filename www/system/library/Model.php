@@ -8,7 +8,7 @@
  *  \brief      Classe Model para acesso a banco de dados
  *  \note       Essa classe extende a classe DB.
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    1.20.28
+ *  \version    1.22.30
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \ingroup    framework
  */
@@ -137,6 +137,12 @@ class Model extends DB implements \Iterator
                             break;
                         case 'in':
                             $where[] = $field.' in ('.trim(str_repeat('?, ', count($key)), ', ').')';
+                            foreach ($key as $val) {
+                                $params[] = $val;
+                            }
+                            break;
+                        case 'not in':
+                            $where[] = $field.' not in ('.trim(str_repeat('?, ', count($key)), ', ').')';
                             foreach ($key as $val) {
                                 $params[] = $val;
                             }
@@ -683,7 +689,9 @@ class Model extends DB implements \Iterator
      *      - 'data' define que o atributo é um único registro do objeto embutido (array de colunas).
      *  'column' => (string) nome da coluna que será usada para relacionamento com o objeto embutido.
      *  'found_by' => (string) nome da coluna do objeto embutido que será usada como chave de busca.
+     *  'columns' => (array) um array de colunas, opcional, a serem aplicados ao objeto embutido, no mesmo formato usados no método setColumns.
      *  'filter' => (array) um array de filtros, opcional, a serem aplicados ao objeto embutido, no mesmo formato usados no método query.
+     *  'group_by' => (array) um array de agrupamento, opcional, a serem aplicados ao objeto embutido, no mesmo formato usados no método groupBy.
      *  'order' => (array) um array de ordenação, opcional, a ser aplicado ao objeto embutido, no mesmo formato usados no método query.
      *  'offset' => (int) o offset de registros, opcional, a ser aplicado ao objeto embutido, no mesmo formato usados no método query.
      *  'limit' => (int) o limite de registros, opcional, a ser aplicado ao objeto embutido, no mesmo formato usados no método query.
@@ -971,6 +979,12 @@ class Model extends DB implements \Iterator
                 }
 
                 $embObj = new $obj();
+                if (isset($attr['columns']) && is_array($attr['columns'])) {
+                    $embObj->setColumns($attr['columns']);
+                }
+                if (isset($attr['group_by']) && is_array($attr['group_by'])) {
+                    $embObj->groupBy($attr['group_by']);
+                }
                 if (isset($attr['embedded_obj'])) {
                     $embObj->setEmbeddedObj($attr['embedded_obj']);
                 }

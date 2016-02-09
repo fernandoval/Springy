@@ -3,8 +3,8 @@
 /** \file
  *  FVAL PHP Framework for Web Applications.
  *  
- *  \copyright Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
- *  \copyright Copyright (c) 2007-2015 Fernando Val
+ *  \copyright Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
+ *  \copyright Copyright (c) 2007-2016 Fernando Val
  *
  *	\brief   This is a database migration script
  *  \warning Este arquivo é parte integrante do framework e não pode ser omitido

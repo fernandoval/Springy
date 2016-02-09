@@ -8,7 +8,7 @@
  *
  *  \brief      Script da classe de acesso a banco de dados
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    1.7.27
+ *  \version    1.7.28
  *  \author     Fernando Val  - fernando.val@gmail.com
  *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
  *  \author     Allan Marques - allan.marques@ymail.com
@@ -222,7 +222,7 @@ class DB
      *  \deprecated
      *  \see connected.
      */
-    public static function hasConnection($database = 'default')
+    public static function hasConnection()
     {
         throw new \Exception('Deprecated method');
         // return self::connected($database);
@@ -391,9 +391,9 @@ class DB
      */
     public static function rollBackAll()
     {
-        foreach (self::$conectionIds as $db => $v) {
-            if ($v['con']->inTransaction()) {
-                $v['con']->rollBack();
+        foreach (self::$conectionIds as $database) {
+            if ($database['con']->inTransaction()) {
+                $database['con']->rollBack();
             }
         }
     }
