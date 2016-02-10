@@ -8,7 +8,7 @@
  *
  *  \brief      Classe para tratamento de erros
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    2.2.33
+ *  \version    2.2.34
  *  \author     Fernando Val  - fernando.val@gmail.com
  *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
  *  \ingroup    framework
@@ -342,6 +342,7 @@ class Errors
 
                 $db = new DB($conn);
                 if (DB::connected()) {
+                    $res = false;
                     $db->errorReportStatus(false);
                     if (!$db->execute('SELECT id FROM '.$table.' WHERE error_code = ?', [$errorId])) {
                         if ($db->statmentErrorCode()) {
@@ -451,7 +452,7 @@ class Errors
         $order_column = URI::getParam('orderBy') ?: 'last_time';
         $order_type = URI::getParam('sort') ?: 'DESC';
         $db->execute(
-            'SELECT SQL_CALC_FOUND_ROWS id, error_code, description, occurrences, last_time, details'.
+            'SELECT id, error_code, description, occurrences, last_time, details'.
             '  FROM '.$table.
             ' ORDER BY '.$order_column.' '.$order_type
         );
@@ -473,8 +474,6 @@ class Errors
 
                 '<div class="container">',
                     '<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">';
-
-        $retorno = [];
 
         while ($res = $db->fetchNext()) {
             echo
@@ -503,7 +502,7 @@ class Errors
 
         echo '</div></div></body></html>';
 
-        die;
+        // die;
     }
 
     /**
