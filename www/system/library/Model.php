@@ -8,7 +8,7 @@
  *  \brief      Classe Model para acesso a banco de dados
  *  \note       Essa classe extende a classe DB.
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    1.22.30
+ *  \version    1.23.32
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \ingroup    framework
  */
@@ -680,15 +680,17 @@ class Model extends DB implements \Iterator
      *  O array de objetos embutidos é uma estrutura que permite a consulta a execução de consultas em outros objetos e embutir
      *  seu resultado dentro de um atributo do registro.
      *
-     *  Cara item do array de objetos embutidos deve ter o nome da classe do objeto como índice e ter como valor um array com
-     *  os seguintes pares chave => valor:
+     *  O índice de cada item do array de objetos embutidos será inserido no registro como uma coluna que pode ser um array de
+     *  registros ou a estrutura de dados da Model embutida.
      *
-     *  'attr_name' => (string) nome do atributo a ser criado no registro
-     *  'attr_type' => (constant)'list'|'data' determina como o atributo deve ser.
+     *  O valor de cada item do array deve ser um array com a seguinte extrutura:
+     *
+     *  'model' => (string) nome do atributo a ser criado no registro
+     *  'type' => (constant)'list'|'data' determina como o atributo deve ser.
      *      - 'list' (default) define que o atributo é uma lista (array) de registros;
      *      - 'data' define que o atributo é um único registro do objeto embutido (array de colunas).
-     *  'column' => (string) nome da coluna que será usada para relacionamento com o objeto embutido.
      *  'found_by' => (string) nome da coluna do objeto embutido que será usada como chave de busca.
+     *  'column' => (string) nome da coluna que será usada para relacionamento com o objeto embutido.
      *  'columns' => (array) um array de colunas, opcional, a serem aplicados ao objeto embutido, no mesmo formato usados no método setColumns.
      *  'filter' => (array) um array de filtros, opcional, a serem aplicados ao objeto embutido, no mesmo formato usados no método query.
      *  'group_by' => (array) um array de agrupamento, opcional, a serem aplicados ao objeto embutido, no mesmo formato usados no método groupBy.
@@ -699,7 +701,7 @@ class Model extends DB implements \Iterator
      *
      *  Exemplo de array aceito:
      *
-     *  array('Parent_Table' => array('attr_name' => 'parent', 'type' => 'data', 'found_by' => 'id', 'column' => 'parent_id'))
+     *  array('parent' => array('model' => 'Parent_Table', 'type' => 'data', 'found_by' => 'id', 'column' => 'parent_id'))
      */
     public function setEmbeddedObj(array $embeddedObj)
     {
@@ -863,9 +865,9 @@ class Model extends DB implements \Iterator
         // Monta a ordenação do resultado de busca
         if (!empty($orderby)) {
             foreach ($orderby as $column => $direction) {
-                if (!strpos($column, '.') && !strpos($column, '(')) {
-                    $column = $this->tableName.'.'.$column;
-                }
+                // if (!strpos($column, '.') && !strpos($column, '(')) {
+                    // $column = $this->tableName.'.'.$column;
+                // }
                 $order[] = "$column $direction";
             }
 
@@ -927,6 +929,9 @@ class Model extends DB implements \Iterator
         // );
         if (is_int($embbed) && $embbed > 0 && count($this->embeddedObj) && count($this->rows) > 0) {
             foreach ($this->embeddedObj as $obj => $attr) {
+                if (isset($attr['model'])) {
+                    $attr['attr_name'] = (isset($attr['attr_name']) ? $attr['attr_name'] : $obj);
+                }
                 // Back compatibility to fix a bug
                 if (!isset($attr['column'])) {
                     $attr['column'] = $attr['fk'];
@@ -934,8 +939,8 @@ class Model extends DB implements \Iterator
                 if (!isset($attr['found_by'])) {
                     $attr['found_by'] = $attr['pk'];
                 }
-                if (!isset($attr['attr_type'])) {
-                    $attr['attr_type'] = 'list';
+                if (!isset($attr['type'])) {
+                    $attr['type'] = isset($attr['attr_type']) ? $attr['attr_type'] : 'list';
                 }
 
                 $keys = [];
@@ -978,7 +983,11 @@ class Model extends DB implements \Iterator
                     $limit = null;
                 }
 
-                $embObj = new $obj();
+                if (isset($attr['model'])) {
+                    $embObj = new $attr['model']();
+                } else {
+                    $embObj = new $obj();
+                }
                 if (isset($attr['columns']) && is_array($attr['columns'])) {
                     $embObj->setColumns($attr['columns']);
                 }
@@ -992,7 +1001,7 @@ class Model extends DB implements \Iterator
                 while ($er = $embObj->next()) {
                     foreach ($this->rows as $idx => $row) {
                         if ($er[ $attr['found_by'] ] == $row[ $attr['column'] ]) {
-                            if ($attr['attr_type'] == 'list') {
+                            if ($attr['type'] == 'list') {
                                 $this->rows[$idx][ $attr['attr_name'] ][] = $er;
                             } else {
                                 $this->rows[$idx][ $attr['attr_name'] ] = $er;

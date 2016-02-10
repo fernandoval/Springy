@@ -63,6 +63,10 @@
 /**@{*/
 
 /// Entradas para todos os ambientes
-$conf = [];
+$conf = [
+    '_migration' => [
+        'table_name' => '_database_version_control',
+    ],
+];
 
 /**@}*/
