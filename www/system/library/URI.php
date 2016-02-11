@@ -515,7 +515,7 @@ class URI
     {
         return isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : ((PHP_SAPI === 'cli' || defined('STDIN')) ? 'CIL' : '');
     }
-    
+
     /**
      *  \brief remove um parametro do _GET.
      *

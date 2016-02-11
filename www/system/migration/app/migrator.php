@@ -1,9 +1,9 @@
 <?php
 /** \file
- *  FVAL PHP Framework for Web Applications
+ *  FVAL PHP Framework for Web Applications.
  *
  *  \copyright Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
- *  \copyright Copyright (c) 2007-2016 Fernando Val\n
+ *  \copyright Copyright (c) 2007-2016 Fernando Val
  *
  *  \brief     Script da classe de acesso a banco de dados
  *  \warning   Este arquivo é parte integrante do framework e não pode ser omitido
@@ -11,7 +11,6 @@
  *  \author    Fernando Val - fernando.val@gmail.com
  *  \ingroup   framework
  */
-
 namespace FW;
 
 use FW\Kernel;

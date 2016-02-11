@@ -40,7 +40,6 @@ class Template_Static
      */
     public static function assignDefaultVar($name, $value)
     {
-
         Kernel::assignTemplateVar($name, $value);
     }
 

@@ -265,7 +265,7 @@ class Kernel
         }
 
         if (!isset(self::$templateVars[$var])) {
-            return null;
+            return;
         }
 
         return self::$templateVars[$var];

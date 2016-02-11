@@ -22,38 +22,38 @@ class Global_Controller
     }
 
     /**
-     *  Inicializa todas as dependências da aplicação
+     *  Inicializa todas as dependências da aplicação.
      */
     private function bindDefaultDependencies()
     {
         $app = app();
 
-        $app->bind('security.hasher', function() {
+        $app->bind('security.hasher', function () {
             return $hasher = new FW\Security\BCryptHasher();
         });
 
-        $app->bind('user.auth.identity', function() {
+        $app->bind('user.auth.identity', function () {
             return new Usuarios;
         });
 
-        $app->bind('user.auth.driver', function($c) {
+        $app->bind('user.auth.driver', function ($c) {
             $hasher = $c['security.hasher'];
             $user = $c['user.auth.identity'];
 
             return new FW\Security\DBAuthDriver($hasher, $user);
         });
 
-        $app->instance('user.auth.manager', function($c) {
+        $app->instance('user.auth.manager', function ($c) {
             return new FW\Security\Authentication( $c['user.auth.driver'] );
         });
 
-        $app->instance('session.flashdata', new FW\Utils\FlashMessagesManager);
+        $app->instance('session.flashdata', new FW\Utils\FlashMessagesManager());
 
-        $app->instance('input', new FW\Core\Input);
+        $app->instance('input', new FW\Core\Input());
     }
 
     /**
-     *  Inicializa todas as variáveis de template que sejam padrão da aplicação
+     *  Inicializa todas as variáveis de template que sejam padrão da aplicação.
      */
     private function bindDefaultTemplateVars()
     {
@@ -61,7 +61,7 @@ class Global_Controller
         FW\Kernel::assignTemplateVar('HTTPS',  isset($_SERVER['HTTPS']));
 
         // Inicializa as URLs estáticas
-        FW\Kernel::assignTemplateVar('urlJS',  FW\URI::buildURL([FW\Configuration::get('uri', 'js_dir')], [], true, 'static'));
+        FW\Kernel::assignTemplateVar('urlJS', FW\URI::buildURL([FW\Configuration::get('uri', 'js_dir')], [], true, 'static'));
         FW\Kernel::assignTemplateVar('urlCSS', FW\URI::buildURL([FW\Configuration::get('uri', 'css_dir')], [], true, 'static'));
         FW\Kernel::assignTemplateVar('urlIMG', FW\URI::buildURL([FW\Configuration::get('uri', 'images_dir')], [], true, 'static'));
         FW\Kernel::assignTemplateVar('urlSWF', FW\URI::buildURL([FW\Configuration::get('uri', 'swf_dir')], [], true, 'static'));
