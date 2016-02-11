@@ -41,13 +41,13 @@ class Migrator extends DB
     private $mustByApplied = [];
 
     /**
-     *  \brief Initiate the class
+     *  \brief Initiate the class.
      */
     public function __construct()
     {
         $this->mgPath = $GLOBALS['SYSTEM']['MIGRATION_PATH'];
-        $this->revPath = $this->mgPath . DS . 'revisions' . DS;
-        $this->revFile = $this->revPath . 'current'; // Legacy contral file
+        $this->revPath = $this->mgPath.DS.'revisions'.DS;
+        $this->revFile = $this->revPath.'current'; // Legacy contral file
 
         $this->disableReportError();
 
@@ -55,7 +55,7 @@ class Migrator extends DB
     }
 
     /**
-     *  \brief Run the migrator
+     *  \brief Run the migrator.
      */
     public function run()
     {
@@ -91,7 +91,7 @@ class Migrator extends DB
 
         $this->output('');
         $this->output('Done!');
-        exit (0);
+        exit(0);
     }
 
     /**
@@ -179,7 +179,7 @@ class Migrator extends DB
     }
 
     /**
-     *  \brief Get arguments passed to the program
+     *  \brief Get arguments passed to the program.
      */
     private function getArguments()
     {
@@ -204,20 +204,18 @@ class Migrator extends DB
     }
 
     /**
-     *  \brief Verify if two or more incompatible arguments was passed
+     *  \brief Verify if two or more incompatible arguments was passed.
      */
-    private function validateArgument($arguments, $list, $isExclusive=false)
+    private function validateArgument($arguments, $list, $isExclusive = false)
     {
         $count = 0;
         foreach ($list as $arg) {
             if (isset($arguments[$arg])) {
                 if ($isExclusive && isset($this->command)) {
-                    $this->systemAbort(
-                        [
-                            'Syntax error!' => self::MSG_ERROR,
-                            'You cannot execute two or concurrent commands at a time.' => self::MSG_INFORMATION
-                        ]
-                    );
+                    $this->systemAbort([
+                        'Syntax error!'                                            => self::MSG_ERROR,
+                        'You cannot execute two or concurrent commands at a time.' => self::MSG_INFORMATION,
+                    ]);
                 }
                 $count++;
 
@@ -227,16 +225,14 @@ class Migrator extends DB
             }
 
             if ($count > 1) {
-                $this->systemAbort(
-                    [
-                        'Syntax error!' => self::MSG_ERROR,
-                        'Please, use only short or long form of a parameter, not both.' => self::MSG_INFORMATION
-                    ]
-                );
+                $this->systemAbort([
+                    'Syntax error!'                                                 => self::MSG_ERROR,
+                    'Please, use only short or long form of a parameter, not both.' => self::MSG_INFORMATION,
+                ]);
             }
         }
 
-        return ($count > 0);
+        return $count > 0;
     }
 
     /**
@@ -261,7 +257,7 @@ class Migrator extends DB
     }
 
     /**
-     *  \brief Show current status
+     *  \brief Show current status.
      */
     private function showCurrentStatus()
     {
@@ -318,7 +314,7 @@ class Migrator extends DB
             foreach ($files as $file) {
                 $this->output('  Running script '.self::CS_INFORMATION.$file, self::MSG_INFORMATION, false);
 
-                if (!$this->runFile($this->getScriptsPath($revision, self::DIR_UP).DS.$file) ) {
+                if (!$this->runFile($this->getScriptsPath($revision, self::DIR_UP).DS.$file)) {
                     $this->output(self::CS_ERROR.' [ERR]');
                     if (is_array($this->error)) {
                         $this->output($this->error[2], self::MSG_ERROR);
@@ -341,13 +337,13 @@ class Migrator extends DB
     }
 
     /**
-     *  \brief Execute migrations
+     *  \brief Execute migrations.
      */
     private function revert()
     {
         $command = 'SELECT DISTINCT revision_number FROM '.$this->controlTable.' ORDER BY revision_number DESC';
         if (!$this->execute($command)) {
-             $this->systemAbort('Can not read control table ('.$this->statmentErrorCode().' : '.$this->statmentErrorInfo()[2].')');
+            $this->systemAbort('Can not read control table ('.$this->statmentErrorCode().' : '.$this->statmentErrorInfo()[2].')');
         }
 
         $revisions = $this->fetchAll();
@@ -397,7 +393,7 @@ class Migrator extends DB
                     break;
                 }
 
-                if (!$this->runFile($script) ) {
+                if (!$this->runFile($script)) {
                     $this->output(self::CS_ERROR.' [ERR]');
                     if (is_array($this->error)) {
                         $this->output($this->error[2], self::MSG_ERROR);
@@ -424,7 +420,7 @@ class Migrator extends DB
     }
 
     /**
-     *  \brief Load the current revisions from control file
+     *  \brief Load the current revisions from control file.
      */
     private function loadCurrentRevision()
     {
@@ -451,7 +447,7 @@ class Migrator extends DB
     }
 
     /**
-     *  \brief Get all revision directories
+     *  \brief Get all revision directories.
      */
     private function getRevisions()
     {
@@ -469,14 +465,14 @@ class Migrator extends DB
     }
 
     /**
-     *  \brief Get script files from revision directory
+     *  \brief Get script files from revision directory.
      */
     private function getRevisionFiles($revision, $direction)
     {
         $dir = $this->getScriptsPath($revision, $direction);
 
-        if ( !is_dir($dir) ) {
-            $this->systemAbort('Directory with ' . ($direction == self::DIR_UP ? 'MIGRATE' : 'ROLLBACK') . ' scripts for revision #' . $revision . ' not found.');
+        if (!is_dir($dir)) {
+            $this->systemAbort('Directory with '.($direction == self::DIR_UP ? 'MIGRATE' : 'ROLLBACK').' scripts for revision #'.$revision.' not found.');
         }
 
         $return = [];
@@ -491,11 +487,12 @@ class Migrator extends DB
         } else {
             rsort($return, SORT_REGULAR);
         }
+
         return $return;
     }
 
     /**
-     *  \brief Get the path of revisions' scripts
+     *  \brief Get the path of revisions' scripts.
      */
     private function getScriptsPath($revision, $direction)
     {
@@ -503,7 +500,7 @@ class Migrator extends DB
     }
 
     /**
-     *  \brief Get name of the scripts' subdirectory
+     *  \brief Get name of the scripts' subdirectory.
      */
     private function getScriptsSubdir($direction)
     {
@@ -517,7 +514,7 @@ class Migrator extends DB
     }
 
     /**
-     *  \brief Run a revision file
+     *  \brief Run a revision file.
      */
     private function runFile($file)
     {
@@ -528,12 +525,14 @@ class Migrator extends DB
             $content = file_get_contents($file);
             if ($content === false) {
                 $this->setError('Cannot open file '.self::CS_INFORMATION.$file.self::CS_RESET);
+
                 return false;
             }
 
             try {
                 if (!$this->execute($content)) {
                     $this->setError($this->statmentErrorInfo());
+
                     return false;
                 }
 
@@ -548,7 +547,7 @@ class Migrator extends DB
     }
 
     /**
-     *  \brief Print a message to output device
+     *  \brief Print a message to output device.
      */
     private function output($message, $type = 0, $lineBreak = true)
     {
@@ -597,6 +596,6 @@ class Migrator extends DB
 
         $this->output('');
         $this->output('System aborted!');
-        exit (1);
+        exit(1);
     }
 }

@@ -59,7 +59,7 @@ class Global_Controller
     private function bindDefaultTemplateVars()
     {
         // Informa para o template se o site está com SSL
-        FW\Kernel::assignTemplateVar('HTTPS',  isset($_SERVER['HTTPS']));
+        FW\Kernel::assignTemplateVar('HTTPS', isset($_SERVER['HTTPS']));
 
         // Inicializa as URLs estáticas
         FW\Kernel::assignTemplateVar('urlJS', FW\URI::buildURL([FW\Configuration::get('uri', 'js_dir')], [], true, 'static'));

@@ -1,6 +1,6 @@
 <?php
 /** \file
- *  \brief Classe model for users table
+ *  \brief Classe model for users table.
  *
  *  This is a sample class for users table. You can delete it from your project and write your own.
  *
@@ -8,8 +8,8 @@
  *  \author   Fernando Val - fernando.val@gmail.com
  */
 use FW\Model;
-use FW\Security\IdentityInterface;
 use FW\Security\AclUserInterface;
+use FW\Security\IdentityInterface;
 
 class User extends Model implements IdentityInterface, AclUserInterface
 {
@@ -28,7 +28,7 @@ class User extends Model implements IdentityInterface, AclUserInterface
      */
     protected function cypherPass($pass)
     {
-        return with(new \FW\Security\BCryptHasher)->make($pass);
+        return with(new \FW\Security\BCryptHasher())->make($pass);
     }
 
     /**
@@ -50,7 +50,7 @@ class User extends Model implements IdentityInterface, AclUserInterface
     {
         return [
             'login'    => 'email',
-            'password' => 'password'
+            'password' => 'password',
         ];
     }
 
@@ -176,7 +176,7 @@ class User extends Model implements IdentityInterface, AclUserInterface
      */
     protected function triggerBeforeInsert()
     {
-        $user = new User(['email' => $this->email, $this->deletedColumn => ['gte' => 0]]);
+        $user = new self(['email' => $this->email, $this->deletedColumn => ['gte' => 0]]);
         if (!$user->isLoaded()) {
             return true;
         }
@@ -205,10 +205,7 @@ class User extends Model implements IdentityInterface, AclUserInterface
         if (!in_array('email', $this->changedColumns())) {
             return true;
         }
-        $user = new User([
-            'email' => $this->email,
-            $this->deletedColumn => ['gte' => 0]
-        ]);
+        $user = new self(['email' => $this->email, $this->deletedColumn => ['gte' => 0]]);
         if (!$user->isLoaded() || $user->id == $this->id) {
             return true;
         }
