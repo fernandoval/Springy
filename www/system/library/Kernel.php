@@ -8,7 +8,7 @@
  *
  *  \brief      Script da classe cerne do framework
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    2.1.56
+ *  \version    2.1.57
  *  \author     Fernando Val  - fernando.val@gmail.com
  *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
  *  \ingroup    framework
@@ -157,6 +157,10 @@ class Kernel
      */
     public static function systemVersion($major = null, $minor = null, $build = null)
     {
+        if (is_array($major) && is_null($minor) && is_null($build)) {
+            return self::systemVersion(isset($major[0]) ? $major[0] : 0, isset($major[1]) ? $major[1] : 0, isset($major[2]) ? $major[2] : 0);
+        }
+
         if (!is_null($major) && !is_null($minor) && !is_null($build)) {
             self::$version = [$major, $minor, $build];
         } elseif (!is_null($major) && !is_null($minor)) {
