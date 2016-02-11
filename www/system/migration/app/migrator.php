@@ -264,6 +264,7 @@ class Migrator extends DB
         $this->output('');
         if (empty($this->mustByApplied)) {
             $this->output(self::CS_INFORMATION.'The database is up to date. No revisions to be applied.');
+
             return;
         }
 
@@ -271,7 +272,7 @@ class Migrator extends DB
     }
 
     /**
-     *  \brief Execute migrations
+     *  \brief Execute migrations.
      */
     private function migrate()
     {
@@ -581,7 +582,7 @@ class Migrator extends DB
     }
 
     /**
-     *  \brief Set a sistem error message
+     *  \brief Set a sistem error message.
      */
     private function setError($error)
     {
