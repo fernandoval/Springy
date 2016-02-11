@@ -18,6 +18,12 @@ Framework Update History
 
 ------------------------------------------------------------------------------------ --- -- -
 dev
+    - Eliminação da classe Template_Static. Todas as chamadas aos métodos da classe devem ser renomeados conforme abaixo:
+        - chamadas a Template_Static::assignDefaultVar($name, $value) mudar para Kernel::assignTemplateVar($name, $value);
+        - chamadas a Template_Static::getDefaultPlugins() mudar para Kernel::getTemplateFunctions();
+        - chamadas a Template_Static::getDefaultVars() mudar para Kernel::getTemplateVar();
+        - chamadas a Template_Static::getDefaultVar($name) mudar para Kernel::getTemplateVar($name);
+        - chamadas a Template_Static::registerDefaultPlugin($type, $name, $callback, $cacheable = null, $cache_attrs = null) mudar para Kernel::registerTemplateFunction($type, $name, $callback, $cacheable = null, $cacheAttrs = null);
     - Diretório para instalação de classes de terceiros renomeado de "other" para "vendor", mas mantido dentro do diretório do sistema;
     - Implementado recurso de controle de versção do banco de dados no próprio banco. Migration cria e controla sua própria tabela para controle. Para rollback funcionar, agora os arquivos de script de rollback precisam ter mesmo nome do arquivos correspondente de migração;
 	- Adicionado método Errors::setHook($error, $hook) para permitir hook em caso de erro.

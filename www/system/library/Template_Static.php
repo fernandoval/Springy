@@ -8,9 +8,11 @@
  *
  *	\brief		Classe estática para tratamento de templates
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.1.2
+ *	\version	2.3.4
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
  *	\ingroup	framework
+ *  \deprecated
+ *  \note       This class was deprecated. Change to Kernel methods. See each correspondent method below. This class will be removed in early future version.
  */
 namespace FW;
 
@@ -19,54 +21,59 @@ namespace FW;
  */
 class Template_Static
 {
-    private static $defaultVars = [];
-    private static $defaultFuncs = [];
-
     /**
      *	\brief Método statico que define um pluguin para todas as instancias da Template.
+     *  \deprecated
+     *  \note This class will be deleted on future version. Use Kernel::registerTemplateFunction($type, $name, $callback, $cacheable = null, $cacheAttrs = null).
+     *  \see Kernel::registerTemplateFunction($type, $name, $callback, $cacheable = null, $cacheAttrs = null).
      */
     public static function registerDefaultPlugin($type, $name, $callback, $cacheable = null, $cache_attrs = null)
     {
-        self::$defaultFuncs[] = [$type, $name, $callback, $cacheable, $cache_attrs];
+        Kernel::registerTemplateFunction($type, $name, $callback, $cacheable, $cache_attrs);
     }
 
     /**
-     *	\brief Método statico que adiciona uma variável a todas as instancias da Template.
+     *  \brief Método statico que adiciona uma variável a todas as instancias da Template.
+     *  \deprecated
+     *  \note This class will be deleted on future version. Use Kernel::assignTemplateVar($name, $value).
+     *  \see Kernel::assignTemplateVar($name, $value).
      */
     public static function assignDefaultVar($name, $value)
     {
-        self::$defaultVars[$name] = $value;
+
+        Kernel::assignTemplateVar($name, $value);
     }
 
     /**
      *	\brief Método statico que retorna todas as variáveis registradas.
-     *
-     * @return array
+     *  \deprecated
+     *  \note This class will be deleted on future version. Use Kernel::getTemplateVar().
+     *  \see Kernel::getTemplateVar().
      */
     public static function getDefaultVars()
     {
-        return self::$defaultVars;
+        return Kernel::getTemplateVar();
     }
 
     /**
-     *	\brief Método statico que retorna todos os Plugins registrados.
-     *
-     * @return array
+     *  \brief Método statico que retorna todos os Plugins registrados.
+     *  \deprecated
+     *  \note This class will be deleted on future version. Use Kernel::getTemplateFunctions().
+     *  \see Kernel::getTemplateFunctions().
      */
     public static function getDefaultPlugins()
     {
-        return self::$defaultFuncs;
+        return Kernel::getTemplateFunctions();
     }
 
     /**
      *	\brief Método statico que retorna uma variável definida como padrão a todas as instancias da Template.
-     *
-     * @param[in] String $name
-     *
-     * @return mixed
+     *  \deprecated
+     *  \note This class will be deleted on future version. Use Kernel::getTemplateVar($name).
+     *  \see Kernel::getTemplateVar($name).
      */
     public static function getDefaultVar($name)
     {
-        return isset(self::$defaultVars[$name]) ? self::$defaultVars[$name] : null;
+        return Kernel::getTemplateVar($name);
     }
 }

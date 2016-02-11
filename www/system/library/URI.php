@@ -513,7 +513,7 @@ class URI
      */
     public static function requestMethod()
     {
-        return isset($_SERVER['REQUEST_METHOD'] ? $_SERVER['REQUEST_METHOD'] : ((PHP_SAPI === 'cli' || defined('STDIN')) ? 'CIL' : ''));
+        return isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : ((PHP_SAPI === 'cli' || defined('STDIN')) ? 'CIL' : '');
     }
     
     /**
