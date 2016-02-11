@@ -33,7 +33,8 @@ class Global_Controller
         });
 
         $app->bind('user.auth.identity', function () {
-            return new Usuarios;
+            // Here you can return a new instance of your user Model class.
+            return new User();
         });
 
         $app->bind('user.auth.driver', function ($c) {
@@ -44,7 +45,7 @@ class Global_Controller
         });
 
         $app->instance('user.auth.manager', function ($c) {
-            return new FW\Security\Authentication( $c['user.auth.driver'] );
+            return new FW\Security\Authentication($c['user.auth.driver']);
         });
 
         $app->instance('session.flashdata', new FW\Utils\FlashMessagesManager());

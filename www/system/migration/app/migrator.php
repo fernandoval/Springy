@@ -7,26 +7,21 @@
  *
  *  \brief     Script da classe de acesso a banco de dados
  *  \warning   Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version   0.3.4 beta
+ *  \version   0.3.5 beta
  *  \author    Fernando Val - fernando.val@gmail.com
  *  \ingroup   framework
  */
 namespace FW;
 
-use FW\Kernel;
-use FW\Configuration;
-use FW\URI;
-use FW\DB;
-
 class Migrator extends DB
 {
     const VERSION = '0.3.4';
-	const MSG_INFORMATION = 0;
-	const MSG_WARNING = 1;
-	const MSG_ERROR = 2;
+    const MSG_INFORMATION = 0;
+    const MSG_WARNING = 1;
+    const MSG_ERROR = 2;
 
-	const DIR_UP = 1;
-	const DIR_DOWN = -1;
+    const DIR_UP = 1;
+    const DIR_DOWN = -1;
 
     const CS_ERROR = "\033[31m";
     const CS_INFORMATION = "\033[1;37m";
@@ -34,38 +29,38 @@ class Migrator extends DB
     const CS_SUCCESS = "\033[1;32m";
     const CS_WARNING = "\033[1;33m";
 
-	private $mgPath = '';
-	private $revPath = '';
-	private $revFile = '';
-	private $command = null;
-	private $target = null;
-	private $parameter = null;
-	private $error = false;
-	private $currentRevision = []; // Legacy
+    private $mgPath = '';
+    private $revPath = '';
+    private $revFile = '';
+    private $command = null;
+    private $target = null;
+    private $parameter = null;
+    private $error = false;
+    private $currentRevision = []; // Legacy
     private $controlTable = '';
     private $mustByApplied = [];
 
-	/**
-	 *  \brief Initiate the class
-	 */
-	public function __construct()
-	{
-		$this->mgPath = $GLOBALS['SYSTEM']['MIGRATION_PATH'];
-		$this->revPath = $this->mgPath . DS . 'revisions' . DS;
-		$this->revFile = $this->revPath . 'current'; // Legacy contral file
+    /**
+     *  \brief Initiate the class
+     */
+    public function __construct()
+    {
+        $this->mgPath = $GLOBALS['SYSTEM']['MIGRATION_PATH'];
+        $this->revPath = $this->mgPath . DS . 'revisions' . DS;
+        $this->revFile = $this->revPath . 'current'; // Legacy contral file
 
-		$this->disableReportError();
+        $this->disableReportError();
 
-		parent::__construct();
-	}
+        parent::__construct();
+    }
 
-	/**
-	 *  \brief Run the migrator
-	 */
-	public function run()
-	{
-		ob_end_flush();
-		$this->output([
+    /**
+     *  \brief Run the migrator
+     */
+    public function run()
+    {
+        ob_end_flush();
+        $this->output([
             'FVAL PHP Framework for Web Applications'                         => self::MSG_INFORMATION,
             'Database Migration Tool v'.self::VERSION                         => self::MSG_INFORMATION,
             '---------------------------------------'                         => self::MSG_INFORMATION,
@@ -80,24 +75,24 @@ class Migrator extends DB
         $this->checkControlTable();
         $this->checkCurrentRevision();
 
-		$this->getArguments();
+        $this->getArguments();
 
-		if ($this->command == 'status') {
-			$this->showCurrentStatus();
-		} elseif ($this->command == 'migrate') {
-			$this->migrate();
-		} elseif ($this->command == 'rollback') {
-			$this->revert();
-		} elseif ($this->command == 'help') {
-			$this->showHelp();
-		} else {
-			$this->output('Invalid command!', self::MSG_WARNING);
-		}
+        if ($this->command == 'status') {
+            $this->showCurrentStatus();
+        } elseif ($this->command == 'migrate') {
+            $this->migrate();
+        } elseif ($this->command == 'rollback') {
+            $this->revert();
+        } elseif ($this->command == 'help') {
+            $this->showHelp();
+        } else {
+            $this->output('Invalid command!', self::MSG_WARNING);
+        }
 
-		$this->output('');
-		$this->output('Done!');
-		exit (0);
-	}
+        $this->output('');
+        $this->output('Done!');
+        exit (0);
+    }
 
     /**
      *  \brief Checks the existence of the control table.
@@ -183,66 +178,66 @@ class Migrator extends DB
         }
     }
 
-	/**
-	 *  \brief Get arguments passed to the program
-	 */
-	private function getArguments()
-	{
-		$args = getopt('hsmr', ['help', 'revision:']);
+    /**
+     *  \brief Get arguments passed to the program
+     */
+    private function getArguments()
+    {
+        $args = getopt('hsmr', ['help', 'revision:']);
 
-		if ($this->validateArgument($args, ['m'], true)) {
-			$this->command = 'migrate';
-		}
-		if ($this->validateArgument($args, ['r'], true)) {
-			$this->command = 'rollback';
-		}
-		if ($this->validateArgument($args, ['s'], true)) {
-			$this->command = 'status';
-		}
-		if ($this->validateArgument($args, ['h', 'help'], true)) {
-			$this->command = 'help';
-		}
-		if ($this->validateArgument($args, ['revision'])) {
-			$this->target = $this->parameter;
-			$this->parameter = null;
-		}
-	}
+        if ($this->validateArgument($args, ['m'], true)) {
+            $this->command = 'migrate';
+        }
+        if ($this->validateArgument($args, ['r'], true)) {
+            $this->command = 'rollback';
+        }
+        if ($this->validateArgument($args, ['s'], true)) {
+            $this->command = 'status';
+        }
+        if ($this->validateArgument($args, ['h', 'help'], true)) {
+            $this->command = 'help';
+        }
+        if ($this->validateArgument($args, ['revision'])) {
+            $this->target = $this->parameter;
+            $this->parameter = null;
+        }
+    }
 
-	/**
-	 *  \brief Verify if two or more incompatible arguments was passed
-	 */
-	private function validateArgument($arguments, $list, $isExclusive=false)
-	{
-		$count = 0;
-		foreach ($list as $arg) {
-			if (isset($arguments[$arg])) {
-				if ($isExclusive && isset($this->command)) {
-					$this->systemAbort(
-						[
-							'Syntax error!' => self::MSG_ERROR,
-							'You cannot execute two or concurrent commands at a time.' => self::MSG_INFORMATION
-						]
-					);
-				}
-				$count++;
+    /**
+     *  \brief Verify if two or more incompatible arguments was passed
+     */
+    private function validateArgument($arguments, $list, $isExclusive=false)
+    {
+        $count = 0;
+        foreach ($list as $arg) {
+            if (isset($arguments[$arg])) {
+                if ($isExclusive && isset($this->command)) {
+                    $this->systemAbort(
+                        [
+                            'Syntax error!' => self::MSG_ERROR,
+                            'You cannot execute two or concurrent commands at a time.' => self::MSG_INFORMATION
+                        ]
+                    );
+                }
+                $count++;
 
-				if ($arguments[$arg] !== false) {
-					$this->parameter = $arguments[$arg];
-				}
-			}
+                if ($arguments[$arg] !== false) {
+                    $this->parameter = $arguments[$arg];
+                }
+            }
 
-			if ($count > 1) {
-				$this->systemAbort(
-					[
-						'Syntax error!' => self::MSG_ERROR,
-						'Please, use only short or long form of a parameter, not both.' => self::MSG_INFORMATION
-					]
-				);
-			}
-		}
+            if ($count > 1) {
+                $this->systemAbort(
+                    [
+                        'Syntax error!' => self::MSG_ERROR,
+                        'Please, use only short or long form of a parameter, not both.' => self::MSG_INFORMATION
+                    ]
+                );
+            }
+        }
 
-		return ($count > 0);
-	}
+        return ($count > 0);
+    }
 
     /**
      *  \brief Show help instructions.
@@ -279,47 +274,47 @@ class Migrator extends DB
         $this->output(self::CS_WARNING.count($this->mustByApplied).self::CS_RESET.' revision'.(count($this->mustByApplied) > 1 ? 's' : '').' to be applied');
     }
 
-	/**
-	 *  \brief Execute migrations
-	 */
-	private function migrate()
-	{
+    /**
+     *  \brief Execute migrations
+     */
+    private function migrate()
+    {
         // Get target revision
-		if (is_null($this->target)) {
-			$target = -1;
-		} elseif (!is_numeric($this->target)) {
-			$this->systemAbort([
+        if (is_null($this->target)) {
+            $target = -1;
+        } elseif (!is_numeric($this->target)) {
+            $this->systemAbort([
                 'Syntax error!'            => self::MSG_ERROR,
                 'Invalid revision number.' => self::MSG_INFORMATION,
             ]);
-		} else {
-			$target = (int) $this->target;
-		}
+        } else {
+            $target = (int) $this->target;
+        }
 
-		$this->output('');
-		$this->output(self::CS_INFORMATION.'Starting migration proccess.');
+        $this->output('');
+        $this->output(self::CS_INFORMATION.'Starting migration proccess.');
 
         if (empty($this->mustByApplied)) {
             $this->showCurrentStatus();
             return;
         }
 
-		foreach ($this->mustByApplied as $revision => $files) {
+        foreach ($this->mustByApplied as $revision => $files) {
             // Hit target?
-			if ($revision > $target && $target >= 0) {
-				return;
-			}
+            if ($revision > $target && $target >= 0) {
+                return;
+            }
 
-			$this->output('');
-			$this->output('Applying revision #'.self::CS_INFORMATION.$revision);
+            $this->output('');
+            $this->output('Applying revision #'.self::CS_INFORMATION.$revision);
 
             // No files? Oops!
-			if (empty($files)) {
-				$this->output('Nothing to do at revision #'.self::INFORMATION.$revision, self::MSG_WARNING);
+            if (empty($files)) {
+                $this->output('Nothing to do at revision #'.self::INFORMATION.$revision, self::MSG_WARNING);
                 continue;
-			}
+            }
 
-			$error = false;
+            $error = false;
             foreach ($files as $file) {
                 $this->output('  Running script '.self::CS_INFORMATION.$file, self::MSG_INFORMATION, false);
 
@@ -338,18 +333,18 @@ class Migrator extends DB
                 $this->setMigrationApplied($revision, $file, $this->affectedRows().' affected rows');
             }
 
-			if ($error) {
-				$this->systemAbort('Revision has errors!');
-			}
-			$this->output('  Revision #'.self::CS_INFORMATION.$revision.self::CS_RESET.' sucessfully applied.');
-		}
-	}
+            if ($error) {
+                $this->systemAbort('Revision has errors!');
+            }
+            $this->output('  Revision #'.self::CS_INFORMATION.$revision.self::CS_RESET.' sucessfully applied.');
+        }
+    }
 
-	/**
-	 *  \brief Execute migrations
-	 */
-	private function revert()
-	{
+    /**
+     *  \brief Execute migrations
+     */
+    private function revert()
+    {
         $command = 'SELECT DISTINCT revision_number FROM '.$this->controlTable.' ORDER BY revision_number DESC';
         if (!$this->execute($command)) {
              $this->systemAbort('Can not read control table ('.$this->statmentErrorCode().' : '.$this->statmentErrorInfo()[2].')');
@@ -362,28 +357,28 @@ class Migrator extends DB
         }
 
         // Get target revision
-		if (is_null($this->target)) {
-			$target = 0;
-		} elseif (!is_numeric($this->target)) {
-			$this->systemAbort([
+        if (is_null($this->target)) {
+            $target = 0;
+        } elseif (!is_numeric($this->target)) {
+            $this->systemAbort([
                 'Syntax error!'            => self::MSG_ERROR,
                 'Invalid revision number.' => self::MSG_INFORMATION,
             ]);
-		} else {
-			$target = (int) $this->target;
-		}
+        } else {
+            $target = (int) $this->target;
+        }
 
-		$this->output('');
-		$this->output(self::CS_INFORMATION.'Starting rollback proccess until revision #'.self::CS_WARNING.$target);
+        $this->output('');
+        $this->output(self::CS_INFORMATION.'Starting rollback proccess until revision #'.self::CS_WARNING.$target);
 
         foreach ($revisions as $revision) {
             // Hit target?
-			if ((int) $revision['revision_number'] <= $target) {
-				break;
-			}
+            if ((int) $revision['revision_number'] <= $target) {
+                break;
+            }
 
-			$this->output('');
-			$this->output('Applying rollback of revision #'.self::CS_INFORMATION.$revision['revision_number']);
+            $this->output('');
+            $this->output('Applying rollback of revision #'.self::CS_INFORMATION.$revision['revision_number']);
 
             $command = 'SELECT script_file FROM '.$this->controlTable.' WHERE revision_number = ? ORDER BY script_file DESC';
             if (!$this->execute($command, [$revision['revision_number']])) {
@@ -421,43 +416,43 @@ class Migrator extends DB
                 }
             }
 
-			if ($error) {
-				$this->systemAbort('Rollback fail!');
-			}
-			$this->output('  Rollback of revision #'.self::CS_INFORMATION.$revision['revision_number'].self::CS_RESET.' sucessfully applied.');
+            if ($error) {
+                $this->systemAbort('Rollback fail!');
+            }
+            $this->output('  Rollback of revision #'.self::CS_INFORMATION.$revision['revision_number'].self::CS_RESET.' sucessfully applied.');
         }
-	}
+    }
 
-	/**
-	 *  \brief Load the current revisions from control file
-	 */
-	private function loadCurrentRevision()
-	{
-		$this->currentRevision = [];
+    /**
+     *  \brief Load the current revisions from control file
+     */
+    private function loadCurrentRevision()
+    {
+        $this->currentRevision = [];
 
-		// Check if revision control file exists and is writable
-		if (file_exists($this->revFile)) {
-			// return intval(file_get_contents($this->revFile));
-			$revisions = file_get_contents($this->revFile);
-			$aRevs = explode(',', $revisions);
-			foreach ($aRevs as $range) {
-				$aRange = explode('-', $range);
-				if (count($aRange) == 1) {
-					$this->currentRevision[ intval($aRange[0]) ] = intval($aRange[0]);
-				} else {
-					$this->currentRevision[ intval($aRange[0]) ] = intval($aRange[1]);
-				}
-			}
+        // Check if revision control file exists and is writable
+        if (file_exists($this->revFile)) {
+            // return intval(file_get_contents($this->revFile));
+            $revisions = file_get_contents($this->revFile);
+            $aRevs = explode(',', $revisions);
+            foreach ($aRevs as $range) {
+                $aRange = explode('-', $range);
+                if (count($aRange) == 1) {
+                    $this->currentRevision[ intval($aRange[0]) ] = intval($aRange[0]);
+                } else {
+                    $this->currentRevision[ intval($aRange[0]) ] = intval($aRange[1]);
+                }
+            }
 
-			return true;
-		}
+            return true;
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	/**
-	 *  \brief Get all revision directories
-	 */
+    /**
+     *  \brief Get all revision directories
+     */
     private function getRevisions()
     {
         $return = [];
@@ -473,16 +468,16 @@ class Migrator extends DB
         return $return;
     }
 
-	/**
-	 *  \brief Get script files from revision directory
-	 */
+    /**
+     *  \brief Get script files from revision directory
+     */
     private function getRevisionFiles($revision, $direction)
     {
         $dir = $this->getScriptsPath($revision, $direction);
 
-		if ( !is_dir($dir) ) {
-			$this->systemAbort('Directory with ' . ($direction == self::DIR_UP ? 'MIGRATE' : 'ROLLBACK') . ' scripts for revision #' . $revision . ' not found.');
-		}
+        if ( !is_dir($dir) ) {
+            $this->systemAbort('Directory with ' . ($direction == self::DIR_UP ? 'MIGRATE' : 'ROLLBACK') . ' scripts for revision #' . $revision . ' not found.');
+        }
 
         $return = [];
         foreach (new \DirectoryIterator($dir) as $file) {
@@ -491,39 +486,39 @@ class Migrator extends DB
             }
         }
 
-		if (self::DIR_UP) {
-			sort($return, SORT_REGULAR);
-		} else {
-			rsort($return, SORT_REGULAR);
-		}
+        if (self::DIR_UP) {
+            sort($return, SORT_REGULAR);
+        } else {
+            rsort($return, SORT_REGULAR);
+        }
         return $return;
     }
 
-	/**
-	 *  \brief Get the path of revisions' scripts
-	 */
-	private function getScriptsPath($revision, $direction)
-	{
+    /**
+     *  \brief Get the path of revisions' scripts
+     */
+    private function getScriptsPath($revision, $direction)
+    {
         return $this->revPath.DS.$revision.DS.$this->getScriptsSubdir($direction);
-	}
+    }
 
-	/**
-	 *  \brief Get name of the scripts' subdirectory
-	 */
-	private function getScriptsSubdir($direction)
-	{
-		if ($direction == self::DIR_UP) {
-			return 'migrate';
-		} elseif ($direction == self::DIR_DOWN) {
-			return 'rollback';
-		}
+    /**
+     *  \brief Get name of the scripts' subdirectory
+     */
+    private function getScriptsSubdir($direction)
+    {
+        if ($direction == self::DIR_UP) {
+            return 'migrate';
+        } elseif ($direction == self::DIR_DOWN) {
+            return 'rollback';
+        }
 
-		$this->systemAbort('Direction undefined');
-	}
+        $this->systemAbort('Direction undefined');
+    }
 
-	/**
-	 *  \brief Run a revision file
-	 */
+    /**
+     *  \brief Run a revision file
+     */
     private function runFile($file)
     {
         $extension = strtolower(pathinfo($file, PATHINFO_EXTENSION));
@@ -552,16 +547,16 @@ class Migrator extends DB
         return false;
     }
 
-	/**
-	 *  \brief Print a message to output device
-	 */
-	private function output($message, $type = 0, $lineBreak = true)
-	{
-		if (is_array($message)) {
-			foreach ($message as $part => $type) {
-				$this->output($part, $type);
-			}
-		} else {
+    /**
+     *  \brief Print a message to output device
+     */
+    private function output($message, $type = 0, $lineBreak = true)
+    {
+        if (is_array($message)) {
+            foreach ($message as $part => $type) {
+                $this->output($part, $type);
+            }
+        } else {
             switch ($type) {
                 case self::MSG_INFORMATION:
                     $msgTemplate = '%s';
@@ -576,32 +571,32 @@ class Migrator extends DB
                     $msgTemplate = '%s';
             }
 
-			printf($msgTemplate, $message);
+            printf($msgTemplate, $message);
             echo self::CS_RESET;
 
             if (!$lineBreak) {
                 return;
             }
             echo "\n";
-		}
-	}
+        }
+    }
 
-	/**
-	 *  \brief Set a sistem error message
-	 */
-	private function setError($error)
-	{
-		$this->error = $error;
-	}
+    /**
+     *  \brief Set a sistem error message
+     */
+    private function setError($error)
+    {
+        $this->error = $error;
+    }
 
-	private function systemAbort($message = false)
-	{
-		if ($message) {
-			$this->output($message, self::MSG_ERROR);
-		}
+    private function systemAbort($message = false)
+    {
+        if ($message) {
+            $this->output($message, self::MSG_ERROR);
+        }
 
-		$this->output('');
-		$this->output('System aborted!');
-		exit (1);
-	}
+        $this->output('');
+        $this->output('System aborted!');
+        exit (1);
+    }
 }
