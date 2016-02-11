@@ -293,6 +293,7 @@ class Migrator extends DB
 
         if (empty($this->mustByApplied)) {
             $this->showCurrentStatus();
+
             return;
         }
 
