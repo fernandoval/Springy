@@ -15,7 +15,7 @@ The names of the files must be correspondent to the URL who the user is accessin
 
 If the user is accessing the page **/my-first-page** then the controller file must have the name **my-first-page.page.php** to the framework call it.
 
-Your class can extends the [Controller](/documentation/en/library/Controller.md) class.
+Your class can extends the FW\[Controller](/documentation/en/library/Controller.md) class.
 
 The follow example show a simple controller code:
 

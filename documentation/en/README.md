@@ -45,6 +45,9 @@ If you do not use the [Apache HTTP Server](http://httpd.apache.org/) or your web
 
 ### Models
 
+Model is part of [MVC](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) architecture of the framework. They are objects representing business data, rules and logic.
+[Read more](/documentation/en/Models.md)
+
 ### Views
 
 ### Controllers
