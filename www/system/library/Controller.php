@@ -13,16 +13,13 @@
  */
 namespace FW;
 
-use FW\Errors;
 use FW\Security\AclManager;
-use FW\Template;
-use FW\URI;
 
 class Controller extends AclManager
 {
     /// Define if the controller is restricted to signed in users.
     protected $authNeeded = false;
-    /// Define a URL to redirect the user if it is not signed ($authNeeded must be true). Can be a string or an array user by URI::buildUrl();
+    /// Define a URL to redirect the user if it is not signed ($authNeeded must be true). Can be a string or an array used by URI::buildUrl();
     protected $redirectUnsigned = false;
     /// The current user signed in.
     protected $signedUser = null;
@@ -40,7 +37,7 @@ class Controller extends AclManager
      *  This method is called by PHP when the object is created.\n
      *  All default verification is made by this method, before other methos been called by the framework.
      */
-    function __construct()
+    public function __construct()
     {
         // Do nothing if is free for unsigned users
         if (!$this->authNeeded) {
@@ -53,7 +50,7 @@ class Controller extends AclManager
             $this->signedUser = app('user.auth.manager')->user();
 
             // Call user special verifications
-            if (! $this->_userSpecialVerifications()) {
+            if (!$this->_userSpecialVerifications()) {
                 $this->_forbidden();
             }
 
@@ -133,7 +130,7 @@ class Controller extends AclManager
             $tpl->setCaching('current');
             $tpl->setCacheLifetime($this->tplCacheTime);
 
-            if (! $this->tplCacheId) {
+            if (!$this->tplCacheId) {
                 $this->tplCacheId = URI::currentPage();
             }
 

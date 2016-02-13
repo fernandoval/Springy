@@ -6,7 +6,7 @@
 
 ## About
 
-Controller is a simple class you can extend to create controllers for your application.
+Controller is a simple class you can extend to create [controllers](/documentation/en/Controllers.md) for your application.
 
 ## Properties
 
@@ -15,11 +15,11 @@ All properties are *protected* and can be changed by child classes.
 |Property|Type|Description|Default Value|
 |---|---|---|---|
 |**$authNeeded**|*boolean*|Define if the controller is restricted to signed in users.|*false*|
-|**$redirectUnsigned**|*mixed*|Define a URL to redirect the user if it is not signed ($authNeeded must be true). Can be a string or an array user by URI::buildUrl();|*false|
+|**$redirectUnsigned**|*mixed*|Define a URL to redirect the user if it is not signed ($authNeeded must be true). Can be a string or an array used by URI::buildUrl();|*false|
 |**$signedUser**|*object*|The current user signed in object.|*null*|
 |**$tplIsChaced**|*boolean*|Define if the template's page must be cached.|*false*|
 |**$tplCacheTime**|*integer*|Define the live time (in seconds) of the cache.|*1800*|
-|**$tplCacheId**|Define an identificator to the template cache.|*null*|
+|**$tplCacheId**|*string*|Define an identificator to the template cache.|*null*|
 
 ### Examples:
 ```php
@@ -31,8 +31,8 @@ In below example, no authenticated users will be redirected to /login page.
 ```php
     protected $authNeeded = true;
     protected $redirectUnsigned = [
-       'segments'      => ['login'],
-       'query'         => [],
+        'segments'      => ['login'],
+        'query'         => [],
         'forceRewrite' => false,
         'host'         => 'secure',
     ];
