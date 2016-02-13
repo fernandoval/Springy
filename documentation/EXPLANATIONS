@@ -43,7 +43,7 @@ Lista padrão de diretórios do framework:
 * "library" : diretório onde estão armazenados as classes e bibliotecas do framework;
 * "classes" : diretório onde são armazenadas as classes proprietárias;
 * "conf" : diretório onde são armazenados os scripts de configuração do sistema;
-* "controller" : diretório onde as controladoras são armazenados (pode conter subdiretórios);
+* "controllers" : diretório onde as controladoras são armazenados (pode conter subdiretórios);
 * "other" : diretório onde estão armazenados as classes e bibliotecas de terceiros;
 * "templates" : diretório onde são asmazenados os templates (pode conter subdiretórios);
 * "tpl_comp" : diretório onde são asmazenados os templates compilados (o PHP deve ter direito de escrita dentro dele);

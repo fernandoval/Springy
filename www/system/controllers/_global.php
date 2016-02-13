@@ -14,7 +14,7 @@ class Global_Controller
     {
         date_default_timezone_set('America/Sao_Paulo');
 
-        // Declarando as dependências default, necessárias em todos os controlles
+        // Initialize all defalt dependencies, needed by framework and other controllers.
         $this->bindDefaultDependencies();
 
         // Como exemplo, variáveis globais de template são inicializadas para entendimento da usabilidade desse hook de controladora
@@ -22,21 +22,28 @@ class Global_Controller
     }
 
     /**
-     *  Inicializa todas as dependências da aplicação.
+     *  \brief Initiate all application dependecies.
+     *
+     *  This method starts all application dependencies, used by some framework libraries and you application.
+     *  You can change its content, but try no remove our code.
      */
     private function bindDefaultDependencies()
     {
+        // Load the application helper.
         $app = app();
 
+        // Start the security hasher for user passwords. We like BCrypt, but you can use another you prefer.
         $app->bind('security.hasher', function () {
             return $hasher = new FW\Security\BCryptHasher();
         });
 
+        // Define the user model class. We made a sample model class User. You can change it or use another.
         $app->bind('user.auth.identity', function () {
-            // Here you can return a new instance of your user Model class.
+            // Here you can return a new instance of your user model class.
             return new User();
         });
 
+        // Define the authentication driver for test users sign in. Change the methods in your user model class.
         $app->bind('user.auth.driver', function ($c) {
             $hasher = $c['security.hasher'];
             $user = $c['user.auth.identity'];
@@ -44,17 +51,23 @@ class Global_Controller
             return new FW\Security\DBAuthDriver($hasher, $user);
         });
 
+        // Define the authentication manager for you application. Change the methods in your user model class.
         $app->instance('user.auth.manager', function ($c) {
             return new FW\Security\Authentication($c['user.auth.driver']);
         });
 
+        // Initiate the flash message manager. This is used by Errors class. Do not remove it.
         $app->instance('session.flashdata', new FW\Utils\FlashMessagesManager());
 
+        // Initiate the input helper. You can remove it ou can use it. :)
         $app->instance('input', new FW\Core\Input());
     }
 
     /**
-     *  Inicializa todas as variáveis de template que sejam padrão da aplicação.
+     *  \brief Initialize all default global template variables.
+     *  
+     *  This method set values to all template variables used by default for any system template.
+     *  You can change it how you want.
      */
     private function bindDefaultTemplateVars()
     {
@@ -67,7 +80,7 @@ class Global_Controller
         FW\Kernel::assignTemplateVar('urlIMG', FW\URI::buildURL([FW\Configuration::get('uri', 'images_dir')], [], true, 'static'));
         FW\Kernel::assignTemplateVar('urlSWF', FW\URI::buildURL([FW\Configuration::get('uri', 'swf_dir')], [], true, 'static'));
 
-        // Inicializa o controle de versões de arquivos estáticos
+        // Sample how to define a template function
         FW\Kernel::registerTemplateFunction('function', 'sampleFunction', 'sampleTemplateFunction');
 
         // Inicializa as URLs do site

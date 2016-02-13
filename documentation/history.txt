@@ -18,6 +18,7 @@ Framework Update History
 
 ------------------------------------------------------------------------------------ --- -- -
 dev
+    - Criação da classe Controller para construção de controllers;
     - Eliminação da classe Template_Static. Todas as chamadas aos métodos da classe devem ser renomeados conforme abaixo:
         - chamadas a Template_Static::assignDefaultVar($name, $value) mudar para Kernel::assignTemplateVar($name, $value);
         - chamadas a Template_Static::getDefaultPlugins() mudar para Kernel::getTemplateFunctions();
