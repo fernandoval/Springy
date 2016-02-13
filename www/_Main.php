@@ -9,7 +9,7 @@
  *  http://www.fval.com.br
  *
  *  \brief    System initialization script
- *  \version  4.2.27
+ *  \version  4.2.28
  *  \author   Fernando Val - fernando.val@gmail.com
  *  \author   Lucas Cardozo - lucas.cardozo@gmail.com
  *
@@ -35,7 +35,7 @@
 $FWGV_START_TIME = microtime(true); // Memoriza a hora do início do processamento
 
 // Kill system with internal error 500 if initial setup file does not exists
-if (!file_exists('sysconf.php')) {
+if (!file_exists('sysconf.php') || !file_exists('helpers.php')) {
     header('Content-type: text/html; charset=UTF-8', true, 500);
     die('Internal System Error on Startup');
 }

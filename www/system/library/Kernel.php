@@ -8,7 +8,7 @@
  *
  *  \brief      Script da classe cerne do framework
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    2.1.57
+ *  \version    2.1.58
  *  \author     Fernando Val  - fernando.val@gmail.com
  *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
  *  \ingroup    framework
@@ -48,7 +48,7 @@ class Kernel
     /// System environment
     private static $environment = '';
     /// System name
-    private static $name = 'Sistem Name';
+    private static $name = 'System Name';
     /// System version
     private static $version = [0, 0, 0];
     /// System path
