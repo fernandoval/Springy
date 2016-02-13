@@ -74,7 +74,7 @@ class Controller extends AclManager
         // Call the parent constructor to start user permissions
         parent::__construct($this->signedUser);
         // Check if the controller and respective method is permitted to the user
-        if (! $this->isPermitted()) {
+        if (!$this->isPermitted()) {
             $this->_forbidden();
         }
     }
