@@ -10,7 +10,7 @@ A micro framework for smart PHP developers.
 * [Installation Guide](#installation-guide)
   * [Prerequisites](#prerequisites)
   * [First steps](#first-steps)
-* [Configuration](#configuration)
+  * [Configuration](#configuration)
 * [Models](#models)
 * [Views](#views)
 * [Controllers](#controllers)
@@ -43,17 +43,17 @@ If you do not use the [Apache HTTP Server](http://httpd.apache.org/) or your web
 
 ### Configuration
 
-### Models
+## Models
 
 Model is part of [MVC](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) architecture of the framework. They are objects representing business data, rules and logic.
 [Read more](/documentation/en/Models.md)
 
-### Views
+## Views
 
 Views are part of [MVC](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) architecture of the framework. They are code responsible for presenting data to end users, usually files containing HTML code and special codes parsed by a template engine.
 [Read mode](/documentation/en/Views.md)
 
-### Controllers
+## Controllers
 
 Controller is part of [MVC](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) architecture of the framework. All actions is you application is started by a controller class. They are responsible for processing requests and generating responses.
 [Read more](/documentation/en/Controllers.md)

@@ -36,7 +36,7 @@ Sample of a template to *Twig* driver.
 
 ## Using Templates
 
-Once you have created you template file, you will need a [controller](/documentation/en/Controllers.md) to print its content. All you need is create a FW\\[Template](/documentation/en/library/Template.md) object and use its methods.
+Once you have created your template file, you will need a [controller](/documentation/en/Controllers.md) to print its content. All you need is create a FW\\[Template](/documentation/en/library/Template.md) object and use its methods.
 
 Sample how to use a template view:
 ```php
