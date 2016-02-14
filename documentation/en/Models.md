@@ -9,13 +9,13 @@ Model is part of [MVC](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93
 
 ## Creating Models
 
-You can create model classes by extending FW\[Model](/documentation/en/library/MOdel.md) or its child classes.
+You can create model classes by extending FW\[Model](/documentation/en/library/Model.md) or its child classes.
 
 The script files of your models must be located in the classes directory.
 
 The names of the files must be correspondent to the name of the model, followed by the extension *.php*.
 
-The follow example show a simple controller code:
+The follow example show a simple model code:
 
 ```php
 use FW\Model;

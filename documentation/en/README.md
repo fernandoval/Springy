@@ -39,7 +39,7 @@ If you do not use the [Apache HTTP Server](http://httpd.apache.org/) or your web
   * Choice between [PHPMailer](https://github.com/PHPMailer/PHPMailer) and [SendGrid](https://github.com/sendgrid/sendgrid-php) for mailer system.
 * Run Composer to download and install all dependencies;
 * Edit the configuration files;
-* Create your controllers, views and models.
+* Create your [controllers](/documentation/en/Controllers.md), [views](/documentation/en/Views.md) and [models](/documentation/en/Models.md).
 
 ### Configuration
 
@@ -49,6 +49,9 @@ Model is part of [MVC](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93
 [Read more](/documentation/en/Models.md)
 
 ### Views
+
+Views are part of [MVC](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) architecture of the framework. They are code responsible for presenting data to end users, usually files containing HTML code and special codes parsed by a template engine.
+[Read mode](/documentation/en/Views.md)
 
 ### Controllers
 
