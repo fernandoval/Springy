@@ -18,7 +18,7 @@ All properties are *protected* and can be changed by child classes.
 |**$authNeeded**|*boolean*|Define if the controller is restricted to signed in users.|*false*|
 |**$redirectUnsigned**|*mixed*|Define a URL to redirect the user if it is not signed ($authNeeded must be true). Can be a string or an array used by URI::buildUrl();|*false|
 |**$signedUser**|*object*|The current user signed in object.|*null*|
-|**$tplIsChaced**|*boolean*|Define if the template's page must be cached.|*false*|
+|**$tplIsCached**|*boolean*|Define if the template's page must be cached.|*false*|
 |**$tplCacheTime**|*integer*|Define the live time (in seconds) of the cache.|*1800*|
 |**$tplCacheId**|*string*|Define an identificator to the template cache.|*null*|
 

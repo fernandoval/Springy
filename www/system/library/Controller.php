@@ -7,7 +7,7 @@
  *
  *  \brief      Class Controller
  *  \note       This class can be used to construct application controllers.
- *  \version    0.1 beta
+ *  \version    0.1.1 beta
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \ingroup    framework
  */
@@ -25,7 +25,7 @@ class Controller extends AclManager
     protected $signedUser = null;
 
     /// Define if the template's page must be cached.
-    protected $tplIsChaced = false;
+    protected $tplIsCached = false;
     /// Define the live time (in seconds) of the cache.
     protected $tplCacheTime = 1800; // 30 minutes default
     /// Define an identificator to the template cache.
@@ -126,7 +126,7 @@ class Controller extends AclManager
     {
         $tpl = new Template($template);
 
-        if ($this->tplIsChaced) {
+        if ($this->tplIsCached) {
             $tpl->setCaching('current');
             $tpl->setCacheLifetime($this->tplCacheTime);
 
