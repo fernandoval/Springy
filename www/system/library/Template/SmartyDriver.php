@@ -2,13 +2,13 @@
 /** \file
  *  FVAL PHP Framework for Web Applications.
  *
- *  \copyright  Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
- *  \copyright  Copyright (c) 2007-2015 Fernando Val\n
+ *  \copyright  Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
+ *  \copyright  Copyright (c) 2007-2016 Fernando Val\n
  *
  *  \brief      Classe driver de tratamento de templates utilizando Smarty como mecanismo de renderização
  *  \see        http://www.smarty.net/
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    1.2.6
+ *  \version    1.3.7
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \ingroup    framework
  */
@@ -17,7 +17,6 @@ namespace FW\Template;
 use FW\Configuration;
 use FW\Errors;
 use FW\Kernel;
-use FW\Template_Static;
 use FW\URI;
 
 /**
@@ -226,7 +225,7 @@ class SmartyDriver implements TemplateDriverInterface
         $this->tplObj->assign('ACTIVE_ENVIRONMENT', Kernel::environment());
 
         // Alimenta as variáveis padrão da aplicação
-        foreach (Template_Static::getDefaultVars() as $name => $value) {
+        foreach (Kernel::getTemplateVar() as $name => $value) {
             $this->tplObj->assign($name, $value);
         }
 
@@ -239,7 +238,7 @@ class SmartyDriver implements TemplateDriverInterface
         $this->tplObj->registerPlugin('function', 'assetFile', [$this, 'assetFile']);
 
         // Inicializa as funções personalizadas padrão
-        foreach (Template_Static::getDefaultPlugins() as $func) {
+        foreach (Kernel::getTemplateFunctions() as $func) {
             $this->tplObj->registerPlugin($func[0], $func[1], $func[2], $func[3], $func[4]);
         }
 

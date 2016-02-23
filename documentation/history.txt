@@ -17,6 +17,19 @@ Em 2011 a classe adoDB foi abandonada e o mecanismo PDO (PHP Data Objects) foi a
 Framework Update History
 
 ------------------------------------------------------------------------------------ --- -- -
+3.4.0
+    - Criação da classe Controller para construção de controllers;
+    - Eliminação da classe Template_Static. Todas as chamadas aos métodos da classe devem ser renomeados conforme abaixo:
+        - chamadas a Template_Static::assignDefaultVar($name, $value) mudar para Kernel::assignTemplateVar($name, $value);
+        - chamadas a Template_Static::getDefaultPlugins() mudar para Kernel::getTemplateFunctions();
+        - chamadas a Template_Static::getDefaultVars() mudar para Kernel::getTemplateVar();
+        - chamadas a Template_Static::getDefaultVar($name) mudar para Kernel::getTemplateVar($name);
+        - chamadas a Template_Static::registerDefaultPlugin($type, $name, $callback, $cacheable = null, $cache_attrs = null) mudar para Kernel::registerTemplateFunction($type, $name, $callback, $cacheable = null, $cacheAttrs = null);
+    - Diretório para instalação de classes de terceiros renomeado de "other" para "vendor", mas mantido dentro do diretório do sistema;
+    - Implementado recurso de controle de versção do banco de dados no próprio banco. Migration cria e controla sua própria tabela para controle. Para rollback funcionar, agora os arquivos de script de rollback precisam ter mesmo nome do arquivos correspondente de migração;
+	- Adicionado método Errors::setHook($error, $hook) para permitir hook em caso de erro.
+		- $error pode ser o código do erro ou 'default' para todos os erros;
+		- $hook se refer ao nome de uma função (string) ou método de uma classe. Para o segundo caso, seu valor deve ser um array no formato [(object) objeto, (string) método].
 3.3.1
 	- Adicionado suporte a Swift Mailer;
 	- Encerramento de funções depreciadas;

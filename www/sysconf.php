@@ -2,10 +2,10 @@
 /** \file
  *  FVAL PHP Framework for Web Applications.
  *
- *  \copyright	Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
- *  \copyright	Copyright (c) 2007-2015 Fernando Val\n
+ *  \copyright	Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
+ *  \copyright	Copyright (c) 2007-2016 Fernando Val\n
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	3.0.14
+ *  \version	3.1.15
  *  \author		Fernando Val  - fernando.val@gmail.com
  *
  *  \brief Configurações do cerne do sistema
@@ -13,14 +13,14 @@
 
 /**
  *  \addtogroup config.
- *  
+ *
  *  O script \c sysconf.php é o arquivo de configuração geral do sistema. Nele estão as entradas de definição do nome e versão do sistema,
  *  ambiente, caminhos dos diretórios do sistema, charset e timezone.
- *  
+ *
  *  Este arquivo é obrigatório e não pode ser removido ou renomeado.
- *  
+ *
  *  Definição das entradas da configuração geral do sistema:
- *  
+ *
  *  \li 'SYSTEM_NAME' - Nome do sistema.
  *  \li 'SYSTEM_VERSION' - Versão do sistema.
  *  \li 'ACTIVE_ENVIRONMENT' - Determina o ambiente ativo. São comumente utilizados 'development' e 'production' como valores dessa chave.
@@ -39,19 +39,19 @@
  *  \li 'CONFIG_PATH' - Diretório das configurações do sistema.
  *  \li 'CHARSET' - Charset do sistema.
  *  \li 'TIMEZONE' - Timestamp do sistema
- *  
+ *
  *  As demais configurações da aplicação deverão estar no diretório e sub-diretórios definidos pela entrada \c 'CONFIG_PATH'.
- *  
+ *
  *  O sistema de configuração irá buscar por arquivos contendo o sufixo \c ".conf.php", dentro dos sub-diretórios do ambiente em que o
  *  sistema estiver sendo executado. Além disso, o arquivo de mesmo nome e sufixo \c ".default.conf.php" também será carregado,
  *  caso exista, no diretório raiz das configurações, independete do ambiente, como sendo entradas de configuração padrão para todos os
  *  ambientes. As entradas padrão serão sobrescritas por entradas específicas do ambiente.
- *  
+ *
  *  A configuração dos arquivos de configuração é feita pela definição da variável de nome \c $conf que é um array de definições de
  *  configuração.
- *  
+ *
  *  Exemplo:
- *  
+ *
  *  \code{.php}
  $conf = array(
  'entrada' => 'valor',
@@ -61,9 +61,9 @@
  *  É possível sobrescrever as configurações para determinados hosts de sua aplicação, utilizando a variável \c $over_conf, que é um array
  *  contendo no primeiro nível de índices o nome do host para o qual se deseja sobrescrever determinada(s) entrada(s) de configuração,
  *  que por sua vez, receberá um array contendo cada entrada de configuração a ser sobrescrita.
- *  
+ *
  *  Exemplo:
- *  
+ *
  *  \code{.php}
  $over_conf = array(
  'host.meudominio.com' => array(
@@ -73,7 +73,7 @@
  ); \endcode
  *  
  *  Os arquivos pré-distribuídos com o framework são de uso interno das classes e não podem ser renomeados ou omitidos.
- *  
+ *
  *  Seu sistema poderá possuir arquivos de configuração específicos, bastando obedecer o formato e a estrutura de nomes e diretórios.
  */
 /**@{*/
@@ -110,7 +110,7 @@ $GLOBALS['SYSTEM']['SYSTEM_PATH'] = realpath($GLOBALS['SYSTEM']['ROOT_PATH'].DIR
 /// Diretório da biblioteca do sistema
 $GLOBALS['SYSTEM']['LIBRARY_PATH'] = realpath($GLOBALS['SYSTEM']['SYSTEM_PATH'].DIRECTORY_SEPARATOR.'library');
 /// Diretório de classes de terceiros que não são carregadas pelo autoload
-$GLOBALS['SYSTEM']['3RDPARTY_PATH'] = realpath($GLOBALS['SYSTEM']['SYSTEM_PATH'].DIRECTORY_SEPARATOR.'other');
+$GLOBALS['SYSTEM']['3RDPARTY_PATH'] = realpath($GLOBALS['SYSTEM']['SYSTEM_PATH'].DIRECTORY_SEPARATOR.'vendor');
 /// Diretório das controladoras
 $GLOBALS['SYSTEM']['CONTROLER_PATH'] = realpath($GLOBALS['SYSTEM']['SYSTEM_PATH'].DIRECTORY_SEPARATOR.'controllers');
 /// Diretório das classes da aplicação

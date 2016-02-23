@@ -2,8 +2,8 @@
 /** \file
  *  FVAL PHP Framework for Web Applications.
  *  
- *  \copyright  Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
- *  \copyright  Copyright (c) 2007-2015 Fernando Val\n
+ *  \copyright  Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
+ *  \copyright  Copyright (c) 2007-2016 Fernando Val\n
  *
  *	\brief      Helper file - Functions and constants
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido

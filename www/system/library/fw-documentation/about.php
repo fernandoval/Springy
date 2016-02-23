@@ -2,12 +2,12 @@
 /** \mainpage
  *  ## FVAL PHP Framework.
  *  
- *  \version 3.3.1
+ *  \version 3.4.0
  *  
  *  http://framework.fval.net.br
  *  
- *  \copyright Copyright (C) 2007-2015 FVAL - Consultoria e Informática Ltda.
- *  \copyright Copyright (C) 2007-2015 Fernando Val
+ *  \copyright Copyright (c) 2007-2016 FVAL - Consultoria e Informática Ltda.
+ *  \copyright Copyright (c) 2007-2016 Fernando Val
  *  \copyright Copyright (C) 2009-2013 Lucas Cardozo
  *  
  *  \author Fernando Val  - fernando.val@gmail.com

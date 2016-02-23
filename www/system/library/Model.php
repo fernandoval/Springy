@@ -1,16 +1,16 @@
 <?php
-/**	\file
+/** \file
  *  FVAL PHP Framework for Web Applications.
  *
- *  \copyright	Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
- *  \copyright	Copyright (c) 2007-2015 Fernando Val\n
+ *  \copyright  Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
+ *  \copyright  Copyright (c) 2007-2016 Fernando Val\n
  *
- *  \brief		Classe Model para acesso a banco de dados
- *  \note		Essa classe extende a classe DB.
- *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    1.20.28
- *  \author		Fernando Val  - fernando.val@gmail.com
- *  \ingroup	framework
+ *  \brief      Classe Model para acesso a banco de dados
+ *  \note       Essa classe extende a classe DB.
+ *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
+ *  \version    1.24.33
+ *  \author     Fernando Val - fernando.val@gmail.com
+ *  \ingroup    framework
  */
 namespace FW;
 
@@ -141,6 +141,12 @@ class Model extends DB implements \Iterator
                                 $params[] = $val;
                             }
                             break;
+                        case 'not in':
+                            $where[] = $field.' not in ('.trim(str_repeat('?, ', count($key)), ', ').')';
+                            foreach ($key as $val) {
+                                $params[] = $val;
+                            }
+                            break;
                         case 'is':
                             $where[] = $field.' IS ?';
                             $params[] = $key;
@@ -202,7 +208,7 @@ class Model extends DB implements \Iterator
 
     /**
      *  \brief Gatilho que será executado antes de um DELETE.
-     *  
+     *
      *  Esse método existe para ser estendido, opcionalmente, na classe herdeira
      *  caso algum tratamento precise ser feito antes da exclusão de um registro
      */
@@ -213,7 +219,7 @@ class Model extends DB implements \Iterator
 
     /**
      *  \brief Gatilho que será executado antes de um INSERT.
-     *  
+     *
      *  Esse método existe para ser estendido, opcionalmente, na classe herdeira
      *  caso algum tratamento precise ser feito antes da enclusão de um registro
      */
@@ -224,7 +230,7 @@ class Model extends DB implements \Iterator
 
     /**
      *  \brief Gatilho que será executado antes de um UPDATE.
-     *  
+     *
      *  Esse método existe para ser estendido, opcionalmente, na classe herdeira
      *  caso algum tratamento precise ser feito antes da alteração de um registro
      */
@@ -235,7 +241,7 @@ class Model extends DB implements \Iterator
 
     /**
      *  \brief Gatilho que será executado depois de um DELETE.
-     *  
+     *
      *  Esse método existe para ser estendido, opcionalmente, na classe herdeira
      *  caso algum tratamento precise ser feito depois da exclusão de um registro
      */
@@ -246,7 +252,7 @@ class Model extends DB implements \Iterator
 
     /**
      *  \brief Gatilho que será executado depois de um INSERT.
-     *  
+     *
      *  Esse método existe para ser estendido, opcionalmente, na classe herdeira
      *  caso algum tratamento precise ser feito depois da inclusão de um registro
      */
@@ -257,7 +263,7 @@ class Model extends DB implements \Iterator
 
     /**
      *  \brief Gatilho que será executado depois de um UPDATE.
-     *  
+     *
      *  Esse método existe para ser estendido, opcionalmente, na classe herdeira
      *  caso algum tratamento precise ser feito depois da alteração de um registro
      */
@@ -472,46 +478,21 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     *  \brief Deleta o registro.
+     *  \brief Delete one or more rows.
      *
-     *  Promove a exclusão física ou lógica de registros
+     *  This method deletes the curret row or many rows if the $filter is given.
      *
-     *  \param (array)$filter - filtro dos registros a serem deletados.
-     *  	Se omitido (ou null), default, deleta o registro carregado na classe
-     *  \return Retorna o número de linhas afetadas ou FALSE em caso contrário.
+     *  \param $filter is an array with a match criteria.
+     *      If ommited (or null), default, deletes the current row selected.
+     *  \return Returns the number of affected rows or false.
      */
     public function delete(array $filter = null)
     {
-        // Se está carregado e não foi passado um filtro, exclui o registro corrente
-        if ($this->loaded && is_null($filter)) {
-            // Abandona se a chave primária não estiver definida
-            if (!$this->isPrimaryKeyDefined()) {
-                return false;
-            }
+        $where = [];
+        $params = [];
 
-            // Monta a chave primária
-            $apk = [];
-            $primary = explode(',', $this->primaryKey);
-            foreach ($primary as $column) {
-                $apk[] = $column.' = ?';
-                $values[] = $this->rows[0][$column];
-            }
-
-            // Faz a exclusão lógica ou física do registro
-            if (!$this->triggerBeforeDelete()) {
-                return false;
-            }
-            if (!empty($this->deletedColumn)) {
-                array_unshift($values, 1);
-                $this->execute('UPDATE '.$this->tableName.' SET '.$this->deletedColumn.' = ? WHERE '.implode(' AND ', $apk), $values);
-            } else {
-                $this->execute('DELETE FROM '.$this->tableName.' WHERE '.implode(' AND ', $apk), $values);
-            }
-            $this->triggerAfterDelete();
-        } else {
-            $where = [];
-            $params = [];
-
+        // Has a filter?
+        if (!is_null($filter)) {
             // Monta o conjunto de filtros personalizado da classe herdeira
             if (!$this->filter($filter, $where, $params)) {
                 return false;
@@ -537,6 +518,31 @@ class Model extends DB implements \Iterator
                 $this->execute('DELETE FROM '.$this->tableName.' WHERE '.implode(' AND ', $where), $params);
             }
             // $this->triggerAfterDelete();
+        } elseif ($this->valid()) {
+            // Abandona se a chave primária não estiver definida
+            if (!$this->isPrimaryKeyDefined()) {
+                return false;
+            }
+
+            // Monta a chave primária
+            foreach (explode(',', $this->primaryKey) as $column) {
+                $where[] = $column.' = ?';
+                $params[] = $this->get($column);
+            }
+
+            // Faz a exclusão lógica ou física do registro
+            if (!$this->triggerBeforeDelete()) {
+                return false;
+            }
+            if (!empty($this->deletedColumn)) {
+                array_unshift($params, 1);
+                $this->execute('UPDATE '.$this->tableName.' SET '.$this->deletedColumn.' = ? WHERE '.implode(' AND ', $where), $params);
+            } else {
+                $this->execute('DELETE FROM '.$this->tableName.' WHERE '.implode(' AND ', $where), $params);
+            }
+            $this->triggerAfterDelete();
+        } else {
+            return false;
         }
 
         return $this->affectedRows();
@@ -544,9 +550,9 @@ class Model extends DB implements \Iterator
 
     /**
      *  \brief Faz alteração em lote.
-     *  
+     *
      *  EXPERIMENTAL!
-     *  
+     *
      *  Permite fazer atualização de registros em lote (UPDATE)
      */
     public function update(array $values, array $conditions)
@@ -670,28 +676,32 @@ class Model extends DB implements \Iterator
 
     /**
      *  \brief Define o array de objetos embutidos.
-     *  
+     *
      *  O array de objetos embutidos é uma estrutura que permite a consulta a execução de consultas em outros objetos e embutir
      *  seu resultado dentro de um atributo do registro.
-     *  
-     *  Cara item do array de objetos embutidos deve ter o nome da classe do objeto como índice e ter como valor um array com
-     *  os seguintes pares chave => valor:
-     *  
-     *  'attr_name' => (string) nome do atributo a ser criado no registro
-     *  'attr_type' => (constant)'list'|'data' determina como o atributo deve ser.
-     *  	- 'list' (default) define que o atributo é uma lista (array) de registros;
-     *  	- 'data' define que o atributo é um único registro do objeto embutido (array de colunas).
-     *  'column' => (string) nome da coluna que será usada para relacionamento com o objeto embutido.
+     *
+     *  O índice de cada item do array de objetos embutidos será inserido no registro como uma coluna que pode ser um array de
+     *  registros ou a estrutura de dados da Model embutida.
+     *
+     *  O valor de cada item do array deve ser um array com a seguinte extrutura:
+     *
+     *  'model' => (string) nome do atributo a ser criado no registro
+     *  'type' => (constant)'list'|'data' determina como o atributo deve ser.
+     *      - 'list' (default) define que o atributo é uma lista (array) de registros;
+     *      - 'data' define que o atributo é um único registro do objeto embutido (array de colunas).
      *  'found_by' => (string) nome da coluna do objeto embutido que será usada como chave de busca.
+     *  'column' => (string) nome da coluna que será usada para relacionamento com o objeto embutido.
+     *  'columns' => (array) um array de colunas, opcional, a serem aplicados ao objeto embutido, no mesmo formato usados no método setColumns.
      *  'filter' => (array) um array de filtros, opcional, a serem aplicados ao objeto embutido, no mesmo formato usados no método query.
+     *  'group_by' => (array) um array de agrupamento, opcional, a serem aplicados ao objeto embutido, no mesmo formato usados no método groupBy.
      *  'order' => (array) um array de ordenação, opcional, a ser aplicado ao objeto embutido, no mesmo formato usados no método query.
      *  'offset' => (int) o offset de registros, opcional, a ser aplicado ao objeto embutido, no mesmo formato usados no método query.
      *  'limit' => (int) o limite de registros, opcional, a ser aplicado ao objeto embutido, no mesmo formato usados no método query.
      *  'embbeded_obj' => (array) um array estrutura, opcional, para embutir outro objeto no objeto embutido.
-     *  
+     *
      *  Exemplo de array aceito:
-     *  
-     *  array('Parent_Table' => array('attr_name' => 'parent', 'type' => 'data', 'found_by' => 'id', 'column' => 'parent_id'))
+     *
+     *  array('parent' => array('model' => 'Parent_Table', 'type' => 'data', 'found_by' => 'id', 'column' => 'parent_id'))
      */
     public function setEmbeddedObj(array $embeddedObj)
     {
@@ -855,9 +865,9 @@ class Model extends DB implements \Iterator
         // Monta a ordenação do resultado de busca
         if (!empty($orderby)) {
             foreach ($orderby as $column => $direction) {
-                if (!strpos($column, '.') && !strpos($column, '(')) {
-                    $column = $this->tableName.'.'.$column;
-                }
+                // if (!strpos($column, '.') && !strpos($column, '(')) {
+                    // $column = $this->tableName.'.'.$column;
+                // }
                 $order[] = "$column $direction";
             }
 
@@ -910,15 +920,18 @@ class Model extends DB implements \Iterator
         //
         // Example embeddedObj attribute array
         // protected $embeddedObj = array(
-        // 	'Table_Class_Child_Obj' => array(
-        //		'attr_name' => 'child_or_parent', // name of the attribute to be created on parent row
-        //		'attr_type' => 'list|data', // type of the attribute to be created on parent row when 'list' is a array of rows and 'data' a array of columns from last row found
-        //		'column'|'fk' => 'id', // Name of the column in parent table used to link to embedded object
-        //		'found_by'|'pk' => 'parent_id', // Name of the column key on embedded object
-        //	)
+        //     'Table_Class_Child_Obj' => array(
+        //        'attr_name' => 'child_or_parent', // name of the attribute to be created on parent row
+        //        'attr_type' => 'list|data', // type of the attribute to be created on parent row when 'list' is a array of rows and 'data' a array of columns from last row found
+        //        'column'|'fk' => 'id', // Name of the column in parent table used to link to embedded object
+        //        'found_by'|'pk' => 'parent_id', // Name of the column key on embedded object
+        //    )
         // );
         if (is_int($embbed) && $embbed > 0 && count($this->embeddedObj) && count($this->rows) > 0) {
             foreach ($this->embeddedObj as $obj => $attr) {
+                if (isset($attr['model'])) {
+                    $attr['attr_name'] = (isset($attr['attr_name']) ? $attr['attr_name'] : $obj);
+                }
                 // Back compatibility to fix a bug
                 if (!isset($attr['column'])) {
                     $attr['column'] = $attr['fk'];
@@ -926,8 +939,8 @@ class Model extends DB implements \Iterator
                 if (!isset($attr['found_by'])) {
                     $attr['found_by'] = $attr['pk'];
                 }
-                if (!isset($attr['attr_type'])) {
-                    $attr['attr_type'] = 'list';
+                if (!isset($attr['type'])) {
+                    $attr['type'] = isset($attr['attr_type']) ? $attr['attr_type'] : 'list';
                 }
 
                 $keys = [];
@@ -970,7 +983,17 @@ class Model extends DB implements \Iterator
                     $limit = null;
                 }
 
-                $embObj = new $obj();
+                if (isset($attr['model'])) {
+                    $embObj = new $attr['model']();
+                } else {
+                    $embObj = new $obj();
+                }
+                if (isset($attr['columns']) && is_array($attr['columns'])) {
+                    $embObj->setColumns($attr['columns']);
+                }
+                if (isset($attr['group_by']) && is_array($attr['group_by'])) {
+                    $embObj->groupBy($attr['group_by']);
+                }
                 if (isset($attr['embedded_obj'])) {
                     $embObj->setEmbeddedObj($attr['embedded_obj']);
                 }
@@ -978,7 +1001,7 @@ class Model extends DB implements \Iterator
                 while ($er = $embObj->next()) {
                     foreach ($this->rows as $idx => $row) {
                         if ($er[ $attr['found_by'] ] == $row[ $attr['column'] ]) {
-                            if ($attr['attr_type'] == 'list') {
+                            if ($attr['type'] == 'list') {
                                 $this->rows[$idx][ $attr['attr_name'] ][] = $er;
                             } else {
                                 $this->rows[$idx][ $attr['attr_name'] ] = $er;

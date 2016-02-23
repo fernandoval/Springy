@@ -1,17 +1,17 @@
 <?php
-/**	\file
- *	FVAL PHP Framework for Web Applications.
+/** \file
+ *  FVAL PHP Framework for Web Applications.
  *
- *  \copyright	Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
- *  \copyright	Copyright (c) 2007-2015 Fernando Val\n
- *	\copyright Copyright (c) 2009-2013 Lucas Cardozo
- *
- *	\brief		Classe para tratamento de strings em formato ANSI
- *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
+ *  \copyright  Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
+ *  \copyright  Copyright (c) 2007-2016 Fernando Val\n
+ *  \copyright  Copyright (c) 2009-2013 Lucas Cardozo
+ *  
+ *  \brief      Classe para tratamento de strings em formato ANSI
+ *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
  *  \version    1.5.8
- *  \author		Fernando Val  - fernando.val@gmail.com
- *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
- *	\ingroup	framework
+ *  \author     Fernando Val  - fernando.val@gmail.com
+ *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
+ *  \ingroup    framework
  */
 namespace FW\Utils;
 
@@ -23,7 +23,7 @@ namespace FW\Utils;
 class Strings_ANSI extends Strings
 {
     /**
-     *	\brief Troca caracteres acentuados por não acentuado.
+     *  \brief Troca caracteres acentuados por não acentuado.
      */
     public static function removeAccentedChars($txt)
     {
@@ -49,7 +49,7 @@ class Strings_ANSI extends Strings
     }
 
     /**
-     *	/brief Converte uma string ANSI para Windows-CP-1252.
+     *  /brief Converte uma string ANSI para Windows-CP-1252.
      */
     public static function convertToWindowsCP1252($string)
     {

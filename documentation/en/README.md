@@ -10,14 +10,14 @@ A micro framework for smart PHP developers.
 * [Installation Guide](#installation-guide)
   * [Prerequisites](#prerequisites)
   * [First steps](#first-steps)
-* [Configuration](#configuration)
+  * [Configuration](#configuration)
 * [Models](#models)
 * [Views](#views)
 * [Controllers](#controllers)
 
 ## About
 
-The **FVAL PHP Framework** is designed to be a framework for developing web applications in PHP MVC methodology, lightweight, easy to learn, feature rich, adaptable and quick execution.
+The **FVAL PHP Framework** is designed to be a framework for developing web applications in PHP [MVC](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) architecture, lightweight, easy to learn, feature rich, adaptable and quick execution.
 
 ## Instalation Guide
 
@@ -39,12 +39,21 @@ If you do not use the [Apache HTTP Server](http://httpd.apache.org/) or your web
   * Choice between [PHPMailer](https://github.com/PHPMailer/PHPMailer) and [SendGrid](https://github.com/sendgrid/sendgrid-php) for mailer system.
 * Run Composer to download and install all dependencies;
 * Edit the configuration files;
-* Create your controllers, views and models.
+* Create your [controllers](/documentation/en/Controllers.md), [views](/documentation/en/Views.md) and [models](/documentation/en/Models.md).
 
 ### Configuration
 
-### Models
+## Models
 
-### Views
+Model is part of [MVC](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) architecture of the framework. They are objects representing business data, rules and logic.
+[Read more](/documentation/en/Models.md)
 
-### Controllers
+## Views
+
+Views are part of [MVC](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) architecture of the framework. They are code responsible for presenting data to end users, usually files containing HTML code and special codes parsed by a template engine.
+[Read mode](/documentation/en/Views.md)
+
+## Controllers
+
+Controller is part of [MVC](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) architecture of the framework. All actions is you application is started by a controller class. They are responsible for processing requests and generating responses.
+[Read more](/documentation/en/Controllers.md)

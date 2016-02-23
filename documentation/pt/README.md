@@ -10,7 +10,7 @@ A micro framework for smart PHP developers.
 * [Guia de instalação](#guia-de-instalacao)
   * [Pré-requisitos](#pre-requisitos)
   * [Primeiros passos](#primeiros-passos)
-* [Configuration](#configuration)
+  * [Configuration](#configuration)
 * [Models](#models)
 * [Views](#views)
 * [Controllers](#controllers)
@@ -43,8 +43,8 @@ Se você não usa o [Apache HTTP Server](http://httpd.apache.org/) ou seu servid
 
 ### Configuração
 
-### Models
+## Models
 
-### Views
+## Views
 
-### Controllers
+## Controllers

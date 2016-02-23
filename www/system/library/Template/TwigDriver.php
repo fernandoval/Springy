@@ -2,13 +2,13 @@
 /** \file
  *  FVAL PHP Framework for Web Applications.
  *
- *  \copyright  Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
- *  \copyright  Copyright (c) 2007-2015 Fernando Val\n
+ *  \copyright  Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
+ *  \copyright  Copyright (c) 2007-2016 Fernando Val\n
  *
  *  \brief      Classe driver de tratamento de templates utilizando Twig como mecanismo de renderização
  *  \see        http://twig.sensiolabs.org/
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.10.6 beta 4
+ *  \version    0.11.7 beta 4
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \ingroup    framework
  */
@@ -16,7 +16,6 @@ namespace FW\Template;
 
 use FW\Configuration;
 use FW\Kernel;
-use FW\Template_Static;
 use FW\URI;
 
 /**
@@ -240,7 +239,7 @@ class TwigDriver implements TemplateDriverInterface
         ];
 
         // Alimenta as variáveis padrão da aplicação
-        foreach (Template_Static::getDefaultVars() as $name => $data) {
+        foreach (Kernel::getTemplateVar() as $name => $data) {
             $vars[$name] = $data;
         }
 
@@ -253,7 +252,7 @@ class TwigDriver implements TemplateDriverInterface
         $this->tplObj->addFunction(new \Twig_SimpleFunction('assetFile', [$this, 'assetFile']));
 
         // Inicializa as funções personalizadas padrão
-        foreach (Template_Static::getDefaultPlugins() as $func) {
+        foreach (Kernel::getTemplateFunctions() as $func) {
             $this->tplObj->addFunction(new \Twig_SimpleFunction($func[1], $func[2]));
         }
 

@@ -2,14 +2,14 @@
 /** \file
  *  FVAL PHP Framework for Web Applications.
  *
- *  \copyright Copyright ₢ 2007-2015 FVAL Consultoria e Informática Ltda.\n
- *  \copyright Copyright ₢ 2007-2015 Fernando Val\n
+ *  \copyright Copyright ₢ 2007-2016 FVAL Consultoria e Informática Ltda.\n
+ *  \copyright Copyright ₢ 2007-2016 Fernando Val\n
  *  \copyright Copyright ₢ 2009-2013 Lucas Cardozo
  *
  *  http://www.fval.com.br
  *
  *  \brief    System initialization script
- *  \version  4.1.25
+ *  \version  4.2.28
  *  \author   Fernando Val - fernando.val@gmail.com
  *  \author   Lucas Cardozo - lucas.cardozo@gmail.com
  *
@@ -35,7 +35,7 @@
 $FWGV_START_TIME = microtime(true); // Memoriza a hora do início do processamento
 
 // Kill system with internal error 500 if initial setup file does not exists
-if (!file_exists('sysconf.php')) {
+if (!file_exists('sysconf.php') || !file_exists('helpers.php')) {
     header('Content-type: text/html; charset=UTF-8', true, 500);
     die('Internal System Error on Startup');
 }
@@ -185,60 +185,58 @@ if (isset($ControllerClassName)) {
         FW\Errors::displayError(404, 'No '.$ControllerClassName.' on '.$controller);
     }
     unset($controller);
+
+    // se tiver algum debug, utiliza-o
+    FW\Kernel::debugPrint();
 } else {
-    if ($Page = FW\URI::getSegment(0, false)) {
-        if ($Page == 'framework' || $Page == 'about' || $Page == 'copyright' || $Page == 'credits' || $Page == 'fval' || $Page == '_') {
-            FW\Kernel::printCopyright();
-        } elseif ($Page == '_pi_') {
-            phpinfo();
-            ob_end_flush();
-            exit;
-        } elseif ($Page == '_error_') {
-            if ($error = FW\URI::getSegment(0)) {
-                FW\Errors::displayError((int) $error, 'System error');
-            }
-        } elseif (in_array($Page, ['_system_bug_', '_system_bug_solved_'])) {
-            // Verifica se o acesso ao sistema necessita de autenticação
-            $auth = FW\Configuration::get('system', 'bug_authentication');
-            if (!empty($auth['user']) && !empty($auth['pass'])) {
-                if (!FW\Cookie::get('__sys_bug_auth__')) {
-                    if (!isset($_SERVER['PHP_AUTH_USER']) || !isset($_SERVER['PHP_AUTH_PW']) || $_SERVER['PHP_AUTH_USER'] != $auth['user'] || $_SERVER['PHP_AUTH_PW'] != $auth['pass']) {
-                        header('WWW-Authenticate: Basic realm="'.utf8_decode('What r u doing here?').'"');
-                        header('HTTP/1.0 401 Unauthorized');
-                        die('Não autorizado.');
-                    }
-                    FW\Cookie::set('__sys_bug_auth__', true);
-                }
-            }
-
-            if ($Page == '_system_bug_') {
-                FW\Errors::bugList();
-            } elseif ($Page == '_system_bug_solved_' && preg_match('/^[0-9a-z]{8}$/', FW\URI::getSegment(1, false))) {
-                FW\Errors::bugSolved(FW\URI::getSegment(1, false));
-            }
-        } elseif ($Page == '__migration__') {
-            // Cli mode only
-            if (!defined('STDIN') || empty($argc)) {
-                echo 'This script can be executed only in CLI mode.';
-                exit(998);
-            }
-
-            require $GLOBALS['SYSTEM']['MIGRATION_PATH'].DS.'app'.DS.'migrator.php';
-            $PageController = new FW\Migrator();
-            $PageController->run();
+    $Page = FW\URI::getSegment(0, false);
+    if ($Page == '_fw_' || $Page == '_') {
+        FW\Kernel::printCopyright();
+    } elseif ($Page == '_pi_') {
+        phpinfo();
+        ob_end_flush();
+        exit;
+    } elseif ($Page == '_error_') {
+        if ($error = FW\URI::getSegment(0)) {
+            FW\Errors::displayError((int) $error, 'System error');
+        } else {
+            FW\Errors::displayError(404, 'Page not found');
         }
+    } elseif (in_array($Page, ['_system_bug_', '_system_bug_solved_'])) {
+        // Verifica se o acesso ao sistema necessita de autenticação
+        $auth = FW\Configuration::get('system', 'bug_authentication');
+        if (!empty($auth['user']) && !empty($auth['pass'])) {
+            if (!FW\Cookie::get('__sys_bug_auth__')) {
+                if (!isset($_SERVER['PHP_AUTH_USER']) || !isset($_SERVER['PHP_AUTH_PW']) || $_SERVER['PHP_AUTH_USER'] != $auth['user'] || $_SERVER['PHP_AUTH_PW'] != $auth['pass']) {
+                    header('WWW-Authenticate: Basic realm="'.utf8_decode('What r u doing here?').'"');
+                    // header('HTTP/1.0 401 Unauthorized');
+                    // die('Unauthorized!');
+                    FW\Errors::displayError(401, 'Unauthorized');
+                }
+                FW\Cookie::set('__sys_bug_auth__', true);
+            }
+        }
+
+        if ($Page == '_system_bug_') {
+            FW\Errors::bugList();
+        } elseif ($Page == '_system_bug_solved_' && preg_match('/^[0-9a-z]{8}$/', FW\URI::getSegment(1, false))) {
+            FW\Errors::bugSolved(FW\URI::getSegment(1, false));
+        } else {
+            FW\Errors::displayError(404, 'Page not found');
+        }
+    } elseif ($Page == '__migration__') {
+        // Cli mode only
+        if (!defined('STDIN') || empty($argc)) {
+            echo 'This script can be executed only in CLI mode.';
+            exit(998);
+        }
+
+        require $GLOBALS['SYSTEM']['MIGRATION_PATH'].DS.'app'.DS.'migrator.php';
+        $PageController = new FW\Migrator();
+        $PageController->run();
+    } else {
+        FW\Errors::displayError(404, 'Page not found');
     }
-
-    // Nenhuma controller definida e não está usando CMS ou não há artigo correspondente
-    FW\Errors::displayError(404, FW\URI::relativePathPage().'/'.FW\URI::currentPage());
 }
-
-// se o template estiver carregado, imprime
-if (isset($tpl)) {
-    $tpl->display();
-}
-
-// se tiver algum debug, utiliza-o
-FW\Kernel::debugPrint();
 
 ob_end_flush();

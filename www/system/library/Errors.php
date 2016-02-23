@@ -1,17 +1,17 @@
 <?php
-/**	\file
- *	FVAL PHP Framework for Web Applications.
+/** \file
+ *  FVAL PHP Framework for Web Applications.
  *
- *  \copyright  Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
- *  \copyright  Copyright (c) 2007-2015 Fernando Val\n
- *	\copyright  Copyright (c) 2009-2013 Lucas Cardozo
+ *  \copyright  Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
+ *  \copyright  Copyright (c) 2007-2016 Fernando Val\n
+ *  \copyright  Copyright (c) 2009-2013 Lucas Cardozo
  *
- *	\brief      Classe para tratamento de erros
- *	\warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    2.2.31
+ *  \brief      Classe para tratamento de erros
+ *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
+ *  \version    2.2.34
  *  \author     Fernando Val  - fernando.val@gmail.com
  *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
- *	\ingroup    framework
+ *  \ingroup    framework
  */
 namespace FW;
 
@@ -19,17 +19,19 @@ use FW\Utils\Strings;
 
 /**
  *  \brief Classe para tratamento de erros.
- *  
+ *
  *  Esta classe é estática e invocada automaticamente pelo framework.
  */
 class Errors
 {
-    // List of ignores errors
+    /// List of ignores errors
     private static $disregarded = [];
+    /// List of hooks for errors
+    private static $hooks = [];
 
     /**
      *  \brief Add a error code to the list of disregarded error.
-     *  
+     *
      *  \param (int|array)$error - a error code os a array of errors code
      */
     public static function disregard($error)
@@ -47,7 +49,7 @@ class Errors
 
     /**
      *  \brief Remove a error code from the list of disregarded error.
-     *  
+     *
      *  \param (int|array)$error - a error code os a array of errors code
      */
     public static function regard($error)
@@ -161,15 +163,13 @@ class Errors
                 $errorType,
                 hash('crc32', $errno.$errfile.$errline) /// error id
             );
-        } else {
-            self::sendReport(
-                '<span style="color:#FF0000">'.$printError.'</span>'.($errstr ? ': <em>'.$errstr.'</em>' : '').($errfile ? ' in <strong>'.$errfile.'</strong> on line <strong>'.$errline.'</strong>' : ''),
-                $errorType,
-                hash('crc32', $errno.$errfile.$errline) /// error id
-            );
         }
 
-        die;
+        self::sendReport(
+            '<span style="color:#FF0000">'.$printError.'</span>'.($errstr ? ': <em>'.$errstr.'</em>' : '').($errfile ? ' in <strong>'.$errfile.'</strong> on line <strong>'.$errline.'</strong>' : ''),
+            $errorType,
+            hash('crc32', $errno.$errfile.$errline) /// error id
+        );
     }
 
     /**
@@ -179,7 +179,7 @@ class Errors
     {
         $getParams = [];
         foreach (URI::getParams() as $var => $value) {
-            $getParams[] = $var.'='.$value;
+            $getParams[] = $var.'='.(is_array($value) ? json_encode($value) : $value);
         }
 
         // Verify if this type of error is reported
@@ -228,7 +228,7 @@ class Errors
                      .'    <td style="padding:3px 2px">'.$msg.'</td>'
                      .'  </tr>'
                      .'  <tr>'
-                     .'    <td style="padding:3px 2px"><strong>Error ID:</strong> '.$errorId.' (<a href="'.URI::buildURL(['_system_bug_solved_', $errorId]).'">marcar bug como resolvido</a>)</td>'
+                     .'    <td style="padding:3px 2px"><strong>Error ID:</strong> '.$errorId.' (<a href="'.URI::buildURL(['_system_bug_solved_', $errorId]).'">was solved</a>)</td>'
                      .'  </tr>'
                      // . '  <tr style="color:#000; display:none" class="bugList">'
                      // . '    <td style="padding:3px 2px"><strong>Número de ocorrências:</strong> [n_ocorrencias] | <strong>Última ocorrência:</strong> [ultima_ocorrencia] (<a href="javascript:;">mais informações</a>)</td>'
@@ -341,8 +341,9 @@ class Errors
                 }
 
                 $db = new DB($conn);
-                if (DB::hasConnection()) {
-                    $db->disableReportError();
+                if (DB::connected()) {
+                    $res = false;
+                    $db->errorReportStatus(false);
                     if (!$db->execute('SELECT id FROM '.$table.' WHERE error_code = ?', [$errorId])) {
                         if ($db->statmentErrorCode()) {
                             if (Configuration::get('system', 'system_error.create_table') && $sql = file_get_contents(dirname(__FILE__).DIRECTORY_SEPARATOR.'system_errors_create_table.sql')) {
@@ -390,7 +391,29 @@ class Errors
             }
         }
 
+        if (isset(self::$hooks[$errorType])) {
+            $hook = self::$hooks[$errorType];
+        } elseif (isset(self::$hooks['default'])) {
+            $hook = self::$hooks['default'];
+        } elseif (isset(self::$hooks['all'])) {
+            $hook = self::$hooks['all'];
+        } elseif (!$hook = Configuration::get('system', 'system_error.hook.'.$errorType)) {
+            $hook = Configuration::get('system', 'system_error.hook.default');
+        }
+        if ($hook) {
+            if (is_array($hook) && method_exists($hook[0], $hook[1])) {
+                $hook[0]->$hook[1]($msg, $errorType, $errorId, $additionalInfo);
+            } elseif (function_exists($hook)) {
+                $hook($msg, $errorType, $errorId, $additionalInfo);
+            }
+        }
+
         self::printHtml($errorType, $out);
+    }
+
+    public static function setHook($error, $hook)
+    {
+        self::$hooks[$error] = $hook;
     }
 
     /**
@@ -406,7 +429,7 @@ class Errors
         }
 
         $db = new DB($conn);
-        if (DB::hasConnection()) {
+        if (DB::connected()) {
             $db->execute('DELETE FROM '.$table.' WHERE error_code = ?', [$errorId]);
         }
         unset($db);
@@ -429,7 +452,7 @@ class Errors
         $order_column = URI::getParam('orderBy') ?: 'last_time';
         $order_type = URI::getParam('sort') ?: 'DESC';
         $db->execute(
-            'SELECT SQL_CALC_FOUND_ROWS id, error_code, description, occurrences, last_time, details'.
+            'SELECT id, error_code, description, occurrences, last_time, details'.
             '  FROM '.$table.
             ' ORDER BY '.$order_column.' '.$order_type
         );
@@ -451,8 +474,6 @@ class Errors
 
                 '<div class="container">',
                     '<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">';
-
-        $retorno = [];
 
         while ($res = $db->fetchNext()) {
             echo
@@ -481,13 +502,13 @@ class Errors
 
         echo '</div></div></body></html>';
 
-        die;
+        // die;
     }
 
     /**
      *	\brief Imprime a mensagem de erro.
      */
-    public static function printHtml($errorType, $msg)
+    private static function printHtml($errorType, $msg)
     {
         // Verifica se a saída do erro não é em ajax ou json
         //if (!Configuration::get('system', 'ajax') || !in_array('Content-type: application/json; charset=' . Kernel::charset(), headers_list())) {
@@ -554,6 +575,8 @@ class Errors
                 echo $msg;
             }
         }
+
+        die;
     }
 
     /**
@@ -567,7 +590,7 @@ class Errors
     {
         $getParams = [];
         foreach (URI::getParams() as $var => $value) {
-            $getParams[] = $var.'='.$value;
+            $getParams[] = $var.'='.(is_array($value) ? json_encode($value) : $value);
         }
 
         try {

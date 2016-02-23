@@ -1,14 +1,14 @@
 <?php
-/**	\file
+/** \file
  *  FVAL PHP Framework for Web Applications.
  *
- *  \copyright  Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
- *  \copyright  Copyright (c) 2007-2015 Fernando Val\n
+ *  \copyright  Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
+ *  \copyright  Copyright (c) 2007-2016 Fernando Val\n
  *  \copyright  Copyright (c) 2009-2013 Lucas Cardozo
  *
  *  \brief      Script da classe cerne do framework
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    2.0.55
+ *  \version    2.1.59
  *  \author     Fernando Val  - fernando.val@gmail.com
  *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
  *  \ingroup    framework
@@ -17,13 +17,13 @@ namespace FW;
 
 /**
  *  \brief Classe cerne do framework.
- *  
+ *
  *  Esta classe é estática e invocada automaticamente pelo framework.
  */
 class Kernel
 {
     /// Versão do framework
-    const VERSION = '3.3.1';
+    const VERSION = '3.4.0';
 
     /// Kernel constants
     const PATH_CLASS = 'CLASS';
@@ -48,13 +48,18 @@ class Kernel
     /// System environment
     private static $environment = '';
     /// System name
-    private static $name = 'Sistem Name';
+    private static $name = 'System Name';
     /// System version
     private static $version = [0, 0, 0];
     /// System path
     private static $paths = [];
     /// System charset
     private static $charset = 'UTF-8';
+
+    /// Default template vars
+    private static $templateVars = [];
+    /// Default template functions
+    private static $templateFuncs = [];
 
     /**
      *  \brief Start system environment.
@@ -92,7 +97,7 @@ class Kernel
 
     /**
      *  \brief The system environment.
-     *  
+     *
      *  \param string $env - if defined, set the system environment
      *  \return A string containing the system environment
      */
@@ -129,7 +134,7 @@ class Kernel
 
     /**
      *  \brief The system name.
-     *  
+     *
      *  \param string $name - if defined, set the system name
      *  \return A string containing the system name
      */
@@ -144,7 +149,7 @@ class Kernel
 
     /**
      *  \brief The system version.
-     *  
+     *
      *  \param $major - if defined, set the major part of the system version. Can be an array with all parts.
      *  \param $minor - if defined, set the minor part of the system version
      *  \param $build - if defined, set the build part of the system version
@@ -152,6 +157,10 @@ class Kernel
      */
     public static function systemVersion($major = null, $minor = null, $build = null)
     {
+        if (is_array($major) && is_null($minor) && is_null($build)) {
+            return self::systemVersion(isset($major[0]) ? $major[0] : 0, isset($major[1]) ? $major[1] : 0, isset($major[2]) ? $major[2] : 0);
+        }
+
         if (!is_null($major) && !is_null($minor) && !is_null($build)) {
             self::$version = [$major, $minor, $build];
         } elseif (!is_null($major) && !is_null($minor)) {
@@ -165,9 +174,9 @@ class Kernel
 
     /**
      *  \brief The system charset.
-     *  
+     *
      *  Default UTF-8
-     *  
+     *
      *  \param string $charset - if defined, set the system charset
      *  \return A string containing the system charset
      */
@@ -188,7 +197,7 @@ class Kernel
 
     /**
      *  \brief A path of the system.
-     *  
+     *
      *  \param string $component - the component constant
      *  \param string $path - if defined, change the path of the component
      *  \return A string containing the path of the component
@@ -204,7 +213,7 @@ class Kernel
 
     /**
      *  \brief Pega ou seta o root de controladoras.
-     *  
+     *
      *  \param (array)$controller_root - ae definido, altera o root de controladoras
      *  \return Retorna um array contendo o root de controladoras
      */
@@ -232,6 +241,62 @@ class Kernel
         }
 
         return self::$controller_namespace;
+    }
+
+    /**
+     *  \brief Assign a template var used by all templates in system.
+     *  \param string $name defines the name of the variable.
+     *  \param mixed $value the value to assign to the variable.
+     */
+    public static function assignTemplateVar($name, $value)
+    {
+        self::$templateVars[$name] = $value;
+    }
+
+    /**
+     *  \brief Get a template variable or all is its name is omitted.
+     *  \param string $var the name of the variable desired. If omitted the function will return an array containing all template vars.
+     *  \return mixed.
+     */
+    public static function getTemplateVar($var = null)
+    {
+        if (is_null($var)) {
+            return self::$templateVars;
+        }
+
+        if (!isset(self::$templateVars[$var])) {
+            return;
+        }
+
+        return self::$templateVars[$var];
+    }
+
+    /**
+     *  \brief Register a global function used by all templates is system.
+     *  \param string $type defines the type of the function.\n
+     *      Valid values for Smarty driver are "function", "block", "compiler" and "modifier".\n
+     *      For Twig driver always use "function".
+     *  \param string $name defines the name of the function.
+     *  \param mixed $callback defines the PHP callback.
+     *      For Twig driver it must be a function declaration like this: function ($value) { return $value; }\n
+     *      For Smarty driver it can be either:\n
+     *          - A string containing the function name;\n
+     *          - An array of the form array($object, $method) with $object being a reference to an object and $method being a string containing the method-name;\n
+     *          - An array of the form array($class, $method) with $class being the class name and $method being a method of the class.
+     *  \param $cacheable and $cacheAttrs can be omitted in most cases. Used only by Smarty driver.
+     */
+    public static function registerTemplateFunction($type, $name, $callback, $cacheable = null, $cacheAttrs = null)
+    {
+        self::$templateFuncs[] = [$type, $name, $callback, $cacheable, $cacheAttrs];
+    }
+
+    /**
+     *  \brief Get all teplate plugins registered.
+     *  \return Return an array containing all template plugins registered.
+     */
+    public static function getTemplateFunctions()
+    {
+        return self::$templateFuncs;
     }
 
     /**
@@ -446,11 +511,11 @@ class Kernel
 
     /**
      *  \brief Verifica se o usuário está usando um browser de dispositivo móvel.
-     *  
+     *
      *  This method was deprecated.
-     *  
+     *
      *  Use sinergi/browser-detector library from Chris Schuld & Gabriel Bull
-     *  
+     *
      *  \see https://packagist.org/packages/sinergi/browser-detector
      *  \deprecated
      *  \warning This method was removed.
@@ -462,11 +527,11 @@ class Kernel
 
     /**
      *	\brief Informa se o usuário está usando um dispositivo móvel.
-     *  
+     *
      *  This method was deprecated.
-     *  
+     *
      *  Use sinergi/browser-detector library from Chris Schuld & Gabriel Bull
-     *  
+     *
      *  \see https://packagist.org/packages/sinergi/browser-detector
      *  \deprecated
      *  \warning This method was removed.

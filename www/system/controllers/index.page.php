@@ -1,24 +1,15 @@
 <?php
 /**	\file
- * 	\brief		Controladora da página principal da aplicação.
+ * 	\brief Sample controller for the main page.
  *
- *	\ingroup	controllers
- *	\copyright	Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
- *  \author		Fernando Val  - fernando.val@gmail.com
+ *  \ingroup    controllers
+ *  \copyright  Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
+ *  \author     Fernando Val - fernando.val@gmail.com
  */
-class Index_Controller
-{
-    /**
-     *  \brief Método construtor da controladora.
-     *
-     *  Este método sempre é executado quando a controladora é criada.
-     *  Tudo que precisa se inicializadou e/ou instanciado com a conroladora deve ser colocado nesse método.
-     */
-    public function __construct()
-    {
-        date_default_timezone_set('America/Sao_Paulo');
-    }
+use \FW\Controller;
 
+class Index_Controller extends Controller
+{
     /**
      *  \brief Método principal (default).
      *
@@ -32,7 +23,7 @@ class Index_Controller
         FW\Kernel::debug('Exemplo de debug 2', 'Exemplo com título');
         FW\Kernel::debug('Exemplo de debug 3', 'Título do Exemplo 3', false, false);
 
-        $tpl = new FW\Template();
+        $tpl = $this->_template();
         $tpl->assign('date', $date);
         $tpl->display();
     }

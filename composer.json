@@ -4,11 +4,11 @@
 	"license": "MIT",
 	"type": "project",
 	"config": {
-        "vendor-dir": "www/system/other"
+        "vendor-dir": "www/system/vendor"
     },
 	"extra": {
         "installer-paths": {
-            "www/system/other/{$name}": ["vendor/package"]
+            "www/system/vendor/{$name}": ["vendor/package"]
         },
 		"post-install": {
 			"components/jquery": {
@@ -35,14 +35,5 @@
 		"post-install-cmd": "php -f post-install.php",
 		"post-update-cmd": "php -f post-install.php"
 	},
-	"repositories": [
-		{
-			"type": "composer",
-			"url": "http://www.phpclasses.org/"
-		},
-		{
-			"type": "composer",
-			"url": "http://www.jsclasses.org/"
-		}
-	]
+	"repositories": []
 }
