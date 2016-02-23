@@ -1,6 +1,6 @@
 <?php
 /** \file
- *  Springy
+ *  Springy.
  *
  *  \brief      Test case for Classe de intermediadora de administração de eventos.
  *  \copyright  Copyright (c) 2007-2015 Fernando Val

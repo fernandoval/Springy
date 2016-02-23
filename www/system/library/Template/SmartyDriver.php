@@ -1,6 +1,6 @@
 <?php
 /** \file
- *  Springy
+ *  Springy.
  *
  *  \brief      Classe driver de tratamento de templates utilizando Smarty como mecanismo de renderização.
  *  \copyright  Copyright (c) 2007-2016 Fernando Val

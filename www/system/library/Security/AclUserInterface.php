@@ -1,6 +1,6 @@
 <?php
 /** \file
- *  Springy
+ *  Springy.
  *
  *  \brief      Interface para padronizar as identidades que serão permissionadas na aplicação.
  *  \copyright  Copyright (c) 2007-2016 Fernando Val

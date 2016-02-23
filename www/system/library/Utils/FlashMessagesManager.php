@@ -1,6 +1,6 @@
 <?php
 /** \file
- *  Springy
+ *  Springy.
  *
  *  \brief      Classe que gerenciar dados flash de sessão, ou seja, dados que ficam disponíveis por somente um request.
  *  \copyright  Copyright (c) 2007-2016 Fernando Val

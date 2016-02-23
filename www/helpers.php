@@ -1,6 +1,6 @@
 <?php
 /** \file
- *  Springy
+ *  Springy.
  *
  *	\brief      Helper file - Functions and constants
  *  \copyright  Copyright (c) 2007-2016 Fernando Val

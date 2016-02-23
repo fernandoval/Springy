@@ -1,6 +1,6 @@
 <?php
 /** \file
- *  Springy
+ *  Springy.
  *
  *  \brief      Driver de autenticação que utiliza o banco de dados como storage.
  *  \copyright  Copyright (c) 2007-2016 Fernando Val

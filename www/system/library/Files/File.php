@@ -1,6 +1,6 @@
 <?php
 /** \file
- *  Springy
+ *  Springy.
  *
  *  \brief      Classe para manipulação de arquivos do sistema de arquivos.
  *  \copyright  Copyright (c) 2007-2016 Fernando Val

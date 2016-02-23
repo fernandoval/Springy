@@ -1,6 +1,6 @@
 <?php
 /**	\file
- *	Springy
+ *	Springy.
  *
  *  \copyright Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
  *  \copyright Copyright (c) 2007-2015 Fernando Val\n

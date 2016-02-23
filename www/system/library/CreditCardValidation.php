@@ -1,6 +1,6 @@
 <?php
 /** \file
- *  Springy
+ *  Springy.
  *
  *  \brief      Classe de validação de número de cartão de crédito.
  *  \copyright  Copyright (c) 2007-2016 Fernando Val

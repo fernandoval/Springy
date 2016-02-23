@@ -1,6 +1,6 @@
 <?php
 /**	\file
- *	Springy
+ *	Springy.
  *
  *	\brief      Classe para envio de email.
  *  \copyright  Copyright (c) 2007-2016 Fernando Val

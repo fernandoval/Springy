@@ -1,6 +1,6 @@
 <?php
 /**	\file
- *  Springy
+ *  Springy.
  *
  *  \brief      Class driver for use with SendGrid class.
  *  \copyright  Copyright (c) 2007-2016 Fernando Val

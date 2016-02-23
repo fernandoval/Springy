@@ -1,6 +1,6 @@
 <?php
 /** \file
- *  Springy
+ *  Springy.
  *
  *  \brief      Classe container de dependências de toda aplicação
  *  \copyright  Copyright (c) 2007-2016 Fernando Val\n

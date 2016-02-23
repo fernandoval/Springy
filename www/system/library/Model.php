@@ -1,6 +1,6 @@
 <?php
 /** \file
- *  Springy
+ *  Springy.
  *
  *  \brief      Classe Model para acesso a banco de dados.
  *  \copyright  Copyright (c) 2007-2016 Fernando Val

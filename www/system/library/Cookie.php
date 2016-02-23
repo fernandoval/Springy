@@ -1,6 +1,6 @@
 <?php
 /** \file
- *  Springy
+ *  Springy.
  *
  *  \brief      Script da classe para tratamento de cookies.
  *  \copyright  Copyright (c) 2007-2016 Fernando Val

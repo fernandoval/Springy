@@ -1,6 +1,6 @@
 <?php
 /** \file
- *  Springy
+ *  Springy.
  *
  *  \brief      Classe stática para tratamento JSON.
  *  \copyright  Copyright (c) 2009-2013 Lucas Cardozo

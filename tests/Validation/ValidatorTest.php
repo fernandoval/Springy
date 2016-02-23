@@ -1,6 +1,6 @@
 <?php
 /** \file
- *  Springy
+ *  Springy.
  *
  *  \brief      Test case for Validador de dados de input do usuário.
  *  \copyright  Copyright (c) 2007-2015 Fernando Val

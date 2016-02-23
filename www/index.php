@@ -1,5 +1,5 @@
 <?php
-/** \file
+/* \file
  *  Springy
  *
  *	\brief      The silence is golden.

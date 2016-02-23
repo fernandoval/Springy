@@ -1,6 +1,6 @@
 <?php
 /** \file
- *  Springy
+ *  Springy.
  *
  *  \brief      Classe para tratamento de strings em formato ANSI.
  *  \copyright  Copyright (c) 2007-2016 Fernando Val

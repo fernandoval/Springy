@@ -1,6 +1,6 @@
 <?php
 /**	\file
- *	Springy
+ *	Springy.
  *
  *	\brief      Classe para construção de arquivos no formato Microsoft(R) Excel(R).
  *  \copyright  Copyright (c) 2007-2016 Fernando Val

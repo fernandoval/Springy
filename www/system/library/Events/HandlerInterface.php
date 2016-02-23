@@ -1,6 +1,6 @@
 <?php
 /** \file
- *  Springy
+ *  Springy.
  *
  *  \brief      Interface para classes handlers de eventos.
  *  \copyright  Copyright (c) 2007-2016 Fernando Val

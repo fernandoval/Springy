@@ -1,6 +1,6 @@
 <?php
 /**	\file
- *	Springy
+ *	Springy.
  *
  *	\brief		Classe de construção de Universally Unique Identifiers (UUID) compatíveis com RFC 4211.
  *  \copyright  Copyright (c) 2007-2016 Fernando Val
