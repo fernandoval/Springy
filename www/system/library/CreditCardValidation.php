@@ -1,18 +1,16 @@
 <?php
-/**	\file
- *	FVAL PHP Framework for Web Applications.
+/** \file
+ *  Springy
  *
- *  \copyright	Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
- *  \copyright	Copyright (c) 2007-2016 Fernando Val\n
- *
- *	\brief		Classe de validação de número de cartão de crédito
- *	\version	1.1.2
- *  \author		Daniel Convissor <danielc@analysisandsolutions.com>
- *  \author		Fernando Val <fernando.val@gmail.com>
- *  \author		Mauricio Bastos <mbastos@gmail.com>
- *	\ingroup	framework
+ *  \brief      Classe de validação de número de cartão de crédito.
+ *  \copyright  Copyright (c) 2007-2016 Fernando Val
+ *  \author     Daniel Convissor <danielc@analysisandsolutions.com>
+ *  \author     Fernando Val <fernando.val@gmail.com>
+ *  \author     Mauricio Bastos <mbastos@gmail.com>
+ *  \version    1.1.2
+ *  \ingroup    framework
  */
-namespace FW;
+namespace Springy;
 
 /**
  * Credit Card Validation Solution, PHP Edition.
@@ -105,7 +103,7 @@ class CreditCardValidation
 
     /*
      * The first six digits of card
-     * @var  string 
+     * @var  string
      */
     public $CCVSNumberLeft6 = '';
 

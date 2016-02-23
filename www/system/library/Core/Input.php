@@ -1,23 +1,20 @@
 <?php
-/**	\file
- *	FVAL PHP Framework for Web Applications.
+/** \file
+ *  Springy
  *
- *  \copyright	Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
- *  \copyright	Copyright (c) 2007-2016 Fernando Val\n
- *	\copyright Copyright (c) 2014 Allan Marques
- *
- *	\brief		Classe para gerenciamento de dados de input de usuário (GET e POST)
- *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	0.3
- *  \author		Allan Marques - allan.marques@ymail.com
- *	\ingroup	framework
+ *  \brief      Classe para gerenciamento de dados de input de usuário (GET e POST)
+ *  \copyright  Copyright (c) 2007-2016 Fernando Val
+ *  \author     Allan Marques - allan.marques@ymail.com
+ *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
+ *  \version    0.3.1
+ *  \ingroup    framework
  */
-namespace FW\Core;
+namespace Springy\Core;
 
-use FW\Files\UploadedFile;
-use FW\Session;
-use FW\URI;
-use FW\Utils\ArrayUtils;
+use Springy\Files\UploadedFile;
+use Springy\Session;
+use Springy\URI;
+use Springy\Utils\ArrayUtils;
 
 /**
  * \brief Classe para gerenciamento de dados de input de usuário (GET e POST).
@@ -50,7 +47,7 @@ class Input
         $this->oldData = Session::get($this->oldDataSessionKey) or [];
 
         /// Converte o array de dados dos arquivos enviados pelo usuário para
-        /// um array de objetos de FW\Files\UploadedFile, que são bem mais fáceis de manipular
+        /// um array de objetos de Springy\Files\UploadedFile, que são bem mais fáceis de manipular
         $this->files = UploadedFile::convertPHPUploadedFiles($_FILES);
 
         /// Reseta os dados de inputs antigos
@@ -137,7 +134,7 @@ class Input
     }
 
     /**
-     * \brief Retorna somente os dados de input contidos no request atual 
+     * \brief Retorna somente os dados de input contidos no request atual
      *        equivalentes as chaves identificadoras passadas por parâmetro
      * \param [in] (array) $keys - Chaves identificadoras dos dados
      * \return (array).
@@ -148,7 +145,7 @@ class Input
     }
 
     /**
-     * \brief Retorna todos os dados de input contidos no request atual, 
+     * \brief Retorna todos os dados de input contidos no request atual,
      *        exceto os equivalentes as chaves identificadoras passadas por parâmetro
      * \param [in] (array) $keys - Chaves identificadoras dos dados
      * \return (array).

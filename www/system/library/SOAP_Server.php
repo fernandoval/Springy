@@ -1,21 +1,19 @@
 <?php
 /**	\file
- *	FVAL PHP Framework for Web Applications.
- *
- *  \copyright	Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
- *  \copyright	Copyright (c) 2007-2016 Fernando Val\n
+ *	Springy
  *
  *	\brief		Classe para servidor SOAP
- *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	0.4.4
+ *  \copyright	Copyright (c) 2007-2016 Fernando Val
  *  \author		Fernando Val  - fernando.val@gmail.com
+ *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
+ *	\version	0.4.5
  *	\ingroup	framework
  */
-namespace FW;
+namespace Springy;
 
 /**
  *  \brief Classe para servidor SOAP.
- *  
+ *
  *  \warning Esta classe ainda está em estágio experimental.
  */
 class SOAP_Server extends Kernel
@@ -27,7 +25,7 @@ class SOAP_Server extends Kernel
      *	\brief Construtor da classe.
      *
      *	@param[in] (string) $endpoint - endereço URI do web service
-     *	@param[in] (array) $options - 
+     *	@param[in] (array) $options -
      */
     public function __construct($endpoint = '', $options = [])
     {

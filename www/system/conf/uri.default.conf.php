@@ -1,24 +1,21 @@
 <?php
 /** \file
- *  \brief Configurações da classe URI.
- *
- *  \warning Este arquivo é parte integrante do framework e não pode ser omitido
- *
- *  \copyright	Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
+ *  \brief      Configurations for Springy\URI class.
+ *  \copyright  Copyright (c) 2007-2016 Fernando Val
+ *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
  */
-/**@{*/
 
 /**
  *  \defgroup uricfg Configurações da classe de tratamento de URI/URL
  *  \ingroup config.
- *  
+ *
  *  As entradas de configuração dos arquivos \c uri, são utilizadas pela classe URI, sendo que as entradas previamente definidas não podem ser omitidas
  *  sob risco de dano à aplicação.
- *  
+ *
  *  Você poderá adicionar entradas personalizadas de sua aplicação.
- *  
+ *
  *  Exemplo de código PHP de como usar a entrada \c 'register_method_set_common_urls':
- *  
+ *
  *  \code{.php}
  *  $conf = [
  *      'register_method_set_common_urls' => [
@@ -56,7 +53,7 @@
  *      índice 1 => array da query string;
  *      índice 2 => boleano para o parâmetro forceRewrite;
  *      índice 3 => entrada de configuração host;
- *      índice 4 => booleano para o parânetro include_ignores_segments. 
+ *      índice 4 => booleano para o parânetro include_ignores_segments.
  *  - 'redirect_last_slash' - Valor boleano que determina se a aplicação deve redirecionar requisições a URIs terminadas em barra (/) para URI semelhante sem a barra no final.
  *  	Útil para evitar conteúdo duplicado em ferramentas SEO.
  *  - 'force_slash_on_index' - 	Força o uso de barra (/) ao final da URL para o primeiro segmento (index).
@@ -69,7 +66,7 @@
  *  - 'dynamic' - Host do conteúdo dinâmico do site. Ex.: 'http://www.seusite.com'
  *  - 'static' - Host do conteúdo estático do site. Ex.: 'http://cdn.seusite.com'
  *  - 'secure' - Host seguro do site. Ex.: 'https://www.seusite.com'
- *  
+ *
  *  \see config
  *
  *  @{
@@ -79,11 +76,11 @@
 /**
  *  \defgroup uricfg_default Configurações da classe de tratamento de URI/URL para todos os ambientes
  *  \ingroup uricfg.
- *  
+ *
  *  As entradas colocadas nesse arquivo serão aplicadas a todos os ambientes do sistema.
- *  
+ *
  *  Veja \link uricfg Configurações da classe de tratamento de URI/URL \endlink para entender as entradas de configuração possíveis.
- *  
+ *
  *  \see uricfg
  */
 /**@{*/

@@ -1,16 +1,14 @@
 #!/usr/bin/php
 <?php
 /** \file
- *  FVAL PHP Framework for Web Applications.
- *  
- *  \copyright Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
- *  \copyright Copyright (c) 2007-2016 Fernando Val
+ *  Springy
  *
- *	\brief   This is a database migration script
- *  \warning Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version 0.2
- *  \author  Fernando Val  - fernando.val@gmail.com
- *  \ingroup framework
+ *	\brief     This is a database migration script
+ *  \copyright Copyright (c) 2007-2016 Fernando Val
+ *  \author    Fernando Val - fernando.val@gmail.com
+ *  \warning   Este arquivo é parte integrante do framework e não pode ser omitido
+ *  \version   0.3
+ *  \ingroup   framework
  */
 if (!file_exists(__DIR__.'/sysconf.php')) {
     echo 'Internal System Error on Startup.',"\n";

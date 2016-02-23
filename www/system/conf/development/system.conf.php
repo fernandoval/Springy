@@ -1,10 +1,8 @@
 <?php
 /** \file
- *  \brief Configurações gerais do sistema.
- *
- *  \warning Este arquivo é parte integrante do framework e não pode ser omitido
- *
- *  \copyright	Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
+ *  \brief      General system configutations.
+ *  \copyright  Copyright (c) 2007-2016 Fernando Val
+ *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
  */
 
 /**

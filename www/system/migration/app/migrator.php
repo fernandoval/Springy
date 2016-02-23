@@ -1,21 +1,19 @@
 <?php
 /** \file
- *  FVAL PHP Framework for Web Applications.
+ *  Springy
  *
- *  \copyright Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
+ *  \brief     Script da classe de acesso a banco de dados.
  *  \copyright Copyright (c) 2007-2016 Fernando Val
- *
- *  \brief     Script da classe de acesso a banco de dados
- *  \warning   Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version   0.3.5 beta
  *  \author    Fernando Val - fernando.val@gmail.com
+ *  \warning   Este arquivo é parte integrante do framework e não pode ser omitido
+ *  \version   0.3.6
  *  \ingroup   framework
  */
-namespace FW;
+namespace Springy;
 
 class Migrator extends DB
 {
-    const VERSION = '0.3.4';
+    const VERSION = '0.3.6';
     const MSG_INFORMATION = 0;
     const MSG_WARNING = 1;
     const MSG_ERROR = 2;

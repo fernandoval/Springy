@@ -1,27 +1,25 @@
 <?php
 /** \file
- *  FVAL PHP Framework for Web Applications.
+ *  Springy
  *
- *  \copyright  Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
- *  \copyright  Copyright (c) 2007-2016 Fernando Val\n
- *
- *  \brief      Classe driver de tratamento de templates utilizando Twig como mecanismo de renderização
+ *  \brief      Classe driver de tratamento de templates utilizando Twig como mecanismo de renderização.
+ *  \copyright  Copyright (c) 2007-2016 Fernando Val
+ *  \author     Fernando Val - fernando.val@gmail.com
  *  \see        http://twig.sensiolabs.org/
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.11.7 beta 4
- *  \author     Fernando Val - fernando.val@gmail.com
+ *  \version    0.11.8
  *  \ingroup    framework
  */
-namespace FW\Template;
+namespace Springy\Template;
 
-use FW\Configuration;
-use FW\Kernel;
-use FW\URI;
+use Springy\Configuration;
+use Springy\Kernel;
+use Springy\URI;
 
 /**
  *  \brief Classe driver de tratamento de templates utilizando Twig como mecanismo.
  *
- *  \note Esta classe é um driver para a classe FW\Template e utiliza internamente a classe Twig.
+ *  \note Esta classe é um driver para a classe Springy\Template e utiliza internamente a classe Twig.
  *        Não utilize a classe Twig diretamente.
  *        Não utilize esta classe diretamente em sua aplicação.
  *        Instancie a classe Template em sua aplicação.

@@ -1,19 +1,16 @@
 <?php
-/**	\file
- *  FVAL PHP Framework for Web Applications.
- *  
- *  \copyright  Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
- *  \copyright  Copyright (c) 2007-2015 Fernando Val\n
- *  \copyright  Copyright (c) 2014 Allan Marques
- *  
- *  \brief      Test case for Validador de dados de input do usuário
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.1
+/** \file
+ *  Springy
+ *
+ *  \brief      Test case for Validador de dados de input do usuário.
+ *  \copyright  Copyright (c) 2007-2015 Fernando Val
  *  \author     Allan Marques - allan.marques@ymail.com
  *  \author     Fernando Val - fernando.val@gmail.com
+ *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
+ *  \version    0.1.1
  *  \ingroup    framework
  */
-use FW\Validation\Validator;
+use Springy\Validation\Validator;
 
 class ValidatorTest extends PHPUnit_Framework_TestCase
 {

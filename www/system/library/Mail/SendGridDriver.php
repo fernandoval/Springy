@@ -1,26 +1,24 @@
 <?php
 /**	\file
- *  FVAL PHP Framework for Web Applications.
+ *  Springy
  *
- *  \copyright  Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
- *  \copyright  Copyright (c) 2007-2016 Fernando Val\n
- *
- *  \brief      Class driver for use with SendGrid class
+ *  \brief      Class driver for use with SendGrid class.
+ *  \copyright  Copyright (c) 2007-2016 Fernando Val
+ *  \author     Fernando Val - fernando.val@gmail.com
  *  \see        https://github.com/sendgrid/sendgrid-php
  *  \warning    This file is part of the framework and can not be omitted
- *  \version    1.0.0
- *  \author     Fernando Val - fernando.val@gmail.com
+ *  \version    1.0.1
  *  \ingroup    framework
  */
-namespace FW\Mail;
+namespace Springy\Mail;
 
-use FW\Configuration;
-use FW\Errors;
+use Springy\Configuration;
+use Springy\Errors;
 
 /**
  *  \brief Driver class for sent mail using SendGrid official class.
  *
- *  \note This classe is a driver used by FW\Mail classe.
+ *  \note This classe is a driver used by Springy\Mail classe.
  *        Do not use it directly.
  */
 class SendGridDriver implements MailDriverInterface

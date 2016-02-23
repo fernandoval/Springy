@@ -1,18 +1,15 @@
 <?php
-/**	\file
- *	FVAL PHP Framework for Web Applications.
+/** \file
+ *  Springy
  *
- *  \copyright	Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
- *  \copyright	Copyright (c) 2007-2016 Fernando Val\n
- *	\copyright Copyright (c) 2014 Allan Marques
- *
- *	\brief		Classe para manipulação de arquivos que foram criados por upload no sistema de arquivos
- *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	0.1
- *  \author		Allan Marques - allan.marques@ymail.com
- *	\ingroup	framework
+ *  \brief      Classe para manipulação de arquivos que foram criados por upload no sistema de arquivos.
+ *  \copyright  Copyright (c) 2007-2016 Fernando Val
+ *  \author     Allan Marques - allan.marques@ymail.com
+ *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
+ *  \version    0.1.1
+ *  \ingroup    framework
  */
-namespace FW\Files;
+namespace Springy\Files;
 
 use RuntimeException;
 
@@ -135,7 +132,7 @@ class UploadedFile extends File
      * \brief Move o arquivo enviado para o diretório indicado
      * \param [in] (string) $directory - Caminho do diretório
      * \param [in] (string) $name - Novo nome do arquivo
-     * \return FW\Files\File
+     * \return Springy\Files\File
      * \throws RuntimeException.
      */
     public function moveTo($directory, $name = null)
@@ -188,8 +185,8 @@ class UploadedFile extends File
     }
 
     /**
-     * \brief Transforma o array superglobal de arquivos $_FILES em uma 
-     *        coleção de objetos FW\Files\UploadedFile para manipulação facilitada
+     * \brief Transforma o array superglobal de arquivos $_FILES em uma
+     *        coleção de objetos Springy\Files\UploadedFile para manipulação facilitada
      * \param [in] (array) $files - $_FILES superglobal
      * \return (array).
      */
@@ -205,9 +202,9 @@ class UploadedFile extends File
     }
 
     /**
-     * \brief Transforma um item unico do arrey superglobal $_FILES em um objeto FW\Files\UploadedFile
+     * \brief Transforma um item unico do arrey superglobal $_FILES em um objeto Springy\Files\UploadedFile
      * \param [in] (array) $file
-     * \return \FW\Files\UploadedFile.
+     * \return \Springy\Files\UploadedFile.
      */
     protected static function convertPHPSinglePHPUploadedFile($file)
     {

@@ -1,14 +1,12 @@
 <?php
 /** \file
- *  FVAL PHP Framework for Web Applications.
+ *  Springy
  *
- *  \copyright	Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
+ *  \brief      Configurações do cerne do sistema
  *  \copyright	Copyright (c) 2007-2016 Fernando Val\n
+ *  \author		Fernando Val  - fernando.val@gmail.com
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
  *  \version	3.1.15
- *  \author		Fernando Val  - fernando.val@gmail.com
- *
- *  \brief Configurações do cerne do sistema
  */
 
 /**
@@ -57,7 +55,7 @@
  'entrada' => 'valor',
  'outra_configuracao' => 'valor da outra configuracao'
  ); \endcode
- *  
+ *
  *  É possível sobrescrever as configurações para determinados hosts de sua aplicação, utilizando a variável \c $over_conf, que é um array
  *  contendo no primeiro nível de índices o nome do host para o qual se deseja sobrescrever determinada(s) entrada(s) de configuração,
  *  que por sua vez, receberá um array contendo cada entrada de configuração a ser sobrescrita.
@@ -71,7 +69,7 @@
  'entrada2' => 'outro novo valor'
  )
  ); \endcode
- *  
+ *
  *  Os arquivos pré-distribuídos com o framework são de uso interno das classes e não podem ser renomeados ou omitidos.
  *
  *  Seu sistema poderá possuir arquivos de configuração específicos, bastando obedecer o formato e a estrutura de nomes e diretórios.
@@ -80,18 +78,17 @@
 
 /// Configurações gerais do sistema
 $GLOBALS['SYSTEM'] = [
-    'SYSTEM_NAME'    => 'Nome Do Seu Sistema',
+    'SYSTEM_NAME'    => 'Your system name',
     'SYSTEM_VERSION' => [1, 0, 0],
 
     'ACTIVE_ENVIRONMENT'   => '',
-    'ENVIRONMENT_VARIABLE' => 'FWGV_ENVIRONMENT',
+    'ENVIRONMENT_VARIABLE' => 'SPRINGY_ENVIRONMENT',
     'CONSIDER_PORT_NUMBER' => false,
     'ENVIRONMENT_ALIAS'    => [
-        'localhost'                   => 'development',
-        '127\.0\.0\.1'                => 'development',
-        '192\.168\.[0-9]*\.[0-9]*'    => 'development',
-        'homol(ogation)?'             => 'development',
-        '(www\.)?seusite\.com(\.br)?' => 'production',
+        'localhost'             => 'development',
+        '127\.0\.0\.1'          => 'development',
+        'homol(ogation)?'       => 'development',
+        '(www\.)?mydomain\.com' => 'production',
     ],
 
     'ROOT_PATH'      => realpath(dirname(__FILE__)),

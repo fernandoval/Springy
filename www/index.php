@@ -1,15 +1,8 @@
 <?php
 /** \file
- *  FVAL PHP Framework for Web Applications.
+ *  Springy
  *
- *  \copyright Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
- *  \copyright Copyright (c) 2007-2016 Fernando Val\n
- *
- *  \warning Este arquivo é parte integrante do framework e não pode ser omitido
- *
- *  \version 1.0.1
- *
- *	\brief Script alternativo de inicialização (remover esse arquivo se servidor der suporte a REWRITE de URL)
+ *	\brief      The silence is golden.
+ *  \copyright  Copyright (c) 2007-2016 Fernando Val
+ *  \version    1.0.2
  */
-die('Invalid access mode');
-// require_once '_Main.php';

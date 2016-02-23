@@ -1,18 +1,15 @@
 <?php
-
-/**	\file
- *	FVAL PHP Framework for Web Applications.
+/** \file
+ *  Springy
  *
- *  \copyright Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
- *  \copyright Copyright (c) 2007-2015 Fernando Val
- *
- *	\brief     Test class for UUID framework library class
- *	\warning   Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version   0.1
- *  \author    Fernando Val - fernando.val@gmail.com
- *	\ingroup   tests
+ *  \brief      Test class for UUID framework library class.
+ *  \copyright  Copyright (c) 2007-2015 Fernando Val
+ *  \author     Fernando Val - fernando.val@gmail.com
+ *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
+ *  \version    0.1.1
+ *  \ingroup    tests
  */
-use FW\Utils\UUID;
+use Springy\Utils\UUID;
 
 class UUIDTest extends PHPUnit_Framework_TestCase
 {

@@ -1,21 +1,18 @@
 <?php
-/**	\file
- *	FVAL PHP Framework for Web Applications.
+/** \file
+ *  Springy
  *
- *  \copyright	Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
- *  \copyright	Copyright (c) 2007-2016 Fernando Val\n
- *	\copyright Copyright (c) 2014 Allan Marques
- *
- *	\brief		Classe container de dependências de toda aplicação
- *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	0.2
- *  \author		Allan Marques - allan.marques@ymail.com
- *	\ingroup	framework
+ *  \brief      Classe container de dependências de toda aplicação
+ *  \copyright  Copyright (c) 2007-2016 Fernando Val\n
+ *  \author     Allan Marques - allan.marques@ymail.com
+ *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
+ *  \version    0.2.1
+ *  \ingroup    framework
  */
-namespace FW\Core;
+namespace Springy\Core;
 
-use FW\Container\DIContainer;
-use FW\Events\Mediator;
+use Springy\Container\DIContainer;
+use Springy\Events\Mediator;
 
 /**
  * \brief Classe container de dependências de toda aplicação.
@@ -40,7 +37,7 @@ class Application extends DIContainer
      * \param [in] (string) $event - Nome do evento
      * \param [in] (variant) $handler - Handler do evento
      * \param [in] (int) $priority - Prioridade do handler, maior melhor.
-     * \return \FW\Core\Application.
+     * \return \Springy\Core\Application.
      */
     public function on($event, $handler, $priority = 0)
     {
@@ -52,7 +49,7 @@ class Application extends DIContainer
     /**
      * \brief Remove o registro de um handler de eventos
      * \param [in] (string) $event - Nome do evento
-     * \return \FW\Core\Application.
+     * \return \Springy\Core\Application.
      */
     public function off($event)
     {
@@ -62,7 +59,7 @@ class Application extends DIContainer
     }
 
     /**
-     * \brief Dispara o evento com o nome indicado, 
+     * \brief Dispara o evento com o nome indicado,
      *        com os dados passados por parametro para cada handler
      * \param [in] (type) $event
      * \param [in] (type) $data
@@ -76,7 +73,7 @@ class Application extends DIContainer
     /**
      * \brief Retorna a instancia compartilhada desta classe.
      *
-     * @return \FW\Core\Application
+     * @return \Springy\Core\Application
      */
     public static function sharedInstance()
     {

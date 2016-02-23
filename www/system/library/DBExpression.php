@@ -1,6 +1,6 @@
 <?php
 
-namespace FW;
+namespace Springy;
 
 abstract class DBExpression
 {

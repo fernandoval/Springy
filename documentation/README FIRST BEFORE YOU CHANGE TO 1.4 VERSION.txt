@@ -1,10 +1,6 @@
-FVAL PHP Framework for Web Applications
+Springy
 
-Copyright (C) 2007-2014 FVAL - Consultoria e Informática Ltda.
 Copyright (C) 2007-2014 Fernando Val
-Copyright (C) 2009-2014 Lucas Cardozo
-
-http://www.fval.com.br
 
 
 Migrando para a Versão >= 3.0.x de versões anteriores

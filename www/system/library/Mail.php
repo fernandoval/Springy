@@ -1,17 +1,15 @@
 <?php
 /**	\file
- *	FVAL PHP Framework for Web Applications.
+ *	Springy
  *
- *  \copyright  Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
- *  \copyright  Copyright (c) 2007-2016 Fernando Val\n
- *
- *	\brief      Classe para envio de email
- *	\warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version    2.1.16
+ *	\brief      Classe para envio de email.
+ *  \copyright  Copyright (c) 2007-2016 Fernando Val
  *  \author     Fernando Val  - fernando.val@gmail.com
+ *	\warning    Este arquivo é parte integrante do framework e não pode ser omitido
+ *	\version    2.1.17
  *	\ingroup    framework
  */
-namespace FW;
+namespace Springy;
 
 /**
  *  \brief Classe para envio de email.

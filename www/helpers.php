@@ -1,20 +1,18 @@
 <?php
 /** \file
- *  FVAL PHP Framework for Web Applications.
- *  
- *  \copyright  Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
- *  \copyright  Copyright (c) 2007-2016 Fernando Val\n
+ *  Springy
  *
  *	\brief      Helper file - Functions and constants
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    2.0.1
+ *  \copyright  Copyright (c) 2007-2016 Fernando Val
  *  \author     Allan Marques - allan.marques@ymail.com
  *  \author     Fernando Val - fernando.val@gmail.com
+ *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
+ *  \version    2.0.3
  *  \ingroup    framework
  */
 
 /*
- *  para deixar o desenvolvedor mais feliz e produtivo 
+ *  para deixar o desenvolvedor mais feliz e produtivo
  */
 
 /**------------------------------------------------------------
@@ -32,10 +30,10 @@ if (!defined('DS')) {
  *  \brief Get shared container application instance.
  *
  *  Retorna a instância compartilhada do container da aplicação
- *  ou um serviço registrado com o nome passado por parâmetro. * 
- *  
+ *  ou um serviço registrado com o nome passado por parâmetro. *
+ *
  *  \param string $service Nome chave do serviço (opcional)
- *  \return FW\Core\Application
+ *  \return Springy\Core\Application
  */
 function app($service = null)
 {
@@ -43,27 +41,27 @@ function app($service = null)
         return app()->resolve($service);
     }
 
-    return FW\Core\Application::sharedInstance();
+    return Springy\Core\Application::sharedInstance();
 }
 
 /**
- *  \brief An alias for FW\Configuration::get() method
+ *  \brief An alias for Springy\Configuration::get() method
  *  \param string $key
  *  \return mixed.
  */
 function config_get($key)
 {
-    return FW\Configuration::get($key);
+    return Springy\Configuration::get($key);
 }
 
 /**
- *  \brief An alias for FW\Configuration::set() method
+ *  \brief An alias for Springy\Configuration::set() method
  *  \param string $key
  *  \param mixed $val.
  */
 function config_set($key, $val)
 {
-    FW\Configuration::set($key, $val);
+    Springy\Configuration::set($key, $val);
 }
 
 /**
@@ -77,7 +75,7 @@ function sysconf($key)
 }
 
 /**
- *  \brief An alias for FW\Kernel::debug() method
+ *  \brief An alias for Springy\Kernel::debug() method
  *  \param string $txt
  *  \param string $name
  *  \param boolean $highlight
@@ -85,7 +83,7 @@ function sysconf($key)
  */
 function debug($txt, $name = '', $highlight = true, $revert = true)
 {
-    FW\Kernel::debug($txt, $name, $highlight, $revert);
+    Springy\Kernel::debug($txt, $name, $highlight, $revert);
 }
 
 /**
@@ -115,11 +113,11 @@ function with($object)
 /**
  *	\brief Framework autoload function.
  */
-function fwgv_autoload($class)
+function springyAutoload($class)
 {
     $aclass = explode('\\', $class);
     if (count($aclass) > 1) {
-        if ($aclass[0] == 'FW') {
+        if ($aclass[0] == 'Springy') {
             array_shift($aclass);
         }
         $file = implode(DIRECTORY_SEPARATOR, $aclass);
@@ -179,23 +177,23 @@ function fwgv_autoload($class)
 /**
  *	\brief Exception error handler.
  */
-function FW_ExceptionHandler($error)
+function springyExceptionHandler($error)
 {
-    FW\Errors::errorHandler($error->getCode(), $error->getMessage(), $error->getFile(), $error->getLine(), (method_exists($error, 'getContext') ? $error->getContext() : null));
+    Springy\Errors::errorHandler($error->getCode(), $error->getMessage(), $error->getFile(), $error->getLine(), (method_exists($error, 'getContext') ? $error->getContext() : null));
 }
 
 /**
  *	\brief Error handler.
  */
-function FW_ErrorHandler($errno, $errstr, $errfile, $errline, $errContext)
+function springyErrorHandler($errno, $errstr, $errfile, $errline, $errContext)
 {
-    FW\Errors::errorHandler($errno, $errstr, $errfile, $errline, $errContext);
+    Springy\Errors::errorHandler($errno, $errstr, $errfile, $errline, $errContext);
 }
 
 /**
  *  \brief Framework Exception class.
  */
-class FW_Exception extends Exception
+class SpringyException extends Exception
 {
     /// Contexto do erro
     private $context = null;

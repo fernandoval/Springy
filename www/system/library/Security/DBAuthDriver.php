@@ -1,23 +1,20 @@
 <?php
 /** \file
- *  FVAL PHP Framework for Web Applications.
+ *  Springy
  *
- *  \copyright  Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
- *  \copyright  Copyright (c) 2007-2016 Fernando Val\n
- *  \copyright  Copyright (c) 2014 Allan Marques
- *
- *  \brief      Driver de autenticação que utiliza o banco de dados como storage
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.1.2
+ *  \brief      Driver de autenticação que utiliza o banco de dados como storage.
+ *  \copyright  Copyright (c) 2007-2016 Fernando Val
  *  \author     Allan Marques - allan.marques@ymail.com
+ *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
+ *  \version    0.1.3
  *  \ingroup    framework
  */
-namespace FW\Security;
+namespace Springy\Security;
 
-use FW\Core\Application;
+use Springy\Core\Application;
 
 /**
- * \brief        Driver de autenticação que utiliza o banco de dados como storage.
+ * \brief Driver de autenticação que utiliza o banco de dados como storage.
  */
 class DBAuthDriver implements AuthDriverInterface
 {
@@ -29,9 +26,9 @@ class DBAuthDriver implements AuthDriverInterface
     protected $lastValidIdentity;
 
     /**
-     *  \brief Construtor da classe
-     *  \param [in] (\FW\Security\HasherInterface) $hasher
-     *  \param [in] (\FW\Security\IdentityInterface) $identity.
+     *  \brief Construtor da classe.
+     *  \param [in] (\Springy\Security\HasherInterface) $hasher.
+     *  \param [in] (\Springy\Security\IdentityInterface) $identity.
      */
     public function __construct(HasherInterface $hasher = null, IdentityInterface $identity = null)
     {
@@ -40,8 +37,8 @@ class DBAuthDriver implements AuthDriverInterface
     }
 
     /**
-     *  \brief Seta o hasher da senha de autenticação
-     *  \param [in] (\FW\Security\HasherInterface) $hasher.
+     *  \brief Seta o hasher da senha de autenticação.
+     *  \param [in] (\Springy\Security\HasherInterface) $hasher.
      */
     public function setHasher(HasherInterface $hasher)
     {
@@ -50,7 +47,7 @@ class DBAuthDriver implements AuthDriverInterface
 
     /**
      *  \brief Retorna o hasher da senha de autenticação.
-     *  \return (\FW\Security\HasherInterface).
+     *  \return (\Springy\Security\HasherInterface).
      */
     public function getHasher()
     {
@@ -58,8 +55,8 @@ class DBAuthDriver implements AuthDriverInterface
     }
 
     /**
-     *  \brief Seta a identidade que será o tipo padrão para realizar a autenticação
-     *  \param [in] (\FW\Security\IdentityInterface) $identity - Tipo padrão de identidade.
+     *  \brief Seta a identidade que será o tipo padrão para realizar a autenticação.
+     *  \param [in] (\Springy\Security\IdentityInterface) $identity - Tipo padrão de identidade.
      */
     public function setDefaultIdentity(IdentityInterface $identity)
     {
@@ -67,8 +64,8 @@ class DBAuthDriver implements AuthDriverInterface
     }
 
     /**
-     *  \brief Retorna a identidade pelo ID que à identifica
-     *  \return (\FW\Security\IdentityInterface).
+     *  \brief Retorna a identidade pelo ID que à identifica.
+     *  \return (\Springy\Security\IdentityInterface).
      */
     public function getIdentityById($iid)
     {
@@ -79,8 +76,8 @@ class DBAuthDriver implements AuthDriverInterface
     }
 
     /**
-     *  \brief Retorna a última identidade a passar com sucesso pela autenticação
-     *  \return (\FW\Security\IdentityInterface).
+     *  \brief Retorna a última identidade a passar com sucesso pela autenticação.
+     *  \return (\Springy\Security\IdentityInterface).
      */
     public function getLastValidIdentity()
     {
@@ -88,7 +85,7 @@ class DBAuthDriver implements AuthDriverInterface
     }
 
     /**
-     *  \brief Retorna o o nome identificador da sessão da identidade
+     *  \brief Retorna o o nome identificador da sessão da identidade.
      *  \return (string).
      */
     public function getIdentitySessionKey()
@@ -97,9 +94,9 @@ class DBAuthDriver implements AuthDriverInterface
     }
 
     /**
-     *  \brief Verifica se o login e o password da identidade atual são válidos
-     *  \param [in] (string) $login - Login da identidade
-     *  \param [in] (string) $password - Senha da identidade
+     *  \brief Verifica se o login e o password da identidade atual são válidos.
+     *  \param [in] (string) $login - Login da identidade.
+     *  \param [in] (string) $password - Senha da identidade.
      *  return (bool).
      */
     public function isValid($login, $password)
@@ -125,8 +122,8 @@ class DBAuthDriver implements AuthDriverInterface
     }
 
     /**
-     *  \brief Retorna a identidade tipo padrão para realizar a autenticação
-     *  \return (\FW\Security\IdentityInterface).
+     *  \brief Retorna a identidade tipo padrão para realizar a autenticação.
+     *  \return (\Springy\Security\IdentityInterface).
      */
     public function getDefaultIdentity()
     {

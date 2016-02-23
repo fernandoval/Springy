@@ -1,22 +1,20 @@
 <?php
 /**	\file
- *	FVAL PHP Framework for Web Applications.
+ *	Springy
  *
- *  \copyright  Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
- *  \copyright  Copyright (c) 2007-2016 Fernando Val\n
- *
- *	\brief      Classe de configuração
- *	\warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version    2.0.9
+ *	\brief      Classe de configuração.
+ *  \copyright  Copyright (c) 2007-2016 Fernando Val
  *  \author     Fernando Val  - fernando.val@gmail.com
  *  \author     Allan Marques - allan.marques@ymail.com
+ *	\warning    Este arquivo é parte integrante do framework e não pode ser omitido
+ *	\version    2.0.10
  *	\ingroup    framework
  */
-namespace FW;
+namespace Springy;
 
 /**
  *  \brief Classe de configuração.
- *  
+ *
  *  Esta classe é estática e invocada automaticamente pelo framework.
  */
 class Configuration
@@ -57,7 +55,7 @@ class Configuration
 
     /**
      *  \brief Altera o valor de uma entrada de configuração.
-     *  
+     *
      *  Esta alteração é temporária e estará ativa apenas durante a execução da aplicação.
      *  Nenhuma alteração será feita nos arquivos de configuração.
      *

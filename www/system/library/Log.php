@@ -1,19 +1,17 @@
 <?php
 /**	\file
- *	FVAL PHP Framework for Web Applications.
+ *	Springy
  *
- *  \copyright	Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
- *  \copyright	Copyright (c) 2007-2016 Fernando Val\n
- *
- *	\brief		Classe para geração de saídas em logs de eventos
- *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	0.11.12
+ *	\brief		Classe para geração de saídas em logs de eventos.
+ *  \copyright	Copyright (c) 2007-2016 Fernando Val
  *  \author		Fernando Val  - fernando.val@gmail.com
+ *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
+ *	\version	0.11.13
  *	\ingroup	framework
  */
-namespace FW;
+namespace Springy;
 
-use FW\Utils\Strings;
+use Springy\Utils\Strings;
 
 /**
  *  \brief Classe para geração de saídas em logs de eventos.

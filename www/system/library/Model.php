@@ -1,20 +1,18 @@
 <?php
 /** \file
- *  FVAL PHP Framework for Web Applications.
+ *  Springy
  *
- *  \copyright  Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
- *  \copyright  Copyright (c) 2007-2016 Fernando Val\n
- *
- *  \brief      Classe Model para acesso a banco de dados
+ *  \brief      Classe Model para acesso a banco de dados.
+ *  \copyright  Copyright (c) 2007-2016 Fernando Val
+ *  \author     Fernando Val - fernando.val@gmail.com
  *  \note       Essa classe extende a classe DB.
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    1.24.33
- *  \author     Fernando Val - fernando.val@gmail.com
+ *  \version    1.24.34
  *  \ingroup    framework
  */
-namespace FW;
+namespace Springy;
 
-use FW\Validation\Validator;
+use Springy\Validation\Validator;
 
 /**
  *  \brief Classe Model para acesso a banco de dados.
@@ -292,7 +290,7 @@ class Model extends DB implements \Iterator
      * \brief Retorna o container de mensagens de errors que guardará as mensagens de erros
      *       vindas do teste de validação.
      *
-     * \return FW\Utils\MessageContainer
+     * \return Springy\Utils\MessageContainer
      */
     public function validationErrors()
     {

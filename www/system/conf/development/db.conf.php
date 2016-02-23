@@ -1,23 +1,21 @@
 <?php
 /** \file
- *  \brief Configurações de acesso a banco de dados.
- *
- *  \warning Este arquivo é parte integrante do framework e não pode ser omitido
- *
- *  \copyright	Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
+ *  \brief      Database configurations.
+ *  \copyright	Copyright (c) 2007-2016 Fernando Val
+ *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
  */
 
 /**
  *  \defgroup dbcfg_development Configurações de acesso a banco de dados para o ambiente 'development'
  *  \ingroup dbcfg.
- *  
+ *
  *  As entradas colocadas nesse arquivo serão aplicadas apenas ao ambiente 'development'.
- *  
+ *
  *  Seu sistema pode não possuir esse ambiente, então use-o como modelo para criação do arquivo de
  *  parâmetros de configuração para os ambientes que seu sistema possua.
- *  
+ *
  *  Veja \link dbcfg Configurações de acesso a banco de dados \endlink para entender as entradas de configuração possíveis.
- *  
+ *
  *  \see dbcfg
  */
 /**@{*/

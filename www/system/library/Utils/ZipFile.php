@@ -1,21 +1,16 @@
 <?php
 /**	\file
- *  FVAL PHP Framework for Web Applications.
+ *  Springy
  *
- *  \copyright	Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n\n
- *  \copyright	Copyright (c) 2007-2016 Fernando Val\n\n
- *
- *  \brief		Classe para geração de arquivos ZIP
- *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	0.3.7
+ *  \brief		Classe para geração de arquivos ZIP.
+ *  \copyright	Copyright (c) 2007-2016 Fernando Val
  *  \author		(c) 2003 by Pascal Rehfeldt - Pascal@Pascal-Rehfeldt.com, under license GNU General Public License (Version 2, June 1991)
  *  \author		Fernando Val - fernando.val@gmail.com
+ *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
+ *  \version	0.3.9
  *  \ingroup	framework
  */
-namespace FW;
-
-use FW\Utils\Strings_ANSI;
-use FW\Utils\Strings_UTF8;
+namespace Springy\Utils;
 
 /**
  *  \brief Classe para geração de arquivos ZIP.

@@ -1,21 +1,19 @@
 <?php
 /**	\file
- *	FVAL PHP Framework for Web Applications.
+ *	Springy
  *
- *  \copyright	Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
- *  \copyright	Copyright (c) 2007-2016 Fernando Val\n
- *
- *	\brief		Classe para tratamento de sessão
+ *	\brief		Classe para tratamento de sessão.
+ *  \copyright	Copyright (c) 2007-2016 Fernando Val
+ *  \author		Fernando Val  - fernando.val@gmail.com
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
  *  \version    1.5.16
- *  \author		Fernando Val  - fernando.val@gmail.com
  *	\ingroup	framework
  */
-namespace FW;
+namespace Springy;
 
 /**
  *  \brief Classe para tratamento de sessão.
- *  
+ *
  *  Esta classe é estática e invocada automaticamente pelo framework.
  */
 class Session
@@ -115,7 +113,7 @@ class Session
                     self::$data = [];
                 }
             }
-            register_shutdown_function(['\FW\Session', '_save_db_session']);
+            register_shutdown_function(['\Springy\Session', '_save_db_session']);
             // self::_save_db_session();
 
             self::$started = true;

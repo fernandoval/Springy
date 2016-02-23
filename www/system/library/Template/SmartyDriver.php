@@ -1,28 +1,26 @@
 <?php
 /** \file
- *  FVAL PHP Framework for Web Applications.
+ *  Springy
  *
- *  \copyright  Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
- *  \copyright  Copyright (c) 2007-2016 Fernando Val\n
- *
- *  \brief      Classe driver de tratamento de templates utilizando Smarty como mecanismo de renderização
+ *  \brief      Classe driver de tratamento de templates utilizando Smarty como mecanismo de renderização.
+ *  \copyright  Copyright (c) 2007-2016 Fernando Val
+ *  \author     Fernando Val - fernando.val@gmail.com
  *  \see        http://www.smarty.net/
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    1.3.7
- *  \author     Fernando Val - fernando.val@gmail.com
+ *  \version    1.3.8
  *  \ingroup    framework
  */
-namespace FW\Template;
+namespace Springy\Template;
 
-use FW\Configuration;
-use FW\Errors;
-use FW\Kernel;
-use FW\URI;
+use Springy\Configuration;
+use Springy\Errors;
+use Springy\Kernel;
+use Springy\URI;
 
 /**
  *  \brief Classe driver de tratamento de templates utilizando Smarty como mecanismo.
  *
- *  \note Esta classe é um driver para a classe FW\Template e utiliza internamente a classe Smarty.
+ *  \note Esta classe é um driver para a classe Springy\Template e utiliza internamente a classe Smarty.
  *        Não utilize a classe Smarty diretamente.
  *        Não utilize esta classe diretamente em sua aplicação.
  *        Instancie a classe Template em sua aplicação.

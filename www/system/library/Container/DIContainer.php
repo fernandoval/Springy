@@ -1,22 +1,19 @@
 <?php
-/**	\file
- *	FVAL PHP Framework for Web Applications.
+/** \file
+ *  Springy
  *
- *  \copyright	Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
- *  \copyright	Copyright (c) 2007-2016 Fernando Val\n
- *	\copyright Copyright (c) 2014 Allan Marques
+ *  \brief      Classe de container para inversão de controle (Dependecy Injection)
+ *  \copyright  Copyright (c) 2007-2016 Fernando Val
+ *  \author     Allan Marques - allan.marques@ymail.com
+ *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
+ *  \version    0.1.1
+ *  \ingroup    framework
  *
- *	\brief		Classe de container para inversão de controle (Dependecy Injection)
- *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	0.1
- *  \author		Allan Marques - allan.marques@ymail.com
- *	\ingroup	framework
+ *  \b Exemplos:
  *
- *	\b Exemplos:
- *
- *	\code
+ *  \code
  *  //Configurando
- *	$di = new DIContainer;
+ *    $di = new DIContainer;
  *  $di['db.connectionString'] = 'mysql:host=localhost;dbname=db;charset=utf8';
  *  $di['db.user'] = 'root';
  *  $di['db.password'] = '';
@@ -31,14 +28,14 @@
  *  $DB = new PDO('mysql:host=localhost;dbname=db;charset=utf8', 'root', ''); *
  *  \endcode
  */
-namespace FW\Container;
+namespace Springy\Container;
 
 use ArrayAccess;
 use Closure;
 use InvalidArgumentException;
 
 /**
- * \brief		Classe de container para inversão de controle (Dependecy Injection).
+ * \brief Classe de container para inversão de controle (Dependecy Injection).
  */
 class DIContainer implements ArrayAccess
 {

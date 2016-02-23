@@ -42,7 +42,7 @@ Returns *null* if there is no entry for `$var` in `$local` or throws a 500 error
 
 **Sample:**
 ```php
-    $databaseType = FW\Configuration::get('db', 'default.database_type');
+    $databaseType = Springy\Configuration::get('db', 'default.database_type');
 ```
 
 ### set()
@@ -58,7 +58,7 @@ The `$value` if a mixed value to set to `$var`.
 
 **Sample:**
 ```php
-    $databaseType = FW\Configuration::set('db', 'default.database_type', 'MySQL');
+    $databaseType = Springy\Configuration::set('db', 'default.database_type', 'MySQL');
 ```
 
 
@@ -73,5 +73,5 @@ Returns *true* if the file was loaded or throws a 500 error if the configuration
 
 **Sample:**
 ```php
-    $confLoaded = FW\Configuration::load('db');
+    $confLoaded = Springy\Configuration::load('db');
 ```

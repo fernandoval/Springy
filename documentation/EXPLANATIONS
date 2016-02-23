@@ -1,4 +1,4 @@
-# FVAL PHP Framework #
+# Springy
 
 A micro framework for smart PHP developers.
 
@@ -7,7 +7,6 @@ Developer team:
 ---------------
 
 * 2007-2015 - Fernando Val
-* 2009-2014 - Lucas Cardozo
 
 ### Documentação ###
 
@@ -16,7 +15,7 @@ Developer team:
 O sistema MVC deste framework:
 ------------------------------
 
-Os models (modelos) nada mais são que classes para tratamento de dados ou funções genéricas ou de uso comum que não fazem parte do cerne do framework. Nesse framework os models são tratados simplesmento como "classes proprietárias" e ficam armazenadas no diterório de classes proprietárias (ver estrutura de diretórios). O framework possui uma classe de tratamento de bancos da qual você poderá herdar suas classes para tratamento de tabelas em banco, simplesmente crie suas classes extendendo a classe \FW\Model.
+Os models (modelos) nada mais são que classes para tratamento de dados ou funções genéricas ou de uso comum que não fazem parte do cerne do framework. Nesse framework os models são tratados simplesmento como "classes proprietárias" e ficam armazenadas no diterório de classes proprietárias (ver estrutura de diretórios). O framework possui uma classe de tratamento de bancos da qual você poderá herdar suas classes para tratamento de tabelas em banco, simplesmente crie suas classes extendendo a classe Springy\Model.
 
 As views (visões), que são o resultado visual do processamento, são tratadas como templates (modelos) e o desenvolvedor pode optar por utiliza as bibliotecas [Smarty](http://smarty.net) ou [Twig](http://twig.sensiolabs.org) como mecanismos de renderização, sendo que os templates Smarty deverão ter a terminação ".tpl.html" em seus nomes, enquanto para Twig deverão ser terminados por ".twig.html". Os templates são armazenados no diretório de templates que pode ter múltiplos níveis de acordo com a necessidade do projeto.
 

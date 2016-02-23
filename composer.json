@@ -1,6 +1,6 @@
 {
-	"name": "fval/php-framewok",
-	"description": "FVAL PHP Framework",
+	"name": "fval/springy",
+	"description": "Springy",
 	"license": "MIT",
 	"type": "project",
 	"config": {

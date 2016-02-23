@@ -1,20 +1,17 @@
 <?php
 /** \file
- *  FVAL PHP Framework for Web Applications.
+ *  Springy
  *
- *  \copyright  Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
- *  \copyright  Copyright (c) 2007-2016 Fernando Val\n
- *  \copyright  Copyright (c) 2009-2013 Lucas Cardozo
- *
- *  \brief      Script da classe de acesso a banco de dados
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    1.7.28
+ *  \brief      Script da classe de acesso a banco de dados.
+ *  \copyright  Copyright (c) 2007-2016 Fernando Val
  *  \author     Fernando Val  - fernando.val@gmail.com
  *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
  *  \author     Allan Marques - allan.marques@ymail.com
+ *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
+ *  \version    1.7.29
  *  \ingroup    framework
  */
-namespace FW;
+namespace Springy;
 
 /**
  *  \brief Classe para acesso a banco de dados.
@@ -144,7 +141,7 @@ class DB
             unset($pdoConf, self::$conErrors[$database]);
         } catch (\PDOException $error) {
             $callers = debug_backtrace();
-            if (!isset($callers[1]) || $callers[1]['class'] != 'FW\Errors' || $callers[1]['function'] != 'sendReport') {
+            if (!isset($callers[1]) || $callers[1]['class'] != 'Springy\Errors' || $callers[1]['function'] != 'sendReport') {
                 Errors::errorHandler((int) $error->getCode(), $error->getMessage(), $error->getFile(), $error->getLine(), null);
             }
         }

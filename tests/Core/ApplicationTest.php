@@ -1,18 +1,15 @@
 <?php
 /**	\file
- *	FVAL PHP Framework for Web Applications.
- *  
- *  \copyright Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
- *  \copyright Copyright (c) 2007-2015 Fernando Val\n
- *	\copyright Copyright (c) 2014 Allan Marques
- *  
- *	\brief     Test case for Classe container de dependências de toda aplicação
- *	\warning   Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version   0.1
- *  \author    Allan Marques - allan.marques@ymail.com
- *	\ingroup   tests
+ *	Springy
+ *
+ *	\brief      Test case for Classe container de dependências de toda aplicação.
+ *  \copyright  Copyright (c) 2007-2015 Fernando Val
+ *  \author     Allan Marques - allan.marques@ymail.com
+ *	\warning    Este arquivo é parte integrante do framework e não pode ser omitido
+ *	\version    0.1.1
+ *	\ingroup    tests
  */
-use FW\Core\Application;
+use Springy\Core\Application;
 
 class ApplicationTest extends PHPUnit_Framework_TestCase
 {

@@ -1,18 +1,15 @@
 <?php
 /** \file
- *  FVAL PHP Framework for Web Applications.
+ *  Springy
  *
- *  \copyright  Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
- *  \copyright  Copyright (c) 2007-2016 Fernando Val\n
- *  \copyright  Copyright (c) 2009-2013 Lucas Cardozo
- *
- *  \brief      Classe com métodos para diversos tipos de tratamento e validação de dados string
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.9.14
+ *  \brief      Classe com métodos para diversos tipos de tratamento e validação de dados string.
+ *  \copyright  Copyright (c) 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
+ *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
+ *  \version    0.9.15
  *  \ingroup    framework
  */
-namespace FW\Utils;
+namespace Springy\Utils;
 
 /**
  *  \brief Classe com métodos para diversos tipos de tratamento e validação de dados string.

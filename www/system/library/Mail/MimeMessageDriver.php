@@ -1,31 +1,29 @@
 <?php
 /**	\file
- *  FVAL PHP Framework for Web Applications.
+ *  Springy
  *
- *  \copyright  Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
+ *  \brief      Class driver for use with Manuel Lemos' MIME e-mail message class.
  *  \copyright  Copyright (c) 2007-2016 Fernando Val\n
- *
- *  \brief      Class driver for use with Manuel Lemos' MIME e-mail message class
+ *  \author     Fernando Val - fernando.val@gmail.com
  *  \see        http://www.phpclasses.org/package/9-PHP-PHP-mailer-to-compose-and-send-MIME-messages.html
  *  \warning    This file is part of the framework and can not be omitted
- *  \version    1.0.1
- *  \author     Fernando Val - fernando.val@gmail.com
+ *  \version    1.0.2
  *  \ingroup    framework
  */
-namespace FW\Mail;
+namespace Springy\Mail;
 
-use FW\Configuration;
-use FW\Errors;
-use FW\Kernel;
+use Springy\Configuration;
+use Springy\Errors;
+use Springy\Kernel;
 
 /**
  *  \brief Driver class for sent mail using MIME e-mail message class developed by Manuel Lemos.
- *  
+ *
  *  \warning This class was not tested yet. Because MIME e-mail message classes are not into Packagist repository
  *  	we can not install it via Composer. Then you will need download and install it by yourself and create an
  *  	autoload to it. There are commented lines in __construct method with require_once for each file needed.
  *
- *  \note This classe is a driver used by FW\Mail classe.
+ *  \note This classe is a driver used by Springy\Mail classe.
  *        Do not use it directly.
  */
 class MimeMessageDriver implements MailDriverInterface
@@ -128,7 +126,7 @@ class MimeMessageDriver implements MailDriverInterface
 
     /**
      *  \brief Add an address to 'To' field.
-     *  
+     *
      *  \param $email - the email address
      *  \param $name - the name of the person (optional)
      */
@@ -139,7 +137,7 @@ class MimeMessageDriver implements MailDriverInterface
 
     /**
      *  \brief Add an address to 'BCC' field.
-     *  
+     *
      *  \param $email - the email address
      *  \param $name - the name of the person (optional)
      */
@@ -150,7 +148,7 @@ class MimeMessageDriver implements MailDriverInterface
 
     /**
      *  \brief Add an address to 'CC' field.
-     *  
+     *
      *  \param $email - the email address
      *  \param $name - the name of the person (optional)
      */
@@ -161,7 +159,7 @@ class MimeMessageDriver implements MailDriverInterface
 
     /**
      *  \brief Add a file to be attached to the e-mail.
-     *  
+     *
      *  \param $path - full pathname to the attachment
      *  \param $name - override the attachment name (optional)
      *  \param $type - MIME type/file extension type (optional)
@@ -178,7 +176,7 @@ class MimeMessageDriver implements MailDriverInterface
 
     /**
      *  \brief Set the 'From' field.
-     *  
+     *
      *  \param $email - the email address
      *  \param $name - the name of the person (optional)
      */
@@ -190,7 +188,7 @@ class MimeMessageDriver implements MailDriverInterface
 
     /**
      *  \brief Set the mail subject.
-     *  
+     *
      *  \param $subject - the subject text
      */
     public function setSubject($subject)
@@ -200,7 +198,7 @@ class MimeMessageDriver implements MailDriverInterface
 
     /**
      *  \brief Set the message bo.
-     *  
+     *
      *  \param $body - HTML ou text message body
      *  \param $html - set true if body is HTML ou false if plain text
      */

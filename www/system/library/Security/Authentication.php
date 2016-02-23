@@ -1,24 +1,21 @@
 <?php
 /**	\file
- *	FVAL PHP Framework for Web Applications.
- *  
- *  \copyright  Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
- *  \copyright  Copyright (c) 2007-2016 Fernando Val\n
- *	\copyright  Copyright (c) 2014 Allan Marques
- *  
- *	\brief      Gerenciador de autenticação de identidades
- *	\warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version    0.2
+ *	Springy
+ *
+ *	\brief      Gerenciador de autenticação de identidades.
+ *  \copyright  Copyright (c) 2007-2016 Fernando Val
  *  \author     Allan Marques - allan.marques@ymail.com
+ *	\warning    Este arquivo é parte integrante do framework e não pode ser omitido
+ *	\version    0.2.1
  *	\ingroup    framework
  */
-namespace FW\Security;
+namespace Springy\Security;
 
-use FW\Cookie;
-use FW\Session;
+use Springy\Cookie;
+use Springy\Session;
 
 /**
- * \brief		Gerenciador de autenticação de identidades.
+ * \brief Gerenciador de autenticação de identidades.
  */
 class Authentication
 {
@@ -28,8 +25,8 @@ class Authentication
     protected $user;
 
     /**
-     * \brief Construtor da classe
-     * \param [in] (\FW\Security\AuthDriverInterface) $driver.
+     *  \brief Construtor da classe.
+     *  \param [in] (\Springy\Security\AuthDriverInterface) $driver.
      */
     public function __construct(AuthDriverInterface $driver = null)
     {
@@ -40,7 +37,7 @@ class Authentication
     }
 
     /**
-     * \brief Restaurar sessão de usuário que já esteja autenticação na aplicação.
+     *  \brief Restaurar sessão de usuário que já esteja autenticação na aplicação.
      */
     protected function wakeupSession()
     {
@@ -54,8 +51,8 @@ class Authentication
     }
 
     /**
-     * \brief Restaurar sessão de usuário que sessão já esteja expirado, 
-     *        mas há um cookie de 'remember me'.
+     *  \brief Restaurar sessão de usuário que sessão já esteja expirado,
+     *         mas há um cookie de 'remember me'.
      */
     protected function rememberSession()
     {
@@ -68,8 +65,8 @@ class Authentication
     }
 
     /**
-     * \brief Seta o driver de autenticação do gerenciador
-     * \param [in] (\FW\Security\AuthDriverInterface) $driver.
+     *  \brief Seta o driver de autenticação do gerenciador.
+     *  \param [in] (\Springy\Security\AuthDriverInterface) $driver.
      */
     public function setDriver(AuthDriverInterface $driver)
     {
@@ -77,9 +74,9 @@ class Authentication
     }
 
     /**
-     * \brief Retorna o driver de autenticação do gerenciador.
+     *  \brief Retorna o driver de autenticação do gerenciador.
      *
-     * @return (\FW\Security\AuthDriverInterface)
+     *  @return (\Springy\Security\AuthDriverInterface)
      */
     public function getDriver()
     {
@@ -87,12 +84,12 @@ class Authentication
     }
 
     /**
-     * \brief Tenta a autenticação de um usuário com as credenciais passadas por parâmetro
-     * \param [in] (string) $login - Login do usuário
-     * \param [in] (string) $password - Senha do usuário
-     * \param [in] (bool) $remember - Indica se a sessão deve ser elmbrada por um cookie mesmo quando o tempo da sessão expirar
-     * \param [in] (bool) $loginValids - Indica se os usuários autenticados devem ser automaticamente guardados na sessão
-     * \return (boolean).
+     *  \brief Tenta a autenticação de um usuário com as credenciais passadas por parâmetro.
+     *  \param [in] (string) $login - Login do usuário
+     *  \param [in] (string) $password - Senha do usuário
+     *  \param [in] (bool) $remember - Indica se a sessão deve ser elmbrada por um cookie mesmo quando o tempo da sessão expirar
+     *  \param [in] (bool) $loginValids - Indica se os usuários autenticados devem ser automaticamente guardados na sessão
+     *  \return (boolean).
      */
     public function attempt($login, $password, $remember = false, $loginValids = true)
     {
@@ -108,11 +105,11 @@ class Authentication
     }
 
     /**
-     * \brief Tenta a autenticação de um usuário com as credenciais passadas por parâmetro 
-     *        sem guardar seus dados na sessão caso a autenticação obtiver sucesso
-     * \param [in] (string) $login - Login do usuário
-     * \param [in] (string) $password - Senha do usuário
-     * \return (boolean).
+     *  \brief Tenta a autenticação de um usuário com as credenciais passadas por parâmetro
+     *         sem guardar seus dados na sessão caso a autenticação obtiver sucesso.
+     *  \param [in] (string) $login - Login do usuário
+     *  \param [in] (string) $password - Senha do usuário
+     *  \return (boolean).
      */
     public function validate($login, $password)
     {
@@ -120,9 +117,9 @@ class Authentication
     }
 
     /**
-     * \brief Loga o usuário na aplicação, ou seja, guarda suas informações na sessão
-     * \param [in] (\FW\Security\IdentityInterface) $user - Usuário para logar
-     * \param [in] (bool) $remember - Indica se a sessão deve ser elmbrada por um cookie mesmo quando o tempo da sessão expirar.
+     *  \brief Loga o usuário na aplicação, ou seja, guarda suas informações na sessão.
+     *  \param [in] (\Springy\Security\IdentityInterface) $user - Usuário para logar.
+     *  \param [in] (bool) $remember - Indica se a sessão deve ser elmbrada por um cookie mesmo quando o tempo da sessão expirar.
      */
     public function login(IdentityInterface $user, $remember = false)
     {
@@ -142,9 +139,9 @@ class Authentication
     }
 
     /**
-     * \brief Loga o usuário que possui o identificador passado por parâmetro
-     * \param [in] (variant) $id - Identificador do usuário que será logado
-     * \param [in] (bool) $remember - Indica se a sessão deve ser elmbrada por um cookie mesmo quando o tempo da sessão expirar.
+     *  \brief Loga o usuário que possui o identificador passado por parâmetro.
+     *  \param [in] (variant) $id - Identificador do usuário que será logado.
+     *  \param [in] (bool) $remember - Indica se a sessão deve ser elmbrada por um cookie mesmo quando o tempo da sessão expirar.
      */
     public function loginWithId($id, $remember = false)
     {
@@ -166,8 +163,8 @@ class Authentication
     }
 
     /**
-     * \brief Retorna se há um usuário autenticado atualmente na sessão
-     * \return (boolean).
+     *  \brief Retorna se há um usuário autenticado atualmente na sessão.
+     *  \return (boolean).
      */
     public function check()
     {
@@ -175,8 +172,8 @@ class Authentication
     }
 
     /**
-     * \brief Retorna o usuário atualmente logado na aplicação
-     * \return (\FW\Security\IdentityInterface).
+     *  \brief Retorna o usuário atualmente logado na aplicação.
+     *  \return (\Springy\Security\IdentityInterface).
      */
     public function user()
     {
@@ -184,7 +181,7 @@ class Authentication
     }
 
     /**
-     * \brief Destroi a sessão do usuário atualmente logado na aplicação.
+     *  \brief Destroi a sessão do usuário atualmente logado na aplicação.
      */
     protected function destroyUserData()
     {

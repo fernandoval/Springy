@@ -1,18 +1,15 @@
 <?php
-/**	\file
- *	FVAL PHP Framework for Web Applications.
+/** \file
+ *  Springy
  *
- *  \copyright	Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
- *  \copyright	Copyright (c) 2007-2016 Fernando Val\n
- *	\copyright Copyright (c) 2014 Allan Marques
- *
- *	\brief		Classe para manipulação de arquivos do sistema de arquivos
- *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	0.1
- *  \author		Allan Marques - allan.marques@ymail.com
- *	\ingroup	framework
+ *  \brief      Classe para manipulação de arquivos do sistema de arquivos.
+ *  \copyright  Copyright (c) 2007-2016 Fernando Val
+ *  \author     Allan Marques - allan.marques@ymail.com
+ *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
+ *  \version    0.1
+ *  \ingroup    framework
  */
-namespace FW\Files;
+namespace Springy\Files;
 
 use finfo;
 use InvalidArgumentException;
@@ -63,7 +60,7 @@ class File extends SplFileInfo
      * \brief Move o arquivo para outro diretório e retorna um objeto representando-o
      * \param [in] (string) $directory - Caminho do diretório para mover
      * \param [in] (string) $name - Novo nome do arquivo
-     * \return (FW\Files\File)
+     * \return (Springy\Files\File)
      * \throws RuntimeException.
      */
     public function moveTo($directory, $name = null)
@@ -84,7 +81,7 @@ class File extends SplFileInfo
      * \brief Cria um objeto reresentando que será movido no futuro
      * \param [in] (string) $directory - Camino do diretório para mover
      * \param [in] (string) $name - Novo nome do arquivo
-     * \return FW\Files\File
+     * \return Springy\Files\File
      * \throws RuntimeException.
      */
     protected function getTargetFile($directory, $name = null)

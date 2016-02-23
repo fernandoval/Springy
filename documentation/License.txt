@@ -1,14 +1,9 @@
-FVAL PHP Framework for Web Applications
+Springy
 
-Copyright (C) 2007-2015 FVAL - Consultoria e Informática Ltda.
 Copyright (C) 2007-2015 Fernando Val
-Copyright (C) 2009-2014 Lucas Cardozo
-
-http://www.fval.com.br
 
 Developer team:
 	Fernando Val  - fernando.val@gmail.com
-	Lucas Cardozo - lucas.cardozo@gmail.com
 
 
 Este framework é propriedade de seus autores.

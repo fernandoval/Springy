@@ -1,19 +1,17 @@
 <?php
 /** \file
- *  \brief Configurações de sessão.
- *
- *  \warning Este arquivo é parte integrante do framework e não pode ser omitido
- *
- *  \copyright	Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
+ *  \brief      Configutarions for Springy\Session class.
+ *  \copyright  Copyright (c) 2007-2016 Fernando Val
+ *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
  */
 
 /**
  *  \defgroup sessioncfg Configurações de SESSÃO
  *  \ingroup config.
- *  
+ *
  *  As entradas de configuração dos arquivos \c session, são utilizadas pela classe Session, sendo que as entradas previamente definidas não podem ser omitidas
  *  sob risco da classe não funcionar.
- *  
+ *
  *  Você poderá adicionar entradas personalizadas de sua aplicação.
  *
  *  Entradas de configuração:
@@ -29,7 +27,7 @@
  *  - \c id_column - define o nome da coluna do id da sessão (quando o tipo de controle for 'db')
  *  - \c value_column - define o nome da coluna do valor da sessão (quando o tipo de controle for 'db')
  *  - \c update_column - define o nome da coluna da data de atualização da sessão (quando o tipo de controle for 'db')
- *  
+ *
  *  \see config
  *
  *  @{
@@ -39,11 +37,11 @@
 /**
  *  \defgroup sessioncfg_default Configurações de SESSÃO para todos os ambientes
  *  \ingroup sessioncfg.
- *  
+ *
  *  As entradas colocadas nesse arquivo serão aplicadas a todos os ambientes do sistema.
- *  
+ *
  *  Veja \link dbcfg Configurações de SESSÃO \endlink para entender as entradas de configuração possíveis.
- *  
+ *
  *  \see sessioncfg
  */
 /**@{*/

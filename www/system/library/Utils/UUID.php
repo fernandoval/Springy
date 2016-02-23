@@ -1,24 +1,22 @@
 <?php
 /**	\file
- *	FVAL PHP Framework for Web Applications.
+ *	Springy
  *
- *  \copyright Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
- *  \copyright Copyright (c) 2007-2016 Fernando Val\n
- *
- *	\brief		Classe de construção de Universally Unique Identifiers (UUID) compatíveis com RFC 4211
- *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	0.1.1
+ *	\brief		Classe de construção de Universally Unique Identifiers (UUID) compatíveis com RFC 4211.
+ *  \copyright  Copyright (c) 2007-2016 Fernando Val
  *  \author		Fernando Val - fernando.val@gmail.com
+ *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
+ *	\version	0.1.2
  *	\ingroup	framework
  */
-namespace FW\Utils;
+namespace Springy\Utils;
 
 /**
  *  \brief Classe de geração de Universally Unique Identifiers (UUID).
- *  
+ *
  *  Esta classe foi construída a partir da classe desenvolvida por Andrew Moore em comentário
  *  na documentação da função uniqid() do PHP.
- *  
+ *
  *  A classe original pode ser obtida no seguinte endereço:
  *  http://php.net/manual/en/function.uniqid.php
  */
@@ -39,7 +37,7 @@ class UUID
 
     /**
      *  \brief Generate a Version 3 UUID.
-     *  
+     *
      *  The V3 require a namespace (another valid UUID) and a value (the name).
      *  Given the same namespace and name, the output is always the same.
      */
@@ -85,7 +83,7 @@ class UUID
 
     /**
      *  \brief Generate a Version 4 UUID.
-     *  
+     *
      *  The V4 UUIDs are pseudo-random.
      */
     public static function v4()
@@ -113,7 +111,7 @@ class UUID
 
     /**
      *  \brief Generate a Version 5 UUID.
-     *  
+     *
      *  The V5 require a namespace (another valid UUID) and a value (the name).
      *  Given the same namespace and name, the output is always the same.
      */

@@ -1,22 +1,20 @@
 <?php
 /**	\file
- *	FVAL PHP Framework for Web Applications.
+ *	Springy
  *
- *	\copyright	Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.
+ *	\brief		A single pagination class.
  *	\copyright	Copyright (c) 2007-2016 Fernando Val
- *
- *	\brief		A single pagination class
+ *	\author		Fernando Val <fernando.val@gmail.com>
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
  *	\link		http://www.fval.com.br/
- *	\version	2.3.6
- *	\author		Fernando Val <fernando.val@gmail.com>
+ *	\version	2.3.7
  *	\ingroup	framework
  */
-namespace FW;
+namespace Springy;
 
 /**
  *  \brief		A single pagination class.
- *  
+ *
  *	\b License:		[pt-BR] : Esta classe é Open Source e distribuida sob a licença GPL.\n
  *					[en-US] : This class is Open Source and distributed under GPL license.
  *

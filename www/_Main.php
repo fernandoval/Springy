@@ -1,17 +1,11 @@
 <?php
 /** \file
- *  FVAL PHP Framework for Web Applications.
+ *  Springy
  *
- *  \copyright Copyright ₢ 2007-2016 FVAL Consultoria e Informática Ltda.\n
- *  \copyright Copyright ₢ 2007-2016 Fernando Val\n
- *  \copyright Copyright ₢ 2009-2013 Lucas Cardozo
- *
- *  http://www.fval.com.br
- *
- *  \brief    System initialization script
- *  \version  4.2.28
- *  \author   Fernando Val - fernando.val@gmail.com
- *  \author   Lucas Cardozo - lucas.cardozo@gmail.com
+ *  \brief      System initialization script
+ *  \copyright  Copyright ₢ 2007-2016 Fernando Val
+ *  \author     Fernando Val - fernando.val@gmail.com
+ *  \version    4.2.29
  *
  *  \defgroup framework Biblioteca do Framework
  *
@@ -32,7 +26,7 @@
  *
  *  \ingroup framework
  */
-$FWGV_START_TIME = microtime(true); // Memoriza a hora do início do processamento
+$springyStartTime = microtime(true); // Memoriza a hora do início do processamento
 
 // Kill system with internal error 500 if initial setup file does not exists
 if (!file_exists('sysconf.php') || !file_exists('helpers.php')) {
@@ -47,14 +41,14 @@ require 'sysconf.php';
 require 'helpers.php';
 
 // Kill system with internal error 500 if can not set autoload funcion
-if (!spl_autoload_register('fwgv_autoload')) {
+if (!spl_autoload_register('springyAutoload')) {
     header('Content-type: text/html; charset=UTF-8', true, 500);
     die('Internal System Error on Startup');
 }
 
 error_reporting(E_ALL);
-set_exception_handler('FW_ExceptionHandler');
-set_error_handler('FW_ErrorHandler');
+set_exception_handler('springyExceptionHandler');
+set_error_handler('springyErrorHandler');
 
 /*
  *  \brief Carrega autoload do Composer, caso exista
@@ -68,88 +62,88 @@ if (file_exists($GLOBALS['SYSTEM']['3RDPARTY_PATH'].DIRECTORY_SEPARATOR.'autoloa
     ------------------------------------------------------------------------------------ --- -- - */
 
 ob_start();
-FW\Kernel::initiate($GLOBALS['SYSTEM'], $FWGV_START_TIME);
+Springy\Kernel::initiate($GLOBALS['SYSTEM'], $springyStartTime);
 
 // Envia o cache-control
-header('Cache-Control: '.FW\Configuration::get('system', 'cache-control'), true);
+header('Cache-Control: '.Springy\Configuration::get('system', 'cache-control'), true);
 
 // Resolve a URI e monta as variáveis internas
-$controller = FW\URI::parseURI();
+$controller = Springy\URI::parseURI();
 
 // Verifica se o acesso ao sistema necessita de autenticação
-if (is_array(FW\Configuration::get('system', 'authentication'))) {
-    $auth = FW\Configuration::get('system', 'authentication');
+if (is_array(Springy\Configuration::get('system', 'authentication'))) {
+    $auth = Springy\Configuration::get('system', 'authentication');
     if (isset($auth['user']) && isset($auth['pass'])) {
-        if (!FW\Cookie::get('__sys_auth__')) {
+        if (!Springy\Cookie::get('__sys_auth__')) {
             if (!isset($_SERVER['PHP_AUTH_USER']) || !isset($_SERVER['PHP_AUTH_PW']) || $_SERVER['PHP_AUTH_USER'] != $auth['user'] || $_SERVER['PHP_AUTH_PW'] != $auth['pass']) {
                 header('WWW-Authenticate: Basic realm="'.utf8_decode('What are you doing here?').'"');
                 header('HTTP/1.0 401 Unauthorized');
                 die('Não autorizado.');
             }
-            FW\Cookie::set('__sys_auth__', true);
+            Springy\Cookie::set('__sys_auth__', true);
         }
     }
 }
 
 // Verifica se o usuário desenvolvedor está acessando
-if (FW\Configuration::get('system', 'developer_user') && FW\Configuration::get('system', 'developer_pass')) {
-    if (FW\URI::_GET(FW\Configuration::get('system', 'developer_user')) == FW\Configuration::get('system', 'developer_pass')) {
-        FW\Cookie::set('_developer', true);
+if (Springy\Configuration::get('system', 'developer_user') && Springy\Configuration::get('system', 'developer_pass')) {
+    if (Springy\URI::_GET(Springy\Configuration::get('system', 'developer_user')) == Springy\Configuration::get('system', 'developer_pass')) {
+        Springy\Cookie::set('_developer', true);
         /**
          * A var $_SystemDeveloperOn é setada pois, quando o site tá em manutenção e é passado o user e pass para que o desenvolvedor veja o site,
          * devido ao uso de Cookies, o site só aparece quando dá um refresh.
          */
         $_SystemDeveloperOn = true;
-    } elseif (FW\URI::_GET(FW\Configuration::get('system', 'developer_user')) == 'off') {
-        FW\Cookie::delete('_developer');
+    } elseif (Springy\URI::_GET(Springy\Configuration::get('system', 'developer_user')) == 'off') {
+        Springy\Cookie::delete('_developer');
     }
 }
 
-if (FW\Cookie::exists('_developer') || isset($_SystemDeveloperOn)) {
-    FW\Configuration::set('system', 'maintenance', false);
-    FW\Configuration::set('system', 'debug', true);
+if (Springy\Cookie::exists('_developer') || isset($_SystemDeveloperOn)) {
+    Springy\Configuration::set('system', 'maintenance', false);
+    Springy\Configuration::set('system', 'debug', true);
 }
 
 // apenas se o debug estiver ligado, verifica se o DBA (modo de exibição de SQLs) está ligado
-if (FW\Configuration::get('system', 'debug') && FW\Configuration::get('system', 'dba_user')) {
-    if (FW\URI::_GET(FW\Configuration::get('system', 'dba_user')) == FW\Configuration::get('system', 'developer_pass')) {
-        FW\Cookie::set('_dba', true);
-    } elseif (FW\URI::_GET(FW\Configuration::get('system', 'dba_user')) == 'off') {
-        FW\Cookie::delete('_dba');
+if (Springy\Configuration::get('system', 'debug') && Springy\Configuration::get('system', 'dba_user')) {
+    if (Springy\URI::_GET(Springy\Configuration::get('system', 'dba_user')) == Springy\Configuration::get('system', 'developer_pass')) {
+        Springy\Cookie::set('_dba', true);
+    } elseif (Springy\URI::_GET(Springy\Configuration::get('system', 'dba_user')) == 'off') {
+        Springy\Cookie::delete('_dba');
     }
 
-    if (FW\Cookie::exists('_dba')) {
-        FW\Configuration::set('system', 'sql_debug', true);
+    if (Springy\Cookie::exists('_dba')) {
+        Springy\Configuration::set('system', 'sql_debug', true);
     }
 }
 
-if (FW\Configuration::get('system', 'debug')) {
+if (Springy\Configuration::get('system', 'debug')) {
     ini_set('display_errors', 1);
 } else {
     ini_set('display_errors', 0);
 }
 
 // [pt-br] Verifica se o sistema está em manutenção
-if (FW\Configuration::get('system', 'maintenance')) {
-    FW\Errors::displayError(503, 'The system is under maintenance');
+if (Springy\Configuration::get('system', 'maintenance')) {
+    Springy\Errors::displayError(503, 'The system is under maintenance');
 }
 
 // Se foi definido uma Controller, carrega para a memória
 if (!is_null($controller)) {
     // Valida a URI antes de carregar a controladora
-    FW\URI::validateURI();
+    Springy\URI::validateURI();
 
     // Carrega a controladora
     require_once $controller;
 
     // Define o nome da classe controladora
-    $ControllerClassName = str_replace('-', '_', FW\URI::getControllerClass()).'_Controller';
+    $ControllerClassName = str_replace('-', '_', Springy\URI::getControllerClass()).'_Controller';
 }
 
 // Se a classe controladora foi carregada e ela não possui sua própria classe Global, checa a existência da _global
 if (!defined('BYPASS_CONTROLLERS') && (!isset($ControllerClassName) || !method_exists($ControllerClassName, '_ignore_global'))) {
     // Verifica se a controller _global existe
-    $path = FW\Kernel::path(FW\Kernel::PATH_CONTROLLER).DIRECTORY_SEPARATOR.'_global.php';
+    $path = Springy\Kernel::path(Springy\Kernel::PATH_CONTROLLER).DIRECTORY_SEPARATOR.'_global.php';
     if (file_exists($path)) {
         require_once $path;
         if (class_exists('Global_Controller')) {
@@ -174,7 +168,7 @@ if (isset($ControllerClassName)) {
     // Inicializa a controller
     if (class_exists($ControllerClassName)) {
         $PageController = new $ControllerClassName();
-        $PageMethod = str_replace('-', '_', FW\URI::getSegment(0, true));
+        $PageMethod = str_replace('-', '_', Springy\URI::getSegment(0, true));
 
         if ($PageMethod && method_exists($PageController, $PageMethod)) {
             call_user_func([$PageController, $PageMethod]);
@@ -182,47 +176,47 @@ if (isset($ControllerClassName)) {
             call_user_func([$PageController, '_default']);
         }
     } else {
-        FW\Errors::displayError(404, 'No '.$ControllerClassName.' on '.$controller);
+        Springy\Errors::displayError(404, 'No '.$ControllerClassName.' on '.$controller);
     }
     unset($controller);
 
     // se tiver algum debug, utiliza-o
-    FW\Kernel::debugPrint();
+    Springy\Kernel::debugPrint();
 } else {
-    $Page = FW\URI::getSegment(0, false);
-    if ($Page == '_fw_' || $Page == '_') {
-        FW\Kernel::printCopyright();
+    $Page = Springy\URI::getSegment(0, false);
+    if ($Page == '_springy_' || $Page == '_') {
+        Springy\Kernel::printCopyright();
     } elseif ($Page == '_pi_') {
         phpinfo();
         ob_end_flush();
         exit;
     } elseif ($Page == '_error_') {
-        if ($error = FW\URI::getSegment(0)) {
-            FW\Errors::displayError((int) $error, 'System error');
+        if ($error = Springy\URI::getSegment(0)) {
+            Springy\Errors::displayError((int) $error, 'System error');
         } else {
-            FW\Errors::displayError(404, 'Page not found');
+            Springy\Errors::displayError(404, 'Page not found');
         }
     } elseif (in_array($Page, ['_system_bug_', '_system_bug_solved_'])) {
         // Verifica se o acesso ao sistema necessita de autenticação
-        $auth = FW\Configuration::get('system', 'bug_authentication');
+        $auth = Springy\Configuration::get('system', 'bug_authentication');
         if (!empty($auth['user']) && !empty($auth['pass'])) {
-            if (!FW\Cookie::get('__sys_bug_auth__')) {
+            if (!Springy\Cookie::get('__sys_bug_auth__')) {
                 if (!isset($_SERVER['PHP_AUTH_USER']) || !isset($_SERVER['PHP_AUTH_PW']) || $_SERVER['PHP_AUTH_USER'] != $auth['user'] || $_SERVER['PHP_AUTH_PW'] != $auth['pass']) {
                     header('WWW-Authenticate: Basic realm="'.utf8_decode('What r u doing here?').'"');
                     // header('HTTP/1.0 401 Unauthorized');
                     // die('Unauthorized!');
-                    FW\Errors::displayError(401, 'Unauthorized');
+                    Springy\Errors::displayError(401, 'Unauthorized');
                 }
-                FW\Cookie::set('__sys_bug_auth__', true);
+                Springy\Cookie::set('__sys_bug_auth__', true);
             }
         }
 
         if ($Page == '_system_bug_') {
-            FW\Errors::bugList();
-        } elseif ($Page == '_system_bug_solved_' && preg_match('/^[0-9a-z]{8}$/', FW\URI::getSegment(1, false))) {
-            FW\Errors::bugSolved(FW\URI::getSegment(1, false));
+            Springy\Errors::bugList();
+        } elseif ($Page == '_system_bug_solved_' && preg_match('/^[0-9a-z]{8}$/', Springy\URI::getSegment(1, false))) {
+            Springy\Errors::bugSolved(Springy\URI::getSegment(1, false));
         } else {
-            FW\Errors::displayError(404, 'Page not found');
+            Springy\Errors::displayError(404, 'Page not found');
         }
     } elseif ($Page == '__migration__') {
         // Cli mode only
@@ -232,10 +226,10 @@ if (isset($ControllerClassName)) {
         }
 
         require $GLOBALS['SYSTEM']['MIGRATION_PATH'].DS.'app'.DS.'migrator.php';
-        $PageController = new FW\Migrator();
+        $PageController = new Springy\Migrator();
         $PageController->run();
     } else {
-        FW\Errors::displayError(404, 'Page not found');
+        Springy\Errors::displayError(404, 'Page not found');
     }
 }
 

@@ -1,6 +1,6 @@
 <?php
 /**	\file
- *	FVAL PHP Framework for Web Applications.
+ *	Springy
  *
  *  \copyright Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
  *  \copyright Copyright (c) 2007-2015 Fernando Val\n
@@ -18,7 +18,7 @@ define('HELPERS', 'www/helpers.php');
 
 require SYSCONF;
 require HELPERS;
-if (!spl_autoload_register('fwgv_autoload')) {
+if (!spl_autoload_register('springyAutoload')) {
     die('Internal System Error on Startup');
 }
 

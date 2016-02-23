@@ -1,4 +1,4 @@
-# FVAL PHP Framework
+# Springy
 
 A micro framework for smart PHP developers.
 
@@ -17,7 +17,7 @@ A micro framework for smart PHP developers.
 
 ## About
 
-The **FVAL PHP Framework** is designed to be a framework for developing web applications in PHP [MVC](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) architecture, lightweight, easy to learn, feature rich, adaptable and quick execution.
+The **Springy** is designed to be a framework for developing web applications in PHP [MVC](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) architecture, lightweight, easy to learn, feature rich, adaptable and quick execution.
 
 ## Instalation Guide
 

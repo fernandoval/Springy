@@ -1,19 +1,15 @@
 <?php
-
 /**	\file
- *	FVAL PHP Framework for Web Applications.
+ *	Springy
  *
- *  \copyright Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
- *  \copyright Copyright (c) 2007-2015 Fernando Val\n
- *	\copyright Copyright (c) 2014 Allan Marques
- *
- *	\brief     Test case for Classe de container para inversão de controle (Dependecy Injection)
- *	\warning   Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version   0.1
- *  \author    Allan Marques - allan.marques@ymail.com
- *	\ingroup   tests
+ *	\brief      Test case for Classe de container para inversão de controle (Dependecy Injection).
+ *  \copyright  Copyright (c) 2007-2015 Fernando Val
+ *  \author     Allan Marques - allan.marques@ymail.com
+ *	\warning    Este arquivo é parte integrante do framework e não pode ser omitido
+ *	\version    0.1.1
+ *	\ingroup    tests
  */
-use FW\Container\DIContainer;
+use Springy\Container\DIContainer;
 
 class DIContainerTest extends PHPUnit_Framework_TestCase
 {
@@ -30,7 +26,7 @@ class DIContainerTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \InvalidArgumentException
+     *  @expectedException \InvalidArgumentException
      */
     public function testThatContainerCanStoreRawValues()
     {
@@ -66,7 +62,7 @@ class DIContainerTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \InvalidArgumentException
+     *  @expectedException \InvalidArgumentException
      */
     public function testThatContainerCanCreateObjectsOnTheFly()
     {
@@ -136,7 +132,7 @@ class DIContainerTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \InvalidArgumentException
+     *  @expectedException \InvalidArgumentException
      */
     public function testThatContainerCanBindObjectsAndShareInstances()
     {

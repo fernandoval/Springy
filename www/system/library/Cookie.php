@@ -1,25 +1,22 @@
 <?php
-/**	\file
- *	FVAL PHP Framework for Web Applications.
+/** \file
+ *  Springy
  *
- *  \copyright	Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
- *  \copyright	Copyright (c) 2007-2016 Fernando Val\n
- *	\copyright Copyright (c) 2009-2013 Lucas Cardozo
- *
- *	\brief		Script da classe para tratamento de cookies
- *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.2.5
- *  \author		Fernando Val  - fernando.val@gmail.com
- *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
- *	\ingroup	framework
+ *  \brief      Script da classe para tratamento de cookies.
+ *  \copyright  Copyright (c) 2007-2016 Fernando Val
+ *  \author     Fernando Val  - fernando.val@gmail.com
+ *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
+ *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
+ *  \version    1.2.6
+ *  \ingroup    framework
  */
-namespace FW;
+namespace Springy;
 
 /**
  *  \brief Classe para tratamento de cookies.
- *  
- *  \todo		Implementar correção no método delete.
- *  			Foi detectado que o método delete não deleta de fato, é necessário, após expirar a chave, setar seu valor para vazio.
+ *
+ *  \todo  Implementar correção no método delete.
+ *         Foi detectado que o método delete não deleta de fato, é necessário, após expirar a chave, setar seu valor para vazio.
  */
 class Cookie
 {

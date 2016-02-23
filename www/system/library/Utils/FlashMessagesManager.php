@@ -1,25 +1,20 @@
 <?php
-/**	\file
- *	FVAL PHP Framework for Web Applications.
+/** \file
+ *  Springy
  *
- *  \copyright	Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
- *  \copyright	Copyright (c) 2007-2016 Fernando Val\n
- *	\copyright Copyright (c) 2014 Allan Marques
- *
- *	\brief		Classe que gerenciar dados flash de sessão, ou seja, 
- *              dados que ficam disponíveis por somente um request
- *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	0.1
- *  \author		Allan Marques - allan.marques@ymail.com
- *	\ingroup	framework
+ *  \brief      Classe que gerenciar dados flash de sessão, ou seja, dados que ficam disponíveis por somente um request.
+ *  \copyright  Copyright (c) 2007-2016 Fernando Val
+ *  \author     Allan Marques - allan.marques@ymail.com
+ *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
+ *  \version    0.1.1
+ *  \ingroup    framework
  */
-namespace FW\Utils;
+namespace Springy\Utils;
 
-use FW\Session;
+use Springy\Session;
 
 /**
- * \brief		Classe que gerenciar dados flash de sessão, ou seja, 
- *              dados que ficam disponíveis por somente um request.
+ * \brief Classe que gerenciar dados flash de sessão, ou seja, dados que ficam disponíveis por somente um request.
  */
 class FlashMessagesManager
 {
@@ -35,7 +30,7 @@ class FlashMessagesManager
     protected $flashKey = '__FLASHDATA__';
 
     /**
-     * \brief Construtor da classe.
+     *  \brief Construtor da classe.
      */
     public function __construct()
     {
@@ -50,8 +45,8 @@ class FlashMessagesManager
     }
 
     /**
-     * \brief Seta o container de mensagens de erros que serão guardados para o próximo request
-     * \param [in] (\FW\Utils\MessageContainer) $errors - Container de mensagem de erros.
+     *  \brief Seta o container de mensagens de erros que serão guardados para o próximo request.
+     *  \param [in] (\Springy\Utils\MessageContainer) $errors - Container de mensagem de erros.
      */
     public function setErrors(MessageContainer $errors)
     {
@@ -59,8 +54,8 @@ class FlashMessagesManager
     }
 
     /**
-     * \brief Retorna o container de mensagens de erros que serão guardados para o próximo request
-     * \return (\FW\Utils\MessageContainer).
+     *  \brief Retorna o container de mensagens de erros que serão guardados para o próximo request.
+     *  \return (\Springy\Utils\MessageContainer).
      */
     public function errors()
     {
@@ -68,8 +63,8 @@ class FlashMessagesManager
     }
 
     /**
-     * \brief Seta o container de mensagens genéricas que serão guardadas para o próximo request
-     * \param [in] (\FW\Utils\MessageContainer) $errors - Container de mensagem de erros.
+     *  \brief Seta o container de mensagens genéricas que serão guardadas para o próximo request.
+     *  \param [in] (\Springy\Utils\MessageContainer) $errors - Container de mensagem de erros.
      */
     public function setMessages(MessageContainer $messages)
     {
@@ -77,8 +72,8 @@ class FlashMessagesManager
     }
 
     /**
-     * \brief Retorna o container de mensagens genéricas que serão guardadas para o próximo request
-     * \return (\FW\Utils\MessageContainer).
+     *  \brief Retorna o container de mensagens genéricas que serão guardadas para o próximo request.
+     *  \return (\Springy\Utils\MessageContainer).
      */
     public function messages()
     {
@@ -86,8 +81,8 @@ class FlashMessagesManager
     }
 
     /**
-     * \brief Retorna o container de mensagens de erros que foram guardados no último request
-     * \return (\FW\Utils\MessageContainer).
+     *  \brief Retorna o container de mensagens de erros que foram guardados no último request.
+     *  \return (\Springy\Utils\MessageContainer).
      */
     public function lastErrors()
     {
@@ -95,8 +90,8 @@ class FlashMessagesManager
     }
 
     /**
-     * \brief Retorna o container de mensagens genéricas que foram guardadas no último request
-     * \return (\FW\Utils\MessageContainer).
+     *  \brief Retorna o container de mensagens genéricas que foram guardadas no último request.
+     *  \return (\Springy\Utils\MessageContainer).
      */
     public function lastMessages()
     {
@@ -104,7 +99,7 @@ class FlashMessagesManager
     }
 
     /**
-     * \brief Carrega os containers de mensagens que foram guardanos no último request, se existirem.
+     *  \brief Carrega os containers de mensagens que foram guardanos no último request, se existirem.
      */
     protected function loadLastSessionData()
     {
@@ -120,7 +115,7 @@ class FlashMessagesManager
     }
 
     /**
-     * \brief Guarda as mensagens para serem carregadas no próximo request.
+     *  \brief Guarda as mensagens para serem carregadas no próximo request.
      */
     protected function registerSessionData()
     {
@@ -140,7 +135,7 @@ class FlashMessagesManager
     }
 
     /**
-     * \brief Destrutor da classe.
+     *  \brief Destrutor da classe.
      */
     public function __destruct()
     {

@@ -1,48 +1,45 @@
 <?php
-/**	\file
- *	FVAL PHP Framework for Web Applications.
+/** \file
+ *  Springy
  *
- *  \copyright	Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
- *  \copyright	Copyright (c) 2007-2016 Fernando Val\n
- *	\copyright Copyright (c) 2009-2013 Lucas Cardozo
+ *  \brief     Classe para pegar arquivos de toda uma árvore de diretórios.
+ *  \copyright  Copyright (c) 2007-2016 Fernando Val
+ *  \author     Fernando Val  - fernando.val@gmail.com
+ *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
+ *  \version    0.3.5
+ *  \ingroup    framework
  *
- *	\brief		Classe para pegar arquivos de toda uma árvore de diretórios
- *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	0.3.4
- *  \author		Fernando Val  - fernando.val@gmail.com
- *	\ingroup	framework
+ *  \b Exemplos:
  *
- *	\b Exemplos:
+ *  \code
+ *  $dir = new DeepDir();
+ *  $dir->setDir('..');
+ *  $dir->load();
+ *  foreach($dir->getFiles() as $pathToFile) {
+ *  	echo $pathToFile."\n";
+ *  }
  *
- *	\code
- *	$dir = new DeepDir();
- *	$dir->setDir('..');
- *	$dir->load();
- *	foreach($dir->getFiles() as $pathToFile) {
- *		echo $pathToFile."\n";
- *	}
+ *  // or
  *
- *	// or
+ *  $dir = new DeepDir('..');
+ *  $dir->load();
+ *  foreach($dir->getFiles() as $pathToFile) {
+ *  	echo $pathToFile."\n";
+ *  }
+ *  \endcode
  *
- *	$dir = new DeepDir('..');
- *	$dir->load();
- *	foreach($dir->getFiles() as $pathToFile) {
- *		echo $pathToFile."\n";
- *	}
- *	\endcode
+ *  Esta classe foi baseada no excelente trabalho de Ilya Nemihin.\n
+ *  Conversão para PHP 5, melhorias, documentação e adaptação por Fernando Val.
  *
- *	Esta classe foi baseada no excelente trabalho de Ilya Nemihin.\n
- *	Conversão para PHP 5, melhorias, documentação e adaptação por Fernando Val.
+ *  \author (c) Ilya Nemihin
  *
- *	\author (c) Ilya Nemihin
- *
- *	Para baixar a classe original use o seguinte endereço:
- *	http://www.phpclasses.org/browse.html/package/1025.html
+ *  Para baixar a classe original use o seguinte endereço:
+ *  http://www.phpclasses.org/browse.html/package/1025.html
  */
-namespace FW;
+namespace Springy;
 
 /**
- *  \brief Classe para pegar arquivos de toda uma árvore de diretórios
+ *  \brief  Classe para pegar arquivos de toda uma árvore de diretórios.
  *	\author (c) Ilya Nemihin
  *	\author Fernando Val - fernando.val@gmail.com.
  */

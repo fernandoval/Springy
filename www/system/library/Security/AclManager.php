@@ -1,24 +1,21 @@
 <?php
-/**	\file
- *	FVAL PHP Framework for Web Applications.
+/** \file
+ *  Springy
  *
- *  \copyright	Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
- *  \copyright	Copyright (c) 2007-2016 Fernando Val\n
- *	\copyright Copyright (c) 2014 Allan Marques
- *
- *	\brief		Classe para gerenciamento de permissões de identidades autenticadas na aplicação
- *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	0.1
- *  \author		Allan Marques - allan.marques@ymail.com
- *	\ingroup	framework
+ *  \brief      Classe para gerenciamento de permissões de identidades autenticadas na aplicação.
+ *  \copyright  Copyright (c) 2007-2016 Fernando Val
+ *  \author     Allan Marques - allan.marques@ymail.com
+ *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
+ *  \version    0.1.1
+ *  \ingroup    framework
  */
-namespace FW\Security;
+namespace Springy\Security;
 
-use FW\Kernel;
-use FW\URI;
+use Springy\Kernel;
+use Springy\URI;
 
 /**
- * \brief		Classe para gerenciamento de permissões de identidades autenticadas na aplicação.
+ * \brief Classe para gerenciamento de permissões de identidades autenticadas na aplicação.
  */
 class AclManager
 {
@@ -38,8 +35,8 @@ class AclManager
     protected $defaultModule = 'default';
 
     /**
-     * \brief Construtor da classe
-     * \param [in] (\FW\Security\AclUserInterface) $user.
+     *  \brief Construtor da classe.
+     *  \param [in] (\Springy\Security\AclUserInterface) $user.
      */
     public function __construct(AclUserInterface $user)
     {
@@ -49,7 +46,7 @@ class AclManager
     }
 
     /**
-     * \brief Define em qual ação de permissão o usuário se encontra atualmente.
+     *  \brief Define em qual ação de permissão o usuário se encontra atualmente.
      */
     public function setupCurrentAclObject()
     {
@@ -59,8 +56,8 @@ class AclManager
     }
 
     /**
-     * \brief Retorna o módulo sendo acessado no request atual
-     * \return (string).
+     *  \brief Retorna o módulo sendo acessado no request atual.
+     *  \return (string).
      */
     public function getCurrentModule()
     {
@@ -68,8 +65,8 @@ class AclManager
     }
 
     /**
-     * \brief Retorna o controller sendo acessado no request atual
-     * \return (string).
+     *  \brief Retorna o controller sendo acessado no request atual.
+     *  \return (string).
      */
     public function getCurrentController()
     {
@@ -77,8 +74,8 @@ class AclManager
     }
 
     /**
-     * \brief Retorna a ação sendo acessada no request atual
-     * \return (string).
+     *  \brief Retorna a ação sendo acessada no request atual.
+     *  \return (string).
      */
     public function getCurrentAction()
     {
@@ -86,8 +83,8 @@ class AclManager
     }
 
     /**
-     * \brief Seta o prefixo dos módulos
-     * \param [in] (string) $modulePrefix.
+     *  \brief Seta o prefixo dos módulos.
+     *  \param [in] (string) $modulePrefix.
      */
     public function setModulePrefix($modulePrefix)
     {
@@ -95,8 +92,8 @@ class AclManager
     }
 
     /**
-     * \brief Retorna o prefixo dos módulos
-     * \return (string).
+     *  \brief Retorna o prefixo dos módulos.
+     *  \return (string).
      */
     public function getModulePrefix()
     {
@@ -104,8 +101,8 @@ class AclManager
     }
 
     /**
-     * \brief Seta o separador do nome da permissão
-     * \param [in] (string) $separator.
+     *  \brief Seta o separador do nome da permissão.
+     *  \param [in] (string) $separator.
      */
     public function setSeparator($separator)
     {
@@ -113,8 +110,8 @@ class AclManager
     }
 
     /**
-     * \brief Retorna o separador do nome da permissão
-     * \return (string).
+     *  \brief Retorna o separador do nome da permissão.
+     *  \return (string).
      */
     public function getSeparator()
     {
@@ -122,8 +119,8 @@ class AclManager
     }
 
     /**
-     * \brief Seta o nome do módulo padrão
-     * \param [in] (string) $module.
+     *  \brief Seta o nome do módulo padrão.
+     *  \param [in] (string) $module.
      */
     public function setDefaultModule($module)
     {
@@ -131,8 +128,8 @@ class AclManager
     }
 
     /**
-     * \brief Retorna o nome do módulo padrão
-     * \return (string).
+     *  \brief Retorna o nome do módulo padrão.
+     *  \return (string).
      */
     public function getDefaultModule()
     {
@@ -140,8 +137,8 @@ class AclManager
     }
 
     /**
-     * \brief Seta o usuário 
-     * \param [in] (\FW\Security\AclUserInterface) $user.
+     *  \brief Seta o usuário.
+     *  \param [in] (\Springy\Security\AclUserInterface) $user.
      */
     public function setAclUser(AclUserInterface $user)
     {
@@ -149,8 +146,8 @@ class AclManager
     }
 
     /**
-     * \brief Retorna o usuário
-     * \return (\FW\Security\AclUserInterface).
+     *  \brief Retorna o usuário.
+     *  \return (\Springy\Security\AclUserInterface).
      */
     public function getAclUser()
     {
@@ -158,8 +155,8 @@ class AclManager
     }
 
     /**
-     * \brief Verifica se o usuário atual tem permissão à acessar o recurso atual
-     * \return (boolean).
+     *  \brief Verifica se o usuário atual tem permissão à acessar o recurso atual.
+     *  \return (boolean).
      */
     public function isPermitted()
     {
@@ -167,8 +164,8 @@ class AclManager
     }
 
     /**
-     * \brief Retorna o nome do recurso atual, equivalente à permissão
-     * \return (string).
+     *  \brief Retorna o nome do recurso atual, equivalente à permissão.
+     *  \return (string).
      */
     public function getAclObjectName()
     {

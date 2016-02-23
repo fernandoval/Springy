@@ -1,17 +1,15 @@
 <?php
-/**	\file
- *	FVAL PHP Framework for Web Applications.
+/** \file
+ *  Springy
  *
- *  \copyright	Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
- *	\copyright Copyright (c) 2009-2013 Lucas Cardozo
- *
- *	\brief		Classe stática para tratamento JSON
- *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.2.2
- *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
- *	\ingroup	framework
+ *  \brief      Classe stática para tratamento JSON.
+ *  \copyright  Copyright (c) 2009-2013 Lucas Cardozo
+ *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
+ *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
+ *  \version    1.2.2
+ *  \ingroup    framework
  */
-namespace FW\Utils;
+namespace Springy\Utils;
 
 /**
  *  \brief Classe stática para tratamento JSON.

@@ -1,18 +1,15 @@
 <?php
-/**  \file
- *  FVAL PHP Framework for Web Applications.
+/** \file
+ *  Springy
  *
- *  \copyright Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
- *  \copyright Copyright (c) 2007-2016 Fernando Val\n
- *  \copyright Copyright (c) 2014 Allan Marques
- *
- *  \brief     Test case for Classe com métodos para diversos tipos de tratamento e validação de dados string
- *  \warning   Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version   0.2
- *  \author    Allan Marques - allan.marques@ymail.com
- *  \ingroup   tests
+ *  \brief      Test case for Classe com métodos para diversos tipos de tratamento e validação de dados string.
+ *  \copyright  Copyright (c) 2007-2016 Fernando Val
+ *  \author     Allan Marques - allan.marques@ymail.com
+ *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
+ *  \version    0.2.1
+ *  \ingroup    tests
  */
-use FW\Utils\Strings;
+use Springy\Utils\Strings;
 
 class StringsTest extends PHPUnit_Framework_TestCase
 {

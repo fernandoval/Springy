@@ -1,22 +1,19 @@
 <?php
-/**	\file
- *	FVAL PHP Framework for Web Applications.
+/** \file
+ *  Springy
  *
- *  \copyright  Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
- *  \copyright	Copyright (c) 2007-2016 Fernando Val\n
- *	\copyright  Copyright (c) 2011-2013 Lucas Cardozo
- *
- *	\brief      Classe de construção e tratamento de objetos JSON
- *	\warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version    1.0.4
+ *  \brief      Classe de construção e tratamento de objetos JSON.
+ *  \copyright  Copyright (c) 2007-2016 Fernando Val
  *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
- *  \author		Fernando Val  - fernando.val@gmail.com
- *	\ingroup    framework
+ *  \author     Fernando Val  - fernando.val@gmail.com
+ *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
+ *  \version    1.0.6
+ *  \ingroup    framework
  */
-namespace FW\Utils;
+namespace Springy\Utils;
 
-use FW\Configuration;
-use FW\Kernel;
+use Springy\Configuration;
+use Springy\Kernel;
 
 /**
  *  \brief Classe de construção e tratamento de objetos JSON.

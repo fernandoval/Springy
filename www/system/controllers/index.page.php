@@ -6,7 +6,7 @@
  *  \copyright  Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
  *  \author     Fernando Val - fernando.val@gmail.com
  */
-use \FW\Controller;
+use \Springy\Controller;
 
 class Index_Controller extends Controller
 {
@@ -19,9 +19,9 @@ class Index_Controller extends Controller
     {
         $date = date('F j, Y');
 
-        FW\Kernel::debug('Exemplo de debug 1');
-        FW\Kernel::debug('Exemplo de debug 2', 'Exemplo com título');
-        FW\Kernel::debug('Exemplo de debug 3', 'Título do Exemplo 3', false, false);
+        Springy\Kernel::debug('Exemplo de debug 1');
+        Springy\Kernel::debug('Exemplo de debug 2', 'Exemplo com título');
+        Springy\Kernel::debug('Exemplo de debug 3', 'Título do Exemplo 3', false, false);
 
         $tpl = $this->_template();
         $tpl->assign('date', $date);

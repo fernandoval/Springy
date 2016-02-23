@@ -1,20 +1,17 @@
 <?php
-/**	\file
- *	FVAL PHP Framework for Web Applications.
+/** \file
+ *  Springy
  *
- *  \copyright	Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
- *  \copyright	Copyright (c) 2007-2016 Fernando Val\n
- *	\copyright Copyright (c) 2014 Allan Marques
- *
- *	\brief		Classe de intermediadora de administração de eventos
- *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	0.2
- *  \author		Allan Marques - allan.marques@ymail.com
- *	\ingroup	framework
+ *  \brief      Classe de intermediadora de administração de eventos.
+ *  \copyright  Copyright (c) 2007-2016 Fernando Val
+ *  \author     Allan Marques - allan.marques@ymail.com
+ *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
+ *  \version    0.2.1
+ *  \ingroup    framework
  */
-namespace FW\Events;
+namespace Springy\Events;
 
-use FW\Container\DIContainer;
+use Springy\Container\DIContainer;
 
 /**
  * \brief Classe de intermediadora de administração de eventos.
@@ -287,7 +284,7 @@ class Mediator
 
     /**
      * \brief Cria e retorna uma nova instancia desta classe
-     * \param \FW\Container\DIContainer $container
+     * \param \Springy\Container\DIContainer $container
      * \return \static.
      */
     public static function newInstance(DIContainer $container = null)

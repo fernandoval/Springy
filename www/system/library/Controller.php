@@ -1,19 +1,17 @@
 <?php
 /** \file
- *  FVAL PHP Framework for Web Applications.
+ *  Springy
  *
- *  \copyright  Copyright (c) 2016 FVAL Consultoria e Informática Ltda.\n
- *  \copyright  Copyright (c) 2016 Fernando Val\n
- *
- *  \brief      Class Controller
- *  \note       This class can be used to construct application controllers.
- *  \version    0.1.1 beta
+ *  \brief      Class Controller.
+ *  \copyright  Copyright (c) 2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
+ *  \note       This class can be used to construct application controllers.
+ *  \version    0.1.2
  *  \ingroup    framework
  */
-namespace FW;
+namespace Springy;
 
-use FW\Security\AclManager;
+use Springy\Security\AclManager;
 
 class Controller extends AclManager
 {

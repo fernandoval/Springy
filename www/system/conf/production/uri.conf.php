@@ -1,10 +1,8 @@
 <?php
 /** \file
- *  \brief Configurações da classe URI.
- *
- *  \warning Este arquivo é parte integrante do framework e não pode ser omitido
- *
- *  \copyright	Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
+ *  \brief      Configurations for Springy\URI class.
+ *  \copyright  Copyright (c) 2007-2016 Fernando Val
+ *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
  */
 
 /**

@@ -34,7 +34,7 @@ class Global_Controller
 
         // Start the security hasher for user passwords. We like BCrypt, but you can use another you prefer.
         $app->bind('security.hasher', function () {
-            return $hasher = new FW\Security\BCryptHasher();
+            return $hasher = new Springy\Security\BCryptHasher();
         });
 
         // Define the user model class. We made a sample model class User. You can change it or use another.
@@ -48,19 +48,19 @@ class Global_Controller
             $hasher = $c['security.hasher'];
             $user = $c['user.auth.identity'];
 
-            return new FW\Security\DBAuthDriver($hasher, $user);
+            return new Springy\Security\DBAuthDriver($hasher, $user);
         });
 
         // Define the authentication manager for you application. Change the methods in your user model class.
         $app->instance('user.auth.manager', function ($c) {
-            return new FW\Security\Authentication($c['user.auth.driver']);
+            return new Springy\Security\Authentication($c['user.auth.driver']);
         });
 
         // Initiate the flash message manager. This is used by Errors class. Do not remove it.
-        $app->instance('session.flashdata', new FW\Utils\FlashMessagesManager());
+        $app->instance('session.flashdata', new Springy\Utils\FlashMessagesManager());
 
         // Initiate the input helper. You can remove it ou can use it. :)
-        $app->instance('input', new FW\Core\Input());
+        $app->instance('input', new Springy\Core\Input());
     }
 
     /**
@@ -72,26 +72,26 @@ class Global_Controller
     private function bindDefaultTemplateVars()
     {
         // Informa para o template se o site está com SSL
-        FW\Kernel::assignTemplateVar('HTTPS', isset($_SERVER['HTTPS']));
+        Springy\Kernel::assignTemplateVar('HTTPS', isset($_SERVER['HTTPS']));
 
         // Inicializa as URLs estáticas
-        FW\Kernel::assignTemplateVar('urlJS', FW\URI::buildURL([FW\Configuration::get('uri', 'js_dir')], [], true, 'static'));
-        FW\Kernel::assignTemplateVar('urlCSS', FW\URI::buildURL([FW\Configuration::get('uri', 'css_dir')], [], true, 'static'));
-        FW\Kernel::assignTemplateVar('urlIMG', FW\URI::buildURL([FW\Configuration::get('uri', 'images_dir')], [], true, 'static'));
-        FW\Kernel::assignTemplateVar('urlSWF', FW\URI::buildURL([FW\Configuration::get('uri', 'swf_dir')], [], true, 'static'));
+        Springy\Kernel::assignTemplateVar('urlJS', Springy\URI::buildURL([Springy\Configuration::get('uri', 'js_dir')], [], true, 'static'));
+        Springy\Kernel::assignTemplateVar('urlCSS', Springy\URI::buildURL([Springy\Configuration::get('uri', 'css_dir')], [], true, 'static'));
+        Springy\Kernel::assignTemplateVar('urlIMG', Springy\URI::buildURL([Springy\Configuration::get('uri', 'images_dir')], [], true, 'static'));
+        Springy\Kernel::assignTemplateVar('urlSWF', Springy\URI::buildURL([Springy\Configuration::get('uri', 'swf_dir')], [], true, 'static'));
 
         // Sample how to define a template function
-        FW\Kernel::registerTemplateFunction('function', 'sampleFunction', 'sampleTemplateFunction');
+        Springy\Kernel::registerTemplateFunction('function', 'sampleFunction', 'sampleTemplateFunction');
 
         // Inicializa as URLs do site
-        // FW\Kernel::assignTemplateVar('urlMain', FW\URI::buildURL(['']));
-        // FW\Kernel::assignTemplateVar('urlLogin', FW\URI::buildURL(['login'], [], true, 'secure'));
-        // FW\Kernel::assignTemplateVar('urlLogut', FW\URI::buildURL(['logout'], [], true, 'secure'));
+        // Springy\Kernel::assignTemplateVar('urlMain', Springy\URI::buildURL(['']));
+        // Springy\Kernel::assignTemplateVar('urlLogin', Springy\URI::buildURL(['login'], [], true, 'secure'));
+        // Springy\Kernel::assignTemplateVar('urlLogut', Springy\URI::buildURL(['logout'], [], true, 'secure'));
 
         // conta o número de parêmetros _GET na URL
-        FW\Kernel::assignTemplateVar('numParamURL', count(FW\URI::getParams()));
+        Springy\Kernel::assignTemplateVar('numParamURL', count(Springy\URI::getParams()));
         // pegando a URL atual sem paramêtros para passar a tag canonical do google
-        FW\Kernel::assignTemplateVar('urlCurrentURL', FW\URI::buildURL(FW\URI::getAllSegments(), [], true));
+        Springy\Kernel::assignTemplateVar('urlCurrentURL', Springy\URI::buildURL(Springy\URI::getAllSegments(), [], true));
     }
 }
 

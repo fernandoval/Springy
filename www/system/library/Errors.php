@@ -1,21 +1,18 @@
 <?php
 /** \file
- *  FVAL PHP Framework for Web Applications.
+ *  Springy
  *
- *  \copyright  Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
- *  \copyright  Copyright (c) 2007-2016 Fernando Val\n
- *  \copyright  Copyright (c) 2009-2013 Lucas Cardozo
- *
- *  \brief      Classe para tratamento de erros
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    2.2.34
+ *  \brief      Classe para tratamento de erros.
+ *  \copyright  Copyright (c) 2007-2016 Fernando Val
  *  \author     Fernando Val  - fernando.val@gmail.com
  *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
+ *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
+ *  \version    2.2.35
  *  \ingroup    framework
  */
-namespace FW;
+namespace Springy;
 
-use FW\Utils\Strings;
+use Springy\Utils\Strings;
 
 /**
  *  \brief Classe para tratamento de erros.

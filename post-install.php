@@ -1,14 +1,13 @@
 <?php
 /** \file
- *  FVAL PHP Framework for Web Applications.
+ *  Springy
  *
  *  Post Install/Update Script for Composer
  *
- *  \copyright Copyright ₢ 2015 FVAL Consultoria e Informática Ltda.\n
- *  \copyright Copyright ₢ 2015 Fernando Val\n
+ *  \copyright Copyright (c) 2015-2016 Fernando Val
  *
  *  \brief    Post Install/Update Script for Composer
- *  \version  2.1.5
+ *  \version  2.1.6
  *  \author   Fernando Val - fernando.val@gmail.com
  *
  *  This script is executed by Composer after the install/update process.

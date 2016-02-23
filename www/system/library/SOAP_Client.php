@@ -1,17 +1,15 @@
 <?php
 /**	\file
- *	FVAL PHP Framework for Web Applications.
+ *	Springy
  *
- *  \copyright	Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
- *  \copyright	Copyright (c) 2007-2016 Fernando Val\n
- *
- *	\brief		Classe para cliente SOAP
+ *	\brief		Classe para cliente SOAP.
+ *  \copyright	Copyright (c) 2007-2016 Fernando Val
+ *  \author		Fernando Val  - fernando.val@gmail.com
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
  *	\version	2.0.12
- *  \author		Fernando Val  - fernando.val@gmail.com
  *	\ingroup	framework
  */
-namespace FW;
+namespace Springy;
 
 /**
  *  \brief Classe para cliente SOAP.
@@ -83,7 +81,7 @@ class SOAP_Client
         Errors::regard([0, E_WARNING, E_ERROR]);
 
         set_time_limit(30);
-        // set_error_handler('FW_ErrorHandler');
+        // set_error_handler('springyErrorHandler');
 
         return true;
     }
@@ -117,7 +115,7 @@ class SOAP_Client
         }
         Errors::regard([0, E_WARNING]);
 
-        // set_error_handler('FW_ErrorHandler');
+        // set_error_handler('springyErrorHandler');
         set_time_limit(30);
 
         return true;

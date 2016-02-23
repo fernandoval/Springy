@@ -1,18 +1,16 @@
 <?php
 /**	\file
- *	FVAL PHP Framework for Web Applications.
+ *	Springy
  *
- *  \copyright	Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
- *  \copyright	Copyright (c) 2007-2016 Fernando Val\n
- *
- *	\brief		Classe para construção de arquivos no formato Microsoft(R) Excel(R)
- *	\note		Classe baseada no trabalho de Harish Chauhan de 31/12/2004
- *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	0.4.4
- *  \author		Fernando Val  - fernando.val@gmail.com
- *	\ingroup	framework
+ *	\brief      Classe para construção de arquivos no formato Microsoft(R) Excel(R).
+ *  \copyright  Copyright (c) 2007-2016 Fernando Val
+ *  \author     Fernando Val  - fernando.val@gmail.com
+ *	\note       Classe baseada no trabalho de Harish Chauhan de 31/12/2004
+ *	\warning    Este arquivo é parte integrante do framework e não pode ser omitido
+ *	\version    0.4.5
+ *	\ingroup    framework
  */
-namespace FW;
+namespace Springy\Utils;
 
 /**
  *  \brief Classe para construção de arquivos no formato Microsoft(R) Excel(R).
@@ -255,19 +253,19 @@ class Excel
         }
 
         $this->columns = [];
-        $this->open_row();
+        $this->openRow();
         foreach ($columns as $column) {
             if (!is_array($column) || !isset($column['name']) || !isset($column['title']) || !isset($column['type'])) {
-                $this->close_row();
+                $this->closeRow();
                 $this->error = self::ERR_INVALID_ARGUMENT_ARRAY;
 
                 return false;
             }
 
             $this->columns[$column['name']] = $column;
-            $this->add_col($column['name']);
+            $this->addCol($column['name']);
         }
-        $this->close_row();
+        $this->closeRow();
         $this->newRow = false;
     }
 
