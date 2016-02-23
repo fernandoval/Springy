@@ -2,7 +2,7 @@
 /** \file
  *  \brief      Configurations for Springy\Template class.
  *  \copyright  Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
+ *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido.
  */
 
 /**

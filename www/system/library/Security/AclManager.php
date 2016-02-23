@@ -1,6 +1,6 @@
 <?php
 /** \file
- *  Springy
+ *  Springy.
  *
  *  \brief      Classe para gerenciamento de permissões de identidades autenticadas na aplicação.
  *  \copyright  Copyright (c) 2007-2016 Fernando Val

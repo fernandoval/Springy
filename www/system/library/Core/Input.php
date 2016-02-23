@@ -1,6 +1,6 @@
 <?php
 /** \file
- *  Springy
+ *  Springy.
  *
  *  \brief      Classe para gerenciamento de dados de input de usuário (GET e POST)
  *  \copyright  Copyright (c) 2007-2016 Fernando Val

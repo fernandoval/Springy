@@ -1,6 +1,6 @@
 <?php
 /** \file
- *  Springy
+ *  Springy.
  *
  *  \brief      Classe para tratamento de erros.
  *  \copyright  Copyright (c) 2007-2016 Fernando Val

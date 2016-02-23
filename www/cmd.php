@@ -1,6 +1,6 @@
 <?php
 /** \file
- *  Springy
+ *  Springy.
  *
  *	\brief      Script de execução via shell para crontab
  *  \copyright  Copyright (c) 2007-2016 Fernando Val

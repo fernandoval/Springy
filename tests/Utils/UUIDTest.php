@@ -1,6 +1,6 @@
 <?php
 /** \file
- *  Springy
+ *  Springy.
  *
  *  \brief      Test class for UUID framework library class.
  *  \copyright  Copyright (c) 2007-2015 Fernando Val

@@ -1,7 +1,7 @@
 #!/usr/bin/php
 <?php
 /** \file
- *  Springy
+ *  Springy.
  *
  *	\brief     This is a database migration script
  *  \copyright Copyright (c) 2007-2016 Fernando Val

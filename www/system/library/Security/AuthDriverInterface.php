@@ -1,6 +1,6 @@
 <?php
 /**  \file
- *  Springy
+ *  Springy.
  *
  *  \brief      Interface para padronizar os drivers de autenticação de identidades.
  *  \copyright  Copyright (c) 2007-2016 Fernando Val

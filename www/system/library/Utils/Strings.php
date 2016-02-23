@@ -1,6 +1,6 @@
 <?php
 /** \file
- *  Springy
+ *  Springy.
  *
  *  \brief      Classe com métodos para diversos tipos de tratamento e validação de dados string.
  *  \copyright  Copyright (c) 2007-2016 Fernando Val

@@ -1,6 +1,6 @@
 <?php
 /** \file
- *  Springy
+ *  Springy.
  *
  *  \brief      Test case for Classe container de mensagens de texto.
  *  \copyright  Copyright (c) 2007-2015 Fernando Val

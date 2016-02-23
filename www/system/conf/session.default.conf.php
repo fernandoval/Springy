@@ -2,7 +2,7 @@
 /** \file
  *  \brief      Configutarions for Springy\Session class.
  *  \copyright  Copyright (c) 2007-2016 Fernando Val
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
+ *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido.
  */
 
 /**

@@ -1,6 +1,6 @@
 <?php
 /**	\file
- *  Springy
+ *  Springy.
  *
  *  \brief		Classe para geração de arquivos ZIP.
  *  \copyright	Copyright (c) 2007-2016 Fernando Val

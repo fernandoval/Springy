@@ -1,6 +1,6 @@
 <?php
 /** \file
- *  Springy
+ *  Springy.
  *
  *  \brief      Classe de container para inversão de controle (Dependecy Injection)
  *  \copyright  Copyright (c) 2007-2016 Fernando Val

@@ -1,6 +1,6 @@
 <?php
 /** \file
- *  Springy
+ *  Springy.
  *
  *  \brief      Class Controller.
  *  \copyright  Copyright (c) 2016 Fernando Val

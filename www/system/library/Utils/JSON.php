@@ -1,6 +1,6 @@
 <?php
 /** \file
- *  Springy
+ *  Springy.
  *
  *  \brief      Classe de construção e tratamento de objetos JSON.
  *  \copyright  Copyright (c) 2007-2016 Fernando Val

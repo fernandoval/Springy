@@ -1,6 +1,6 @@
 <?php
 /**	\file
- *	Springy
+ *	Springy.
  *
  *	\brief		Classe para geração de saídas em logs de eventos.
  *  \copyright	Copyright (c) 2007-2016 Fernando Val

@@ -1,6 +1,6 @@
 <?php
 /** \file
- *  Springy
+ *  Springy.
  *
  *  \brief      System initialization script
  *  \copyright  Copyright ₢ 2007-2016 Fernando Val
