@@ -8,7 +8,7 @@
  *
  *  \brief      Script da classe cerne do framework
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    2.1.58
+ *  \version    2.1.59
  *  \author     Fernando Val  - fernando.val@gmail.com
  *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
  *  \ingroup    framework
@@ -23,7 +23,7 @@ namespace FW;
 class Kernel
 {
     /// Versão do framework
-    const VERSION = '3.3.1';
+    const VERSION = '3.4.0';
 
     /// Kernel constants
     const PATH_CLASS = 'CLASS';

@@ -2,7 +2,7 @@
 /** \mainpage
  *  ## FVAL PHP Framework.
  *  
- *  \version 3.3.1
+ *  \version 3.4.0
  *  
  *  http://framework.fval.net.br
  *  

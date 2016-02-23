@@ -8,7 +8,7 @@
  *  \brief      Classe Model para acesso a banco de dados
  *  \note       Essa classe extende a classe DB.
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    1.23.32
+ *  \version    1.24.33
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \ingroup    framework
  */
@@ -478,46 +478,21 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     *  \brief Deleta o registro.
+     *  \brief Delete one or more rows.
      *
-     *  Promove a exclusão física ou lógica de registros
+     *  This method deletes the curret row or many rows if the $filter is given.
      *
-     *  \param (array)$filter - filtro dos registros a serem deletados.
-     *      Se omitido (ou null), default, deleta o registro carregado na classe
-     *  \return Retorna o número de linhas afetadas ou FALSE em caso contrário.
+     *  \param $filter is an array with a match criteria.
+     *      If ommited (or null), default, deletes the current row selected.
+     *  \return Returns the number of affected rows or false.
      */
     public function delete(array $filter = null)
     {
-        // Se está carregado e não foi passado um filtro, exclui o registro corrente
-        if ($this->loaded && is_null($filter)) {
-            // Abandona se a chave primária não estiver definida
-            if (!$this->isPrimaryKeyDefined()) {
-                return false;
-            }
+        $where = [];
+        $params = [];
 
-            // Monta a chave primária
-            $apk = [];
-            $primary = explode(',', $this->primaryKey);
-            foreach ($primary as $column) {
-                $apk[] = $column.' = ?';
-                $values[] = $this->rows[0][$column];
-            }
-
-            // Faz a exclusão lógica ou física do registro
-            if (!$this->triggerBeforeDelete()) {
-                return false;
-            }
-            if (!empty($this->deletedColumn)) {
-                array_unshift($values, 1);
-                $this->execute('UPDATE '.$this->tableName.' SET '.$this->deletedColumn.' = ? WHERE '.implode(' AND ', $apk), $values);
-            } else {
-                $this->execute('DELETE FROM '.$this->tableName.' WHERE '.implode(' AND ', $apk), $values);
-            }
-            $this->triggerAfterDelete();
-        } else {
-            $where = [];
-            $params = [];
-
+        // Has a filter?
+        if (!is_null($filter)) {
             // Monta o conjunto de filtros personalizado da classe herdeira
             if (!$this->filter($filter, $where, $params)) {
                 return false;
@@ -543,6 +518,31 @@ class Model extends DB implements \Iterator
                 $this->execute('DELETE FROM '.$this->tableName.' WHERE '.implode(' AND ', $where), $params);
             }
             // $this->triggerAfterDelete();
+        } elseif ($this->valid()) {
+            // Abandona se a chave primária não estiver definida
+            if (!$this->isPrimaryKeyDefined()) {
+                return false;
+            }
+
+            // Monta a chave primária
+            foreach (explode(',', $this->primaryKey) as $column) {
+                $where[] = $column.' = ?';
+                $params[] = $this->get($column);
+            }
+
+            // Faz a exclusão lógica ou física do registro
+            if (!$this->triggerBeforeDelete()) {
+                return false;
+            }
+            if (!empty($this->deletedColumn)) {
+                array_unshift($params, 1);
+                $this->execute('UPDATE '.$this->tableName.' SET '.$this->deletedColumn.' = ? WHERE '.implode(' AND ', $where), $params);
+            } else {
+                $this->execute('DELETE FROM '.$this->tableName.' WHERE '.implode(' AND ', $where), $params);
+            }
+            $this->triggerAfterDelete();
+        } else {
+            return false;
         }
 
         return $this->affectedRows();
