@@ -6,7 +6,7 @@
  *  \copyright  Copyright (c) 2007-2016 Fernando Val
  *  \author     Allan Marques - allan.marques@ymail.com
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.2.1
+ *  \version    0.2.2
  *  \ingroup    framework
  */
 namespace Springy\Events;
@@ -149,8 +149,6 @@ class Mediator
 
             return $responses;
         }
-
-        return;
     }
 
     /**
@@ -191,7 +189,7 @@ class Mediator
     }
 
     /**
-     * \brief Cria um handler de acordo com o nome do objeto e ação passado por parâmetro, 
+     * \brief Cria um handler de acordo com o nome do objeto e ação passado por parâmetro,
      *        resolvido pelo container de aplicação (Ex. cache@store)
      * \param [in] (variant) $handler - Handler para ser criado
      * \return \Closure.

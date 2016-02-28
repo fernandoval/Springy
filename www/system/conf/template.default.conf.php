@@ -8,12 +8,12 @@
 /**
  *  \addtogroup templatecfg Configurações da classe de templates
  *  \ingroup config.
- *  
+ *
  *  As entradas de configuração dos arquivos \c template, são utilizadas pela classe Template, sendo que as entradas previamente definidas não podem ser omitidas
  *  sob risco de dano à aplicação.
- *  
+ *
  *  Você poderá adicionar entradas personalizadas de sua aplicação.
- *  
+ *
  *  Entradas de configuração:
  *  - \c template_engine - Define a classe de renderização de templates. Os valores aceitos são:\n
  *      'smarty' - para utilizar a classe Smarty como mecanismo de templates;\n
@@ -28,7 +28,7 @@
  *  - \c use_sub_dirs - Valor booleano que informa para a classe de templates que os compilados e cache deverão ser armazenados em subdiretórios.
  *      Esse recurso é importante para aplicações com grande quantidade de páginas/templates ou que utilizem cache de template que gere grande quantidade de arquivos.
  *      Diretórios contendo milhares de arquivos criam problema de performance porque, nesses casos, o sistema de arquivos do sistema operacional demora a responder.
- *  
+ *
  *  \see config
  *
  *  @{
@@ -38,11 +38,11 @@
 /**
  *  \defgroup templatecfg_default Configurações da classe de templates para todos os ambientes
  *  \ingroup templatecfg.
- *  
+ *
  *  As entradas colocadas nesse arquivo serão aplicadas a todos os ambientes do sistema.
- *  
+ *
  *  Veja \link templatecfg Configurações da classe de templates \endlink para entender as entradas de configuração possíveis.
- *  
+ *
  *  \see templatecfg
  */
 /**@{*/

@@ -7,7 +7,7 @@
  *  \author     Fernando Val  - fernando.val@gmail.com
  *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    2.1.61
+ *  \version    2.1.62
  *  \ingroup    framework
  */
 namespace Springy;
@@ -366,7 +366,7 @@ class Kernel
                         '<div> '.($debug[2] ? self::print_rc($debug[3]) : $debug[3]).'</div>'.
                         '<div>'.
                         '<div class="Spring-Debug-Backtrace-Button"><a href="javascript:;" onclick="var obj=$(\'#'.$did.'\').toggle()">open debug backtrace</a></div>'.
-						'<div class="Spring-Debug-Backtrace-Data" id="'.$did.'" style="display:none" class="Spring-Debug-Backtrace">'.self::makeDebugBacktrace($debug[4]).'</div></div>'.
+                        '<div class="Spring-Debug-Backtrace-Data" id="'.$did.'" style="display:none" class="Spring-Debug-Backtrace">'.self::makeDebugBacktrace($debug[4]).'</div></div>'.
                         '</div>';
         }
 

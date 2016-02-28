@@ -7,7 +7,7 @@
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \note       Essa classe extende a classe DB.
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    1.24.34
+ *  \version    1.24.35
  *  \ingroup    framework
  */
 namespace Springy;
@@ -599,14 +599,12 @@ class Model extends DB implements \Iterator
     {
         if (is_null($column)) {
             return current($this->rows);
-        } else {
-            $columns = current($this->rows);
-            if (isset($columns[$column])) {
-                return $columns[$column];
-            }
         }
 
-        return;
+        $columns = current($this->rows);
+        if (isset($columns[$column])) {
+            return $columns[$column];
+        }
     }
 
     /**

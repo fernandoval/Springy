@@ -7,7 +7,7 @@
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \see        https://github.com/PHPMailer/PHPMailer
  *  \warning    This file is part of the framework and can not be omitted
- *  \version    1.0.2
+ *  \version    1.0.3
  *  \ingroup    framework
  */
 namespace Springy\Mail;
@@ -77,7 +77,7 @@ class PHPMailerDriver implements MailDriverInterface
 
     /**
      *  \brief Add an address to 'To' field.
-     *  
+     *
      *  \param $email - the email address
      *  \param $name - the name of the person (optional)
      */
@@ -88,7 +88,7 @@ class PHPMailerDriver implements MailDriverInterface
 
     /**
      *  \brief Add an address to 'BCC' field.
-     *  
+     *
      *  \param $email - the email address
      *  \param $name - the name of the person (optional)
      */
@@ -99,7 +99,7 @@ class PHPMailerDriver implements MailDriverInterface
 
     /**
      *  \brief Add an address to 'CC' field.
-     *  
+     *
      *  \param $email - the email address
      *  \param $name - the name of the person (optional)
      */
@@ -110,7 +110,7 @@ class PHPMailerDriver implements MailDriverInterface
 
     /**
      *  \brief Add a file to be attached to the e-mail.
-     *  
+     *
      *  \param $path - full pathname to the attachment
      *  \param $name - override the attachment name (optional)
      *  \param $type - MIME type/file extension type (optional)
@@ -123,7 +123,7 @@ class PHPMailerDriver implements MailDriverInterface
 
     /**
      *  \brief Set the mail subject.
-     *  
+     *
      *  \param $subject - the subject text
      */
     public function setSubject($subject)
@@ -133,7 +133,7 @@ class PHPMailerDriver implements MailDriverInterface
 
     /**
      *  \brief Set the 'From' field.
-     *  
+     *
      *  \param $email - the email address
      *  \param $name - the name of the person (optional)
      */
@@ -144,7 +144,7 @@ class PHPMailerDriver implements MailDriverInterface
 
     /**
      *  \brief Set the message bo.
-     *  
+     *
      *  \param $body - HTML ou text message body
      *  \param $html - set true if body is HTML ou false if plain text
      */

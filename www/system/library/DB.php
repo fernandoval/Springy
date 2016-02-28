@@ -8,7 +8,7 @@
  *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
  *  \author     Allan Marques - allan.marques@ymail.com
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    1.7.29
+ *  \version    1.7.30
  *  \ingroup    framework
  */
 namespace Springy;
@@ -791,8 +791,6 @@ class DB
         } elseif (preg_match('/^([0-9]{2})\/([0-9]{2})\/([0-9]{4})/', $dateTime)) {
             return \DateTime::createFromFormat('d/m/Y H:i:s', $dateTime)->getTimestamp();
         }
-
-        return;
     }
 
     /**

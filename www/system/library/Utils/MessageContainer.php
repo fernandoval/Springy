@@ -6,7 +6,7 @@
  *  \copyright  Copyright (c) 2007-2016 Fernando Val
  *  \author     Allan Marques - allan.marques@ymail.com
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.1.1
+ *  \version    0.1.2
  *  \ingroup    framework
  */
 namespace Springy\Utils;
@@ -65,8 +65,6 @@ class MessageContainer implements ArrayAccess
 
             return $first[0];
         }
-
-        return;
     }
 
     /**

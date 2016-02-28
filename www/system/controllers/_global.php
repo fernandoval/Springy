@@ -65,7 +65,7 @@ class Global_Controller
 
     /**
      *  \brief Initialize all default global template variables.
-     *  
+     *
      *  This method set values to all template variables used by default for any system template.
      *  You can change it how you want.
      */

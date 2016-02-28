@@ -8,14 +8,14 @@
 /**
  *  \defgroup templatecfg_development Configurações da classe de templates para o ambiente 'development'
  *  \ingroup templatecfg.
- *  
+ *
  *  As entradas colocadas nesse arquivo serão aplicadas apenas ao ambiente 'development'.
- *  
+ *
  *  Seu sistema pode não possuir esse ambiente, então use-o como modelo para criação do arquivo de
  *  parâmetros de configuração para os ambientes que seu sistema possua.
- *  
+ *
  *  Veja \link templatecfg Configurações da classe de templates \endlink para entender as entradas de configuração possíveis.
- *  
+ *
  *  \see templatecfg
  */
 /**@{*/
