@@ -7,7 +7,7 @@
  *  \author     Fernando Val  - fernando.val@gmail.com
  *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    2.1.60
+ *  \version    2.1.61
  *  \ingroup    framework
  */
 namespace Springy;
@@ -361,21 +361,13 @@ class Kernel
             $unit = ['b', 'KB', 'MB', 'GB', 'TB', 'PB'];
             $memoria = round($debug[0] / pow(1024, ($idx = floor(log($debug[0], 1024)))), 2).' '.$unit[$idx];
 
-            $return[] = '
-			<div class="debug_info">
-				<table width="100%" border="0" cellspacing="0" cellpadding="0" align="left">
-				  <thead>
-					<th colspan="2" align="left">'.($debug[1] ? $debug[1].' - ' : '').'Allocated Memory: '.$memoria.'</th>
-				  </thead>
-				  <tr>
-					<td width="50%" valign="top"> '.($debug[2] ? self::print_rc($debug[3]) : $debug[3]).'</td>
-					<td width="50%" valign="top">
-						<a href="javascript:;" onclick="var obj=$(\'#'.$did.'\').toggle()">Debug BackTrace</a>
-						<div id="'.$did.'" style="display:none">'.self::makeDebugBacktrace($debug[4]).'</div></td>
-				  </tr>
-				</table>
-			</div>
-			';
+            $return[] = '<div class="Spring-Debug-Info">'.
+                        '<p>'.($debug[1] ? $debug[1].' - ' : '').'Allocated Memory: '.$memoria.'</p>'.
+                        '<div> '.($debug[2] ? self::print_rc($debug[3]) : $debug[3]).'</div>'.
+                        '<div>'.
+                        '<div class="Spring-Debug-Backtrace-Button"><a href="javascript:;" onclick="var obj=$(\'#'.$did.'\').toggle()">open debug backtrace</a></div>'.
+						'<div class="Spring-Debug-Backtrace-Data" id="'.$did.'" style="display:none" class="Spring-Debug-Backtrace">'.self::makeDebugBacktrace($debug[4]).'</div></div>'.
+                        '</div>';
         }
 
         return implode('<hr />', $return);
@@ -391,15 +383,13 @@ class Kernel
     {
         if (is_object($par)) {
             if (method_exists($par, '__toString')) {
-                return str_replace('&lt;?php', '', str_replace('?&gt;', '', highlight_string('<?php '.var_export($par->__toString(), true).' ?>', true))).
-                (($par instanceof DBSelect || $par instanceof DBInsert || $par instanceof DBUpdate || $par instanceof DBDelete) ? '<br />'.str_replace('&lt;?php', '', str_replace('?&gt;', '', highlight_string('<?php '.var_export($par->getAllValues(), true).' ?>', true))) : '');
+                return str_replace('&lt;?php&nbsp;', '', str_replace('&nbsp;?&gt;', '', highlight_string('<?php '.var_export($par->__toString(), true).' ?>', true))).
+                (($par instanceof DBSelect || $par instanceof DBInsert || $par instanceof DBUpdate || $par instanceof DBDelete) ? '<br />'.str_replace('&lt;?php&nbsp;', '', str_replace('&nbsp;?&gt;', '', highlight_string('<?php '.var_export($par->getAllValues(), true).' ?>', true))) : '');
             } else {
                 return (PHP_SAPI === 'cli' || defined('STDIN')) ? print_r($par, true) : '<pre>'.print_r($par, true).'</pre>';
             }
         } else {
-            return str_replace('&lt;?php', '', str_replace('?&gt;', '',
-                highlight_string('<?php '.print_r($par, true).' ?>', true)
-            ));
+            return str_replace('&lt;?php&nbsp;', '', str_replace('&nbsp;?&gt;', '', highlight_string('<?php '.print_r($par, true).' ?>', true)));
         }
     }
 

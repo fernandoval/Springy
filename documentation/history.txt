@@ -1,22 +1,11 @@
-Springy
-
-Sobre o framework:
-------------------
-
-O Springy foi projetado para ser um framework de desenvolvimentos de aplicações web em PHP no formato MVC, leve, de fácil aprendizado, rico em recursos, adaptável e de execução ágil.
-
-Este framework nasceu a partir de um projeto pessoal de Fernando Val, desenvolvido em 2005, para facilitação de desenvolvimento de projetos e sites baseados em PHP. Em 2007 o projeto foi totalmente reescrito e ganhou orientação a objetos, ainda mantendo-se a compabilidade com a versão 4 do PHP.
-
-No ano de 2008 Lucas Cardozo agregou nova estrutura e recursos ao projeto, transformando-o num micro-framework, utilizado nos projetos da equipe de desenvolvedores PHP liderada por Fernando. Entretanto não havia uma classe com suporte a múltiplas plataformas de sistemas gerenciadores de bancos de dados (SGBD) e apenas o MySQL era suportado.
-
-O framework foi finalmente compilado, remodelado e reestruturado, transformando-se em plataforma MVC, utilizando a classe [Smarty](http://www.smarty.net) como mecanismo de renderização das visões (views), em 2009 por Fernando. O suporte ao PHP 4 foi abandonado e o PHP 5.0 passou a ser menor versão admissível para utilização do framework. A classe de bando de dados [adoDB](http://adodb.sourceforge.net) foi adicionada para suporte a múltiplos SGBD.
-
-Em 2011 a classe adoDB foi abandonada e o mecanismo PDO (PHP Data Objects) foi adotado. Dessa forma a menor versão suportada para utilização do framework passou a ser a 5.1.
-
-
-Framework Update History
+Springy framework update history
 
 ------------------------------------------------------------------------------------ --- -- -
+development
+    - Adjusts in Twig driver;
+    - Enhangements in Twig driver's assetFile() function;
+    - Enhancements in debug system.
+
 3.4.0
     - Framework batizado de Springy;
     - Criação da classe Controller para construção de controllers;
@@ -31,6 +20,7 @@ Framework Update History
 	- Adicionado método Errors::setHook($error, $hook) para permitir hook em caso de erro.
 		- $error pode ser o código do erro ou 'default' para todos os erros;
 		- $hook se refer ao nome de uma função (string) ou método de uma classe. Para o segundo caso, seu valor deve ser um array no formato [(object) objeto, (string) método].
+
 3.3.1
 	- Adicionado suporte a Swift Mailer;
 	- Encerramento de funções depreciadas;
@@ -38,6 +28,7 @@ Framework Update History
 	- Adicionadas classes de teste para parte do framework (o trabalho está apenas começando);
 	- Ajustes de codificação para ficar em harmonia com PSR;
 	- Documentação em inglês (let's go translate and write everything needed).
+
 3.3.0
 	- Correção de bug com sessão vazia que ocorre em usuários do Safari no MacOS;
 	- Adição dos parâmetros 'order', 'offset' e 'limit' em objetos embutidos na Model;
@@ -53,10 +44,12 @@ Framework Update History
 	- Melhorias no script pós instalação e atualização para Composer:
 		- Implementada opção de minificação de arquivos;
 		- Implementada opção de desconsiderar nomes dos subdiratórios durante a cópia para agrupar todos os arquivos num único local.
+
 3.2.1
 	- Correção de bug no método URI::makeSlug();
 	- Correção de bug do iconv() não funcionando no métido Strings_UTF8::removeAccentedChars();
 	- Melhorias em Strings_ANSI::removeAccentedChars().
+
 3.2.0
 	- Tratamento da URL para eliminar caracteres especiais do espaço (' ') ao arroba ('@') dos extremos (trim) da variável $_SERVER['HTTP_HOST'];
 	- Correção de bug na Model quando é feito inclusão de registro (INSERT) em tabela que chave primária (PK) seja composta ou não seja um inteiro autoincremental;
@@ -71,13 +64,17 @@ Framework Update History
 	- Implementação de filtro em classe Model embutida;
 	- Implementação de objeto embutido multi-nível;
 	- Implementação do sistema de controle de versão de banco de dados (migration).
+
 3.1.3
 	- Correção de bug na classe Errors em modo CLI;
 	- Correção de bug na classe Mail quando modo de envio está indefinido.
+
 3.1.2
 	- Inclusão do conteúdo da variável mágica do PHP $_SERVER nas mensages/templates de erro.
+
 3.1.1
 	- Correção de bug na classe Soap_Client.
+
 3.1.0
 	- Melhorias no script post-install.php;
 	- Adicionados métodos de gatilho triggerBeforeDelete, triggerBeforeInsert, triggerBeforeUpdate, triggerAfterDelete, triggerAfterInsert e triggerAfterUpdate na classe Model para permitir gatilhos para tratamentos antes/depois de ações de banco
@@ -92,6 +89,7 @@ Framework Update History
 	- Adicionados os métodos disregar($error) e regard($error) na classe Errors. Esses métodos tem por objetivo, respectivamente, adicionar e remover códigos de erros da lista de ignorados pela classe. São úteis para casos de utilização de funções que causem a ocorrência de um erro ou alerta em caso de falha, mas que não interfira no funcionamento da aplicação;
 	- Adicionada classe UUID para geração de códigos V3, V4, V5 e aleatório com base no microtime;
 	- Implementada proteção contra ID de sessão vazia ou contendo caracteres inválidos.
+
 3.0.5
 	- Correção de bug no método de auto descoberta do template, que causava inconsistência no caminho de templates quando a classe era criada com e sem parâmetros;
 	- Adição do método having na classe Model. Este método permite a utilização da cláusula SQL HAVING;
@@ -109,9 +107,11 @@ Framework Update History
 	- Alteração na URI para permitir a construção de URLs com caracteres em maiúsculas por causa de sistemas que o servidor web é sensitivo ao contexto;
 	- Implementação do atributo embeddedObj na Model, que recebe um array estruturado e permite embutir dados de outras classes mediante a ligação de chaves estrangeiras;
 	- Adição do método setEmbeddedObj na Model para permitir alteração do atributo embeddedObj em tempo de execução.
+
 3.0.4.1
 	- Correção de bug na classe de erro quando o destinatário das mensagens de erro de sistema é um array e não uma string;
 	- Criação da entrada de configuração de email 'system_adm_mail' para o remetente de mensagens de erro do sistema.
+
 3.0.4
 	- Criação do método setColumns na classe Model para permitir alteração das colunas a serem listadas pelo método query;
 	- Criação do método groupBy na classe Model para permitir agrupamentos em consultas pelo método query;
@@ -121,10 +121,12 @@ Framework Update History
 	- Inclusão de template de mensagem de erros do sistema (error_template.html);
 	- Inclusão de template para email com mensagem de erros do sistema (error_email_template.html);
 	- Melhorias na tela de listagem do log de erros armazenado em banco de dados.
+
 3.0.3
 	- Criação da entrada de configurações template.errors para definir nome dos templates das páginas de erros (404, 500, 503, etc.);
 	- Criação da URI mágica para teste das páginas de erro. Para usá-la, chame a página /_error_/{codigo do erro};
 	- Remoção das variáveis de template urlJS, urlCSS, urlIMG e urlSWF do método Errors::printHtml().
+
 3.0.2
 	- Criação da entrada de configuração do sistema para diretório assets;
 	- Criação da entrada de configuração em templates strict_variables que quando verdadeiro faz classe de templates ignorar variáveis inválidas e/ou indefinidas;
@@ -134,6 +136,7 @@ Framework Update History
 	- Alteração da classe Errors para não tratar erros de template (html);
 	- Alteração da posição do bloco de debug dentro do HTML;
 	- Outros ajustes.
+
 3.0.1
 	- Abandonado suporte ao NuSOAP (http://sourceforge.net/projects/nusoap/);
 	- Classe Template transformada em um container da classe de template;
@@ -147,6 +150,7 @@ Framework Update History
 	- Melhoria nos métodos buildURL e makeSlug da classe URI para permitir URLs com '.', ',' e outros caracteres;
 	- Deminificação do HTML e JavaScript embutido para impressão de debug da classe Kernel;
 	- Correções do JavaScript para bind de Ajax do debug.
+
 3.0.0
 	- Inclusão da classe Container\DIContainer - Classe de container para inversão de controle (Dependecy Injection);
 	- Inclusão da classe Core\Application - Classe container de dependências de toda aplicação;
@@ -168,24 +172,31 @@ Framework Update History
 	- Inclusão do Arquivo de helpers com funções e constantes para deixar o desenvolvedor mais feliz e produtivo;
 	- Alteração na variável de configuração global 'SYSTEM' para possibilitar desenvolvimento de teste integrado;
 	- Criado tratamento para ignorar avisos (warnings) de funções depreciadas (deprecated).
+
 2.2.1
 	- Script da controladora Default renomeado para _default.php;
 	- Eliminação da classe FILO;
 	- Implementação de sobrescrição de configuração para hosts específicos;
 	- Classes ArrayUtils, JSON, JSON_Static, Rss, Strings, Strings_ANSI e Strings_UTF8 movidas para dentro de Utils;
 	- Padronização do estilo de código conforme o PHP Framework Interop Group <http://www.php-fig.org/>.
+
 2.2.0
 	- Implementado recurso de leitura de dados de configurações utilizando sistema de sub-níveis separados por ponto. Ex: Configuration::get('db.round_robin.type') - Colaboração de Allan Marques;
 	- Inclusão da classe de manipulação de arrays - ArrayUtils - Colaboração de Allan Marques;
 	- Alteração da mensagem do handler de erro quando o sistema é executado em modo cli.
+
 2.1.2
 	- Implementado recurso de armazenamento dos templates compilados e cache dos templates em subdiretório para melhoria de performance em caso de grande quantidade de arquivos que causam lentidão no sistema operacional.
+
 2.1.1
 	- Correção de bug na lib FW\DB.
+
 2.1.0
 	- Adicionado recurso de cache de consultas de banco em memcached.
+
 2.0.0
 	- Criação do namespace FW.
+
 1.4.0
 	- Criação da classe Configuration;
 	- Removidos métodos de configuração do sistema do Kernel;

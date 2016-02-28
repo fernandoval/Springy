@@ -7,7 +7,7 @@
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \see        http://twig.sensiolabs.org/
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.11.8
+ *  \version    0.12.9
  *  \ingroup    framework
  */
 namespace Springy\Template;
@@ -45,7 +45,7 @@ class TwigDriver implements TemplateDriverInterface
     public function __construct($tpl = null)
     {
         // Inicializa a classe de template
-        \Twig_Autoloader::register();
+        // \Twig_Autoloader::register();
 
         $this->__twigInstance(Configuration::get('template', 'template_path'), Configuration::get('template', 'template_cached_path'));
 
@@ -380,24 +380,16 @@ class TwigDriver implements TemplateDriverInterface
      *  de arquivos estáticos de CSS e JavaScript com objetivo de evitar que o cache
      *  do navegador utilize versões desatualizadas deles.
      */
-    public function assetFile($type, $file)
+    public function assetFile($file, $host = 'static')
     {
-        if ($type == 'js') {
-            $filePath = Configuration::get('system', 'js_path').DIRECTORY_SEPARATOR.$file.'.js';
-            $fileURI = Configuration::get('uri', 'js_dir');
-        } elseif ($type == 'css') {
-            $filePath = Configuration::get('system', 'css_path').DIRECTORY_SEPARATOR.$file.'.css';
-            $fileURI = Configuration::get('uri', 'css_dir');
-        } else {
-            return '#';
-        }
+        $filePath = Configuration::get('system', 'assets_path').DIRECTORY_SEPARATOR.$file;
+        $fileURI = Configuration::get('uri', 'assets_dir').'/'.$file;
+        $get = [];
 
         if (file_exists($filePath)) {
-            $fileURI .= '/'.$file.'__'.filemtime($filePath).'.'.$type;
-        } else {
-            $fileURI .= '/'.$file.'.'.$type;
+            $get['v'] = filemtime($filePath);
         }
 
-        return URI::buildURL(explode('/', $fileURI), [], isset($_SERVER['HTTPS']), 'static', false);
+        return URI::buildURL(explode('/', $fileURI), $get, false, $host, false);
     }
 }

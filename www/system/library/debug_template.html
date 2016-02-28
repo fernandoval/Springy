@@ -6,11 +6,11 @@
 	This line will be replaced with the debug content.
 -->
 <style type="text/css">
-	.debug_box {
+	.Spring-Debug-Box {
 		background-color: #fff;
 		z-index: 99999;
 		margin: 0;
-		width: 70px;
+		width: 100px;
 		height: 30px;
 		display: block;
 		position: fixed;
@@ -20,7 +20,7 @@
 		text-align: center;
 		border: 2px solid #06C;
 	}
-	.debug_box * {
+	.Spring-Debug-Box * {
 		color: #000;
 		font-weight: normal;
 		font-family: Verdana;
@@ -30,240 +30,305 @@
 		margin: 0;
 		padding: 0;
 	}
-	.debug_box_3 {
+	.Spring-Debug-Button {
 		cursor: pointer;
 		font-weight: bold;
 		color: #06C;
 		text-align: center;
 	}
-	.debug_box_3.debug_closed {
+	.Spring-Debug-Button.debug_closed {
 		line-height: 30px;
 	}
-	.debug_box_3.open {
-		background: url(data:image/gif;base64,R0lGODlhBQAbAMQAAP+mIf/aov/CZv/rzP+xO//PiP/15v/ku/+7Vf/89//Jd//TkP+qKv/hs//x3f+3TP/Mf//dqv/Fbv/u1f+0Q//47v/nxP++Xf/////Wmf+tMgAAAAAAAAAAAAAAAAAAACH5BAAHAP8ALAAAAAAFABsAAAVFICaKSVlWKGqsq+O6UxwPNG3d96HrTd9HQGBgOMwYjYtkssBkQp5PhVQqqVYFWOxlu0V4vY9wmEImE85njVrNaLcBcHgIADs=);
-		line-height: auto;
-		height: auto;
-	}
-	.debug_box_3.red { color: #f00; }
-	.debug_box_2 .tools { margin: 3px; }
-	.debug_box_2 .tools a.close_debug {
-		padding: 9px 9px 9px 20px;
-		background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAK6wAACusBgosNWgAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNXG14zYAAAAVdEVYdENyZWF0aW9uIFRpbWUAMi8xNy8wOCCcqlgAAABcSURBVBiVhY/REYAwCENTr/tYJ8oomYWJdKP61R7gneQPeITQJA0AN/51QdKsJGkea8XMPja+t0GSYWBmILnr7h087KHgWCmA61yOEcCcKcPhmSzfa5JOAE8RcbyUIkZhBhiUxQAAAABJRU5ErkJggg==) no-repeat 5px center;
+	.Spring-Debug-Button.red { color: #f00; }
+	.Spring-Debug-Content > .Spring-Debug-Toolbar {
+        height: 27px;
+        border-bottom: 1px solid #999;
+        background-color: #e2e2e2;
+    }
+    .Spring-Debug-Content > .Spring-Debug-Toolbar > span {
+        diplay: inline-block;
+        float: left;
+        height: 27px;
+		padding: 0 10px;
+		color: #023;
+        font-weight: bold;
+        line-height: 26px;
+        vertical-align: middle;
+    }
+    .Spring-Debug-Content > .Spring-Debug-Toolbar > a {
+        diplay: inline-block;
+        float: right;
+        height: 27px;
+		padding: 0 10px;
 		color: #f00;
-	}
-	.debug_box_2 .tools a.clear {
-		padding: 9px 2px 9px 17px;
-		background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAMCAYAAABr5z2BAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAANrwAADa8BQr/nKgAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNXG14zYAAAHrSURBVCiRjZK/axNhGMe/7/tez7sY7HkphVLTH4tDTEBSSqHUxU1xcOofIE3i4B8hjg4Wx6QUXBzMppNjQmuh0BBiIQ2loAnhwPSC0eQS7t7e+7jYotZWv+MDnw/PL0ZE+J98zGTuMKIEhCin8vnGaZ39S1DJ5cYMxp4zIXKmbdPIdbki8hnn+3I0enSpoJbN3hRCvLsai8WnFhYiQtehwhDNUkkF/T5XRC+1i+D9TCarCfFiMpk0rbk5DgBepwNnb0+ZlkWGbaPXbPbOdVBfW7NJ11+PGcbK9NJSVI9GAQBOpUIDx2GTqRSFvh92Dw+HKgzv/iaoZbMPOGNvIrZ9Jb68LBjnkJ6H1vZ2yDWNTaXT3G00hkPX/cSI7ify+daZoJbLrWiMvY9MTBijbpcrIiZ0XSkpmTU7q67F46K9u+vRyUkRrvs4USwGAKCFAA2PjqCbJqbTaZixGAAgGAzwuVzm1+fnoY+P8+bW1pCUepIqFF79OrLmOw5a6+u4sbh4BgNA4HngjKlQyuBLtfqVSXkvublZ+3PZnBsGjJkZONUqjg8OEHgeAOC4XkcoJfvebn+Qvp+49RcYANjJzyX4nQ6+lUro7exA6Dpkvw9S6mmyUHiGS57l/BlXV3VpWQ+JyL+9sfH2IvA0PwDhFvArpErTbgAAAABJRU5ErkJggg==) no-repeat left center;
-		color: #f00;
-	}
-	.debug_box_2 .tools a:hover { text-decoration: underline; }
-	.debug_box_2 .debug_info_area {
+        line-height: 26px;
+        vertical-align: middle;
+    }
+    .Spring-Debug-Content > .Spring-Debug-Toolbar > a:hover {
+        color: #fff;
+        background-color: #666;
+        text-decoration: none;
+    }
+	.Spring-Debug-Content > .Spring-Debug-Data {
 		overflow: auto;
 		height: 97%;
 	}
-	.debug_box_2 .debug_info { overflow: auto; }
-	.debug_box_2 .debug_box_ajax_result > span { font-weight: bold; }
-	.debug_box_2 .debug_box_ajax_result > p { padding-left: 30px; }
-	.debug_box_2 table {
-		margin: 5px 0;
-		width: 100%;
-	}
-	.debug_box_2 table th {
+	.Spring-Debug-Data > .Spring-Debug-Info,
+    .Spring-Debug-Data > .Spring-Debug-Ajax-Result {
+        overflow: auto;
+        border-bottom: 1px solid #e2e2e2;
+        padding: 15px;
+    }
+	.Spring-Debug-Data > .Spring-Debug-Ajax-Result > span {
+        font-weight: bold;
+        line-height: 1.5;
+    }
+	.Spring-Debug-Data > .Spring-Debug-Ajax-Result > pre {
+        max-height: 150px;
+        overflow: auto;
+        margin: 0 25px;
+        padding: 6px;
+        background-color: #1C2529;
+        color: #fff;
+    }
+	.Spring-Debug-Data > .Spring-Debug-Ajax-Result > p { padding-left: 30px; }
+	.Spring-Debug-Data > .Spring-Debug-Info > p {
+		color: #105DBF;
 		font-weight: bold;
-		color: #e8740d;
-		font-size: 14px;
-		border: 0;
+		font-size: 12px;
+        line-height: 1.5;
 	}
-	.debug_box_2 table td {
-		padding: 0 0 3px 3px;
-		vertical-align: top;
+	.Spring-Debug-Data > .Spring-Debug-Info code {
+		background-color: #fff;
 	}
-	.debug_box_2 a { color: #7250a2; }
-	.debug_box_2 > hr, .debug_box_2 .debug_info_area > hr {
-		margin: 15px 0;
-		border: 1px solid #d8dade;
-		visibility: visible;
-	}
-	.debug_box_2 .ErrorTitle{
+	.Spring-Debug-Data > .Spring-Debug-Info .Spring-Debug-Backtrace-Button {
+        padding: 5px 0 5px 25px;
+    }
+	.Spring-Debug-Data > .Spring-Debug-Info .Spring-Debug-Backtrace-Button > a {
+        width: 150px;
+        display: block;
+        border: 1px solid #666;
+        background-color: #AAD092;
+        color: #000;
+        text-align: center;
+    }
+	.Spring-Debug-Data > .Spring-Debug-Info .Spring-Debug-Backtrace-Data {
+        margin: 0 25px;
+        padding: 6px;
+        border: 1px solid #D4CACA;
+        border-radius: 4px;
+        background-color: #FDFFDC;
+        color: #fff;
+    }
+    .Spring-Debug-Backtrace-Data > ul {
+		padding-left: 40px;
+    }
+	.Spring-Debug-Content a { color: #7250a2; }
+	.Spring-Debug-Content .ErrorTitle{
 		background-color: #66C;
 		color: #FFF;
 		font-weight: bold;
 		padding-left: 10px;
 	}
-	.debug_box_2 .ErrorZebra{ background: #efefef; }
-	.debug_box_2 .ErrorLabel{ font-weight: bold; }
+	.Spring-Debug-Content .ErrorZebra{ background: #efefef; }
+	.Spring-Debug-Content .ErrorLabel{ font-weight: bold; }
+    .Spring-Debug-Backtrace {
+        padding-left: 20px;
+    }
+    .Spring-Debug-Delete {
+        display: block;
+        float: right;
+        border: 1px solid #666;
+        border-radius: 4px;
+        padding: 1px 4px;
+
+    }
 </style>
 <script type="text/javascript">
-	// The debug class
-	Debug = { // test
-		opened : false,
-		pe : null,
-		w : window,
-		p : null,
-		open : function() {
-			$('#debug').css({
-				'height' : 'auto',
-				'width' : (parseInt( $(window).width() ) - 5) + 'px'
-			}).find('div').first().show().css({
-				'height' : (parseInt( $(window).height() ) - 18) + 'px'
-			}).next('.debug_box_3').hide();
+    $(document).ready(function () {
+        // The debug class
+        Debug = { // test
+            opened: false,
+            pe: null,
+            w: window,
+            p: null,
+            open: function () {
+                $('#Spring-Debug').css({
+                    'height': 'auto',
+                    'width': (parseInt($(window).width(), 10) - 5) + 'px'
+                }).find('div').first().show().css({
+                    'height': (parseInt($(window).height(), 10) - 18) + 'px'
+                }).next('.Spring-Debug-Button').hide();
 
-			Debug.opened = true;
+                Debug.opened = true;
 
-			try {
-				try {
-					Debug.p.cancel()
-				} catch(e) {}
+                try {
+                    try {
+                        Debug.p.cancel();
+                    } catch(e) {}
 
-				clearInterval(Debug.pe);
-				Debug.pe = null
-			} catch(e) {}
-		},
-		close : function() {
-			$('#debug').css({
-				'width' : '',
-				'height' : ''
-			}).find('div').first().hide().next('.debug_box_3').show().removeClass('red').fadeTo(1,1);
-			Debug.opened = false
-		},
-		clear : function() {
-			$('#debug').find('.debug_info_area').first().html('')
-		},
-		init : function() {
-			var iniciaDoPrincipal = true;
-			do {
-				try {
-					if (Debug.w.document.location == window.top.document.location) {
-						break;
-					} else {
-						iniciaDoPrincipal = false;
-						Debug.w = Debug.w.parent;
-						$('#debug').hide();
-					}
-				} catch(e) {
-					break;
-				}
-			} while(true);
+                    clearInterval(Debug.pe);
+                    Debug.pe = null;
+                } catch (e) {}
+            },
+            close: function () {
+                $('#Spring-Debug').css({
+                    'width': '',
+                    'height': ''
+                }).find('div').first().hide().next('.Spring-Debug-Button').show().removeClass('red').fadeTo(1, 1);
+                Debug.opened = false;
+            },
+            clear: function () {
+                $('#Spring-Debug').find('.Spring-Debug-Data').first().html('');
+            },
+            init: function () {
+                var iniciaDoPrincipal = true;
+                do {
+                    try {
+                        if (Debug.w.document.location === window.top.document.location) {
+                            break;
+                        } else {
+                            iniciaDoPrincipal = false;
+                            Debug.w = Debug.w.parent;
+                            $('#debug').hide();
+                        }
+                    } catch (e) {
+                        break;
+                    }
+                } while (true);
 
-			if (!iniciaDoPrincipal) {
-				Debug.printAjaxResults('', {}, $('#debug').find('.debug_info_area').first().html());
-			}
-			$('#debug').find('.debug_box_3').first().bind('click',Debug.open);
-			$('#debug').find('.close_debug').first().bind('click',Debug.close);
-			$('#debug').find('.clear').first().bind('click',Debug.clear);
-			if ($('#debug div.debug_box_2 div.debug_info_area div.debug_info').size() > 1) {
-				Debug.startPulsate();
-			}
-		},
-		pulsate : function() {
-			$('#debug').find('.debug_box_3').first().addClass('red');
-			$('#debug').find('.debug_box_3').first().fadeOut(100, function() {
-				$('#debug').find('.debug_box_3').first().fadeIn(100, function() {
-					$('#debug').find('.debug_box_3').first().fadeOut(100, function() {
-						$('#debug').find('.debug_box_3').first().fadeIn(100, function() {});
-					});
-				});
-			});
-		},
-		startPulsate : function() {
-			try {
-				Debug.p.cancel();
-			} catch(e) {}
+                if (!iniciaDoPrincipal) {
+                    Debug.printAjaxResults('', {}, $('#Spring-Debug').find('.Spring-Debug-Data').first().html());
+                }
+                $('#Spring-Debug').find('.Spring-Debug-Button').first().bind('click', Debug.open);
+                $('#Spring-Debug').find('.Spring-Tool-Close').first().bind('click', Debug.close);
+                $('#Spring-Debug').find('.Spring-Tool-Clear').first().bind('click', Debug.clear);
+                if ($('#Spring-Debug .Spring-Debug-Content .Spring-Debug-Data div.Spring-Debug-Info').size() > 1) {
+                    Debug.startPulsate();
+                }
+            },
+            pulsate: function () {
+                $('#Spring-Debug').find('.Spring-Debug-Button').first().addClass('red');
+                $('#Spring-Debug').find('.Spring-Debug-Button').first().fadeOut(100, function () {
+                    $('#Spring-Debug').find('.Spring-Debug-Button').first().fadeIn(100, function () {
+                        $('#Spring-Debug').find('.Spring-Debug-Button').first().fadeOut(100, function () {
+                            $('#Spring-Debug').find('.Spring-Debug-Button').first().fadeIn(100, function () {});
+                        });
+                    });
+                });
+            },
+            startPulsate: function () {
+                try {
+                    Debug.p.cancel();
+                } catch (e) {}
 
-			Debug.p = 1;
-			Debug.pulsate();
-			if (Debug.pe == null) {
-				Debug.pe = setInterval(Debug.pulsate, 5000);
-			}
-		},
-		printAjaxResults : function(titulo,infos,txt) {
-			var d = Debug.w.$('.debug_box');
-			if (d.size()) {
-				var now = new Date();
-				var to = d.find('.debug_box_2').first().find('.debug_info_area').first();
-				var title = 'AJAX result';
+                Debug.p = 1;
+                Debug.pulsate();
+                if (Debug.pe === null) {
+                    Debug.pe = setInterval(Debug.pulsate, 5000);
+                }
+            },
+            printAjaxResults: function(titulo, infos, txt) {
+                var d = Debug.w.$('.Spring-Debug-Box');
+                if (d.size()) {
+                    var dbar,
+                        now = new Date(),
+                        to = d.find('.Spring-Debug-Content').first().find('.Spring-Debug-Data').first(),
+                        title = 'AJAX result',
+                        span = $('<span>').html(titulo),
+                        btnDel = $('<button>').addClass('Spring-Debug-Delete').html('&times;');
 
-				if (window.parent.document.location !== self.document.location) {
-					title += 'in [i]?frame ' + window.name + ' ';
-				}
+                    btnDel.on('click', function (e) {
+                        $(this).parent().parent().remove();
+                        e.preventDefault();
+                    });
 
-				param = '';
-				if (infos.param) {
-					infos.param = infos.param.split('&');
-					infos.param.each(function(p) {
-						param = (param ? ', ' : '') + '[' + p + ']';
-					});
-				}
+                    span.prepend(btnDel);
 
-				var span = $('<span>').html(titulo);
+                    if (window.parent.document.location !== self.document.location) {
+                        title += 'in [i]?frame ' + window.name + ' ';
+                    }
 
-				if (infos.url) {
-					span.append($.parseHTML('<br />URL: ' + infos.url));
-				}
+                    param = '';
+                    if (infos.param) {
+                        infos.param = infos.param.split('&');
+                        infos.param.each(function (p) {
+                            param = (param ? ', ' : '') + '[' + p + ']';
+                        });
+                    }
 
-				if (param) {
-					span.append($.parseHTML('<br />Parameters:' + param));
-				}
+                    if (infos.url) {
+                        span.append($.parseHTML('<br />URL: ' + infos.url));
+                    }
 
-				span.append($.parseHTML('<br />Time: ' + (now.getHours() < 10 ? '0' : '') + now.getHours() + ':' + (now.getMinutes() < 10 ? '0' : '') + now.getMinutes() + ':' + (now.getSeconds() < 10 ? '0' : '') + now.getSeconds() + ''));
+                    if (param) {
+                        span.append($.parseHTML('<br />Parameters:' + param));
+                    }
 
-				var dbar = $('<div>').addClass('debug_box_ajax_result').append(span);
+                    span.append($.parseHTML('<br />Time: ' + (now.getHours() < 10 ? '0' : '') + now.getHours() + ':' + (now.getMinutes() < 10 ? '0' : '') + now.getMinutes() + ':' + (now.getSeconds() < 10 ? '0' : '') + now.getSeconds() + ''));
 
-				if (txt) {
-					dbar.append( $('<p>').append( $.parseHTML(txt) ) );
-				}
+                    dbar = $('<div>').addClass('Spring-Debug-Ajax-Result').append(span);
 
-				to.prepend($('<hr>')).prepend(dbar);
+                    if (txt) {
+                        if (typeof txt === 'object') {
+                            dbar.append($('<pre>').html(JSON.stringify(txt, null, '\t')));
+                        } else {
+                            dbar.append($('<pre>').append($.parseHTML(txt)));
+                        }
+                    }
 
-				if (txt && !Debug.w.Debug.opened) {
-					Debug.w.Debug.startPulsate();
-				}
-			}
-		}
-	};
+                    to.append(dbar);
 
-	// Initialize the debug
-	jQuery(Debug.init);
+                    if (txt && !Debug.w.Debug.opened) {
+                        Debug.w.Debug.startPulsate();
+                    }
+                }
+            }
+        };
 
-	// Ajax bind function
-	DebugAjaxComplete = function(e, XMLHttpRequest, ajaxOptions, thrownError) {
-		var p = {
-			url : ajaxOptions.url,
-			params : decodeURI(ajaxOptions.data)
-		};
+        // Initialize the debug
+        jQuery(Debug.init);
 
-		if (e.type === 'ajaxError') {
-			Debug.printAjaxResults('Error 500', p, XMLHttpRequest.responseText);
-		} else if ($.isPlainObject(XMLHttpRequest.responseJSON)) {
-			var json = XMLHttpRequest.responseJSON;
-		} else {
-			try {
-				var json = $.parseJSON(XMLHttpRequest.responseText);
-			} catch(e) {
-				Debug.printAjaxResults('AJAX Result', p, XMLHttpRequest.responseText);
-				return;
-			}
-		}
+        // Ajax bind function
+        DebugAjaxComplete = function (e, XMLHttpRequest, ajaxOptions) {
+            var json,
+                p = {
+                    url: ajaxOptions.url,
+                    params: decodeURI(ajaxOptions.data)
+                };
 
-		if (json.debug !== null && json.debug) {
-			Debug.printAjaxResults('AJAX JSON Result', p, json.debug);
-		}
-	};
+            if (e.type === 'ajaxError') {
+                Debug.printAjaxResults('Error 500', p, XMLHttpRequest.responseText);
+            } else if ($.isPlainObject(XMLHttpRequest.responseJSON)) {
+                json = XMLHttpRequest.responseJSON;
+            } else {
+                try {
+                    json = $.parseJSON(XMLHttpRequest.responseText);
+                } catch (e) {
+                    Debug.printAjaxResults('AJAX Result', p, XMLHttpRequest.responseText);
+                    return;
+                }
+            }
 
-	// Observe all AJAX requests
-	$(window).bind('ajaxComplete', DebugAjaxComplete);
-	$(window).bind('ajaxSuccess',DebugAjaxComplete);
-	$(window).bind('ajaxError',DebugAjaxComplete);
+            //if (json.debug !== null && json.debug) {
+                Debug.printAjaxResults('AJAX JSON Result', p, json);
+            //}
+        };
+
+        // Observe all AJAX requests
+        $(window).bind('ajaxComplete', DebugAjaxComplete);
+    });
 </script>
-<div class="debug_box" id="debug">
-	<div class="debug_box_2" style="display : none">
-		<div class="tools">
-			<a class="clear" href="javascript:;">Clear</a>
-			<a class="close_debug" href="javascript:;"><span>Close</span></a>
+<div class="Spring-Debug-Box" id="Spring-Debug">
+	<div class="Spring-Debug-Content" style="display: none;">
+		<div class="Spring-Debug-Toolbar">
+            <span>Springy Debug Informations</span>
+			<a class="Spring-Tool-Close" href="javascript:;"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AIcETcsBaQP9QAAAvBJREFUOMtNk89rXFUUxz/3vh8z7zUzSSQzaVSSNlPUKiI1ilYhCIJSxJVapO0qMVsFWxoruJAWwWUt9Y8oii7UVERdaQVRCrYY4pjWqW3ITJh2JjNvZt679x4XaU0OnPM9nMWXLxw+qr3w1qwOvSV8HQOAAmRrvSs7S+4NYxOX2kM+gV7S+8djFGAc0kxQ5SEQ2WpA7irGoVIDUQAQ2z8bS754KsZZJLW45SboAKUENRKBc1uJFJAa7NUNVC5EVwoQeIgm1uIEt9nHLDeJThwn/vADsmoLafW2DKyF1JD+fpPc/DzR8XfJVlqQGpwI2joHGrL+ALPeQO8ep/DxGQarbdzmAOln9P5oEL3zNuHs8zA8jPUCbDNBRNAiglKQf2iEO+fP0/vpEt79Ewx/dJrkRkJ3pUnhvZPkDj6DvbXGxolTBCMOrxDirOBbJ2AsSmmGHh2jefYT7svniWYOUJifw/X7hI/tJ/2nRmPxfYp7Cuh8gBiLcw7fyZaBXb+FtG4TmwG1o0conz7D6BuvAdD6+iJri6coTeaQaxG2MIK3ewIrgp/V62Qby2AdKIVJUlIdouJd///edrukSResxnUstNvIzRtkfgm/V61S3FsEgV43o/bvgMcvfkVUmaZ+4XNAKB9+Hf/BB1g5coxKpYhCAY7eahXfOYdKHa1Wn+vrGU999w1RZZrbP1/i+slFXD7P0MyTFJ97lqlzZ7k6t8DD+8YIPI2xgrZWqNe7/N32mfnhW6J9Fda++JLLh99kbznPVOz45cWX6VarlF59hcqn57hSu4NJDM4K2hjHaOCTJR16jQa1C59xeW6BJ8pFfKOIxOORIZ8fX3iJzuo1wqlJbJDD9g3WWNRvk3tkenQXqbH8uplikh4HS0UC7e3gQdFMBlwJ83hJwtP5gJzW/NVJ8AeZTRjYOBQ4EHj4wwVCAyJ2Gz0HY9qn0ukwHoQEBsQ5+plN1PeliVkPtRQoFSP3CN6Bs2xTrbZPGJHEIIf+A4UNf5Wl1LNXAAAAAElFTkSuQmCC"> Close</a>
+			<a class="Spring-Tool-Clear" href="javascript:;"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AIcERYx6j12zwAAA1FJREFUOMullG1om2UUhq/3eb+SN02aj65p0q4Nq41gmXVzujo/ECY45yxFFASh6MBtgvhLmAhSUCcbiCAiuMEEaSdsDsUf4geDTZAidlotbVkDtsU2XUvTzbRN03y9xx9VoSzDjt0/n/NwnXPu5+Hmwm7vhyOHgmtfd9gvA5wyFLelsaedSvGDoMwfq5Pj0MltSl0dKZ7QJ0tssV2eORy++B5EPgsZN1w8qbTNEbvA89u99pwcqZHSW1H54QHftwAx4HyzET4TNXv7I8YOgP6wsTloL9T/+ZBTkp6AFF+PydktxicDDzvfLbwbLRT6GmS6Nyxvwo7NsLSPgSPA+aB+8KkHndNW0IREDXhdKsVlXKuI3uiTK5cKs+2fLjf9L/Bffw67wjcxM72v0xsHDUxBvELFEQpamaG/gmx9tTc7r++WXTs7SKVSACSTSQYHB4nH43i9XrQztQbPZ8tcSPpOPbLH/5K6vgqAuKApYfKaS+nJBuJ7NdbWDIzY+0Ran6g63fj4+PqEfX7j+P6uuqNmNgcCIlBxhYlVg8SxZpS+iqZMlOlhaQlC2z/HF2m9ASgiaIA20OErJrbqeqVY0UAjv1wh3xkl1mWidBfd8qCZHpRuoyyblZyDv/UjnFDLBuD09DQKkF9/z/Vkrpe01ZLLQh5W98fY9oKDMhSG149RE0S3a7CCdWiWn0hzmMlLL1ZdW7+8y6J7tjJyQOSOnMe5u+VoHQ33OxSyZTzhMG5ZIa7CDkdRpg/LqWUxfY1Q8h08gfgGWCAQWPfwn69j/HS6ue+u++qfKy0XsAK1oEyUYaMsBzQDOxhiejRLoOUNgo3bb/4oAF++Bt7akN2xt/2qv9YIKdtB99Sg6Ra4GqJbjP84R3v3Vyhdr7puJpPhv8rZAei/uFZ5rGmxtK3znsfLuTymL4Ru+5ifmGSt3E3royfQ1M3TSEQ2Hnz/th+AkS86/yhnDkk+3SMzPx+UpbkrshkNDQ3Jhna57PJ6p/pXfplLTbAwu4f4zpP4o3duKhMSiUT1wujo6LmVzJTcqtLptFQ1ZHh4GF+k5ZbDNZ1OUzU1V1ZWzo2NjT3b2NiI4zhMTU3R1tZGPp9ncXGRZDLJzMwMAE1NTaRSKSKRCEop/gaLPYRZ88DSIAAAAABJRU5ErkJggg=="> Clear</a>
 		</div>
-		<div class="debug_info_area">
+		<div class="Spring-Debug-Data">
 		<!-- DEBUG CONTENT (do not remove or change this line) -->
 		</div>
 	</div>
-	<div class="debug_box_3 debug_closed">DEBUG</div>
+	<div class="Spring-Debug-Button debug_closed"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAMAAAC6V+0/AAAC/VBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADmnzsbAAAAAXRSTlMAQObYZgAAAAFiS0dEAIgFHUgAAAAJcEhZcwAARt4AAEbeAY4mMlsAAAAHdElNRQfgAhwRDiObn5/eAAAAUElEQVQY02NgoBH4Byb+/YOz0QVPIiv9BwIML/+hmAABDGhiYGo6ukIGVKX/kAT/oVoDVYlQ/Btuz3N02zF9hSH4D+EqrGAXukAHjvDCbQQAt+JQ1owHwsQAAAAASUVORK5CYII="> DEBUG</div>
 </div>
