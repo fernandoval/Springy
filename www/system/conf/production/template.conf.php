@@ -23,7 +23,8 @@
 
 /// Configurações para o ambiente de Produção
 $conf = [
-    'debug' => false,
+    'debug'       => false,
+    'auto_reload' => false,
 ];
 
 /**@}*/

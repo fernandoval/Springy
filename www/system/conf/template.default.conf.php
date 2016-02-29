@@ -53,9 +53,9 @@
 /// Configurações para todos os ambientes
 $conf = [
     'template_engine'        => 'smarty',
-    'strict_variables'       => true,
-    'auto_reload'            => false,
     'debug'                  => false,
+    'auto_reload'            => false,
+    'strict_variables'       => true,
     'autoescape'             => false,
     'optimizations'          => 1,
     'debugging_ctrl'         => 'NONE',

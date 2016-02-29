@@ -22,12 +22,11 @@
 
 /// Configurações para o ambiente de Produção
 $conf = [
-    'debug'             => false,
-    'maintenance'       => false,
-    'rewrite_url'       => true,
-    'cache'             => false,
-    'cache-control'     => 'private, must-revalidate',
-    'authentication'    => [],
+    'maintenance'        => false,
+    'bug_authentication' => [
+        'user' => 'username',
+        'pass' => 'password',
+    ],
 ];
 
 /**@}*/

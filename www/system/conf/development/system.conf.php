@@ -24,10 +24,8 @@
 $conf = [
     'debug'             => true,
     'maintenance'       => false,
-    'rewrite_url'       => true,
     'cache'             => false,
     'cache-control'     => 'no-cache',
-    'authentication'    => [],
     'system_error'      => [
         'save_in_database' => false,
     ],
