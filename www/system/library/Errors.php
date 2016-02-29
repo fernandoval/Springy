@@ -7,7 +7,7 @@
  *  \author     Fernando Val  - fernando.val@gmail.com
  *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    2.2.35
+ *  \version    2.3.36
  *  \ingroup    framework
  */
 namespace Springy;
@@ -95,6 +95,8 @@ class Errors
                 $printError = 'Warning';
                 $aFile = explode(DIRECTORY_SEPARATOR, $errfile);
                 if (in_array('smarty', $aFile) || strpos($errstr, 'filemtime') !== false || strpos($errstr, 'unlink') !== false) {
+                    return;
+                } elseif (in_array('Twig', $aFile) && strpos($errstr, 'include_once') !== false) {
                     return;
                 }
                 $tplPash = Configuration::get('template', 'compiled_template_path');

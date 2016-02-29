@@ -2,6 +2,7 @@ Springy framework update history
 
 ------------------------------------------------------------------------------------ --- -- -
 development
+    - Adjusts in Errors class for Twig driver;
     - Adjusts in Twig driver;
     - Enhangements in Twig driver's assetFile() function;
     - Enhancements in debug system.
