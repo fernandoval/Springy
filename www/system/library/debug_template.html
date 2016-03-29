@@ -272,8 +272,11 @@
                     if (txt) {
                         if (typeof txt === 'object') {
                             dbar.append($('<pre>').html(JSON.stringify(txt, null, '\t')));
+                            if (txt.debug) {
+                                Debug.printAjaxResults('AJAX JSON Debug', infos, txt.debug);
+                            }
                         } else {
-                            dbar.append($('<pre>').append($.parseHTML(txt)));
+                            dbar.append($.parseHTML(txt));
                         }
                     }
 
