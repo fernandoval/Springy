@@ -6,7 +6,7 @@
  *  \copyright Copyright (c) 2007-2016 Fernando Val
  *  \author    Fernando Val - fernando.val@gmail.com
  *  \warning   Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version   0.3.6
+ *  \version   0.3.7
  *  \ingroup   framework
  */
 namespace Springy;
@@ -434,9 +434,9 @@ class Migrator extends DB
             foreach ($aRevs as $range) {
                 $aRange = explode('-', $range);
                 if (count($aRange) == 1) {
-                    $this->currentRevision[ intval($aRange[0]) ] = intval($aRange[0]);
+                    $this->currentRevision[(int) $aRange[0]] = (int) $aRange[0];
                 } else {
-                    $this->currentRevision[ intval($aRange[0]) ] = intval($aRange[1]);
+                    $this->currentRevision[(int) $aRange[0]] = (int) $aRange[1];
                 }
             }
 

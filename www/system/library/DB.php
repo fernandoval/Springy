@@ -8,7 +8,7 @@
  *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
  *  \author     Allan Marques - allan.marques@ymail.com
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    1.7.30
+ *  \version    1.7.31
  *  \ingroup    framework
  */
 namespace Springy;
@@ -114,7 +114,7 @@ class DB
         }
 
         if ($conf['persistent']) {
-            $pdoConf[ \PDO::ATTR_PERSISTENT ] = true;
+            $pdoConf[\PDO::ATTR_PERSISTENT] = true;
         }
 
         /*

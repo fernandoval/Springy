@@ -6,7 +6,7 @@
  *  \copyright  Copyright (c) 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    1.2.6
+ *  \version    1.2.7
  *  \ingroup    framework
  */
 if (!file_exists('sysconf.php')) {
@@ -56,7 +56,7 @@ while (++$arg < $argc) {
 
             foreach (explode('&', $argv[$arg]) as $get) {
                 $get = explode('=', $get);
-                $_GET[ $get[0] ] = $get[1];
+                $_GET[$get[0]] = $get[1];
                 unset($get);
             }
         }

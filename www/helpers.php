@@ -7,7 +7,7 @@
  *  \author     Allan Marques - allan.marques@ymail.com
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    2.0.3
+ *  \version    2.0.4
  *  \ingroup    framework
  */
 
@@ -216,4 +216,4 @@ class SpringyException extends Exception
     {
         return $this->context;
     }
-};
+}

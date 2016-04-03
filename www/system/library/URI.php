@@ -7,7 +7,7 @@
  *  \author     Fernando Val  - fernando.val@gmail.com
  *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    2.1.31
+ *  \version    2.1.32
  *  \ingroup    framework
  */
 namespace Springy;
@@ -396,7 +396,7 @@ class URI
             $segment_num -= count(Kernel::controllerRoot());
         }
         if (array_key_exists($segment_num, self::$segments)) {
-            return self::$segments[ $segment_num ];
+            return self::$segments[$segment_num];
         }
 
         return false;
@@ -411,7 +411,7 @@ class URI
     public static function getIgnoredSegment($segment_num)
     {
         if (array_key_exists($segment_num, self::$ignored_segments)) {
-            return self::$ignored_segments[ $segment_num ];
+            return self::$ignored_segments[$segment_num];
         }
 
         return false;
@@ -481,7 +481,7 @@ class URI
     public static function _GET($var)
     {
         if (array_key_exists($var, self::$get_params)) {
-            return self::$get_params[ $var ];
+            return self::$get_params[$var];
         }
 
         return false;
@@ -531,7 +531,7 @@ class URI
      */
     public static function setParam($var, $value)
     {
-        self::$get_params[ $var ] = $value;
+        self::$get_params[$var] = $value;
     }
 
     /**
@@ -558,8 +558,8 @@ class URI
         // Monta a URI
         $uri = '';
         for ($i = 0; $i < count($segments); $i++) {
-            if ($segments[ $i ] != 'index' && $segments[ $i ] != '') {
-                $uri .= (empty($uri) ? '' : '/').self::makeSlug($segments[ $i ], '-', '\.,|~\#', false);
+            if ($segments[$i] != 'index' && $segments[$i] != '') {
+                $uri .= (empty($uri) ? '' : '/').self::makeSlug($segments[$i], '-', '\.,|~\#', false);
             }
         }
         $url .= $uri;

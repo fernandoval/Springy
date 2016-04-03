@@ -7,7 +7,7 @@
  *  \author     Fernando Val  - fernando.val@gmail.com
  *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    2.1.62
+ *  \version    2.1.63
  *  \ingroup    framework
  */
 namespace Springy;
@@ -202,10 +202,10 @@ class Kernel
     public static function path($component, $path = null)
     {
         if (!is_null($path)) {
-            self::$paths[ $component ] = $path;
+            self::$paths[$component] = $path;
         }
 
-        return isset(self::$paths[ $component ]) ? self::$paths[ $component ] : '';
+        return isset(self::$paths[$component]) ? self::$paths[$component] : '';
     }
 
     /**
