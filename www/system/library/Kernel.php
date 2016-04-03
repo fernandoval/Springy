@@ -7,7 +7,7 @@
  *  \author     Fernando Val  - fernando.val@gmail.com
  *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    2.1.63
+ *  \version    2.1.64
  *  \ingroup    framework
  */
 namespace Springy;
@@ -384,12 +384,12 @@ class Kernel
         if (is_object($par)) {
             if (method_exists($par, '__toString')) {
                 return str_replace('&lt;?php&nbsp;', '', str_replace('&nbsp;?&gt;', '', highlight_string('<?php '.var_export($par->__toString(), true).' ?>', true))).
-                (($par instanceof DBSelect || $par instanceof DBInsert || $par instanceof DBUpdate || $par instanceof DBDelete) ? '<br />'.str_replace('&lt;?php&nbsp;', '', str_replace('&nbsp;?&gt;', '', highlight_string('<?php '.var_export($par->getAllValues(), true).' ?>', true))) : '');
+                (($par instanceof DBSelect || $par instanceof DBInsert || $par instanceof DBUpdate || $par instanceof DBDelete) ? '<br />'.str_replace('&lt;?php&nbsp;', '', str_replace('&nbsp;?&gt;', '', highlight_string('<?php '.var_export($par->getAllValues(), true), true))) : '');
             } else {
                 return (PHP_SAPI === 'cli' || defined('STDIN')) ? print_r($par, true) : '<pre>'.print_r($par, true).'</pre>';
             }
         } else {
-            return str_replace('&lt;?php&nbsp;', '', str_replace('&nbsp;?&gt;', '', highlight_string('<?php '.print_r($par, true).' ?>', true)));
+            return str_replace('&lt;?php&nbsp;', '', str_replace('&nbsp;?&gt;', '', highlight_string('<?php '.print_r($par, true), true)));
         }
     }
 
