@@ -7,7 +7,7 @@
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \note       Essa classe extende a classe DB.
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    1.24.36
+ *  \version    1.24.37
  *  \ingroup    framework
  */
 namespace Springy;
@@ -996,7 +996,7 @@ class Model extends DB implements \Iterator
                 $embObj->query($efilter, $order, $offset, $limit, $embbed - 1);
                 while ($er = $embObj->next()) {
                     foreach ($this->rows as $idx => $row) {
-                        if ($er[$attr['found_by']] == $row[ $attr['column'] ]) {
+                        if ($er[$attr['found_by']] == $row[$attr['column']]) {
                             if ($attr['type'] == 'list') {
                                 $this->rows[$idx][$attr['attr_name']][] = $er;
                             } else {
