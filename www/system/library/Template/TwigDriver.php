@@ -7,7 +7,7 @@
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \see        http://twig.sensiolabs.org/
  *  \warning    This class is under development yet. Use it for you own risk.
- *  \version    0.13.10
+ *  \version    0.14.11
  *  \ingroup    framework
  */
 namespace Springy\Template;
@@ -237,6 +237,7 @@ class TwigDriver implements TemplateDriverInterface
             'CURRENT_PAGE_URI'   => URI::currentPageURI(),
             'SYSTEM_NAME'        => Kernel::systemName(),
             'SYSTEM_VERSION'     => Kernel::systemVersion(),
+            'PROJECT_CODE_NAME'  => Kernel::projectCodeName(),
             'ACTIVE_ENVIRONMENT' => Kernel::environment(),
         ];
 

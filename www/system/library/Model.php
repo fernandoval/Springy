@@ -7,7 +7,7 @@
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \note       Essa classe extende a classe DB.
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    1.24.37
+ *  \version    1.25.38
  *  \ingroup    framework
  */
 namespace Springy;
@@ -634,7 +634,7 @@ class Model extends DB implements \Iterator
                 $this->rows[key($this->rows)][$column] = $value;
             }
 
-            if ($oldvalue != $value) {
+            if ($oldvalue != $value || isset($this->rows[key($this->rows)]['**NEW**'])) {
                 if (!isset($this->rows[key($this->rows)]['**CHANGED**'])) {
                     $this->rows[key($this->rows)]['**CHANGED**'] = [];
                 }

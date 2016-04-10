@@ -7,7 +7,7 @@
  *  \author     Fernando Val  - fernando.val@gmail.com
  *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    2.1.64
+ *  \version    2.2.65
  *  \ingroup    framework
  */
 namespace Springy;
@@ -48,6 +48,8 @@ class Kernel
     private static $name = 'System Name';
     /// System version
     private static $version = [0, 0, 0];
+    /// Project code name
+    private static $projName = '';
     /// System path
     private static $paths = [];
     /// System charset
@@ -68,6 +70,7 @@ class Kernel
         self::$startime = is_null($startime) ? microtime(true) : $startime;
         self::systemName($sysconf['SYSTEM_NAME']);
         self::systemVersion($sysconf['SYSTEM_VERSION']);
+        self::projectCodeName(isset($sysconf['PROJECT_CODE_NAME']) ? $sysconf['PROJECT_CODE_NAME'] : '');
         self::charset($sysconf['CHARSET']);
         self::environment(
             $sysconf['ACTIVE_ENVIRONMENT'],
@@ -167,6 +170,22 @@ class Kernel
         }
 
         return is_array(self::$version) ? implode('.', self::$version) : self::$version;
+    }
+
+    /**
+     *  \brief The project code name.
+     *
+     *  \param string $name - if defined, set the project code name.
+     *  \return A string containing the project code name.
+     *  \see https://en.wikipedia.org/wiki/Code_name#Project_code_name
+     */
+    public static function projectCodeName($name = null)
+    {
+        if (!is_null($name)) {
+            self::$projName = $name;
+        }
+
+        return self::$projName;
     }
 
     /**

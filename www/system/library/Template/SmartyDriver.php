@@ -7,7 +7,7 @@
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \see        http://www.smarty.net/
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    1.3.8
+ *  \version    1.4.9
  *  \ingroup    framework
  */
 namespace Springy\Template;
@@ -220,6 +220,7 @@ class SmartyDriver implements TemplateDriverInterface
         $this->tplObj->assign('CURRENT_PAGE_URI', URI::currentPageURI());
         $this->tplObj->assign('SYSTEM_NAME', Kernel::systemName());
         $this->tplObj->assign('SYSTEM_VERSION', Kernel::systemVersion());
+        $this->tplObj->assign('PROJECT_CODE_NAME', Kernel::projectCodeName());
         $this->tplObj->assign('ACTIVE_ENVIRONMENT', Kernel::environment());
 
         // Alimenta as variáveis padrão da aplicação
