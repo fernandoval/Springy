@@ -6,7 +6,7 @@
  *  \copyright  Copyright (c) 2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.1
+ *  \version    0.1.1
  *  \ingroup    framework
  */
 namespace Springy\DB;
@@ -22,30 +22,30 @@ class Conditions
     const COND_AND = 'AND';
     const COND_OR = 'OR';
 
-    const OP_EQUAL               = '=';
-    const OP_NOT_EQUAL           = '!=';
-    const OP_GREATER             = '>';
-    const OP_GREATER_EQUAL       = '>=';
-    const OP_LESS                = '<';
-    const OP_LESS_EQUAL          = '<=';
-    const OP_IN                  = 'IN';
-    const OP_NOT_IN              = 'NOT IN';
-    const OP_IS                  = 'IS';
-    const OP_IS_NOT              = 'IS NOT';
-    const OP_LIKE                = 'LIKE';
-    const OP_NOT_LIKE            = 'NOT LIKE';
-    const OP_MATCH               = 'MATCH';
-    const OP_MATCH_BOOLEAN_MODE  = 'MATCH BOOLEAN';
+    const OP_EQUAL = '=';
+    const OP_NOT_EQUAL = '!=';
+    const OP_GREATER = '>';
+    const OP_GREATER_EQUAL = '>=';
+    const OP_LESS = '<';
+    const OP_LESS_EQUAL = '<=';
+    const OP_IN = 'IN';
+    const OP_NOT_IN = 'NOT IN';
+    const OP_IS = 'IS';
+    const OP_IS_NOT = 'IS NOT';
+    const OP_LIKE = 'LIKE';
+    const OP_NOT_LIKE = 'NOT LIKE';
+    const OP_MATCH = 'MATCH';
+    const OP_MATCH_BOOLEAN_MODE = 'MATCH BOOLEAN';
 
-    const OP_EQUAL_ALIAS         = 'EQ';
-    const OP_NOT_EQUAL_ALIAS     = 'NE';
-    const OP_GREATER_ALIAS       = 'GT';
+    const OP_EQUAL_ALIAS = 'EQ';
+    const OP_NOT_EQUAL_ALIAS = 'NE';
+    const OP_GREATER_ALIAS = 'GT';
     const OP_GREATER_EQUAL_ALIAS = 'GTE';
-    const OP_LESS_ALIAS          = 'LT';
-    const OP_LESS_EQUAL_ALIAS    = 'LTE';
+    const OP_LESS_ALIAS = 'LT';
+    const OP_LESS_EQUAL_ALIAS = 'LTE';
 
     const EXPR_SIMPLE = 'exp';
-    const EXPR_SUB    = 'sub';
+    const EXPR_SUB = 'sub';
 
     /**
      *  \brief The constructor method.
@@ -104,14 +104,17 @@ class Conditions
             case self::OP_LIKE:
             case self::OP_NOT_LIKE:
                 $this->parameters[] = $condition['value'];
+
                 return $condition['expression'].' '.$condition['column'].' '.$condition['operator'].' ?';
             case self::OP_IN:
             case self::OP_NOT_IN:
                 $this->parameters = array_merge($this->parameters, $condition['value']);
+
                 return $condition['expression'].' '.$condition['column'].($condition['operator'] === self::OP_NOT_IN ? ' NOT' : '').' IN ('.trim(str_repeat('?, ', count($condition['value'])), ', ').')';
             case self::OP_MATCH:
             case self::OP_MATCH_BOOLEAN_MODE:
                 $this->parameters[] = $condition['value'];
+
                 return $condition['expression'].' MATCH ('.$condition['column'].') AGAINST (?'.($condition['operator'] === self::OP_MATCH_BOOLEAN_MODE ? ' IN BOOLEAN MODE' : '').')';
         }
 
