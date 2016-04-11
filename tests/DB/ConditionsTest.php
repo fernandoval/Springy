@@ -47,14 +47,14 @@ class ConditionsTest extends PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('column', $this->conditions->get('column_b'));
         $this->assertCount(2, $this->conditions->get());
     }
-    
+
     public function testParams()
     {
         $this->conditions->parse();
         $this->assertCount(2, $this->conditions->params());
         $this->assertContains('none', $this->conditions->params());
     }
-    
+
     public function testParse()
     {
         $string = $this->conditions->parse();
@@ -62,7 +62,7 @@ class ConditionsTest extends PHPUnit_Framework_TestCase
         $this->assertStringEndsWith('column_b = ?', $string);
         $this->assertStringEndsWith('column_b = ?', $string);
     }
-    
+
     public function testToString()
     {
         $string = (string) $this->conditions;
