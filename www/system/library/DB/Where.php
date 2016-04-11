@@ -6,7 +6,7 @@
  *  \copyright  Copyright (c) 2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.1.1
+ *  \version    0.1.2
  *  \ingroup    framework
  */
 namespace Springy\DB;
@@ -24,7 +24,7 @@ class Where extends Conditions
     public function __toString()
     {
         $where = parent::__toString();
-        
+
         return (!empty($where) ? ' WHERE ' : '').$where;
     }
 }
