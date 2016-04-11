@@ -6,7 +6,7 @@
  *  \copyright  Copyright (c) 2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.1.1
+ *  \version    0.1.2
  *  \ingroup    framework
  */
 namespace Springy\DB;
@@ -60,39 +60,38 @@ class Conditions
     }
 
     /**
+     *  \brief Convert an alias operator to the real operator.
+     */
+    private function convertAliasOperator($operator)
+    {
+        switch ($operator) {
+            case self::OP_EQUAL_ALIAS:
+                return self::OP_EQUAL;
+            case self::OP_NOT_EQUAL_ALIAS:
+                return self::OP_NOT_EQUAL;
+            case self::OP_GREATER_ALIAS:
+                return self::OP_GREATER;
+            case self::OP_GREATER_EQUAL_ALIAS:
+                return self::OP_GREATER_EQUAL;
+            case self::OP_LESS_ALIAS:
+                return self::OP_LESS;
+            case self::OP_LESS_EQUAL_ALIAS:
+                return self::OP_LESS_EQUAL;
+        }
+
+        return $operator;
+    }
+
+    /**
      *  \brief Conver the condition array element to string form.
      *
      *  Will feed the array of parameters too.
      */
     private function condToString(array $condition, $ommitCondType = false)
     {
-        if ($ommitCondType) {
-            $condition['expression'] = '';
-        }
+        $expression = ($ommitCondType ? '' : $condition['expression']);
 
-        // Convert alias operator
-        switch ($condition['operator']) {
-            case self::OP_EQUAL_ALIAS:
-                $condition['operator'] = self::OP_EQUAL;
-                break;
-            case self::OP_NOT_EQUAL_ALIAS:
-                $condition['operator'] = self::OP_NOT_EQUAL;
-                break;
-            case self::OP_GREATER_ALIAS:
-                $condition['operator'] = self::OP_GREATER;
-                break;
-            case self::OP_GREATER_EQUAL_ALIAS:
-                $condition['operator'] = self::OP_GREATER_EQUAL;
-                break;
-            case self::OP_LESS_ALIAS:
-                $condition['operator'] = self::OP_LESS;
-                break;
-            case self::OP_LESS_EQUAL_ALIAS:
-                $condition['operator'] = self::OP_LESS_EQUAL;
-                break;
-        }
-
-        switch ($condition['operator']) {
+        switch ($this->convertAliasOperator($condition['operator'])) {
             case self::OP_EQUAL:
             case self::OP_NOT_EQUAL:
             case self::OP_GREATER:
@@ -105,20 +104,20 @@ class Conditions
             case self::OP_NOT_LIKE:
                 $this->parameters[] = $condition['value'];
 
-                return $condition['expression'].' '.$condition['column'].' '.$condition['operator'].' ?';
+                return $expression.' '.$condition['column'].' '.$condition['operator'].' ?';
             case self::OP_IN:
             case self::OP_NOT_IN:
                 $this->parameters = array_merge($this->parameters, $condition['value']);
 
-                return $condition['expression'].' '.$condition['column'].($condition['operator'] === self::OP_NOT_IN ? ' NOT' : '').' IN ('.trim(str_repeat('?, ', count($condition['value'])), ', ').')';
+                return $expression.' '.$condition['column'].($condition['operator'] === self::OP_NOT_IN ? ' NOT' : '').' IN ('.trim(str_repeat('?, ', count($condition['value'])), ', ').')';
             case self::OP_MATCH:
             case self::OP_MATCH_BOOLEAN_MODE:
                 $this->parameters[] = $condition['value'];
 
-                return $condition['expression'].' MATCH ('.$condition['column'].') AGAINST (?'.($condition['operator'] === self::OP_MATCH_BOOLEAN_MODE ? ' IN BOOLEAN MODE' : '').')';
+                return $expression.' MATCH ('.$condition['column'].') AGAINST (?'.($condition['operator'] === self::OP_MATCH_BOOLEAN_MODE ? ' IN BOOLEAN MODE' : '').')';
         }
 
-        return false;
+        throw new Exception('Unknown condition operator.', 500);
     }
 
     /**
@@ -135,11 +134,7 @@ class Conditions
             $condStr = '';
 
             if ($condition['type'] == self::EXPR_SIMPLE) {
-                if (!$condStr = $this->condToString($condition, empty($conditions))) {
-                    throw new Exception('Unknown condition operator.', 500);
-                }
-
-                $condStr = trim($condStr);
+                $condStr = trim($this->condToString($condition, empty($conditions)));
             } elseif ($condition['type'] == self::EXPR_SUB) {
                 $sub = new self($condition['conditions']);
                 $condStr = (empty($conditions) ? '' : 'AND ').'('.$sub->parse().')';
