@@ -7,7 +7,7 @@
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \note       Essa classe extende a classe DB.
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    2.0.39
+ *  \version    2.0.1.40
  *  \ingroup    framework
  */
 namespace Springy;
@@ -218,7 +218,6 @@ class Model extends DB implements \Iterator
      *          'columns' => 'table_name.column1 AS table_name_column1, table_name.column2',
      *      ],
      *  ]
-     *
      */
     private function _queryJoin($join, &$columns, &$from)
     {
@@ -494,7 +493,7 @@ class Model extends DB implements \Iterator
         }
 
         if (!isset($this->rows[key($this->rows)]['**NEW**'])) {
-            /**
+            /*
              *  Is not a new record. Then update current.
              */
 
@@ -517,7 +516,7 @@ class Model extends DB implements \Iterator
             // Call after update trigger
             $this->triggerAfterUpdate();
         } else {
-            /**
+            /*
              *  Is a new record.
              */
 
@@ -590,7 +589,7 @@ class Model extends DB implements \Iterator
     public function delete($filter = null)
     {
         if (!is_null($filter) || $this->where->count()) {
-            /**
+            /*
              *  Delete rows with a filter.
              *
              *  In this method triggers will not be called.
@@ -618,7 +617,7 @@ class Model extends DB implements \Iterator
             // Clear any conditions
             $this->where->clear();
         } elseif ($this->valid()) {
-            /**
+            /*
              *  Delete de current row.
              */
 
