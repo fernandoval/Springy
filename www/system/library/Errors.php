@@ -7,7 +7,7 @@
  *  \author     Fernando Val  - fernando.val@gmail.com
  *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    2.3.36
+ *  \version    2.3.37
  *  \ingroup    framework
  */
 namespace Springy;
@@ -568,10 +568,12 @@ class Errors
             }
         } else {
             header('Content-type: application/json; charset=utf-8', true, $errorType);
-            if (is_array($msg)) {
-                echo json_encode($msg);
-            } elseif ($msg != '') {
-                echo $msg;
+            if (Configuration::get('system', 'debug')) {
+                if (is_array($msg)) {
+                    echo json_encode($msg);
+                } elseif ($msg != '') {
+                    echo $msg;
+                }
             }
         }
 

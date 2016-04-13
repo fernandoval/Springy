@@ -6,7 +6,7 @@
  *  \copyright  Copyright (c) 2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.1.2
+ *  \version    0.2.3
  *  \ingroup    framework
  */
 namespace Springy\DB;
@@ -140,8 +140,6 @@ class Conditions
                 $condStr = (empty($conditions) ? '' : 'AND ').'('.$sub->parse().')';
                 $this->parameters = array_merge($this->parameters, $sub->params());
                 unset($sub);
-            } else {
-                throw new Exception('Unknown expressiont type.', 500);
             }
 
             $conditions .= ' '.$condStr;
