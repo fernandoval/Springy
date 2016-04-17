@@ -2,12 +2,11 @@
 /** \file
  *  Springy.
  *
- *  \brief      Classe Model para acesso a banco de dados.
- *  \copyright  Copyright (c) 2007-2016 Fernando Val
+ *  \brief      Class used to create Model classes the access relational database tables.
+ *  \copyright  ₢ 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \note       Essa classe extende a classe DB.
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    2.0.1.40
+ *  \version    2.0.0.39
  *  \ingroup    framework
  */
 namespace Springy;

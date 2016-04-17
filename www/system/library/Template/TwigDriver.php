@@ -3,11 +3,10 @@
  *  Springy.
  *
  *  \brief      Driver class using the Twig template engine.
- *  \copyright  Copyright (c) 2014-2016 Fernando Val
+ *  \copyright  ₢ 2014-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \see        http://twig.sensiolabs.org/
- *  \warning    This class is under development yet. Use it for you own risk.
- *  \version    0.14.11
+ *  \version    0.14.0.12
  *  \ingroup    framework
  */
 namespace Springy\Template;
@@ -189,7 +188,7 @@ class TwigDriver implements TemplateDriverInterface
 
         // Se o arquivo de template não existir, exibe erro 404
         // if (!$this->templateExists($this->templateName)) {
-            // Errors::displayError(404, $this->templateName . self::TPL_NAME_SUFIX);
+            // new Errors(404, $this->templateName . self::TPL_NAME_SUFIX);
         // }
 
         return true;

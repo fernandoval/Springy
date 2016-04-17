@@ -3,10 +3,10 @@
  *  Springy.
  *
  *  \brief      Class Controller.
- *  \copyright  Copyright (c) 2016 Fernando Val
+ *  \copyright  ₢ 2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \note       This class can be used to construct application controllers.
- *  \version    0.1.2
+ *  \version    0.2.0.3
  *  \ingroup    framework
  */
 namespace Springy;
@@ -92,7 +92,7 @@ class Controller extends AclManager
             $this->_redirect($url);
         }
 
-        Errors::displayError(403, 'Forbidden');
+        new Errors(403, 'Forbidden');
     }
 
     /**
@@ -100,7 +100,7 @@ class Controller extends AclManager
      */
     protected function _pageNotFound()
     {
-        Errors::displayError(404, 'Page not found');
+        new Errors(404, 'Page not found');
     }
 
     /**

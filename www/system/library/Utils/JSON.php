@@ -5,14 +5,14 @@
  *  \brief      Classe de construção e tratamento de objetos JSON.
  *  \copyright  Copyright (c) 2007-2016 Fernando Val
  *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
- *  \author     Fernando Val  - fernando.val@gmail.com
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    1.0.6
+ *  \author     Fernando Val - fernando.val@gmail.com
+ *  \version    1.0.1.7
  *  \ingroup    framework
  */
 namespace Springy\Utils;
 
 use Springy\Configuration;
+use Springy\Core\Debug;
 use Springy\Kernel;
 
 /**
@@ -79,7 +79,7 @@ class JSON
     public function printJ($andDie = true)
     {
         if (Configuration::get('system', 'debug')) {
-            $this->dados['debug'] = Kernel::getDebugContent();
+            $this->dados['debug'] = Debug::get();
         }
 
         echo $this->fetch();

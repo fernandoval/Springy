@@ -2,12 +2,11 @@
 /**	\file
  *	Springy.
  *
- *	\brief      Classe de configuração.
- *  \copyright  Copyright (c) 2007-2016 Fernando Val
- *  \author     Fernando Val  - fernando.val@gmail.com
+ *	\brief      Application configuration handler.
+ *  \copyright  ₢ 2007-2016 Fernando Val
+ *  \author     Fernando Val - fernando.val@gmail.com
  *  \author     Allan Marques - allan.marques@ymail.com
- *	\warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version    2.0.11
+ *	\version    2.1.0.11
  *	\ingroup    framework
  */
 namespace Springy;
@@ -127,7 +126,7 @@ class Configuration
 
         // Confere se a configuração foi carregada
         if (empty(self::$confs[$local])) {
-            Errors::displayError(500, 'Settings for "'.$local.'" not found in the environment "'.Kernel::environment().'".');
+            new Errors(500, 'Settings for "'.$local.'" not found in the environment "'.Kernel::environment().'".');
         }
 
         return true;
