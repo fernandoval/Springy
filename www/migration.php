@@ -4,10 +4,9 @@
  *  Springy.
  *
  *	\brief     This is a database migration script
- *  \copyright Copyright (c) 2007-2016 Fernando Val
+ *  \copyright â‚¢ 2007-2016 Fernando Val
  *  \author    Fernando Val - fernando.val@gmail.com
- *  \warning   Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version   0.3
+ *  \version   0.4.0.4
  *  \ingroup   framework
  */
 if (!file_exists(__DIR__.'/sysconf.php')) {
@@ -28,9 +27,7 @@ if (!defined('STDIN') || empty($argc)) {
 
 define('BYPASS_CONTROLLERS', true);
 
-$_GET['SUPERVAR'] = '__migration__';
-$_SERVER['QUERY_STRING'] = 'SUPERVAR=__migration__';
-
+$_SERVER['QUERY_STRING'] = '';
 $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 $_SERVER['REQUEST_METHOD'] = 'GET';
 $_SERVER['REQUEST_URI'] = '__migration__';

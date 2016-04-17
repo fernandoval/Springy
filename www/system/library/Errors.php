@@ -45,27 +45,20 @@ class Errors
             $getParams[] = $var.'='.(is_array($value) ? json_encode($value) : $value);
         }
 
+        if (PHP_SAPI === 'cli' || defined('STDIN')) {
+            return 'Error ID: '.$errorId."\n".
+                'Description: '.$errMessage."\n".
+                'Run time: '.Kernel::runTime().' seconds'."\n".
+                'Date: '.date('Y-m-d')."\n".
+                'Time: '.date('G:i:s')."\n".
+                'Request: '.(isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : 'undefined')."\n";
+        }
+
         // Mount error output information
         try {
             $uname = php_uname('n');
         } catch (Exception $e) {
             $uname = $_SERVER['HOST_NAME'];
-        }
-
-        if (PHP_SAPI === 'cli' || defined('STDIN')) {
-            return 'Error Description: '.$errMessage."\n".
-                'Error ID: '.$errorId.' ('.URI::buildURL(['_system_bug_solved_', $errorId]).')'."\n".
-                'Execution time: '.Kernel::runTime().' seconds'."\n".
-                'System: '.$uname."\n".
-                'Secure mode: '.(ini_get('safe_mode') ? 'Yes' : 'No')."\n".
-                'Date: '.date('Y-m-d')."\n".
-                'Time: '.date('G:i:s')."\n".
-                'Request: '.(isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : 'indefinido')."\n".
-                'Request Method: '.(isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : 'indefinido')."\n".
-                'Server Protocol: '.(isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'indefinido')."\n".
-                'URL: '.URI::getURIString().'?'.implode('&', $getParams)."\n";
-                // . 'Debug: ' . parent::get_debug() . "\n\n"
-                // . 'Info: ' . print_r(parent::make_debug_backtrace(), true) . "\n\n";
         }
 
         $errorTemplate = dirname(realpath(__FILE__)).DIRECTORY_SEPARATOR.'error_template.html';

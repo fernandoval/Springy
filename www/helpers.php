@@ -2,12 +2,11 @@
 /** \file
  *  Springy.
  *
- *	\brief      Helper file - Functions and constants
- *  \copyright  Copyright (c) 2007-2016 Fernando Val
+ *  \brief      Helper file - Functions and constants.
+ *  \copyright  (c) 2007-2016 Fernando Val
  *  \author     Allan Marques - allan.marques@ymail.com
  *  \author     Fernando Val - fernando.val@gmail.com
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    2.0.4
+ *  \version    2.1.0.5
  *  \ingroup    framework
  */
 
@@ -75,7 +74,7 @@ function sysconf($key)
 }
 
 /**
- *  \brief An alias for Springy\Kernel::debug() method
+ *  \brief An alias for Springy\Core\Debug::add() method
  *  \param string $txt
  *  \param string $name
  *  \param boolean $highlight
@@ -83,7 +82,7 @@ function sysconf($key)
  */
 function debug($txt, $name = '', $highlight = true, $revert = true)
 {
-    Springy\Kernel::debug($txt, $name, $highlight, $revert);
+    Springy\Core\Debug::add($txt, $name, $highlight, $revert);
 }
 
 /**
@@ -179,7 +178,8 @@ function springyAutoload($class)
  */
 function springyExceptionHandler($error)
 {
-    Springy\Errors::errorHandler($error->getCode(), $error->getMessage(), $error->getFile(), $error->getLine(), (method_exists($error, 'getContext') ? $error->getContext() : null));
+    $errors = new Springy\Errors();
+    $errors->handler($error->getCode(), $error->getMessage(), $error->getFile(), $error->getLine(), (method_exists($error, 'getContext') ? $error->getContext() : null));
 }
 
 /**
@@ -187,7 +187,8 @@ function springyExceptionHandler($error)
  */
 function springyErrorHandler($errno, $errstr, $errfile, $errline, $errContext)
 {
-    Springy\Errors::errorHandler($errno, $errstr, $errfile, $errline, $errContext);
+    $errors = new Springy\Errors();
+    $errors->handler($errno, $errstr, $errfile, $errline, $errContext);
 }
 
 /**

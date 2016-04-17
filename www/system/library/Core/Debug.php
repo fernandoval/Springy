@@ -3,9 +3,9 @@
  *  Springy.
  *
  *  \brief      Framework debug class.
- *  \copyright  (c) 2007-2016 Fernando Val
+ *  \copyright  ₢ 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
- *  \version    1.0.0.1
+ *  \version    1.0.1.2
  *  \ingroup    framework
  */
 namespace Springy\Core;
@@ -38,9 +38,11 @@ class Debug
         ];
         if ($revert) {
             array_unshift(self::$debug, $debug);
-        } else {
-            self::$debug[] = $debug;
+
+            return;
         }
+
+        self::$debug[] = $debug;
     }
 
     /**
@@ -74,7 +76,7 @@ class Debug
         $result = '<ul style="font-family:Arial, Helvetica, sans-serif; font-size:12px">';
         $htmlLI = 0;
 
-        foreach ($aDados as $key => $backtrace) {
+        foreach ($aDados as $backtrace) {
             if ($backtrace['line'] > 0) {
                 $backtrace['content'] = preg_replace('/^<\/span>/', '', trim($backtrace['content']));
                 if (!preg_match('/<\/span>$/', $backtrace['content'])) {

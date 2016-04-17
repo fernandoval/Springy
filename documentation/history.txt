@@ -2,19 +2,19 @@ Springy framework update history
 
 ------------------------------------------------------------------------------------ --- -- -
 development
-    - New classes DB\Conditions and DB\Where;
-    - Adjusts in Errors class for Twig driver;
-    - Adjusts in Twig driver;
-    - Enhangements in Twig driver's assetFile() function;
-    - Enhancements in debug system.
-    
     - New main configuration 'PROJECT_CODE_NAME' to set the project code name;
     - New method Kernel::projectCodeName() to print the value of the project code name;
+    - New class Core\Debug;
+    - New class DB\Conditions;
+    - New class DB\Where;
+    - Adjustments in Errors class for Twig driver;
+    - Adjustments in Twig driver;
+    - Enhangements in Twig driver's assetFile() function;
+    - Enhancements in debug system;
     - The Errors class now is dynamic;
     - The method Errors::disregard() was moved to Kernel::addIgnoredError();
     - The method Errors::regard() was moved to Kernel::delIgnoredError();
     - The method Errors::setHook() was moved to Kernel::setErrorHook();
-    - New class Core\Debug;
     - The method Kernel::debug() was moved to Core\Debug::add();
     - The method Kernel::debugPrint() was moved to Core\Debug::printOut();
     - The method Kernel::getDebugContent() was moved to Core\Debug::get();

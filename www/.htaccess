@@ -13,9 +13,11 @@ RewriteCond %{REQUEST_FILENAME} -d [OR]
 RewriteCond %{REQUEST_URI} =/ [OR]
 RewriteCond %{REQUEST_URI} =/index.php [OR]
 RewriteCond %{REQUEST_URI} =""
-RewriteRule .* /_Main.php?SUPERVAR=/&%{QUERY_STRING} [L]
+RewriteRule .* /_Main.php [L]
+#RewriteRule .* /_Main.php?SUPERVAR=/&%{QUERY_STRING} [L]
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_URI}	!\.(gif|jpe?g|s?css|js|png|swf|ico|eot|svg|ttf|woff|otf|less|json|txt)$ [NC]
-RewriteRule ^(.*?)$ /_Main.php?SUPERVAR=$1&%{QUERY_STRING} [L]
+RewriteRule ^(.*?)$ /_Main.php [L]
+#RewriteRule ^(.*?)$ /_Main.php?SUPERVAR=$1&%{QUERY_STRING} [L]

@@ -5,7 +5,7 @@
  *  \brief      Framework copyright class.
  *  \copyright  (c) 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
- *  \version    1.0.0.2
+ *  \version    1.0.1.3
  *  \ingroup    framework
  */
 namespace Springy\Core;
@@ -28,32 +28,45 @@ class Copyright
     }
 
     /**
+     *  \brief Get the file information and return an array of it.
+     */
+    private function _getFileInfo($file, $nameSpace)
+    {
+        $ver = ['b' => '', 'v' => '', 'n' => ''];
+        $far = file($file);
+
+        while (list(, $lst) = each($far)) {
+            if (preg_match('/\*(\s*)[\\\\|@]brief[\s|\t]{1,}(.*)((\r)*(\n))$/', $lst, $arr)) {
+                $ver['b'] = trim($arr[2]);
+            } elseif (preg_match('/\*([\s|\t]*)\\\\version[\s|\t]{1,}(.*)((\r)*(\n))$/', $lst, $arr)) {
+                $ver['v'] = trim($arr[2]);
+            } elseif (preg_match('/^(class|interface)[\s|\t]{1,}([a-zA-Z0-9_]+)(\s*)(extends)*(\s*)([a-zA-Z0-9_]*)(\s*)(\\{*)/', $lst, $arr)) {
+                $ver['n'] = $arr[1].' '.$nameSpace.'\\'.trim($arr[2]);
+                break;
+            }
+        }
+
+        return $ver;
+    }
+
+    /**
      *  \brief Get the list of classes in a directory.
      */
     private function _list_classes($dir, $nameSpace)
     {
+        if (!$rdir = opendir($dir)) {
+            return [];
+        }
+
         $fver = [];
-        if ($rdir = opendir($dir)) {
-            while (($file = readdir($rdir)) !== false) {
-                if (filetype($dir.$file) == 'file' && substr($file, -4) == '.php') {
-                    $far = file($dir.$file);
-                    $ver = ['b' => '', 'v' => '', 'n' => ''];
-                    while (list(, $lst) = each($far)) {
-                        if (preg_match('/\*(\s*)[\\\\|@]brief[\s|\t]{1,}(.*)((\r)*(\n))$/', $lst, $arr)) {
-                            $ver['b'] = trim($arr[2]);
-                        } elseif (preg_match('/\*([\s|\t]*)\\\\version[\s|\t]{1,}(.*)((\r)*(\n))$/', $lst, $arr)) {
-                            $ver['v'] = trim($arr[2]);
-                        } elseif (preg_match('/^(class|interface)[\s|\t]{1,}([a-zA-Z0-9_]+)(\s*)(extends)*(\s*)([a-zA-Z0-9_]*)(\s*)(\\{*)/', $lst, $arr)) {
-                            $ver['n'] = $arr[1].' '.$nameSpace.'\\'.trim($arr[2]);
-                            break;
-                        }
-                    }
-                    if ($ver['n'] && $ver['v']) {
-                        $fver[$ver['n']] = $ver;
-                    }
-                } elseif (!in_array($file, ['.', '..']) && filetype($dir.$file) == 'dir') {
-                    $fver = array_merge($fver, $this->_list_classes($dir.$file.DIRECTORY_SEPARATOR, $nameSpace.'\\'.$file));
+        while (($file = readdir($rdir)) !== false) {
+            if (filetype($dir.$file) == 'file' && substr($file, -4) == '.php') {
+                $ver = $this->_getFileInfo($dir.$file, $nameSpace);
+                if ($ver['n'] && $ver['v']) {
+                    $fver[$ver['n']] = $ver;
                 }
+            } elseif (!in_array($file, ['.', '..']) && filetype($dir.$file) == 'dir') {
+                $fver = array_merge($fver, $this->_list_classes($dir.$file.DS, $nameSpace.'\\'.$file));
             }
         }
         ksort($fver);
@@ -118,7 +131,5 @@ class Copyright
 
         echo '</body>';
         echo '</html>';
-
-        exit(0);
     }
 }
