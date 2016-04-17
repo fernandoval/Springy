@@ -6,7 +6,7 @@
  *  \copyright  (c) 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
- *  \version    3.0.0.38
+ *  \version    3.0.0.39
  *  \ingroup    framework
  */
 namespace Springy;
@@ -184,7 +184,7 @@ class Errors
     /**
      *  \brief Encerra o processamento e dá saída na página de erro HTML.
      *  \warning This method is deprecated and will be removed soon.
-     *  \deprecated
+     *  \deprecated This method is deprecated and will be removed soon.
      */
     public static function displayError($errorType, $msg = '')
     {
@@ -194,7 +194,7 @@ class Errors
     /**
      *  \brief Old errorHandler method to back compatibility.
      *  \warning This method is deprecated and will be removed soon.
-     *  \deprecated
+     *  \deprecated This method is deprecated and will be removed soon.
      */
     public static function errorHandler($errno, $errstr, $errfile, $errline, $errcontext = null, $errorType = 500)
     {

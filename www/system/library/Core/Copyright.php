@@ -5,7 +5,7 @@
  *  \brief      Framework copyright class.
  *  \copyright  (c) 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
- *  \version    1.0.0.1
+ *  \version    1.0.0.2
  *  \ingroup    framework
  */
 namespace Springy\Core;
@@ -28,7 +28,7 @@ class Copyright
     }
 
     /**
-     *  \brief Get the list of classes in a directory
+     *  \brief Get the list of classes in a directory.
      */
     private function _list_classes($dir, $nameSpace)
     {
