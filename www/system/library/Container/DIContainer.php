@@ -241,11 +241,11 @@ class DIContainer implements ArrayAccess
     }
 
     /**
-     * \brief Retorna a dependencia independente do seu tipo.
-     * 
-     * \param [in] (string) $key - Chave identificadora da dependencia
-     * \return Dependencia equivalente a chave
-     * \throws InvalidArgumentException
+     *  \brief Retorna a dependencia independente do seu tipo.
+     *
+     *  \param [in] (string) $key - Chave identificadora da dependencia
+     *  \return Dependencia equivalente a chave
+     *  \throws InvalidArgumentException
      */
     public function resolve($key)
     {

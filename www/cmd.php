@@ -3,10 +3,9 @@
  *  Springy.
  *
  *	\brief      Script de execução via shell para crontab
- *  \copyright  Copyright (c) 2007-2016 Fernando Val
+ *  \copyright  ₢ 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    1.2.6
+ *  \version    1.3.0.8
  *  \ingroup    framework
  */
 if (!file_exists('sysconf.php')) {
@@ -36,9 +35,7 @@ if ($argc < 2) {
     exit(999);
 }
 
-$_GET['SUPERVAR'] = $argv[1];
-$_SERVER['QUERY_STRING'] = 'SUPERVAR='.$argv[1];
-
+$_SERVER['QUERY_STRING'] = '';
 $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 $_SERVER['REQUEST_METHOD'] = 'GET';
 $_SERVER['REQUEST_URI'] = $argv[1];
@@ -52,11 +49,11 @@ while (++$arg < $argc) {
         $arg += 1;
         if (isset($argv[$arg])) {
             $_SERVER['REQUEST_URI']  .= '?'.$argv[$arg];
-            $_SERVER['QUERY_STRING'] .= '&'.$argv[$arg];
+            $_SERVER['QUERY_STRING'] .= $argv[$arg];
 
             foreach (explode('&', $argv[$arg]) as $get) {
                 $get = explode('=', $get);
-                $_GET[ $get[0] ] = $get[1];
+                $_GET[$get[0]] = $get[1];
                 unset($get);
             }
         }
@@ -67,5 +64,6 @@ while (++$arg < $argc) {
         }
     }
 }
+$_SERVER['QUERY_STRING'] = trim($_SERVER['QUERY_STRING'], '&');
 
 require_once '_Main.php';

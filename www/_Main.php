@@ -3,9 +3,9 @@
  *  Springy.
  *
  *  \brief      System initialization script
- *  \copyright  Copyright ₢ 2007-2016 Fernando Val
+ *  \copyright  ₢ 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
- *  \version    4.2.29
+ *  \version    4.3.0.30
  *
  *  \defgroup framework Biblioteca do Framework
  *
@@ -176,25 +176,25 @@ if (isset($ControllerClassName)) {
             call_user_func([$PageController, '_default']);
         }
     } else {
-        Springy\Errors::displayError(404, 'No '.$ControllerClassName.' on '.$controller);
+        new Springy\Errors(404, 'No '.$ControllerClassName.' on '.$controller);
     }
     unset($controller);
 
     // se tiver algum debug, utiliza-o
-    Springy\Kernel::debugPrint();
+    Springy\Core\Debug::printOut();
 } else {
     $Page = Springy\URI::getSegment(0, false);
     if ($Page == '_springy_' || $Page == '_') {
-        Springy\Kernel::printCopyright();
+        new Springy\Core\Copyright(true);
     } elseif ($Page == '_pi_') {
         phpinfo();
         ob_end_flush();
         exit;
     } elseif ($Page == '_error_') {
         if ($error = Springy\URI::getSegment(0)) {
-            Springy\Errors::displayError((int) $error, 'System error');
+            new Springy\Errors((int) $error, 'System error');
         } else {
-            Springy\Errors::displayError(404, 'Page not found');
+            new Springy\Errors(404, 'Page not found');
         }
     } elseif (in_array($Page, ['_system_bug_', '_system_bug_solved_'])) {
         // Verifica se o acesso ao sistema necessita de autenticação
@@ -205,18 +205,20 @@ if (isset($ControllerClassName)) {
                     header('WWW-Authenticate: Basic realm="'.utf8_decode('What r u doing here?').'"');
                     // header('HTTP/1.0 401 Unauthorized');
                     // die('Unauthorized!');
-                    Springy\Errors::displayError(401, 'Unauthorized');
+                    new Springy\Errors(401, 'Unauthorized');
                 }
                 Springy\Cookie::set('__sys_bug_auth__', true);
             }
         }
 
         if ($Page == '_system_bug_') {
-            Springy\Errors::bugList();
+            $error = new Springy\Errors();
+            $error->bugList();
         } elseif ($Page == '_system_bug_solved_' && preg_match('/^[0-9a-z]{8}$/', Springy\URI::getSegment(1, false))) {
-            Springy\Errors::bugSolved(Springy\URI::getSegment(1, false));
+            $error = new Springy\Errors();
+            $error->bugSolved(Springy\URI::getSegment(1, false));
         } else {
-            Springy\Errors::displayError(404, 'Page not found');
+            new Springy\Errors(404, 'Page not found');
         }
     } elseif ($Page == '__migration__') {
         // Cli mode only
@@ -229,7 +231,7 @@ if (isset($ControllerClassName)) {
         $PageController = new Springy\Migrator();
         $PageController->run();
     } else {
-        Springy\Errors::displayError(404, 'Page not found');
+        new Springy\Errors(404, 'Page not found');
     }
 }
 

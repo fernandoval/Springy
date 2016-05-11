@@ -6,7 +6,7 @@
  *  \copyright	Copyright (c) 2007-2016 Fernando Val
  *  \author		Fernando Val  - fernando.val@gmail.com
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    1.5.16
+ *  \version    1.5.17
  *	\ingroup	framework
  */
 namespace Springy;
@@ -179,7 +179,7 @@ class Session
         self::$data[$var] = $value;
         if (self::$type == 'std') {
             $_SESSION['_ffw_'][$var] = $value;
-        } else {
+        // } else {
             // self::_save_db_session();
         }
     }
@@ -196,8 +196,6 @@ class Session
         if (isset(self::$data[$var])) {
             return self::$data[$var];
         }
-
-        return;
     }
 
     /**
@@ -214,8 +212,6 @@ class Session
         if (!empty(self::$data)) {
             return self::$data;
         }
-
-        return;
     }
 
     /**
@@ -239,7 +235,7 @@ class Session
         unset(self::$data[$var]);
         if (self::$type == 'std' && isset($_SESSION) && isset($_SESSION['_ffw_']) && isset($_SESSION['_ffw_'][$var])) {
             unset($_SESSION['_ffw_'][$var]);
-        } else {
+        // } else {
             // self::_save_db_session();
         }
     }

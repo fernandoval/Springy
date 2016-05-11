@@ -1,6 +1,6 @@
 Springy
 
-Copyright (C) 2007-2015 Fernando Val
+Copyright (C) Fernando Val
 
 Developer team:
 	Fernando Val  - fernando.val@gmail.com

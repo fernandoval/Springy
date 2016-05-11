@@ -6,7 +6,7 @@
  *  \copyright  Copyright (c) 2007-2016 Fernando Val
  *  \author     Allan Marques - allan.marques@ymail.com
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.1.1
+ *  \version    0.1.2
  *  \ingroup    framework
  */
 namespace Springy\Files;
@@ -195,7 +195,7 @@ class UploadedFile extends File
         $convertedFiles = [];
 
         foreach ($files as $name => $info) {
-            $convertedFiles[ $name ] = self::convertPHPSinglePHPUploadedFile($info);
+            $convertedFiles[$name] = self::convertPHPSinglePHPUploadedFile($info);
         }
 
         return $convertedFiles;
@@ -212,7 +212,7 @@ class UploadedFile extends File
             $keys = array_keys($file['tmp_name']);
             $files = [];
             foreach ($keys as $key) {
-                $files[ $key ] = [
+                $files[$key] = [
                     'name'     => $file['name'][$key],
                     'tmp_name' => $file['tmp_name'][$key],
                     'type'     => $file['type'][$key],

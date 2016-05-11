@@ -3,11 +3,10 @@
  *  Springy.
  *
  *  \brief      Classe driver de tratamento de templates utilizando Smarty como mecanismo de renderização.
- *  \copyright  Copyright (c) 2007-2016 Fernando Val
+ *  \copyright  ₢ 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \see        http://www.smarty.net/
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    1.3.8
+ *  \version    1.5.0.10
  *  \ingroup    framework
  */
 namespace Springy\Template;
@@ -172,7 +171,7 @@ class SmartyDriver implements TemplateDriverInterface
 
         // Se o arquivo de template não existir, exibe erro 404
         if (!$this->templateExists($this->templateName)) {
-            Errors::displayError(404, $this->templateName.self::TPL_NAME_SUFIX);
+            new Errors(404, $this->templateName.self::TPL_NAME_SUFIX);
         }
 
         return true;
@@ -220,6 +219,7 @@ class SmartyDriver implements TemplateDriverInterface
         $this->tplObj->assign('CURRENT_PAGE_URI', URI::currentPageURI());
         $this->tplObj->assign('SYSTEM_NAME', Kernel::systemName());
         $this->tplObj->assign('SYSTEM_VERSION', Kernel::systemVersion());
+        $this->tplObj->assign('PROJECT_CODE_NAME', Kernel::projectCodeName());
         $this->tplObj->assign('ACTIVE_ENVIRONMENT', Kernel::environment());
 
         // Alimenta as variáveis padrão da aplicação

@@ -4,9 +4,8 @@
  *
  *	\brief		Classe para cliente SOAP.
  *  \copyright	Copyright (c) 2007-2016 Fernando Val
- *  \author		Fernando Val  - fernando.val@gmail.com
- *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	2.0.12
+ *  \author		Fernando Val - fernando.val@gmail.com
+ *	\version	2.0.1.13
  *	\ingroup	framework
  */
 namespace Springy;
@@ -53,7 +52,7 @@ class SOAP_Client
 
         set_time_limit(0);
 
-        Errors::disregard([0, E_WARNING, E_ERROR]);
+        Kernel::addIgnoredError([0, E_WARNING, E_ERROR]);
         try {
             // Monta a autenticação W.S.Security
             if ($wsse && isset($options['Username']) && isset($options['Password'])) {
@@ -73,12 +72,12 @@ class SOAP_Client
         }
         // catch (Exception $e) {
         catch (\SoapFault $e) {
-            Errors::regard([0, E_WARNING, E_ERROR]);
+            Kernel::delIgnoredError([0, E_WARNING, E_ERROR]);
             $this->error = $e->getMessage();
 
             return false;
         }
-        Errors::regard([0, E_WARNING, E_ERROR]);
+        Kernel::delIgnoredError([0, E_WARNING, E_ERROR]);
 
         set_time_limit(30);
         // set_error_handler('springyErrorHandler');
@@ -103,17 +102,17 @@ class SOAP_Client
 
         // restore_error_handler();
 
-        Errors::disregard([0, E_WARNING]);
+        Kernel::addIgnoredError([0, E_WARNING]);
         try {
             // $result = $this->client->$operation($params);
             $result = $this->client->__soapCall($operation, $params, $options, $input_headers, $output_headers);
         } catch (\SoapFault $exception) {
-            Errors::regard([0, E_WARNING]);
+            Kernel::delIgnoredError([0, E_WARNING]);
             $result = $this->error = $exception->faultcode.' - '.$exception->faultstring;
 
             return false;
         }
-        Errors::regard([0, E_WARNING]);
+        Kernel::delIgnoredError([0, E_WARNING]);
 
         // set_error_handler('springyErrorHandler');
         set_time_limit(30);

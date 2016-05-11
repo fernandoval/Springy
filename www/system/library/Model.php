@@ -2,16 +2,17 @@
 /** \file
  *  Springy.
  *
- *  \brief      Classe Model para acesso a banco de dados.
- *  \copyright  Copyright (c) 2007-2016 Fernando Val
+ *  \brief      Class used to create Model classes the access relational database tables.
+ *  \copyright  ₢ 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \note       Essa classe extende a classe DB.
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    1.24.34
+ *  \version    2.0.0.39
  *  \ingroup    framework
  */
 namespace Springy;
 
+use Springy\DB\Conditions;
+use Springy\DB\Where;
 use Springy\Validation\Validator;
 
 /**
@@ -62,6 +63,8 @@ class Model extends DB implements \Iterator
     protected $groupBy = [];
     /// Cláusula HAVING
     protected $having = [];
+    /// The WHERE conditions
+    public $where = null;
 
     /**
      *  \brief Método construtor da classe.
@@ -72,8 +75,169 @@ class Model extends DB implements \Iterator
     {
         parent::__construct($database);
 
+        $this->where = new Where();
+
         if (is_array($filter)) {
             $this->load($filter);
+        }
+    }
+
+    /**
+     *  \brief Embbed rows of other tables in each row.
+     *  \see setEmbeddedObj().
+     *
+     *  Se o parâmetro $embbed for um inteiro maior que zero e o atributo embeddedObj estiver definido,
+     *  o relacionamento definido pelo atributo será explorado até o enézimo nível definido por $embbed
+     *
+     *  \note ATENÇÃO: é recomendado cuidado com o valor de $embbed para evitar loops muito grandes ou estouro
+     *      de memória, pois os objetos podem relacionar-se cruzadamente causando relacionamento reverso
+     *      infinito.
+     */
+    private function _queryEmbbed($embbed)
+    {
+        if (is_int($embbed) && $embbed > 0 && count($this->embeddedObj) && count($this->rows) > 0) {
+            foreach ($this->embeddedObj as $obj => $attr) {
+                if (isset($attr['model'])) {
+                    $attr['attr_name'] = (isset($attr['attr_name']) ? $attr['attr_name'] : $obj);
+                }
+                // Back compatibility to fix a bug
+                if (!isset($attr['column'])) {
+                    $attr['column'] = $attr['fk'];
+                }
+                if (!isset($attr['found_by'])) {
+                    $attr['found_by'] = $attr['pk'];
+                }
+                if (!isset($attr['type'])) {
+                    $attr['type'] = isset($attr['attr_type']) ? $attr['attr_type'] : 'list';
+                }
+
+                $keys = [];
+                foreach ($this->rows as $idx => $row) {
+                    $this->rows[$idx][$attr['attr_name']] = [];
+                    if (!in_array($row[$attr['column']], $keys)) {
+                        $keys[] = $row[$attr['column']];
+                    }
+                }
+
+                // Filter
+                if (isset($attr['filter']) && is_array($attr['filter'])) {
+                    $efilter = array_merge(
+                        [
+                            $attr['found_by'] => ['in' => $keys],
+                        ],
+                        $attr['filter']
+                    );
+                } else {
+                    $efilter = [
+                        $attr['found_by'] => ['in' => $keys],
+                    ];
+                }
+                // Order
+                if (isset($attr['order'])) {
+                    $order = $attr['order'];
+                } else {
+                    $order = [];
+                }
+                // Offset
+                if (isset($attr['offset'])) {
+                    $offset = $attr['offset'];
+                } else {
+                    $offset = null;
+                }
+                // Limit
+                if (isset($attr['limit'])) {
+                    $limit = $attr['limit'];
+                } else {
+                    $limit = null;
+                }
+
+                if (isset($attr['model'])) {
+                    $embObj = new $attr['model']();
+                } else {
+                    $embObj = new $obj();
+                }
+                if (isset($attr['columns']) && is_array($attr['columns'])) {
+                    $embObj->setColumns($attr['columns']);
+                }
+                if (isset($attr['group_by']) && is_array($attr['group_by'])) {
+                    $embObj->groupBy($attr['group_by']);
+                }
+                if (isset($attr['embedded_obj'])) {
+                    $embObj->setEmbeddedObj($attr['embedded_obj']);
+                }
+                $embObj->query($efilter, $order, $offset, $limit, $embbed - 1);
+                while ($er = $embObj->next()) {
+                    foreach ($this->rows as $idx => $row) {
+                        if ($er[$attr['found_by']] == $row[$attr['column']]) {
+                            if ($attr['type'] == 'list') {
+                                $this->rows[$idx][$attr['attr_name']][] = $er;
+                            } else {
+                                $this->rows[$idx][$attr['attr_name']] = $er;
+                            }
+                        }
+                    }
+                }
+                unset($embObj);
+                reset($this->rows);
+            }
+        }
+    }
+
+    /**
+     *  \brief Build a JOIN string with received array.
+     *
+     *  Monta os JOINs caso um array seja fornecido.
+     *
+     *  Cada item do array de JOINs deve ser um array, cujo índice representa o nome da tabela e contendo
+     *  as seguintes chaves em seu interior: 'columns', 'join' e 'on'.
+     *
+     *  Cada chave do sub-array representa o seguinte:
+     *      'join' determina o tipo de JOIN. Exemplos: 'INNER', 'LEFT OUTER'.
+     *      'columns' define lista de campos, separada por vírgulas, a serem acrescidos ao SELECT.
+     *          Recomenda-se preceder cada coluna com o nome da tabela para evitar ambiguidade.
+     *      'on' é a cláusula ON para junção das tabelas.
+     *
+     *  Example of parameter $embbed as array to be used as JOIN:
+     *
+     *  [
+     *      'table_name' => [
+     *          'join'    => 'INNER',
+     *          'on'      => 'table_name.id = fk_id',
+     *          'columns' => 'table_name.column1 AS table_name_column1, table_name.column2',
+     *      ],
+     *  ]
+     *
+     *  or:
+     *
+     *  [
+     *      [
+     *          'join'    => 'INNER',
+     *          'table'   => 'table_name',
+     *          'on'      => 'table_name.id = fk_id',
+     *          'columns' => 'table_name.column1 AS table_name_column1, table_name.column2',
+     *      ],
+     *  ]
+     */
+    private function _queryJoin($join, &$columns, &$from)
+    {
+        if (!is_array($join)) {
+            return;
+        }
+
+        foreach ($join as $table => $meta) {
+            if (!empty($meta['columns'])) {
+                $columns .= ', '.$meta['columns'];
+            } elseif (!empty($meta['fields'])) {
+                $columns .= ', '.$meta['fields'];
+            }
+            if (!isset($meta['join'])) {
+                if (!isset($meta['type'])) {
+                    $meta['join'] = 'INNER';
+                } else {
+                    $meta['join'] = $meta['type'];
+                }
+            }
+            $from .= ' '.$meta['join'].' JOIN '.(isset($meta['table']) ? $meta['table'] : $table).' ON '.$meta['on'];
         }
     }
 
@@ -92,87 +256,6 @@ class Model extends DB implements \Iterator
         foreach ($primary as $column) {
             if (!isset($this->rows[key($this->rows)][$column])) {
                 return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     *  \brief Monta o filtro para a busca.
-     *
-     *  \note Este método deve ser extendido na classe herdeira
-     */
-    protected function filter($filter, array &$where, array &$params)
-    {
-        foreach ($filter as $field => $value) {
-            if (is_array($value)) {
-                foreach ($value as $method => $key) {
-                    switch (strtolower($method)) {
-                        case 'eq':
-                            $where[] = $field.' = ?';
-                            $params[] = $key;
-                            break;
-                        case 'gt':
-                            $where[] = $field.' > ?';
-                            $params[] = $key;
-                            break;
-                        case 'gte':
-                            $where[] = $field.' >= ?';
-                            $params[] = $key;
-                            break;
-                        case 'lt':
-                            $where[] = $field.' < ?';
-                            $params[] = $key;
-                            break;
-                        case 'lte':
-                            $where[] = $field.' <= ?';
-                            $params[] = $key;
-                            break;
-                        case 'ne':
-                            $where[] = $field.' != ?';
-                            $params[] = $key;
-                            break;
-                        case 'in':
-                            $where[] = $field.' in ('.trim(str_repeat('?, ', count($key)), ', ').')';
-                            foreach ($key as $val) {
-                                $params[] = $val;
-                            }
-                            break;
-                        case 'not in':
-                            $where[] = $field.' not in ('.trim(str_repeat('?, ', count($key)), ', ').')';
-                            foreach ($key as $val) {
-                                $params[] = $val;
-                            }
-                            break;
-                        case 'is':
-                            $where[] = $field.' IS ?';
-                            $params[] = $key;
-                            break;
-                        case 'is not':
-                            $where[] = $field.' IS NOT ?';
-                            $params[] = $key;
-                            break;
-                        case 'like':
-                            $where[] = $field.' LIKE ?';
-                            $params[] = $key;
-                            break;
-                        case 'match':
-                            $where[] = 'MATCH ('.$field.') AGAINST (?)';
-                            $params[] = $key;
-                            break;
-                        case 'match in boolean mode':
-                            $where[] = 'MATCH ('.$field.') AGAINST (? IN BOOLEAN MODE)';
-                            $params[] = $key;
-                            break;
-                        default:
-                            $where[] = $field.' = ?';
-                            $params[] = $key;
-                    }
-                }
-            } else {
-                $where[] = $field.' = ?';
-                $params[] = $value;
             }
         }
 
@@ -333,7 +416,7 @@ class Model extends DB implements \Iterator
      *
      *  \return Retorna TRUE se encontrar um registro que se adeque aos filtros de busca. Retorna FALSE em caso contrário.
      */
-    public function load(array $filter = null)
+    public function load($filter = null)
     {
         if ($this->query($filter) && $this->dbNumRows == 1) {
             $this->loaded = true;
@@ -375,9 +458,9 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     *  \brief Salva o registro carregado no banco de dados.
+     *  \brief Send the changes in current row to the database.
      *
-     *  \return Retorna TRUE se o dado foi salvo ou FALSE caso nenhum dado tenha sido alterado
+     *  \return Retorna TRUE se o dado foi salvo ou FALSE caso nenhum dado tenha sido alterado.
      */
     public function save($onlyIfValidationPasses = true)
     {
@@ -395,33 +478,53 @@ class Model extends DB implements \Iterator
             return false;
         }
 
+        // If there is no change, do nothing.
         if (!isset($this->rows[key($this->rows)]['**CHANGED**']) || count($this->rows[key($this->rows)]['**CHANGED**']) < 1) {
             return false;
         }
 
+        // Build the list of columns was changed.
         $columns = [];
         $values = [];
-
         foreach ($this->rows[key($this->rows)]['**CHANGED**'] as $column) {
             $columns[] = $column;
             $values[] = $this->rows[key($this->rows)][$column];
         }
 
         if (!isset($this->rows[key($this->rows)]['**NEW**'])) {
-            if ($this->isPrimaryKeyDefined()) {
-                $apk = [];
-                $primary = $this->getPKColumns();
-                foreach ($primary as $column) {
-                    $apk[] = $column.' = ?';
-                    $values[] = $this->rows[key($this->rows)][$column];
-                }
-                if (!$this->triggerBeforeUpdate()) {
-                    return false;
-                }
-                $this->execute('UPDATE '.$this->tableName.' SET '.implode(' = ?,', $columns).' = ? WHERE '.implode(' AND ', $apk), $values);
-                $this->triggerAfterUpdate();
+            /*
+             *  Is not a new record. Then update current.
+             */
+
+            // There is no primary key to build condition, do nothing.
+            if (!$this->isPrimaryKeyDefined()) {
+                return false;
             }
+
+            // Call before update trigger
+            if (!$this->triggerBeforeUpdate()) {
+                return false;
+            }
+
+            $where = new Where();
+            foreach ($this->getPKColumns() as $column) {
+                $where->condition($column, $this->rows[key($this->rows)][$column]);
+            }
+            $this->execute('UPDATE '.$this->tableName.' SET '.implode(' = ?,', $columns).' = ?'.$where, array_merge($values, $where->params()));
+
+            // Call after update trigger
+            $this->triggerAfterUpdate();
         } else {
+            /*
+             *  Is a new record.
+             */
+
+            // Call before insert trigger
+            if (!$this->triggerBeforeInsert()) {
+                return false;
+            }
+
+            // Database function to populate created at column
             switch ($this->driverName()) {
                 case 'oci':
                 case 'oracle':
@@ -449,24 +552,22 @@ class Model extends DB implements \Iterator
                     $cdtFunc = '\''.date('Y-m-d H:i:s').'\'';
             }
 
-            if (!$this->triggerBeforeInsert()) {
-                return false;
-            }
-
             $this->execute('INSERT INTO '.$this->tableName.' ('.implode(', ', $columns).($this->insertDateColumn ? ', '.$this->insertDateColumn : '').') VALUES ('.rtrim(str_repeat('?,', count($values)), ',').($this->insertDateColumn ? ', '.$cdtFunc : '').')', $values);
-
+            // Load the insertd row
             if ($this->affectedRows() == 1) {
                 if ($this->lastInsertedId() && !empty($this->primaryKey) && !strpos($this->primaryKey, ',') && empty($this->rows[key($this->rows)][$this->primaryKey])) {
                     $this->load([$this->primaryKey => $this->lastInsertedId()]);
                 } elseif ($this->isPrimaryKeyDefined()) {
-                    $k = [];
+                    $filter = [];
                     foreach ($this->getPKColumns() as $col) {
-                        $k[$col] = $this->rows[key($this->rows)][$col];
+                        $filter[$col] = $this->rows[key($this->rows)][$col];
                     }
-                    $this->load($k);
-                    unset($k);
+                    $this->load($filter);
+                    unset($filter);
                 }
             }
+
+            // Call after insert trigger
             $this->triggerAfterInsert();
         }
 
@@ -480,68 +581,77 @@ class Model extends DB implements \Iterator
      *
      *  This method deletes the curret row or many rows if the $filter is given.
      *
-     *  \param $filter is an array with a match criteria.
-     *      If ommited (or null), default, deletes the current row selected.
+     *  \param $filter is an array or Where object with a match criteria.
+     *      If ommited (null) deletes the current row selected.
      *  \return Returns the number of affected rows or false.
      */
-    public function delete(array $filter = null)
+    public function delete($filter = null)
     {
-        $where = [];
-        $params = [];
+        if (!is_null($filter) || $this->where->count()) {
+            /*
+             *  Delete rows with a filter.
+             *
+             *  In this method triggers will not be called.
+             */
 
-        // Has a filter?
-        if (!is_null($filter)) {
-            // Monta o conjunto de filtros personalizado da classe herdeira
-            if (!$this->filter($filter, $where, $params)) {
-                return false;
-            }
-
-            // Abandona caso não hajam filtros
-            if (empty($where)) {
-                return false;
-            }
-
-            // Se há uma coluna de exclusão lógica definida, adiciona-a ao conjunto de filtros
-            if ($this->deletedColumn) {
-                $where[] = $this->deletedColumn.' = ?';
-                $params[] = 0;
-            }
-
-            // Faz a exclusão lógica ou física do(s) registro(s)
-            // $this->triggerBeforeDelete();
-            if (!empty($this->deletedColumn)) {
-                array_unshift($params, 1);
-                $this->execute('UPDATE '.$this->tableName.' SET '.$this->deletedColumn.' = ? WHERE '.implode(' AND ', $where), $params);
+            // Build the condition
+            if (is_array($filter)) {
+                $where = new Where();
+                $where->filter($filter);
+            } elseif ($filter instanceof Where) {
+                $where = clone $filter;
             } else {
-                $this->execute('DELETE FROM '.$this->tableName.' WHERE '.implode(' AND ', $where), $params);
+                $where = clone $this->where;
             }
-            // $this->triggerAfterDelete();
+
+            if (!empty($this->deletedColumn)) {
+                // If table has a deleted column flag, update the rows
+                $where->condition($this->deletedColumn, 0);
+                $this->execute('UPDATE '.$this->tableName.' SET '.$this->deletedColumn.' = 1'.$where, $where->params());
+            } else {
+                // Otherwise delete the row
+                $this->execute('DELETE FROM '.$this->tableName.$where, $where->params());
+            }
+
+            // Clear any conditions
+            $this->where->clear();
         } elseif ($this->valid()) {
-            // Abandona se a chave primária não estiver definida
+            /*
+             *  Delete de current row.
+             */
+
+            // Do nothing if there is no primary key defined
             if (!$this->isPrimaryKeyDefined()) {
                 return false;
             }
 
-            // Monta a chave primária
+            // Build the primary key to define the row to be deleted
+            $where = new Where();
             foreach (explode(',', $this->primaryKey) as $column) {
-                $where[] = $column.' = ?';
-                $params[] = $this->get($column);
+                $where->condition($column, $this->get($column));
             }
 
-            // Faz a exclusão lógica ou física do registro
+            // Call before delete trigger
             if (!$this->triggerBeforeDelete()) {
                 return false;
             }
+
             if (!empty($this->deletedColumn)) {
-                array_unshift($params, 1);
-                $this->execute('UPDATE '.$this->tableName.' SET '.$this->deletedColumn.' = ? WHERE '.implode(' AND ', $where), $params);
+                // If table has a deleted column flag, update the row
+                $where->condition($this->deletedColumn, 0);
+                $this->execute('UPDATE '.$this->tableName.' SET '.$this->deletedColumn.' = 1'.$where, $where->params());
             } else {
-                $this->execute('DELETE FROM '.$this->tableName.' WHERE '.implode(' AND ', $where), $params);
+                // Otherwise delete the row
+                $this->execute('DELETE FROM '.$this->tableName.$where, $where->params());
             }
+            // Call after delete trigger
             $this->triggerAfterDelete();
         } else {
             return false;
         }
+
+        // Clear conditions avoid bug
+        $this->where->clear();
 
         return $this->affectedRows();
     }
@@ -553,10 +663,13 @@ class Model extends DB implements \Iterator
      *
      *  Permite fazer atualização de registros em lote (UPDATE)
      */
-    public function update(array $values, array $conditions)
+    public function update(array $values, $conditions = null)
     {
+        if (is_null($conditions)) {
+            return false;
+        }
+
         $data = [];
-        $where = [];
         $params = [];
 
         foreach ($values as $column => $value) {
@@ -578,12 +691,23 @@ class Model extends DB implements \Iterator
             }
         }
 
-        // Monta o conjunto de filtros personalizado da classe herdeira
-        if (!$this->filter($conditions, $where, $params)) {
-            return false;
+        // The WHERE clause
+        if ($conditions instanceof Where) {
+            $where = clone $conditions;
+        } elseif (is_array($conditions)) {
+            $where = new Where();
+            $where->filter($conditions);
+        } else {
+            throw new Exception('Invalid condition type.', 500);
         }
 
-        $this->execute('UPDATE '.$this->tableName.' SET '.implode(', ', $data).' WHERE '.implode(' AND ', $where), $params);
+        if (!empty($this->deletedColumn) && !$where->get($this->deletedColumn)) {
+            $where->condition($this->deletedColumn, 0);
+        }
+        $this->execute('UPDATE '.$this->tableName.' SET '.implode(', ', $data).$where, array_merge($params, $where->params()));
+
+        // Clear conditions avoid bug
+        $this->where->clear();
 
         return $this->affectedRows() > 0;
     }
@@ -599,14 +723,12 @@ class Model extends DB implements \Iterator
     {
         if (is_null($column)) {
             return current($this->rows);
-        } else {
-            $columns = current($this->rows);
-            if (isset($columns[$column])) {
-                return $columns[$column];
-            }
         }
 
-        return;
+        $columns = current($this->rows);
+        if (isset($columns[$column])) {
+            return $columns[$column];
+        }
     }
 
     /**
@@ -636,7 +758,7 @@ class Model extends DB implements \Iterator
                 $this->rows[key($this->rows)][$column] = $value;
             }
 
-            if ($oldvalue != $value) {
+            if ($oldvalue != $value || isset($this->rows[key($this->rows)]['**NEW**'])) {
                 if (!isset($this->rows[key($this->rows)]['**CHANGED**'])) {
                     $this->rows[key($this->rows)]['**CHANGED**'] = [];
                 }
@@ -757,18 +879,8 @@ class Model extends DB implements \Iterator
      *    Isso representa apenas que a consulta foi efetuado com sucesso. Para saber o resultado da
      *    consulta, utilize os métodos de recuperação de dados.
      */
-    public function query(array $filter = null, array $orderby = [], $offset = null, $limit = null, $embbed = false)
+    public function query($filter = null, array $orderby = [], $offset = 0, $limit = 0, $embbed = false)
     {
-        // Se nenhuma chave de busca foi passada, utiliza dados do objeto
-        if (is_null($filter) && !empty($this->rows)) {
-            $filter = $this->rows[0];
-        }
-
-        // Abandona caso não nenhum filtro tenha sido definido (evita retornar toda a tabela como resultado)
-        if (empty($filter) && $this->abortOnEmptyFilter) {
-            return false;
-        }
-
         // Monta o conjunto de colunas da busca
         if (is_array($this->tableColumns)) {
             $columns = $this->tableName.'.'.implode(', '.$this->tableName.'.', $this->tableColumns);
@@ -779,93 +891,47 @@ class Model extends DB implements \Iterator
         $select = 'SELECT '.($this->driverName() == 'mysql' ? 'SQL_CALC_FOUND_ROWS ' : '').$columns;
         $from = ' FROM '.$this->tableName;
         unset($columns);
-        $where = [];
-        $order = [];
-        $params = [];
 
-        // Monta o conjunto de filtros personalizado da classe herdeira
-        if (!$this->filter($filter, $where, $params)) {
-            return false;
+        // Build the conditions (if has)
+        if (is_array($filter)) {
+            // Use filter as array (legacy)
+            $where = new Where();
+            $where->filter($filter);
+        } elseif ($filter instanceof Where) {
+            // Filter is a new Where object
+            $where = clone $filter;
+        } else {
+            $where = clone $this->where;
         }
 
         // Abandona caso não hajam filtros
-        if (empty($where) && $this->abortOnEmptyFilter) {
+        if ($this->abortOnEmptyFilter && !$where->count()) {
             return false;
         }
 
         // Se há uma coluna de exclusão lógica definida, adiciona-a ao conjunto de filtros
-        if ($this->deletedColumn && !isset($filter[$this->deletedColumn]) && !isset($filter[$this->tableName.'.'.$this->deletedColumn])) {
-            $where[] = $this->tableName.'.'.$this->deletedColumn.' = ?';
-            $params[] = 0;
+        if ($this->deletedColumn && !$where->get($this->deletedColumn) && !$where->get($this->tableName.'.'.$this->deletedColumn)) {
+            $where->condition($this->tableName.'.'.$this->deletedColumn, 0);
         }
 
-        // Monta os JOINs caso um array seja fornecido
-        // Example of parameter $embbed as array to be used as JOIN
-        // array(
-            // 'table_name' => array(
-                // 'join' => 'INNER',
-                // 'on' => 'table_name.id = fk_id',
-                // 'columns' => 'table_name.column1 AS table_name_column1, table_name.column2'
-            // )
-        // )
-        // or
-        // array(
-            // array(
-                // 'join' => 'INNER',
-                // 'table' => 'table_name',
-                // 'on' => 'table_name.id = fk_id',
-                // 'columns' => 'table_name.column1 AS table_name_column1, table_name.column2'
-            // )
-        // )
-        if (is_array($embbed)) {
-            // Cada item do array de JOINs deve ser um array, cujo índice representa o nome da tabela e contendo
-            // as seguintes chaves em seu interior: 'columns', 'join' e 'on'.
-            // Cada chave do sub-array representa o seguinte:
-            //   'join' determina o tipo de JOIN. Exemplos: 'INNER', 'LEFT OUTER'.
-            //   'columns' define lista de campos, separada por vírgulas, a serem acrescidos ao SELECT.
-            //     Recomenda-se preceder cada coluna com o nome da tabela para evitar ambiguidade.
-            //   'on' é a cláusula ON para junção das tabelas.
-            foreach ($embbed as $table => $join) {
-                if (!empty($join['columns'])) {
-                    $select .= ', '.$join['columns'];
-                } elseif (!empty($join['fields'])) {
-                    $select .= ', '.$join['fields'];
-                }
-                if (!isset($join['join'])) {
-                    if (!isset($join['type'])) {
-                        $join['join'] = 'INNER';
-                    } else {
-                        $join['join'] = $join['type'];
-                    }
-                }
-                $from .= ' '.$join['join'].' JOIN '.(isset($join['table']) ? $join['table'] : $table).' ON '.$join['on'];
-            }
-        }
+        $this->_queryJoin($embbed, $select, $from); // Table joins?
 
-        $sql = $select.$from;
-
-        if (!empty($where)) {
-            $sql .= ' WHERE '.implode(' AND ', $where);
-        }
-
-        // Monta o agrupamento
-        if (!empty($this->groupBy)) {
-            $sql .= ' GROUP BY '.implode(', ', $this->groupBy);
-        }
+        $sql = $select.$from.$where.(!empty($this->groupBy) ? ' GROUP BY '.implode(', ', $this->groupBy) : '');
+        $params = $where->params();
 
         // Monta a cláusula HAVING de condicionamento
         if (!empty($this->having)) {
-            $where = [];
-            $this->filter($this->having, $where, $params);
-            $sql .= ' HAVING '.implode(' AND ', $where);
+            $conditions = new Conditions();
+            $conditions->filter($this->having);
+            $sql .= ' HAVING '.$conditions;
+            $params = array_merge($params, $conditions->params());
+            unset($conditions);
         }
 
         // Monta a ordenação do resultado de busca
         if (!empty($orderby)) {
+            $order = [];
             foreach ($orderby as $column => $direction) {
-                // if (!strpos($column, '.') && !strpos($column, '(')) {
-                    // $column = $this->tableName.'.'.$column;
-                // }
                 $order[] = "$column $direction";
             }
 
@@ -876,9 +942,7 @@ class Model extends DB implements \Iterator
 
         // Monta o limitador de registros
         if ($limit > 0) {
-            $sql .= ' LIMIT ?, ?';
-            $params[] = $offset;
-            $params[] = $limit;
+            $sql .= ' LIMIT '.$offset.', '.$limit;
         }
 
         // Limpa as propriedades da classe
@@ -894,15 +958,9 @@ class Model extends DB implements \Iterator
             if ($this->driverName() == 'mysql') {
                 $this->execute('SELECT FOUND_ROWS() AS found_rows');
             } else {
-                array_pop($params);
-                array_pop($params);
+                $sql = 'SELECT COUNT(0) AS found_rows FROM '.$this->tableName.$where;
 
-                $sql = 'SELECT COUNT(0) AS found_rows FROM '.$this->tableName;
-                if (!empty($where)) {
-                    $sql .= ' WHERE '.implode(' AND ', $where);
-                }
-
-                $this->execute($sql, $params);
+                $this->execute($sql, $where->params());
             }
             $columns = $this->fetchNext();
             $this->dbNumRows = (int) $columns['found_rows'];
@@ -911,106 +969,7 @@ class Model extends DB implements \Iterator
         }
         unset($where, $params);
 
-        // Se o parâmetro $embbed for um inteiro maior que zero e o atributo embeddedObj estiver
-        // definido, o relacionamento definido pelo atributo será explorado até o enézimo nível definido por $embbed
-        // ATENÇÃO: é recomendado cuidado com o valor de $embbed para evitar loops muito grandes ou estouro de memória,
-        // pois os objetos podem relacionar-se cruzadamente causando relacionamento reverso infinito.
-        //
-        // Example embeddedObj attribute array
-        // protected $embeddedObj = array(
-        //     'Table_Class_Child_Obj' => array(
-        //        'attr_name' => 'child_or_parent', // name of the attribute to be created on parent row
-        //        'attr_type' => 'list|data', // type of the attribute to be created on parent row when 'list' is a array of rows and 'data' a array of columns from last row found
-        //        'column'|'fk' => 'id', // Name of the column in parent table used to link to embedded object
-        //        'found_by'|'pk' => 'parent_id', // Name of the column key on embedded object
-        //    )
-        // );
-        if (is_int($embbed) && $embbed > 0 && count($this->embeddedObj) && count($this->rows) > 0) {
-            foreach ($this->embeddedObj as $obj => $attr) {
-                if (isset($attr['model'])) {
-                    $attr['attr_name'] = (isset($attr['attr_name']) ? $attr['attr_name'] : $obj);
-                }
-                // Back compatibility to fix a bug
-                if (!isset($attr['column'])) {
-                    $attr['column'] = $attr['fk'];
-                }
-                if (!isset($attr['found_by'])) {
-                    $attr['found_by'] = $attr['pk'];
-                }
-                if (!isset($attr['type'])) {
-                    $attr['type'] = isset($attr['attr_type']) ? $attr['attr_type'] : 'list';
-                }
-
-                $keys = [];
-                foreach ($this->rows as $idx => $row) {
-                    $this->rows[$idx][ $attr['attr_name'] ] = [];
-                    if (!in_array($row[ $attr['column'] ], $keys)) {
-                        $keys[] = $row[ $attr['column'] ];
-                    }
-                }
-
-                // Filter
-                if (isset($attr['filter']) && is_array($attr['filter'])) {
-                    $efilter = array_merge(
-                        [
-                            $attr['found_by'] => ['in' => $keys],
-                        ],
-                        $attr['filter']
-                    );
-                } else {
-                    $efilter = [
-                        $attr['found_by'] => ['in' => $keys],
-                    ];
-                }
-                // Order
-                if (isset($attr['order'])) {
-                    $order = $attr['order'];
-                } else {
-                    $order = [];
-                }
-                // Offset
-                if (isset($attr['offset'])) {
-                    $offset = $attr['offset'];
-                } else {
-                    $offset = null;
-                }
-                // Limit
-                if (isset($attr['limit'])) {
-                    $limit = $attr['limit'];
-                } else {
-                    $limit = null;
-                }
-
-                if (isset($attr['model'])) {
-                    $embObj = new $attr['model']();
-                } else {
-                    $embObj = new $obj();
-                }
-                if (isset($attr['columns']) && is_array($attr['columns'])) {
-                    $embObj->setColumns($attr['columns']);
-                }
-                if (isset($attr['group_by']) && is_array($attr['group_by'])) {
-                    $embObj->groupBy($attr['group_by']);
-                }
-                if (isset($attr['embedded_obj'])) {
-                    $embObj->setEmbeddedObj($attr['embedded_obj']);
-                }
-                $embObj->query($efilter, $order, $offset, $limit, $embbed - 1);
-                while ($er = $embObj->next()) {
-                    foreach ($this->rows as $idx => $row) {
-                        if ($er[ $attr['found_by'] ] == $row[ $attr['column'] ]) {
-                            if ($attr['type'] == 'list') {
-                                $this->rows[$idx][ $attr['attr_name'] ][] = $er;
-                            } else {
-                                $this->rows[$idx][ $attr['attr_name'] ] = $er;
-                            }
-                        }
-                    }
-                }
-                unset($embObj);
-                reset($this->rows);
-            }
-        }
+        $this->_queryEmbbed($embbed);
 
         // Populate de calculated columns
         if (is_array($this->calculatedColumns) && count($this->calculatedColumns)) {
@@ -1025,6 +984,9 @@ class Model extends DB implements \Iterator
             }
             reset($this->rows);
         }
+
+        // Clear conditions avoid bug
+        $this->where->clear();
 
         return true;
     }
@@ -1098,46 +1060,42 @@ class Model extends DB implements \Iterator
      *
      *  \return Retorna a quantidade de registros encontrados para uma determinada condição
      */
-    public function count(array $filter = null, $embbed = false)
+    public function count($filter = null, $embbed = false)
     {
         $select = 'SELECT COUNT(0) AS rowscount';
         $from = ' FROM '.$this->tableName;
-        $where = [];
-        $params = [];
 
         // Monta o conjunto de filtros personalizado da classe herdeira
-        if (!$this->filter($filter, $where, $params)) {
-            return false;
+        if (is_array($filter)) {
+            $where = new Where();
+            $where->filter($filter);
+        } elseif ($filter instanceof Where) {
+            // Filter is a new Where object
+            $where = clone $filter;
+        } else {
+            $where = clone $this->where;
         }
 
         // Se há uma coluna de exclusão lógica definida, adiciona-a ao conjunto de filtros
         if ($this->deletedColumn) {
-            $where[] = $this->deletedColumn.' = ?';
             if (isset($filter[$this->deletedColumn])) {
-                $params[] = (int) $filter[$this->deletedColumn];
+                $this->where->condition($this->deletedColumn, (int) $filter[$this->deletedColumn]);
             } else {
-                $params[] = 0;
+                $this->where->condition($this->deletedColumn, 0);
             }
         }
 
-        // Monta os JOINs caso um array seja fornecido
-        if (is_array($embbed)) {
-            foreach ($embbed as $join) {
-                if (!isset($join['type'])) {
-                    $join['type'] = 'INNER';
-                }
-                $from .= ' '.$join['type'].' JOIN '.$join['table'].' ON '.$join['on'];
-            }
+        $this->_queryJoin($embbed, $select, $from); // Table joins?
+
+        // Se há uma coluna de exclusão lógica definida, adiciona-a ao conjunto de filtros
+        if ($this->deletedColumn && !$where->get($this->deletedColumn) && !$where->get($this->tableName.'.'.$this->deletedColumn)) {
+            $where->condition($this->tableName.'.'.$this->deletedColumn, 0);
         }
 
-        $sql = $select.$from;
-
-        if (!empty($where)) {
-            $sql .= ' WHERE '.implode(' AND ', $where);
-        }
+        $sql = $select.$from.$where;
 
         // Executa o comando de contagem
-        $this->execute($sql, $params);
+        $this->execute($sql, $where->params());
         $row = $this->fetchNext();
 
         return (int) $row['rowscount'];

@@ -2,25 +2,24 @@
 /** \file
  *  Springy.
  *
- *  \brief      Script da classe para tratamento de cookies.
- *  \copyright  Copyright (c) 2007-2016 Fernando Val
- *  \author     Fernando Val  - fernando.val@gmail.com
+ *  \brief      Cookie treatment class.
+ *  \copyright  ₢ 2007-2016 Fernando Val
+ *  \author     Fernando Val - fernando.val@gmail.com
  *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    1.2.6
+ *  \version    1.3.0.6
  *  \ingroup    framework
  */
 namespace Springy;
 
 /**
- *  \brief Classe para tratamento de cookies.
+ *  \brief Cookie treatment class.
  *
  *  \todo  Implementar correção no método delete.
  *         Foi detectado que o método delete não deleta de fato, é necessário, após expirar a chave, setar seu valor para vazio.
  */
 class Cookie
 {
-    // [en-us] Reserved session keys
+    // Reserved session keys
     private static $_reserved = [];
 
     /**
@@ -28,44 +27,44 @@ class Cookie
      */
     public static function delete($key)
     {
-        // [en-us] Change string representation array to key/value array
+        // Change string representation array to key/value array
         $key = self::_scrubKey($key);
 
-        // [en-us] Make sure the cookie exists
+        // Make sure the cookie exists
         if (self::exists($key)) {
-            // [en-us] Check for key array
+            // Check for key array
             if (is_array($key)) {
-                // [en-us] Grab key/value pair
+                // Grab key/value pair
                 list($k, $v) = each($key);
 
-                // [en-us] Set string representation
+                // Set string representation
                 $key = $k.'['.$v.']';
 
-                // [en-us] Set expiration time to -1hr (will cause browser deletion)
+                // Set expiration time to -1hr (will cause browser deletion)
                 setcookie($key, false, time() - 3600);
 
-                // [en-us] Unset the cookie
+                // Unset the cookie
                 unset($_COOKIE[$k][$v]);
             }
-            // [en-us] Check for cookie array
+            // Check for cookie array
             elseif (is_array($_COOKIE[$key])) {
                 foreach ($_COOKIE[$key] as $k => $v) {
-                    // [en-us] Set string representation
+                    // Set string representation
                     $cookie = $key.'['.$k.']';
 
-                    // [en-us] Set expiration time to -1hr (will cause browser deletion)
+                    // Set expiration time to -1hr (will cause browser deletion)
                     setcookie($cookie, false, time() - 3600);
 
-                    // [en-us] Unset the cookie
+                    // Unset the cookie
                     unset($_COOKIE[$key][$k]);
                 }
             }
-            // [en-us] Unset single cookie
+            // Unset single cookie
             else {
-                // [en-us] Set expiration time to -1hr (will cause browser deletion)
+                // Set expiration time to -1hr (will cause browser deletion)
                 setcookie($key, false, time() - 3600);
 
-                // [en-us] Unset key
+                // Unset key
                 unset($_COOKIE[$key]);
             }
         }
@@ -74,6 +73,7 @@ class Cookie
     /**
      *  \brief Alias for delete() function
      *  \deprecated
+     *  \warning Deprecated. Do not use. Will be removed soon.
      *  \see delete.
      */
     public static function del($key)
@@ -86,25 +86,25 @@ class Cookie
      */
     public static function exists($key)
     {
-        // [en-us] Change string representation array to key/value array
+        // Change string representation array to key/value array
         $key = self::_scrubKey($key);
 
-        // [en-us] Check for array
+        // Check for array
         if (is_array($key)) {
-            // [en-us] Grab key/value pair
+            // Grab key/value pair
             list($k, $v) = each($key);
 
-            // [en-us] Check for key/value pair and return
+            // Check for key/value pair and return
             if (isset($_COOKIE[$k][$v])) {
                 return true;
             }
         }
-        // [en-us] If key exists, return true
+        // If key exists, return true
         elseif (isset($_COOKIE[$key])) {
             return true;
         }
 
-        // [en-us] Key does not exist
+        // Key does not exist
         return false;
     }
 
@@ -113,28 +113,25 @@ class Cookie
      */
     public static function get($key)
     {
-        // [en-us] Change string representation array to key/value array
+        // Change string representation array to key/value array
         $key = self::_scrubKey($key);
 
-        // [en-us] Check for array
+        // Check for array
         if (is_array($key)) {
-            // [en-us] Grab key/value pair
+            // Grab key/value pair
             list($k, $v) = each($key);
 
-            // [en-us] Check for key/value pair and return
+            // Check for key/value pair and return
             if (isset($_COOKIE[$k][$v])) {
                 return $_COOKIE[$k][$v];
             }
         }
-        // [en-us] Return single key if it's set
+        // Return single key if it's set
         elseif (isset($_COOKIE[$key])) {
             return $_COOKIE[$key];
         }
 
-        // [en-us] Otherwise return null
-        else {
-            return;
-        }
+        // Otherwise return null
     }
 
     /**
@@ -152,18 +149,17 @@ class Cookie
      */
     public static function set($key, $value, $expire = 0, $path = '', $domain = '', $secure = false, $httponly = true)
     {
-        // [en-us] Make sure they aren't trying to set a reserved word
+        // Make sure they aren't trying to set a reserved word
         if (!in_array($key, self::$_reserved)) {
-            // [en-us] If $key is in array format, change it to string representation
+            // If $key is in array format, change it to string representation
             $key = self::_scrubKey($key, true);
 
-            // [en-us] Store the cookie
-            setcookie($key, $value, ($expire ? time() + $expire : 0), $path, $domain, $secure, $httponly);
+            // Store the cookie
+            return setcookie($key, $value, ($expire ? time() + $expire : 0), $path, $domain, $secure, $httponly);
         }
-        // [en-us] Otherwise, throw an error
-        else {
-            Error::warning('Could not set key -- it is reserved.', __CLASS__);
-        }
+
+        // Otherwise, throw an error
+        throw new Exception('Could not set key -- it is reserved.', 500);
     }
 
     /**
@@ -171,22 +167,22 @@ class Cookie
      */
     private static function _scrubKey($key, $toString = false)
     {
-        // [en-us] Converting from array to string
+        // Converting from array to string
         if ($toString) {
-            // [en-us] If $key is in array format, change it to string representation
+            // If $key is in array format, change it to string representation
             if (is_array($key)) {
-                // [en-us] Grab key/value pair
+                // Grab key/value pair
                 list($k, $v) = each($key);
 
-                // [en-us] Set string representation
+                // Set string representation
                 $key = $k.'['.$v.']';
             }
         }
-        // [en-us] Converting from string to array
+        // Converting from string to array
         elseif (!is_array($key)) {
-            // [en-us] is this a string representation of an array?
+            // is this a string representation of an array?
             if (preg_match('/([\w\d]+)\[([\w\d]+)\]$/i', $key, $matches)) {
-                // [en-us] Store as key/value pair
+                // Store as key/value pair
                 $key = [$matches[1] => $matches[2]];
             }
         }

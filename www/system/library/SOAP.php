@@ -1,21 +1,21 @@
 <?php
 /** \file
  *  Springy.
- *  
+ *
  *	\brief		Classe para conexão SOAP
  *  \copyright	Copyright (c) 2007-2016 Fernando Val
  *  \author		Fernando Val  - fernando.val@gmail.com
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	0.6.8
+ *	\version	0.6.9
  *  \ingroup	framework
- *  
+ *
  *  This class is not terminated and is experimental. Do not use.
  */
 namespace Springy;
 
 /**
  *  \brief Classe para conexão SOAP.
- *  
+ *
  *  \warning Esta classe ainda está sendo desenvolvida e é experimental. Não a utilize.
  */
 class SOAP

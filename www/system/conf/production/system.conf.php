@@ -8,26 +8,25 @@
 /**
  *  \addtogroup systemcfg_production Configurações do cerne para o ambiente \c 'production'
  *  \ingroup systemcfg.
- *  
+ *
  *  As entradas colocadas nesse arquivo serão aplicadas apenas ao ambiente 'production'.
- *  
+ *
  *  Seu sistema pode não possuir esse ambiente, então use-o como modelo para criação do arquivo de
  *  parâmetros de configuração para os ambientes que seu sistema possua.
- *  
+ *
  *  Veja \link systemcfg Configurações do cerne \endlink para entender as entradas de configuração possíveis.
- *  
+ *
  *  \see systemcfg
  */
 /**@{*/
 
 /// Configurações para o ambiente de Produção
 $conf = [
-    'debug'             => false,
-    'maintenance'       => false,
-    'rewrite_url'       => true,
-    'cache'             => false,
-    'cache-control'     => 'private, must-revalidate',
-    'authentication'    => [],
+    'maintenance'        => false,
+    'bug_authentication' => [
+        'user' => 'username',
+        'pass' => 'password',
+    ],
 ];
 
 /**@}*/

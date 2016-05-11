@@ -1,13 +1,17 @@
 <?php
 /** \file
- *  \brief Controladora global de inicilização da aplicação.
+ *  \brief Startup global and hook controller.
  *
- *  Essa classe sempre é construída, independente da controladora chamada.
+ *  This controller is always constructed by the framework befor the application controller.
  *
- *  \ingroup    controllers
- *  \copyright  Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.
+ *  \copyright  ₢ 2007-2016 Fernando Val.
  *  \author     Fernando Val - fernando.val@gmail.com
+ *  \ingroup    controllers
  */
+use Springy\Configuration;
+use Springy\Kernel;
+use Springy\URI;
+
 class Global_Controller
 {
     public function __construct()
@@ -65,33 +69,33 @@ class Global_Controller
 
     /**
      *  \brief Initialize all default global template variables.
-     *  
+     *
      *  This method set values to all template variables used by default for any system template.
      *  You can change it how you want.
      */
     private function bindDefaultTemplateVars()
     {
         // Informa para o template se o site está com SSL
-        Springy\Kernel::assignTemplateVar('HTTPS', isset($_SERVER['HTTPS']));
+        Kernel::assignTemplateVar('HTTPS', isset($_SERVER['HTTPS']));
 
         // Inicializa as URLs estáticas
-        Springy\Kernel::assignTemplateVar('urlJS', Springy\URI::buildURL([Springy\Configuration::get('uri', 'js_dir')], [], true, 'static'));
-        Springy\Kernel::assignTemplateVar('urlCSS', Springy\URI::buildURL([Springy\Configuration::get('uri', 'css_dir')], [], true, 'static'));
-        Springy\Kernel::assignTemplateVar('urlIMG', Springy\URI::buildURL([Springy\Configuration::get('uri', 'images_dir')], [], true, 'static'));
-        Springy\Kernel::assignTemplateVar('urlSWF', Springy\URI::buildURL([Springy\Configuration::get('uri', 'swf_dir')], [], true, 'static'));
+        Kernel::assignTemplateVar('urlJS', URI::buildURL([Configuration::get('uri', 'js_dir')], [], true, 'static'));
+        Kernel::assignTemplateVar('urlCSS', URI::buildURL([Configuration::get('uri', 'css_dir')], [], true, 'static'));
+        Kernel::assignTemplateVar('urlIMG', URI::buildURL([Configuration::get('uri', 'images_dir')], [], true, 'static'));
+        Kernel::assignTemplateVar('urlSWF', URI::buildURL([Configuration::get('uri', 'swf_dir')], [], true, 'static'));
 
         // Sample how to define a template function
-        Springy\Kernel::registerTemplateFunction('function', 'sampleFunction', 'sampleTemplateFunction');
+        Kernel::registerTemplateFunction('function', 'sampleFunction', 'sampleTemplateFunction');
 
         // Inicializa as URLs do site
-        // Springy\Kernel::assignTemplateVar('urlMain', Springy\URI::buildURL(['']));
-        // Springy\Kernel::assignTemplateVar('urlLogin', Springy\URI::buildURL(['login'], [], true, 'secure'));
-        // Springy\Kernel::assignTemplateVar('urlLogut', Springy\URI::buildURL(['logout'], [], true, 'secure'));
+        // Kernel::assignTemplateVar('urlMain', URI::buildURL(['']));
+        // Kernel::assignTemplateVar('urlLogin', URI::buildURL(['login'], [], true, 'secure'));
+        // Kernel::assignTemplateVar('urlLogut', URI::buildURL(['logout'], [], true, 'secure'));
 
         // conta o número de parêmetros _GET na URL
-        Springy\Kernel::assignTemplateVar('numParamURL', count(Springy\URI::getParams()));
+        Kernel::assignTemplateVar('numParamURL', count(URI::getParams()));
         // pegando a URL atual sem paramêtros para passar a tag canonical do google
-        Springy\Kernel::assignTemplateVar('urlCurrentURL', Springy\URI::buildURL(Springy\URI::getAllSegments(), [], true));
+        Kernel::assignTemplateVar('urlCurrentURL', URI::buildURL(URI::getAllSegments(), [], true));
     }
 }
 

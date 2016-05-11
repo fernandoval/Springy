@@ -2,12 +2,11 @@
 /**	\file
  *	Springy.
  *
- *	\brief      Classe de configuração.
- *  \copyright  Copyright (c) 2007-2016 Fernando Val
- *  \author     Fernando Val  - fernando.val@gmail.com
+ *	\brief      Application configuration handler.
+ *  \copyright  ₢ 2007-2016 Fernando Val
+ *  \author     Fernando Val - fernando.val@gmail.com
  *  \author     Allan Marques - allan.marques@ymail.com
- *	\warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version    2.0.10
+ *	\version    2.1.0.11
  *	\ingroup    framework
  */
 namespace Springy;
@@ -95,12 +94,12 @@ class Configuration
         if (file_exists($config_file)) {
             $conf = [];
             require_once $config_file;
-            self::$confs[ $local ] = array_replace_recursive(self::$confs[ $local ], $conf);
+            self::$confs[$local] = array_replace_recursive(self::$confs[$local], $conf);
 
             $host = URI::http_host();
 
-            if ($host && isset($over_conf[ $host ])) {
-                self::$confs[ $local ] = array_replace_recursive(self::$confs[ $local ], $over_conf[ $host ]);
+            if ($host && isset($over_conf[$host])) {
+                self::$confs[$local] = array_replace_recursive(self::$confs[$local], $over_conf[$host]);
             }
 
             return true;
@@ -117,7 +116,7 @@ class Configuration
      */
     public static function load($local)
     {
-        self::$confs[ $local ] = [];
+        self::$confs[$local] = [];
 
         // Carrega a configuração DEFAULT para $local
         self::_load(Kernel::path(Kernel::PATH_CONFIGURATION).DIRECTORY_SEPARATOR.$local.'.default.conf.php', $local);
@@ -126,8 +125,8 @@ class Configuration
         self::_load(Kernel::path(Kernel::PATH_CONFIGURATION).DIRECTORY_SEPARATOR.Kernel::environment().DIRECTORY_SEPARATOR.$local.'.conf.php', $local);
 
         // Confere se a configuração foi carregada
-        if (empty(self::$confs[ $local ])) {
-            Errors::displayError(500, 'Settings for "'.$local.'" not found in the environment "'.Kernel::environment().'".');
+        if (empty(self::$confs[$local])) {
+            new Errors(500, 'Settings for "'.$local.'" not found in the environment "'.Kernel::environment().'".');
         }
 
         return true;
