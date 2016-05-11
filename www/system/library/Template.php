@@ -2,12 +2,11 @@
 /**	\file
  *	Springy.
  *
- *	\brief		Classe de tratamento de templates.
- *  \copyright	Copyright (c) 2007-2016 Fernando Val
- *  \author		Fernando Val  - fernando.val@gmail.com
+ *	\brief		Template handler class.
+ *  \copyright	₢ 2007-2016 Fernando Val
+ *  \author		Fernando Val - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
- *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	4.0.11
+ *	\version	4.1.0.11
  *	\ingroup	framework
  */
 namespace Springy;
@@ -42,7 +41,7 @@ class Template
                 $this->tplObj = new Template\TwigDriver($tpl);
                 break;
             default:
-                Errors::displayError('500', 'Template engine not implemented');
+                new Errors('500', 'Template engine not implemented');
         }
 
         return true;

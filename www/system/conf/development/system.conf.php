@@ -8,14 +8,14 @@
 /**
  *  \defgroup systemcfg_development Configurações do cerne para o ambiente \c 'development'
  *  \ingroup systemcfg.
- *  
+ *
  *  As entradas colocadas nesse arquivo serão aplicadas apenas ao ambiente 'development'.
- *  
+ *
  *  Seu sistema pode não possuir esse ambiente, então use-o como modelo para criação do arquivo de
  *  parâmetros de configuração para os ambientes que seu sistema possua.
- *  
+ *
  *  Veja \link systemcfg Configurações do cerne \endlink para entender as entradas de configuração possíveis.
- *  
+ *
  *  \see systemcfg
  */
 /**@{*/
@@ -24,10 +24,8 @@
 $conf = [
     'debug'             => true,
     'maintenance'       => false,
-    'rewrite_url'       => true,
     'cache'             => false,
     'cache-control'     => 'no-cache',
-    'authentication'    => [],
     'system_error'      => [
         'save_in_database' => false,
     ],

@@ -74,7 +74,12 @@
 
 /// Configurações para todos os ambientes
 $conf = [
+    'debug'              => false,
     'ignore_deprecated'  => false,
+    'rewrite_url'        => true,
+    'cache'              => false,
+    'cache-control'      => 'private, must-revalidate',
+    'authentication'     => [],
     'developer_user'     => '',
     'developer_pass'     => '',
     'dba_user'           => '',

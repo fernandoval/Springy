@@ -3,15 +3,16 @@
  *  Springy.
  *
  *  \brief      Script da classe de acesso a banco de dados.
- *  \copyright  Copyright (c) 2007-2016 Fernando Val
- *  \author     Fernando Val  - fernando.val@gmail.com
+ *  \copyright  ₢ 2007-2016 Fernando Val
+ *  \author     Fernando Val - fernando.val@gmail.com
  *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
  *  \author     Allan Marques - allan.marques@ymail.com
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    1.7.29
+ *  \version    1.8.1.32
  *  \ingroup    framework
  */
 namespace Springy;
+
+use Springy\Core\Debug;
 
 /**
  *  \brief Classe para acesso a banco de dados.
@@ -114,7 +115,7 @@ class DB
         }
 
         if ($conf['persistent']) {
-            $pdoConf[ \PDO::ATTR_PERSISTENT ] = true;
+            $pdoConf[\PDO::ATTR_PERSISTENT] = true;
         }
 
         /*
@@ -142,7 +143,8 @@ class DB
         } catch (\PDOException $error) {
             $callers = debug_backtrace();
             if (!isset($callers[1]) || $callers[1]['class'] != 'Springy\Errors' || $callers[1]['function'] != 'sendReport') {
-                Errors::errorHandler((int) $error->getCode(), $error->getMessage(), $error->getFile(), $error->getLine(), null);
+                $errors = new Errors();
+                $errors->handler((int) $error->getCode(), $error->getMessage(), $error->getFile(), $error->getLine(), null);
             }
         }
 
@@ -287,9 +289,9 @@ class DB
 
         if (isset($this->lastQuery)) {
             if (PHP_SAPI === 'cli' || defined('STDIN')) {
-                $sqlError = htmlentities((is_object($this->lastQuery) ? $this->lastQuery->__toString() : $this->lastQuery))."\n".'Parametros: '.Kernel::print_rc($this->lastValues);
+                $sqlError = htmlentities((is_object($this->lastQuery) ? $this->lastQuery->__toString() : $this->lastQuery))."\n".'Parametros: '.Debug::print_rc($this->lastValues);
             } else {
-                $sqlError = '<pre>'.htmlentities((is_object($this->lastQuery) ? $this->lastQuery->__toString() : $this->lastQuery)).'</pre><br /> Parametros:<br />'.Kernel::print_rc($this->lastValues);
+                $sqlError = '<pre>'.htmlentities((is_object($this->lastQuery) ? $this->lastQuery->__toString() : $this->lastQuery)).'</pre><br /> Parametros:<br />'.Debug::print_rc($this->lastValues);
             }
         } else {
             $sqlError = 'Still this connection was not executed some instruction SQL using.';
@@ -333,8 +335,9 @@ class DB
         unset($sqlError);
 
         // Send the report of error and kill the application
-        Errors::sendReport(
-            '<span style="color:#FF0000">'.$msg.'</span> - '.'('.$errorInfo[1].') '.$errorInfo[2].($exception ? '<br />'.$exception->getMessage() : '').'<br /><pre>'.$this->lastQuery.'</pre><br />Valores: '.Kernel::print_rc($this->lastValues),
+        $errors = new Errors();
+        $errors->sendReport(
+            '<span style="color:#FF0000">'.$msg.'</span> - '.'('.$errorInfo[1].') '.$errorInfo[2].($exception ? '<br />'.$exception->getMessage() : '').'<br /><pre>'.$this->lastQuery.'</pre><br />Valores: '.Debug::print_rc($this->lastValues),
             500,
             hash('crc32', $msg.$errorInfo[1].$this->lastQuery), // error id
             $htmlError
@@ -518,7 +521,7 @@ class DB
                         $this->resSQL->closeCursor();
                         $this->resSQL = null;
                     } catch (Exception $e) {
-                        Kernel::debug($this->lastQuery, 'Erro: '.$e->getMessage());
+                        debug($this->lastQuery, 'Erro: '.$e->getMessage());
                     }
                 }
             }
@@ -527,12 +530,11 @@ class DB
         if (self::$dbDebug || Configuration::get('system', 'sql_debug')) {
             $conf = Configuration::get('db', self::$conectionIds[$this->database]['dbName']);
 
-            Kernel::debug(
-                '<pre>'.
-                    $this->lastQuery.
-                '</pre><br />Valores: '.Kernel::print_rc($this->lastValues).'<br />'.
+            debug(
+                '<pre>'.$this->lastQuery.'</pre><br />Valores: '.Debug::print_rc($this->lastValues).'<br />'.
                 'Affected Rows: '.$this->affectedRows().'<br />'.
-                'DB: '.(isset($conf['database']) ? $conf['database'] : 'não informado'), 'SQL #'.self::$sqlNum, false);
+                'DB: '.(isset($conf['database']) ? $conf['database'] : 'não informado'), 'SQL #'.self::$sqlNum, false
+            );
         }
 
         return true;
@@ -791,8 +793,6 @@ class DB
         } elseif (preg_match('/^([0-9]{2})\/([0-9]{2})\/([0-9]{4})/', $dateTime)) {
             return \DateTime::createFromFormat('d/m/Y H:i:s', $dateTime)->getTimestamp();
         }
-
-        return;
     }
 
     /**

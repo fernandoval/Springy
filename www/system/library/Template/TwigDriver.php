@@ -2,12 +2,11 @@
 /** \file
  *  Springy.
  *
- *  \brief      Classe driver de tratamento de templates utilizando Twig como mecanismo de renderização.
- *  \copyright  Copyright (c) 2007-2016 Fernando Val
+ *  \brief      Driver class using the Twig template engine.
+ *  \copyright  ₢ 2014-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \see        http://twig.sensiolabs.org/
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.11.8
+ *  \version    0.14.0.12
  *  \ingroup    framework
  */
 namespace Springy\Template;
@@ -29,6 +28,7 @@ class TwigDriver implements TemplateDriverInterface
     const TPL_NAME_SUFIX = '.twig.html';
 
     private $tplObj = null;
+    private $envOptions = [];
 
     private $templatePath = null;
     private $templateName = null;
@@ -45,9 +45,17 @@ class TwigDriver implements TemplateDriverInterface
     public function __construct($tpl = null)
     {
         // Inicializa a classe de template
-        \Twig_Autoloader::register();
+        // \Twig_Autoloader::register();
+        $this->envOptions = [
+            'autoescape'       => Configuration::get('template', 'autoescape'),
+            'strict_variables' => Configuration::get('template', 'strict_variables'),
+            'debug'            => Configuration::get('template', 'debug'),
+            'cache'            => Configuration::get('template', 'compiled_template_path'),
+            'auto_reload'      => Configuration::get('template', 'auto_reload'),
+            'optimizations'    => Configuration::get('template', 'optimizations'),
+        ];
 
-        $this->__twigInstance(Configuration::get('template', 'template_path'), Configuration::get('template', 'template_cached_path'));
+        $this->__twigInstance(Configuration::get('template', 'template_path'));
 
         if ($tpl) {
             $this->setTemplate($tpl);
@@ -92,20 +100,14 @@ class TwigDriver implements TemplateDriverInterface
     /**
      *  \brief Cria a instância da classe Twig.
      */
-    private function __twigInstance($templatePath, $compilePath)
+    private function __twigInstance($templatePath)
     {
         if (isset($this->tplObj)) {
             unset($this->tplObj);
         }
         $this->templatePath = $templatePath;
         $loader = new \Twig_Loader_Filesystem($templatePath);
-        $this->tplObj = new \Twig_Environment($loader, [
-            'autoescape'       => false,
-            'strict_variables' => Configuration::get('template', 'strict_variables'),
-            //'debug' => Configuration::get('system', 'debug'),
-            'cache'       => $compilePath,
-            'auto_reload' => true,
-        ]);
+        $this->tplObj = new \Twig_Environment($loader, $this->envOptions);
     }
 
     /**
@@ -121,7 +123,7 @@ class TwigDriver implements TemplateDriverInterface
      */
     public function setTemplateDir($path)
     {
-        $this->__twigInstance($path, Configuration::get('template', 'template_cached_path'));
+        $this->__twigInstance($path);
     }
 
     /**
@@ -132,7 +134,8 @@ class TwigDriver implements TemplateDriverInterface
      */
     public function setCompileDir($path)
     {
-        // Sem função no Twig
+        $this->envOptions['cache'] = $path;
+        $this->__twigInstance($this->templatePath);
     }
 
     /**
@@ -150,7 +153,7 @@ class TwigDriver implements TemplateDriverInterface
      */
     public function setCacheDir($path)
     {
-        $this->tplObj->setCache($path);
+        // Twig cache dir and compiled dir is the same
     }
 
     /**
@@ -185,7 +188,7 @@ class TwigDriver implements TemplateDriverInterface
 
         // Se o arquivo de template não existir, exibe erro 404
         // if (!$this->templateExists($this->templateName)) {
-            // Errors::displayError(404, $this->templateName . self::TPL_NAME_SUFIX);
+            // new Errors(404, $this->templateName . self::TPL_NAME_SUFIX);
         // }
 
         return true;
@@ -233,6 +236,7 @@ class TwigDriver implements TemplateDriverInterface
             'CURRENT_PAGE_URI'   => URI::currentPageURI(),
             'SYSTEM_NAME'        => Kernel::systemName(),
             'SYSTEM_VERSION'     => Kernel::systemVersion(),
+            'PROJECT_CODE_NAME'  => Kernel::projectCodeName(),
             'ACTIVE_ENVIRONMENT' => Kernel::environment(),
         ];
 
@@ -380,24 +384,16 @@ class TwigDriver implements TemplateDriverInterface
      *  de arquivos estáticos de CSS e JavaScript com objetivo de evitar que o cache
      *  do navegador utilize versões desatualizadas deles.
      */
-    public function assetFile($type, $file)
+    public function assetFile($file, $host = 'static')
     {
-        if ($type == 'js') {
-            $filePath = Configuration::get('system', 'js_path').DIRECTORY_SEPARATOR.$file.'.js';
-            $fileURI = Configuration::get('uri', 'js_dir');
-        } elseif ($type == 'css') {
-            $filePath = Configuration::get('system', 'css_path').DIRECTORY_SEPARATOR.$file.'.css';
-            $fileURI = Configuration::get('uri', 'css_dir');
-        } else {
-            return '#';
-        }
+        $filePath = Configuration::get('system', 'assets_path').DIRECTORY_SEPARATOR.$file;
+        $fileURI = Configuration::get('uri', 'assets_dir').'/'.$file;
+        $get = [];
 
         if (file_exists($filePath)) {
-            $fileURI .= '/'.$file.'__'.filemtime($filePath).'.'.$type;
-        } else {
-            $fileURI .= '/'.$file.'.'.$type;
+            $get['v'] = filemtime($filePath);
         }
 
-        return URI::buildURL(explode('/', $fileURI), [], isset($_SERVER['HTTPS']), 'static', false);
+        return URI::buildURL(explode('/', $fileURI), $get, false, $host, false);
     }
 }

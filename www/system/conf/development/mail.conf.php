@@ -8,14 +8,14 @@
 /**
  *  \defgroup emailcfg_development Configurações da classe de envio de email para o ambiente \c 'development'
  *  \ingroup emailcfg.
- *  
+ *
  *  As entradas colocadas nesse arquivo serão aplicadas apenas ao ambiente 'development'.
- *  
+ *
  *  Seu sistema pode não possuir esse ambiente, então use-o como modelo para criação do arquivo de
  *  parâmetros de configuração para os ambientes que seu sistema possua.
- *  
+ *
  *  Veja \link emailcfg Configurações da classe de envio de email \endlink para entender as entradas de configuração possíveis.
- *  
+ *
  *  \see emailcfg
  */
 /**@{*/

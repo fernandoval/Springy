@@ -6,7 +6,7 @@
  *  \copyright	Copyright (c) 2007-2016 Fernando Val\n
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	3.1.15
+ *  \version	3.2.16
  */
 
 /**
@@ -78,8 +78,9 @@
 
 /// Configurações gerais do sistema
 $GLOBALS['SYSTEM'] = [
-    'SYSTEM_NAME'    => 'Your system name',
-    'SYSTEM_VERSION' => [1, 0, 0],
+    'SYSTEM_NAME'       => 'Your system name',
+    'SYSTEM_VERSION'    => [1, 0, 0],
+    'PROJECT_CODE_NAME' => '',
 
     'ACTIVE_ENVIRONMENT'   => '',
     'ENVIRONMENT_VARIABLE' => 'SPRINGY_ENVIRONMENT',

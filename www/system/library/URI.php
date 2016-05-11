@@ -2,12 +2,11 @@
 /** \file
  *  Springy.
  *
- *  \brief      Classe para tratamento de URI.
- *  \copyright  Copyright (c) 2007-2016 Fernando Val
- *  \author     Fernando Val  - fernando.val@gmail.com
+ *  \brief      URI handler class.
+ *  \copyright  ₢ 2007-2016 Fernando Val
+ *  \author     Fernando Val - fernando.val@gmail.com
  *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    2.1.31
+ *  \version    2.2.0.32
  *  \ingroup    framework
  */
 namespace Springy;
@@ -36,54 +35,34 @@ class URI
     private static $class_controller = null;
 
     /**
-     *  \brief Lê a URLs (em modo re-write) e inicializa a variável $uri_string interna.
-     *
-     *  \return \c true se houve sucesso no processo e \c false em caso contrário
+     *  \brief Get the URI string.
      */
     private static function _fetch_uri_string()
     {
         // Verifica se há um único parâmetro na query string e esse parâmetro não é uma vafiável GET
-        if (is_array($_GET) && count($_GET) == 1 && (trim(key($_GET), '/') != '') && empty($_GET[key($_GET)])) {
-            self::$uri_string = key($_GET);
+        // DEPRECATED
+        // if (is_array($_GET) && count($_GET) == 1 && (trim(key($_GET), '/') != '') && empty($_GET[key($_GET)])) {
+            // return key($_GET);
+        // }
 
-            return true;
-        }
-
-        // A variável SUPERVAR foi setada na query string pelo .htacess ou enviada por GET?
+        // There is the old SUPERVAR in $_GET, given by .htaccess?
         if (is_array($_GET) && !empty($_GET['SUPERVAR'])) {
-            self::$uri_string = $_GET['SUPERVAR'];
-
-            return true;
+            return $_GET['SUPERVAR'];
         }
 
-        // A variável PATH_INFO existe?
-        $path = (isset($_SERVER['PATH_INFO'])) ? $_SERVER['PATH_INFO'] : @getenv('PATH_INFO');
-        if (trim($path, '/') != '' && $path != '/'.pathinfo(__FILE__, PATHINFO_BASENAME)) {
-            self::$uri_string = trim($path, '&');
-
-            return true;
+        // The is REQUEST_URI?
+        if (!empty($_SERVER['REQUEST_URI'])) {
+            return explode('?', $_SERVER['REQUEST_URI'])[0];
         }
-
-        // Não há PATH_INFO? A entrada QUERY_STRING existe?
-        /*$path = (isset($_SERVER['QUERY_STRING'])) ? $_SERVER['QUERY_STRING'] : @getenv('QUERY_STRING');
-        if (trim($path, '/') != '') {
-            self::$uri_string = $path;
-            return true;
-        }*/
 
         // Não há QUERY_STRING? Então a variável ORIG_PATH_INFO existe?
         $path = (isset($_SERVER['ORIG_PATH_INFO'])) ? $_SERVER['ORIG_PATH_INFO'] : @getenv('ORIG_PATH_INFO');
         if (trim($path, '/') != '' && $path != '/'.pathinfo(__FILE__, PATHINFO_BASENAME)) {
             // remove caminho e informações do script, então temos uma boa URI
-            self::$uri_string = str_replace($_SERVER['SCRIPT_NAME'], '', $path);
-
-            return true;
+            return str_replace($_SERVER['SCRIPT_NAME'], '', $path);
         }
 
-        // Se esgotaram todas as opções...
-        self::$uri_string = '';
-
-        return false;
+        return ''; // Uh oh! Huston, we have a problem!
     }
 
     /**
@@ -109,7 +88,7 @@ class URI
             die(md5(microtime()));
         }
 
-        self::_fetch_uri_string();
+        self::$uri_string = self::_fetch_uri_string();
 
         $UriString = trim(self::$uri_string, '/');
 
@@ -300,7 +279,7 @@ class URI
                     case 404:
                     case 500:
                     case 503:
-                        Errors::displayError($action);
+                        new Errors($action);
                         break;
                 }
             }
@@ -396,7 +375,7 @@ class URI
             $segment_num -= count(Kernel::controllerRoot());
         }
         if (array_key_exists($segment_num, self::$segments)) {
-            return self::$segments[ $segment_num ];
+            return self::$segments[$segment_num];
         }
 
         return false;
@@ -411,7 +390,7 @@ class URI
     public static function getIgnoredSegment($segment_num)
     {
         if (array_key_exists($segment_num, self::$ignored_segments)) {
-            return self::$ignored_segments[ $segment_num ];
+            return self::$ignored_segments[$segment_num];
         }
 
         return false;
@@ -481,7 +460,7 @@ class URI
     public static function _GET($var)
     {
         if (array_key_exists($var, self::$get_params)) {
-            return self::$get_params[ $var ];
+            return self::$get_params[$var];
         }
 
         return false;
@@ -531,7 +510,7 @@ class URI
      */
     public static function setParam($var, $value)
     {
-        self::$get_params[ $var ] = $value;
+        self::$get_params[$var] = $value;
     }
 
     /**
@@ -558,8 +537,8 @@ class URI
         // Monta a URI
         $uri = '';
         for ($i = 0; $i < count($segments); $i++) {
-            if ($segments[ $i ] != 'index' && $segments[ $i ] != '') {
-                $uri .= (empty($uri) ? '' : '/').self::makeSlug($segments[ $i ], '-', '\.,|~\#', false);
+            if ($segments[$i] != 'index' && $segments[$i] != '') {
+                $uri .= (empty($uri) ? '' : '/').self::makeSlug($segments[$i], '-', '\.,|~\#', false);
             }
         }
         $url .= $uri;

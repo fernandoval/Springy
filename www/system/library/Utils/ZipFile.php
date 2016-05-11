@@ -7,7 +7,7 @@
  *  \author		(c) 2003 by Pascal Rehfeldt - Pascal@Pascal-Rehfeldt.com, under license GNU General Public License (Version 2, June 1991)
  *  \author		Fernando Val - fernando.val@gmail.com
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	0.3.9
+ *  \version	0.3.0.10
  *  \ingroup	framework
  */
 namespace Springy\Utils;
@@ -91,7 +91,6 @@ class ZipFile
             $dir = new DeepDir();
             $dir->setDir($dirName);
             $dir->load();
-            Kernel::debug($dir->getFiles());
 
             return $dir->getFiles();
             /*
