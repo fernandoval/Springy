@@ -2,7 +2,7 @@
 /** \mainpage
  *  ## Springy.
  *
- *  \version 3.4.0
+ *  \version 3.5.0
  *
  *  \copyright  Copyright (c) 2007-2016 Fernando Val
  *  \author     Fernando Val  - fernando.val@gmail.com
