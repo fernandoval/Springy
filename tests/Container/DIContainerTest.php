@@ -6,7 +6,7 @@
  *  \copyright  Copyright (c) 2007-2015 Fernando Val
  *  \author     Allan Marques - allan.marques@ymail.com
  *	\warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version    0.1.1
+ *	\version    0.1.2
  *	\ingroup    tests
  */
 use Springy\Container\DIContainer;
@@ -42,17 +42,13 @@ class DIContainerTest extends PHPUnit_Framework_TestCase
 
         //Function filter #1
         $DI['key3'] = $DI->raw(function ($container) {
-
             return $this->data['key3'];
-
         });
         $this->assertEquals($this->data['key3'], $DI->param('key3'));
 
         //Function filter #2
         $DI->raw('key4', function ($container) {
-
             return $this->data['key4'];
-
         });
         $this->assertEquals($this->data['key4'], $DI->param('key4'));
 
@@ -153,17 +149,13 @@ class DIContainerTest extends PHPUnit_Framework_TestCase
 
         //Function filter #1
         $DI['object3'] = $DI->instance(function ($container) use ($object3) {
-
             return $object3;
-
         });
         $this->assertSame($object3, $DI->shared('object3'));
 
         //Function filter #2
         $DI->instance('object4', function ($container) use ($object4) {
-
             return $object4;
-
         });
         $this->assertSame($object4, $DI->shared('object4'));
 

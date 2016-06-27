@@ -4,9 +4,9 @@
  *
  *  \brief      Classe de Utilidades para Manipulação de Arrays.
  *  \copyright  Copyright (c) 2007-2016 Fernando Val
- *  \author     Allan Marques  - allan.marques@ymail.com
+ *  \author     Allan Marques - allan.marques@ymail.com
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    1.1.2
+ *  \version    1.1.3
  *  \ingroup    framework
  */
 namespace Springy\Utils;
@@ -180,7 +180,9 @@ class ArrayUtils
     {
         $results = [];
 
-        array_walk_recursive($array, function ($v) use (&$results) { $results[] = $v; });
+        array_walk_recursive($array, function ($v) use (&$results) {
+            $results[] = $v;
+        });
 
         return $results;
     }
