@@ -107,13 +107,13 @@ class Strings
     public static function isPraviteNetwork($userIP)
     {
         // 10.0.0.0/8 or 192.168.0.0/16
-        if (substr($val, 0, 3) == '10.' || substr($val, 0, 8) == '192.168.') {
+        if (substr($userIP, 0, 3) == '10.' || substr($userIP, 0, 8) == '192.168.') {
             return true;
         }
 
         // 172.16.0.0/12
-        if (substr($val, 0, 4) == '172.') {
-            $oct = (int) trim(substr($val, 4, 3), '.');
+        if (substr($userIP, 0, 4) == '172.') {
+            $oct = (int) trim(substr($userIP, 4, 3), '.');
             if ($oct >= 16 && $oct <= 31) {
                 return true;
             }
