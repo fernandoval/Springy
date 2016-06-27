@@ -1,6 +1,10 @@
 Springy framework update history
 
 ------------------------------------------------------------------------------------ --- -- -
+development
+    - Correction in private network IP detection in Utils\Strings::getRealRemoteAddr();
+    - Adjustment in Model->update() method.
+
 3.5.0
     - New main configuration 'PROJECT_CODE_NAME' to set the project code name;
     - New method Kernel::projectCodeName() to print the value of the project code name;
