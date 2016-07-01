@@ -6,7 +6,7 @@
  *  \copyright  (c) 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
- *  \version    2.3.0.66
+ *  \version    2.3.1.67
  *  \ingroup    framework
  */
 namespace Springy;
@@ -278,7 +278,7 @@ class Kernel
     /**
      *  \brief Set a error hook function that will be executed just before the framework shows the error message.
      */
-    public static function callErrorHook($errno)
+    public static function callErrorHook($errno, $msg, $errorId, $additionalInfo)
     {
         if (isset(self::$errorHooks[$errno])) {
             $hook = self::$errorHooks[$errno];
