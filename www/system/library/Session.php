@@ -2,45 +2,159 @@
 /**	\file
  *	Springy.
  *
- *	\brief		Classe para tratamento de sessão.
- *  \copyright	Copyright (c) 2007-2016 Fernando Val
- *  \author		Fernando Val  - fernando.val@gmail.com
- *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    1.5.17
+ *	\brief		Session class system.
+ *  \copyright	(c) 2007-2016 Fernando Val
+ *  \author		Fernando Val - fernando.val@gmail.com
+ *  \version    2.0.18
  *	\ingroup	framework
  */
 namespace Springy;
 
 /**
- *  \brief Classe para tratamento de sessão.
+ *  \brief Session class system.
  *
- *  Esta classe é estática e invocada automaticamente pelo framework.
+ *  \warning This is a static class and can not be instantiated by user.
  */
 class Session
 {
     /// Flag de controle de sessão iniciada
     private static $started = false;
-    /// ID da sessão
-    private static $id = null;
-    /// Flag de tipo de sessão
-    private static $type = 'std';
-    /// Endereço do servidor de sessão
-    private static $server = null;
-    /// Porta do servidor de sessão
-    private static $port = null;
-    /// Nome da tabela de sessão
-    private static $session_table = null;
-    /// Nome da coluna do session_id
-    private static $id_column = null;
-    /// Nome da coluna do valor da sessão
-    private static $value_column = null;
-    /// Nome da coluna da data de atualização da sessão
-    private static $update_column = null;
-    /// Dados da sessão
+    /// Session ID
+    private static $sid = null;
+    /// Session engine type
+    private static $type = 'file';
+    /// Session cookie name
+    private static $name = 'SPRINGYSID';
+    /// Session expiration time
+    private static $expires = 120;
+    
+    /// MemcacheD server address
+    private static $mcAddr = '127.0.0.1';
+    /// MemcacheD server address
+    private static $mcPort = 11211;
+    
+    /// Database config name
+    private static $database = 'default';
+    /// The sessions table name
+    private static $dbTable = '_sessions';
+    
+    /// The session data
     private static $data = [];
+    
+    const ST_STANDARD = 'file';
+    const ST_MEMCACHED = 'memcached';
+    const ST_DATABASE = 'database';
 
     /**
-     *	\brief Inicia a sessão.
+     *  \brief Loads the session configurations.
+     */
+    private static function _confLoad()
+    {
+        $config = Configuration::get('system', 'session');
+        
+        // The session engine type
+        if (!isset($config['type'])) {
+            throw new Exception('Undefined session type.', 500);
+        } elseif ($config['type'] !== self::ST_STANDARD && $config['type'] !== self::ST_MEMCACHED && $config['type'] !== self::ST_DATABASE) {
+            throw new Exception('Invalid session type.', 500);
+        }
+        self::$type = $config['type'];
+        
+        // MemcacheD
+        if (self::$type === self::ST_MEMCACHED && isset($config['memcached'])) {
+            if (isset($config['memcached']['address'])) {
+                self::$mcAddr = $config['memcached']['address'];
+            }
+            if (isset($config['memcached']['port'])) {
+                self::$mcPort = $config['memcached']['port'];
+            }
+        }
+        
+        // Database
+        if (self::$type === self::ST_DATABASE && isset($config['database'])) {
+            if (isset(self::$config['database']['server'])) {
+                self::$database = $config['database']['server'];
+            }
+            if (isset(self::$config['database']['table'])) {
+                self::$dbTable = $config['database']['table'];
+            }
+        }
+        
+        // Session expiration time
+        if (isset($config['expires'])) {
+            self::$expires = $config['expires'];
+        }
+        
+        // Session name
+        if (isset($config['name'])) {
+            self::$name = 'SPRINGYSID';
+        }
+    }
+    
+    /**
+     *  \brief Start the session ID for MemcacheD or dabasese stored sessions.
+     */
+    private static function _startSessionID()
+    {
+        if (is_null(self::$sid)) {
+            if (!(self::$sid = Cookie::get(session_name()))) {
+                self::$sid = substr(md5(uniqid(mt_rand(), true)), 0, 26);
+            }
+        }
+        
+        Cookie::set(session_name(), self::$sid, 0, '/', Configuration::get('system', 'session.domain'), false, false);
+    }
+    
+    /**
+     *  \brief Start the database stored session.
+     */
+    private static function _startDBSession()
+    {
+        self::_startSessionID();
+        
+        // Expires old sessions
+        $db = new DB(self::$database);
+        $exp = self::$expires;
+        if ($exp == 0) {
+            $exp = 86400;
+        }
+        $db->execute('DELETE FROM '.self::$dbTable.' WHERE `updated_at` <= ?', [date('Y-m-d H:i:s', time() - ($exp * 60))]);
+
+        // Load from database
+        $db->execute('SELECT `session_value` FROM '.self::$dbTable.' WHERE id = ?', [self::$sid]);
+        if ($db->affectedRows()) {
+            $res = $db->fetchNext();
+            self::$data = unserialize($res['session_value']);
+        } else {
+            $sql = 'INSERT INTO '.self::$dbTable.'(`id`, `session_value`, `updated_at`) VALUES (?, NULL, NOW())';
+            $db->execute($sql, [self::$sid]);
+            self::$data = [];
+        }
+        
+        register_shutdown_function(['\Springy\Session', '_save_db_session']);
+        self::$started = true;
+    }
+    
+    /**
+     *  \brief Start the Memcached stored session.
+     */
+    private static function _startMCSession()
+    {
+        self::_startSessionID();
+        
+        $memcached = new Memcached();
+        $memcached->addServer(self::$mcAddr, self::$mcPort);
+
+        if (!(self::$data = $memcached->get('session_'.self::$sid))) {
+            self::$data = [];
+        }
+        
+        register_shutdown_function(['\Springy\Session', '_save_mc_session']);
+        self::$started = true;
+    }
+    
+    /**
+     *	\brief Starts the session engine.
      */
     public static function start($name = null)
     {
@@ -48,18 +162,12 @@ class Session
             return true;
         }
 
-        // Carrega as configurações de tratamento de sesssão
-        self::$type = Configuration::get('session', 'type');
-        self::$server = Configuration::get('session', 'server_addr');
-        self::$port = Configuration::get('session', 'server_port');
-        self::$session_table = Configuration::get('session', 'table_name');
-        self::$id_column = Configuration::get('session', 'id_column');
-        self::$value_column = Configuration::get('session', 'value_column');
-        self::$update_column = Configuration::get('session', 'update_column');
-
+        self::_confLoad();
+        
         if (!is_null($name)) {
-            session_name($name);
+            self::$name = $name;
         }
+        session_name(self::$name);
 
         // Verifica se há um cookie com o nome de sessão setado
         if ($id = Cookie::get(session_name())) {
@@ -73,90 +181,49 @@ class Session
             Cookie::delete(session_name());
         }
 
-        // Verifica se a sessão está em banco
-        if (self::$type == 'db' || self::$type == 'memcached') {
-            if (is_null(self::$id)) {
-                if (Cookie::get(session_name())) {
-                    self::$id = Cookie::get(session_name());
-                } else {
-                    // self::$id = md5(time().microtime().rand(1,9999999999999999999999999));
-                    self::$id = substr(md5(uniqid(mt_rand(), true)), 0, 26);
-                }
-            }
-            Cookie::set(session_name(), self::$id, 0, '/', Configuration::get('session', 'master_domain'), false, false);
-
-            if (self::$type == 'db') {
-                // Expira as sessões antigas
-                $db = new DB();
-                $exp = Configuration::get('session', 'expires');
-                if ($exp == 0) {
-                    $exp = 86400;
-                }
-                $db->execute('DELETE FROM '.self::$session_table.' WHERE '.self::$update_column.' <= ?', [date('Y-m-d H:i:s', time() - ($exp * 60))]);
-
-                // Carrega a sessão do banco
-                $db->execute('SELECT '.self::$value_column.' FROM '.self::$session_table.' WHERE '.self::$id_column.' = ?', [self::$id]);
-                if ($db->affectedRows()) {
-                    $res = $db->fetchNext();
-                    self::$data = unserialize($res[self::$value_column]);
-                } else {
-                    $sql = 'INSERT INTO '.self::$session_table.'('.self::$id_column.','.self::$value_column.','.self::$update_column.')'
-                         .' VALUES (?, NULL, NOW())';
-                    $db->execute($sql, [self::$id]);
-                    self::$data = [];
-                }
-            } else {
-                $mc = new Memcached();
-                $mc->addServer(self::$server, self::$port);
-
-                if (!(self::$data = $mc->get('session_'.self::$id))) {
-                    self::$data = [];
-                }
-            }
-            register_shutdown_function(['\Springy\Session', '_save_db_session']);
-            // self::_save_db_session();
-
-            self::$started = true;
+        if (self::$type === self::ST_MEMCACHED) {
+            self::_startMCSession();
+        } elseif (self::$type === self::ST_DATABASE) {
+            self::_startDBSession();
         } else {
-            session_set_cookie_params(0, '/', Configuration::get('session', 'master_domain'), false, false);
+            session_set_cookie_params(0, '/', Configuration::get('system', 'session.domain'), false, false);
             self::$started = session_start();
             self::$data = isset($_SESSION['_ffw_']) ? $_SESSION['_ffw_'] : [];
-            self::$id = session_id();
+            self::$sid = session_id();
         }
 
         return self::$started;
     }
 
     /**
-     *	\brief Salva uma sessão em banco ou memcached.
+     *	\brief Save the session data in database table.
      */
     public static function _save_db_session()
     {
-        if (self::$type == 'db') {
-            $data_value = serialize(self::$data);
-            $sql = 'UPDATE '.self::$session_table
-                 .' SET '
-                 .self::$value_column.' = ?, '
-                 .self::$update_column.' = NOW()'
-                 .' WHERE '
-                 .self::$id_column.' = ?';
-            $db = new DB();
-            $db->execute($sql, [$data_value, self::$id]);
-        } elseif (self::$type == 'memcached') {
-            $mc = new Memcached();
-            $mc->addServer(self::$server, self::$port);
-            $mc->set('session_'.self::$id, self::$data, Configuration::get('session', 'expires') * 60);
-        }
+        $value = serialize(self::$data);
+        $sql = 'UPDATE `'.self::$dbTable.'` SET `session_value` = ?, `updated_at` = NOW() WHERE `id` = ?';
+        $db = new DB();
+        $db->execute($sql, [$value, self::$sid]);
+    }
+
+    /**
+     *	\brief Save session data in Memcached service.
+     */
+    public static function _save_mc_session()
+    {
+        $memcached = new Memcached();
+        $memcached->addServer(self::$mcAddr, self::$mcPort);
+        $memcached->set('session_'.self::$sid, self::$data, self::$expires * 60);
     }
 
     /**
      *  \brief Define o id da sessão.
      */
-    public static function setSessionId($id)
+    public static function setSessionId($sid)
     {
-        self::$id = $id;
-        if (self::$type != 'db') {
-            session_id($id);
+        self::$sid = $sid;
+        if (self::$type != self::ST_DATABASE) {
+            session_id($sid);
         }
     }
 
@@ -177,7 +244,7 @@ class Session
     {
         self::start();
         self::$data[$var] = $value;
-        if (self::$type == 'std') {
+        if (self::$type == self::ST_STANDARD) {
             $_SESSION['_ffw_'][$var] = $value;
         // } else {
             // self::_save_db_session();
@@ -223,7 +290,7 @@ class Session
     {
         self::start();
         // return session_id();
-        return self::$id;
+        return self::$sid;
     }
 
     /**
@@ -233,7 +300,7 @@ class Session
     {
         self::start();
         unset(self::$data[$var]);
-        if (self::$type == 'std' && isset($_SESSION) && isset($_SESSION['_ffw_']) && isset($_SESSION['_ffw_'][$var])) {
+        if (self::$type == self::ST_STANDARD && isset($_SESSION) && isset($_SESSION['_ffw_']) && isset($_SESSION['_ffw_'][$var])) {
             unset($_SESSION['_ffw_'][$var]);
         // } else {
             // self::_save_db_session();
