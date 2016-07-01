@@ -5,7 +5,7 @@
  *	\brief		Session class system.
  *  \copyright	(c) 2007-2016 Fernando Val
  *  \author		Fernando Val - fernando.val@gmail.com
- *  \version    2.0.18
+ *  \version    2.1.19
  *	\ingroup	framework
  */
 namespace Springy;
@@ -87,7 +87,7 @@ class Session
 
         // Session name
         if (isset($config['name'])) {
-            self::$name = 'SPRINGYSID';
+            self::$name = $config['name'];
         }
     }
 
