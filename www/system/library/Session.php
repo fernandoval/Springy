@@ -27,20 +27,20 @@ class Session
     private static $name = 'SPRINGYSID';
     /// Session expiration time
     private static $expires = 120;
-    
+
     /// MemcacheD server address
     private static $mcAddr = '127.0.0.1';
     /// MemcacheD server address
     private static $mcPort = 11211;
-    
+
     /// Database config name
     private static $database = 'default';
     /// The sessions table name
     private static $dbTable = '_sessions';
-    
+
     /// The session data
     private static $data = [];
-    
+
     const ST_STANDARD = 'file';
     const ST_MEMCACHED = 'memcached';
     const ST_DATABASE = 'database';
@@ -51,7 +51,7 @@ class Session
     private static function _confLoad()
     {
         $config = Configuration::get('system', 'session');
-        
+
         // The session engine type
         if (!isset($config['type'])) {
             throw new Exception('Undefined session type.', 500);
@@ -59,7 +59,7 @@ class Session
             throw new Exception('Invalid session type.', 500);
         }
         self::$type = $config['type'];
-        
+
         // MemcacheD
         if (self::$type === self::ST_MEMCACHED && isset($config['memcached'])) {
             if (isset($config['memcached']['address'])) {
@@ -69,7 +69,7 @@ class Session
                 self::$mcPort = $config['memcached']['port'];
             }
         }
-        
+
         // Database
         if (self::$type === self::ST_DATABASE && isset($config['database'])) {
             if (isset(self::$config['database']['server'])) {
@@ -79,18 +79,18 @@ class Session
                 self::$dbTable = $config['database']['table'];
             }
         }
-        
+
         // Session expiration time
         if (isset($config['expires'])) {
             self::$expires = $config['expires'];
         }
-        
+
         // Session name
         if (isset($config['name'])) {
             self::$name = 'SPRINGYSID';
         }
     }
-    
+
     /**
      *  \brief Start the session ID for MemcacheD or dabasese stored sessions.
      */
@@ -101,17 +101,17 @@ class Session
                 self::$sid = substr(md5(uniqid(mt_rand(), true)), 0, 26);
             }
         }
-        
+
         Cookie::set(session_name(), self::$sid, 0, '/', Configuration::get('system', 'session.domain'), false, false);
     }
-    
+
     /**
      *  \brief Start the database stored session.
      */
     private static function _startDBSession()
     {
         self::_startSessionID();
-        
+
         // Expires old sessions
         $db = new DB(self::$database);
         $exp = self::$expires;
@@ -130,29 +130,29 @@ class Session
             $db->execute($sql, [self::$sid]);
             self::$data = [];
         }
-        
+
         register_shutdown_function(['\Springy\Session', '_save_db_session']);
         self::$started = true;
     }
-    
+
     /**
      *  \brief Start the Memcached stored session.
      */
     private static function _startMCSession()
     {
         self::_startSessionID();
-        
+
         $memcached = new Memcached();
         $memcached->addServer(self::$mcAddr, self::$mcPort);
 
         if (!(self::$data = $memcached->get('session_'.self::$sid))) {
             self::$data = [];
         }
-        
+
         register_shutdown_function(['\Springy\Session', '_save_mc_session']);
         self::$started = true;
     }
-    
+
     /**
      *	\brief Starts the session engine.
      */
@@ -163,7 +163,7 @@ class Session
         }
 
         self::_confLoad();
-        
+
         if (!is_null($name)) {
             self::$name = $name;
         }

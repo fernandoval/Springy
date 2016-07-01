@@ -2,7 +2,7 @@
 /** \file
  *  \brief      General system configutations.
  *  \copyright  Copyright (c) 2007-2016 Fernando Val
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido.
+ *  \warning    This file can not be removed.
  */
 
 /**
@@ -109,7 +109,7 @@ $conf = [
         'expires'   => 120,
         'memcached' => [
             'address' => '127.0.0.1',
-            'port'    => 11211
+            'port'    => 11211,
         ],
         'database' => [
             'server' => 'default',
