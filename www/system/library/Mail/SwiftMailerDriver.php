@@ -3,11 +3,10 @@
  *  Springy.
  *
  *  \brief      Class driver for use with Swift Mailer class.
- *  \copyright  Copyright (c) 2007-2016 Fernando Val
+ *  \copyright  (c) 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \see        http://swiftmailer.org/
- *  \warning    This file is part of the framework and can not be omitted
- *  \version    1.0.2
+ *  \version    2.0.3
  *  \ingroup    framework
  */
 namespace Springy\Mail;
@@ -163,6 +162,22 @@ class SwiftMailerDriver implements MailDriverInterface
     public function setAlternativeBody($text)
     {
         $this->mailObj->addPart($text, 'text/plain');
+    }
+
+    /**
+     *  \brief Set a template for this email.
+     */
+    public function setTemplate($name)
+    {
+        throw new \Exception('Resourse unavailable.');
+    }
+
+    /**
+     *  \brief Add value to a template variable.
+     */
+    public function addTemplateVar($name, $value)
+    {
+        throw new \Exception('Resourse unavailable.');
     }
 
     /**

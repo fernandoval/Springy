@@ -3,10 +3,9 @@
  *  Springy.
  *
  *  \brief      Class driver for use with PHPMailer class.
- *  \copyright  Copyright (c) 2007-2016 Fernando Val
+ *  \copyright  (c) 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \see        https://github.com/PHPMailer/PHPMailer
- *  \warning    This file is part of the framework and can not be omitted
  *  \version    1.0.3
  *  \ingroup    framework
  */
@@ -160,6 +159,22 @@ class PHPMailerDriver implements MailDriverInterface
     public function setAlternativeBody($text)
     {
         $this->mailObj->AltBody = $text;
+    }
+
+    /**
+     *  \brief Set a template for this email.
+     */
+    public function setTemplate($name)
+    {
+        throw new \Exception('Resourse unavailable.');
+    }
+
+    /**
+     *  \brief Add value to a template variable.
+     */
+    public function addTemplateVar($name, $value)
+    {
+        throw new \Exception('Resourse unavailable.');
     }
 
     /**

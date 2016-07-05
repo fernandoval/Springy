@@ -3,10 +3,9 @@
  *	Springy.
  *
  *	\brief      Classe para envio de email.
- *  \copyright  Copyright (c) 2007-2016 Fernando Val
- *  \author     Fernando Val  - fernando.val@gmail.com
- *	\warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version    2.1.17
+ *  \copyright  (c) 2007-2016 Fernando Val
+ *  \author     Fernando Val - fernando.val@gmail.com
+ *	\version    3.0.18
  *	\ingroup    framework
  */
 namespace Springy;
@@ -87,6 +86,22 @@ class Mail
     public function setHeader($header, $value)
     {
         $this->addHeader($header, $value);
+    }
+
+    /**
+     *  \brief Set a template for the email.
+     */
+    public function setTemplate($name)
+    {
+        $this->mailObj->setTemplate($name);
+    }
+
+    /**
+     *  \brief Add value to a template variable.
+     */
+    public function addTemplateVar($name, $value)
+    {
+        $this->mailObj->addTemplateVar($name, $value);
     }
 
     /**

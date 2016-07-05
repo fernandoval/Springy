@@ -2,12 +2,11 @@
 /**	\file
  *  Springy.
  *
- *  \brief      Class driver for use with SendGrid class.
- *  \copyright  Copyright (c) 2007-2016 Fernando Val
+ *  \brief      Class driver for use with SendGrid v5 class for integration with SendGrid API v3.
+ *  \copyright  (c) 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \see        https://github.com/sendgrid/sendgrid-php
- *  \warning    This file is part of the framework and can not be omitted
- *  \version    1.0.2
+ *  \version    3.0.4
  *  \ingroup    framework
  */
 namespace Springy\Mail;
@@ -16,7 +15,7 @@ use Springy\Configuration;
 use Springy\Errors;
 
 /**
- *  \brief Driver class for sent mail using SendGrid official class.
+ *  \brief Driver class for sent mail using SendGrid v5 official class.
  *
  *  \note This classe is a driver used by Springy\Mail classe.
  *        Do not use it directly.
@@ -32,21 +31,18 @@ class SendGridDriver implements MailDriverInterface
      */
     public function __construct($cfg)
     {
-        if (!isset($cfg['apikey']) && !isset($cfg['username']) && !isset($cfg['password'])) {
+        if (!isset($cfg['apikey']) || empty($cfg['apikey'])) {
             throw new \Exception('Mail configuration SendGrid authentication undefined');
         }
 
         $options = (isset($cfg['options']) && is_array($cfg['options'])) ? $cfg['options'] : [];
 
-        if (isset($cfg['apikey']) && $cfg['apikey']) {
-            $this->sendgrid = new \SendGrid($cfg['apikey'], $options);
-        } else {
-            $this->sendgrid = new \SendGrid($cfg['username'], $cfg['password'], $options);
-        }
-        $this->mailObj = new \SendGrid\Email();
+        $this->sendgrid = new \SendGrid($cfg['apikey'], $options);
+        $this->mailObj = new \SendGrid\Mail();
+        $this->mailObj->addPersonalization(new \SendGrid\Personalization());
 
         if (Configuration::get('mail', 'errors_go_to')) {
-            $this->mailObj->addHeader('Errors-To', Configuration::get('mail', 'errors_go_to'));
+            $this->mailObj->personalization[0]->addHeader('Errors-To', Configuration::get('mail', 'errors_go_to'));
         }
     }
 
@@ -55,7 +51,7 @@ class SendGridDriver implements MailDriverInterface
      */
     public function addHeader($header, $value)
     {
-        $this->mailObj->addHeader($header, $value);
+        $this->mailObj->personalization[0]->addHeader($header, $value);
     }
 
     /**
@@ -66,7 +62,7 @@ class SendGridDriver implements MailDriverInterface
      */
     public function addTo($email, $name = '')
     {
-        $this->mailObj->addTo($email, $name);
+        $this->mailObj->personalization[0]->addTo(new \SendGrid\Email($name, $email));
     }
 
     /**
@@ -77,7 +73,7 @@ class SendGridDriver implements MailDriverInterface
      */
     public function addBCC($email, $name = '')
     {
-        $this->mailObj->addBcc($email, $name);
+        $this->mailObj->personalization[0]->addBcc(new \SendGrid\Email($name, $email));
     }
 
     /**
@@ -88,7 +84,7 @@ class SendGridDriver implements MailDriverInterface
      */
     public function addCC($email, $name = '')
     {
-        $this->mailObj->addCc($email, $name);
+        $this->mailObj->personalization[0]->addCc(new \SendGrid\Email($name, $email));
     }
 
     /**
@@ -101,7 +97,14 @@ class SendGridDriver implements MailDriverInterface
      */
     public function addAttachment($path, $name = '', $type = '', $encoding = 'base64')
     {
-        $this->mailObj->addAttachment($path);
+        $attachment = new \SendGrid\Attachment();
+        $attachment->setContent(md5(uniqid(rand(), true)));
+        $attachment->setType($type);
+        $attachment->setFilename($path);
+        $attachment->setContentId($name);
+        $attachment->setDisposition('attachment');
+
+        $this->mailObj->addAttachment($attachment);
     }
 
     /**
@@ -112,8 +115,7 @@ class SendGridDriver implements MailDriverInterface
      */
     public function setFrom($email, $name = '')
     {
-        $this->mailObj->setFrom($email);
-        $this->mailObj->setFromName($name);
+        $this->mailObj->setFrom(new \SendGrid\Email($name, $email));
     }
 
     /**
@@ -124,6 +126,7 @@ class SendGridDriver implements MailDriverInterface
     public function setSubject($subject)
     {
         $this->mailObj->setSubject($subject);
+        $this->mailObj->personalization[0]->setSubject($subject);
     }
 
     /**
@@ -135,9 +138,9 @@ class SendGridDriver implements MailDriverInterface
     public function setBody($body, $html = true)
     {
         if ($html) {
-            $this->mailObj->setHtml($body);
+            $this->mailObj->addContent(new \SendGrid\Content('text/html', $body));
         } else {
-            $this->mailObj->setText($body);
+            $this->mailObj->addContent(new \SendGrid\Content('text/plain', $body));
         }
     }
 
@@ -146,7 +149,23 @@ class SendGridDriver implements MailDriverInterface
      */
     public function setAlternativeBody($text)
     {
-        $this->mailObj->setText($text);
+        $this->mailObj->addContent(new \SendGrid\Content('text/plain', $text));
+    }
+
+    /**
+     *  \brief Set a template for this email.
+     */
+    public function setTemplate($name)
+    {
+        $this->mailObj->setTemplateId($name);
+    }
+
+    /**
+     *  \brief Add value to a template variable.
+     */
+    public function addTemplateVar($name, $value)
+    {
+        $this->mailObj->personalization[0]->addSubstitution($name, $value);
     }
 
     /**
@@ -158,13 +177,10 @@ class SendGridDriver implements MailDriverInterface
         $error = false;
 
         try {
-            $this->sendgrid->send($this->mailObj);
-            $error = '';
-        } catch (\SendGrid\Exception $e) {
-            $error = $e->getCode()."\n";
-            foreach ($e->getErrors() as $er) {
-                $error .= $er."\n";
-            }
+            $response = $this->sendgrid->client->mail()->send()->post($this->mailObj);
+            $error = $response->body();
+        } catch (\Exception $e) {
+            $error = $e->getCode().' - '.$e->getMessage().' at '.$e->getFile().' ('.$e->getLine().')';
         }
 
         return $error;
