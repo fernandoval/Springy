@@ -22,7 +22,7 @@ It was created based upon the KISS principle in which the simplicity is the base
 Read the documentation:
 
 * [English](/documentation/en/README.md)
-* [Protuguese](/documentation/pt/README.md)
+* [Portuguese](/documentation/pt/README.md)
 
 ## Contributing
 
