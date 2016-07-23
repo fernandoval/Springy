@@ -6,7 +6,7 @@
  *  \copyright  ₢ 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \see        http://www.smarty.net/
- *  \version    1.6.0.11
+ *  \version    1.7.0.12
  *  \ingroup    framework
  */
 namespace Springy\Template;
@@ -379,34 +379,23 @@ class SmartyDriver implements TemplateDriverInterface
      */
     public function assetFile($params, $smarty)
     {
-        if (!empty($params['type']) && $params['type'] == 'js') {
-            $filePath = Configuration::get('system', 'js_path').DIRECTORY_SEPARATOR.$params['file'].'.js';
-            $fileURI = Configuration::get('uri', 'js_dir');
-        } elseif (!empty($params['type']) && $params['type'] == 'css') {
-            $filePath = Configuration::get('system', 'css_path').DIRECTORY_SEPARATOR.$params['file'].'.css';
-            $fileURI = Configuration::get('uri', 'css_dir');
-        } elseif (!empty($params['file'])) {
-            $filePath = Configuration::get('system', 'assets_path').DIRECTORY_SEPARATOR.$params['file'];
-            $fileURI = Configuration::get('uri', 'assets_dir');
-        } else {
+        if (empty($params['file'])) {
             return '#';
         }
-
+        
+        $srcPath = Configuration::get('system', 'assets_source_path').DIRECTORY_SEPARATOR.$params['file'];
+        $filePath = Configuration::get('system', 'assets_path').DIRECTORY_SEPARATOR.$params['file'];
+        $fileURI = Configuration::get('uri', 'assets_dir').'/'.$params['file'];
         $get = [];
 
-        if (file_exists($filePath)) {
-            if (!empty($params['type'])) {
-                $fileURI .= '/'.$params['file'].'__'.filemtime($filePath).'.'.$params['type'];
-            } else {
-                $fileURI .= '/'.$params['file'];
-                $get['v'] = filemtime($filePath);
-            }
-        } elseif (!empty($params['type'])) {
-            $fileURI .= '/'.$params['file'].'.'.$params['type'];
-        } else {
-            $fileURI .= '/'.$params['file'];
+        if (file_exists($srcPath) && (!file_exists($filePath) || filemtime($filePath) < filemtime($srcPath))) {
+            minify($srcPath, $filePath);
         }
 
-        return URI::buildURL(explode('/', $fileURI), $get, isset($_SERVER['HTTPS']), 'static', false);
+        if (file_exists($filePath)) {
+            $get['v'] = filemtime($filePath);
+        }
+
+        return URI::buildURL(explode('/', $fileURI), $get, isset($_SERVER['HTTPS']), empty($params['host']) ? 'static' : $params['host'], false);
     }
 }

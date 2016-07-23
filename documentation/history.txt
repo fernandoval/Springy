@@ -3,6 +3,7 @@ Springy framework update history
 ------------------------------------------------------------------------------------ --- -- -
 development
     - New feature: default template directory;
+    - New feature: minifing asset files from source directory;
     - Correction in private network IP detection in Utils\Strings::getRealRemoteAddr();
     - Adjustment in Model->update() method;
     - Session configurations moved to 'system' configurations files;

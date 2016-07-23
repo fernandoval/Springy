@@ -6,7 +6,7 @@
  *  \copyright  ₢ 2014-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \see        http://twig.sensiolabs.org/
- *  \version    0.15.0.13
+ *  \version    0.16.0.14
  *  \ingroup    framework
  */
 namespace Springy\Template;
@@ -400,9 +400,14 @@ class TwigDriver implements TemplateDriverInterface
      */
     public function assetFile($file, $host = 'static')
     {
+        $srcPath = Configuration::get('system', 'assets_source_path').DIRECTORY_SEPARATOR.$file;
         $filePath = Configuration::get('system', 'assets_path').DIRECTORY_SEPARATOR.$file;
         $fileURI = Configuration::get('uri', 'assets_dir').'/'.$file;
         $get = [];
+
+        if (file_exists($srcPath) && (!file_exists($filePath) || filemtime($filePath) < filemtime($srcPath))) {
+            minify($srcPath, $filePath);
+        }
 
         if (file_exists($filePath)) {
             $get['v'] = filemtime($filePath);

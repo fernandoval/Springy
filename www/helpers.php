@@ -6,7 +6,7 @@
  *  \copyright  (c) 2007-2016 Fernando Val
  *  \author     Allan Marques - allan.marques@ymail.com
  *  \author     Fernando Val - fernando.val@gmail.com
- *  \version    2.1.0.5
+ *  \version    3.0.0.6
  *  \ingroup    framework
  */
 
@@ -99,6 +99,43 @@ function dd($var, $die = true)
     if ($die) {
         die;
     }
+}
+
+/**
+ *  \brief Copy file minifying it.
+ */
+function minify($source, $destiny)
+{
+    $minify = (substr($source, -4) == '.css' ? 'css' : (substr($source, -3) == '.js' ? 'js' : 'off'));
+
+    $buffer = file_get_contents($source);
+    if ($buffer == false) {
+        return false;
+    }
+
+    if ($minify == 'css') {
+        $buffer = preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $buffer);
+        $buffer = str_replace(["\r\n", "\r", "\n", "\t", '  ', '    ', '     '], '', $buffer);
+        $buffer = preg_replace(['(( )+{)', '({( )+)'], '{', $buffer);
+        $buffer = preg_replace(['(( )+})', '(}( )+)', '(;( )*})'], '}', $buffer);
+        $buffer = preg_replace(['(;( )+)', '(( )+;)'], ';', $buffer);
+    } elseif ($minify == 'js') {
+        $buffer = preg_replace("/((?:\/\*(?:[^*]|(?:\*+[^*\/]))*\*+\/)|(?:\/\/.*))/", '', $buffer);
+        $buffer = str_replace(["\r\n", "\r", "\t", "\n", '  ', '    ', '     '], '', $buffer);
+        $buffer = preg_replace(['(( )+\))', '(\)( )+)'], ')', $buffer);
+    }
+
+    $path = pathinfo($destiny, PATHINFO_DIRNAME);
+    if (!is_dir($path)) {
+        mkdir($path, 0664);
+    }
+
+    $return = file_put_contents($destiny, $buffer);
+    if ($return !== false) {
+        chmod($destiny, 0664);
+    }
+
+    return $return;
 }
 
 /**

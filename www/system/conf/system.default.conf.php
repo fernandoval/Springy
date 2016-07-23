@@ -98,6 +98,7 @@ $conf = [
     'developer_pass'     => '',
     'dba_user'           => '',
     'bug_authentication' => [],
+    'assets_source_path' => $GLOBALS['SYSTEM']['SYSTEM_PATH'].DIRECTORY_SEPARATOR.'assets',
     'assets_path'        => $GLOBALS['SYSTEM']['ROOT_PATH'].DIRECTORY_SEPARATOR.'assets',
     'controller_path'    => $GLOBALS['SYSTEM']['SYSTEM_PATH'].DIRECTORY_SEPARATOR.'controllers',
     'css_path'           => $GLOBALS['SYSTEM']['ROOT_PATH'].DIRECTORY_SEPARATOR.'css',
