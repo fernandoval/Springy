@@ -382,7 +382,7 @@ class SmartyDriver implements TemplateDriverInterface
         if (empty($params['file'])) {
             return '#';
         }
-        
+
         $srcPath = Configuration::get('system', 'assets_source_path').DIRECTORY_SEPARATOR.$params['file'];
         $filePath = Configuration::get('system', 'assets_path').DIRECTORY_SEPARATOR.$params['file'];
         $fileURI = Configuration::get('uri', 'assets_dir').'/'.$params['file'];
