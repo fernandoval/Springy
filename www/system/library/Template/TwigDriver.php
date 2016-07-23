@@ -6,12 +6,13 @@
  *  \copyright  ₢ 2014-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \see        http://twig.sensiolabs.org/
- *  \version    0.14.0.12
+ *  \version    0.15.0.13
  *  \ingroup    framework
  */
 namespace Springy\Template;
 
 use Springy\Configuration;
+use Springy\Errors;
 use Springy\Kernel;
 use Springy\URI;
 
@@ -119,6 +120,14 @@ class TwigDriver implements TemplateDriverInterface
     }
 
     /**
+     *  \brief Add a directory to the list of directories where templates are stored.
+     */
+    public function addTemplateDir($path)
+    {
+        $this->tplObj->getLoader()->addPath($path);
+    }
+
+    /**
      *  \brief Define o local dos arquivos de template.
      */
     public function setTemplateDir($path)
@@ -187,11 +196,16 @@ class TwigDriver implements TemplateDriverInterface
         }
 
         // Se o arquivo de template não existir, exibe erro 404
-        // if (!$this->templateExists($this->templateName)) {
-            // new Errors(404, $this->templateName . self::TPL_NAME_SUFIX);
-        // }
+        if ($this->templateExists($this->templateName)) {
+            return true;
+        }
 
-        return true;
+        $this->addTemplateDir(Configuration::get('template', 'default_template_path'));
+        if ($this->templateExists($this->templateName)) {
+            return true;
+        }
+
+        new Errors(404, $this->templateName.self::TPL_NAME_SUFIX);
     }
 
     /**
@@ -374,7 +388,7 @@ class TwigDriver implements TemplateDriverInterface
      */
     public function templateExists($tplName)
     {
-        return file_exists($this->templatePath.DIRECTORY_SEPARATOR.$tplName.self::TPL_NAME_SUFIX);
+        return $this->tplObj->getLoader()->exists($tplName.self::TPL_NAME_SUFIX);
     }
 
     /**

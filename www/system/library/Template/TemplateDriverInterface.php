@@ -3,10 +3,9 @@
  *  Springy.
  *
  *  \brief      Interface para driver de tratamento de templates.
- *  \copyright  Copyright (c) 2007-2016 Fernando Val
+ *  \copyright  ₢ 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    1.0.2
+ *  \version    1.1.0.3
  *  \ingroup    framework
  */
 namespace Springy\Template;
@@ -20,6 +19,11 @@ namespace Springy\Template;
 interface TemplateDriverInterface
 {
     // const TPL_NAME_SUFIX = '.tpl.html';
+
+    /**
+     *  \brief Add an alternate path to the templates.
+     */
+    public function addTemplateDir($path);
 
     /**
      *  \brief Define o local dos arquivos de template.

@@ -59,6 +59,7 @@ $conf = [
     'autoescape'             => false,
     'optimizations'          => 1,
     'debugging_ctrl'         => 'NONE',
+    'default_template_path'  => $GLOBALS['SYSTEM']['SYSTEM_PATH'].DIRECTORY_SEPARATOR.'templates_default',
     'template_path'          => $GLOBALS['SYSTEM']['SYSTEM_PATH'].DIRECTORY_SEPARATOR.'templates',
     'template_config_path'   => $GLOBALS['SYSTEM']['SYSTEM_PATH'].DIRECTORY_SEPARATOR.'templates_conf',
     'compiled_template_path' => $GLOBALS['SYSTEM']['SYSTEM_PATH'].DIRECTORY_SEPARATOR.'tpl_comp',

@@ -6,7 +6,7 @@
  *  \copyright  ₢ 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \see        http://www.smarty.net/
- *  \version    1.5.0.10
+ *  \version    1.6.0.11
  *  \ingroup    framework
  */
 namespace Springy\Template;
@@ -108,6 +108,14 @@ class SmartyDriver implements TemplateDriverInterface
     }
 
     /**
+     *  \brief Add a directory to the list of directories where templates are stored.
+     */
+    public function addTemplateDir($path)
+    {
+        $this->tplObj->addTemplateDir($path);
+    }
+
+    /**
      *  \brief Define o local dos arquivos de template.
      */
     public function setTemplateDir($path)
@@ -170,17 +178,22 @@ class SmartyDriver implements TemplateDriverInterface
         }
 
         // Se o arquivo de template não existir, exibe erro 404
-        if (!$this->templateExists($this->templateName)) {
-            new Errors(404, $this->templateName.self::TPL_NAME_SUFIX);
+        if ($this->templateExists($this->templateName)) {
+            return true;
         }
 
-        return true;
+        $this->addTemplateDir(Configuration::get('template', 'default_template_path'));
+        if ($this->templateExists($this->templateName)) {
+            return true;
+        }
+
+        new Errors(404, $this->templateName.self::TPL_NAME_SUFIX);
     }
 
     /**
      *  \brief Verifica se o template está cacheado.
      *
-     * @return bool
+     *  @return bool
      */
     public function isCached()
     {
@@ -189,8 +202,6 @@ class SmartyDriver implements TemplateDriverInterface
 
     /**
      *  \brief Define o cacheamento dos templates.
-     *
-     * @
      */
     public function setCaching($value = 'current')
     {
@@ -256,7 +267,7 @@ class SmartyDriver implements TemplateDriverInterface
     /**
      *  \brief Define o arquivos de template.
      *
-     * @param string $tpl Nome do template, sem extenção do arquivo
+     *  @param string $tpl Nome do template, sem extenção do arquivo
      */
     public function setTemplate($tpl)
     {
