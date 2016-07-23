@@ -88,12 +88,12 @@ interface MailDriverInterface
      *  \brief Set a template for this email.
      */
     public function setTemplate($name);
-    
+
     /**
      *  \brief Add value to a template variable.
      */
     public function addTemplateVar($name, $value);
-    
+
     /**
      *  \brief Send the mail message
      *  \return The error message or a empty string if success.
