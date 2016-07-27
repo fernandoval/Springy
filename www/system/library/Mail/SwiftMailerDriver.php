@@ -3,10 +3,10 @@
  *  Springy.
  *
  *  \brief      Class driver for use with Swift Mailer class.
- *  \copyright  (c) 2007-2016 Fernando Val
+ *  \copyright  ₢ 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \see        http://swiftmailer.org/
- *  \version    2.0.3
+ *  \version    2.0.4
  *  \ingroup    framework
  */
 namespace Springy\Mail;

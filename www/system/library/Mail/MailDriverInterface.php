@@ -3,9 +3,9 @@
  *	Springy.
  *
  *	\brief      Interface for mail drivers.
- *  \copyright  (c) 2007-2016 Fernando Val
+ *  \copyright  ₢ 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
- *	\version    2.0.2
+ *	\version    2.0.3
  *	\ingroup    framework
  */
 namespace Springy\Mail;

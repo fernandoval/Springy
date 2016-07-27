@@ -3,10 +3,10 @@
  *  Springy.
  *
  *  \brief      Class driver for use with Manuel Lemos' MIME e-mail message class.
- *  \copyright  (c) 2007-2016 Fernando Val\n
+ *  \copyright  ₢ 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \see        http://www.phpclasses.org/package/9-PHP-PHP-mailer-to-compose-and-send-MIME-messages.html
- *  \version    1.0.2
+ *  \version    1.0.3
  *  \ingroup    framework
  */
 namespace Springy\Mail;

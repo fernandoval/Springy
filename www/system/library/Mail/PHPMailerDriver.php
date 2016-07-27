@@ -3,10 +3,10 @@
  *  Springy.
  *
  *  \brief      Class driver for use with PHPMailer class.
- *  \copyright  (c) 2007-2016 Fernando Val
+ *  \copyright  ₢ 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \see        https://github.com/PHPMailer/PHPMailer
- *  \version    1.0.3
+ *  \version    1.0.4
  *  \ingroup    framework
  */
 namespace Springy\Mail;

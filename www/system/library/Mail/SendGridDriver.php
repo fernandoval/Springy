@@ -3,10 +3,10 @@
  *  Springy.
  *
  *  \brief      Class driver for use with SendGrid v5 class for integration with SendGrid API v3.
- *  \copyright  (c) 2007-2016 Fernando Val
+ *  \copyright  ₢ 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \see        https://github.com/sendgrid/sendgrid-php
- *  \version    3.0.4
+ *  \version    3.0.5
  *  \ingroup    framework
  */
 namespace Springy\Mail;
@@ -98,10 +98,10 @@ class SendGridDriver implements MailDriverInterface
     public function addAttachment($path, $name = '', $type = '', $encoding = 'base64')
     {
         $attachment = new \SendGrid\Attachment();
-        $attachment->setContent(md5(uniqid(rand(), true)));
+        $attachment->setContent(base64_encode(file_get_contents($path)));
         $attachment->setType($type);
-        $attachment->setFilename($path);
-        $attachment->setContentId($name);
+        $attachment->setFilename($name);
+        $attachment->setContentId(md5(uniqid(rand(), true)));
         $attachment->setDisposition('attachment');
 
         $this->mailObj->addAttachment($attachment);

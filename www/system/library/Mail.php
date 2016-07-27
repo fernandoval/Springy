@@ -3,9 +3,9 @@
  *	Springy.
  *
  *	\brief      Classe para envio de email.
- *  \copyright  (c) 2007-2016 Fernando Val
+ *  \copyright  ₢ 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
- *	\version    3.0.18
+ *	\version    3.0.19
  *	\ingroup    framework
  */
 namespace Springy;
