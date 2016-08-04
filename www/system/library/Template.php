@@ -6,7 +6,7 @@
  *  \copyright	₢ 2007-2016 Fernando Val
  *  \author		Fernando Val - fernando.val@gmail.com
  *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
- *	\version	4.1.0.11
+ *	\version	4.1.1.12
  *	\ingroup	framework
  */
 namespace Springy;
@@ -227,6 +227,12 @@ class Template
      */
     public function templateExists($tplName)
     {
+        if ($this->tplObj->templateExists($tplName)) {
+            return true;
+        }
+
+        $this->tplObj->addTemplateDir(Configuration::get('template', 'default_template_path'));
+
         return $this->tplObj->templateExists($tplName);
     }
 }

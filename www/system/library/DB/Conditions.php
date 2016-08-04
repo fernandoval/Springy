@@ -6,7 +6,7 @@
  *  \copyright  Copyright (c) 2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.2.3
+ *  \version    0.3.4
  *  \ingroup    framework
  */
 namespace Springy\DB;
@@ -165,10 +165,10 @@ class Conditions
      */
     public function condition($column, $value = null, $operator = self::OP_EQUAL, $expression = self::COND_AND)
     {
-        if (is_array($column)) {
+        if (is_array($column) || is_object($column)) {
             $this->conditions[] = [
                 'type'       => self::EXPR_SUB,
-                'conditions' => $column,
+                'conditions' => is_object($column) ? $column->get() : $column,
             ];
 
             return;
