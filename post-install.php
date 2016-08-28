@@ -7,7 +7,7 @@
  *  \copyright Copyright (c) 2015-2016 Fernando Val
  *
  *  \brief    Post Install/Update Script for Composer
- *  \version  2.1.6
+ *  \version  2.1.7
  *  \author   Fernando Val - fernando.val@gmail.com
  *
  *  This script is executed by Composer after the install/update process.
@@ -124,7 +124,8 @@ foreach ($composer['extra']['post-install'] as $component => $data) {
             foreach ($files as $file) {
                 $file = implode(DS, explode('/', $file));
                 if ($noSubdirs) {
-                    $dstFile = array_pop(explode('/', $file));
+                    $dstFile = explode('/', $file);
+                    $dstFile = array_pop($dstFile);
                 } else {
                     $dstFile = $file;
                 }
