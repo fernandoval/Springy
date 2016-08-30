@@ -6,7 +6,7 @@
  *  \copyright  (c) 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
- *  \version    2.3.1.67
+ *  \version    2.3.2.68
  *  \ingroup    framework
  */
 namespace Springy;
@@ -292,7 +292,7 @@ class Kernel
 
         if ($hook) {
             if (is_array($hook) && method_exists($hook[0], $hook[1])) {
-                $hook[0]->$hook[1]($msg, $errno, $errorId, $additionalInfo);
+                $hook[0]->{$hook[1]}($msg, $errno, $errorId, $additionalInfo);
             } elseif (function_exists($hook)) {
                 $hook($msg, $errno, $errorId, $additionalInfo);
             }
