@@ -6,7 +6,7 @@
  *  \copyright  Copyright (c) 2007-2015 Fernando Val
  *  \author     Allan Marques - allan.marques@ymail.com
  *	\warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version    0.1.2
+ *	\version    0.2.3
  *	\ingroup    tests
  */
 use Springy\Container\DIContainer;
@@ -66,7 +66,7 @@ class DIContainerTest extends PHPUnit_Framework_TestCase
 
         //Basic
         $DI->bind('object1', function ($attr = null, $val = null) {
-            $obj = $this->getMock('SomeClass', ['someMethod']);
+            $obj = $this->createMock('SomeClass', ['someMethod']);
 
             if (is_string($attr)) {
                 $obj->$attr = $val;
@@ -90,7 +90,7 @@ class DIContainerTest extends PHPUnit_Framework_TestCase
 
         //Array like
         $DI['object2'] = function () {
-            return $this->getMock('AnotherClass', ['otherMethod']);
+            return $this->createMock('AnotherClass', ['otherMethod']);
         };
         $this->assertNotInstanceOf('Closure', $DI['object2']);
         $this->assertTrue(method_exists($DI['object2'], 'otherMethod'));
@@ -110,7 +110,7 @@ class DIContainerTest extends PHPUnit_Framework_TestCase
         $DI = new DIContainer();
 
         $DI['some.service'] = function ($container) {
-            return $this->getMock('someService');
+            return $this->getMockBuilder('someService');
         };
 
         $DI->extend('some.service', function ($someService, $container) {
@@ -134,10 +134,10 @@ class DIContainerTest extends PHPUnit_Framework_TestCase
     {
         $DI = new DIContainer();
 
-        $object1 = $this->getMock('MockedClass');
-        $object2 = $this->getMock('AnotherMockedClass');
-        $object3 = $this->getMock('MockedInstance');
-        $object4 = $this->getMock('AnotherMockedInstance');
+        $object1 = $this->getMockBuilder('MockedClass');
+        $object2 = $this->getMockBuilder('AnotherMockedClass');
+        $object3 = $this->getMockBuilder('MockedInstance');
+        $object4 = $this->getMockBuilder('AnotherMockedInstance');
 
         //Basic
         $DI->instance('object1', $object1);
@@ -162,5 +162,21 @@ class DIContainerTest extends PHPUnit_Framework_TestCase
         //Forgeting
         $DI->forget('object4');
         $DI->shared('object4');
+    }
+}
+
+class AnotherClass
+{
+    public function otherMethod()
+    {
+        return true;
+    }
+}
+
+class SomeClass
+{
+    public function someMethod()
+    {
+        return true;
     }
 }

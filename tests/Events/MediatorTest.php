@@ -6,7 +6,7 @@
  *  \copyright  Copyright (c) 2007-2015 Fernando Val
  *  \author     Allan Marques - allan.marques@ymail.com
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.1.2
+ *  \version    0.2.3
  *  \ingroup    tests
  */
 use Springy\Container\DIContainer;
@@ -239,13 +239,21 @@ class MediatorTest extends PHPUnit_Framework_TestCase
 
     public function testThatMediatorCanAcceptSubscriberClassesAsHandlers()
     {
-        $mockHandler = $this->getMock('MockHandler', ['subscribes']);
+        $mockHandler = $this->createMock('MockHandler', ['subscribes']);
 
         $mockHandler->expects($this->once())
                     ->method('subscribes')
                     ->with($this->mediator);
 
         $this->mediator->subscribe($mockHandler);
+    }
+}
+
+class MockHandler
+{
+    public function subscribes()
+    {
+        return true;
     }
 }
 
