@@ -14,7 +14,7 @@ It was created based upon the KISS principle in which the simplicity is the base
 
 ## Requirements
 
-* PHP 5.4+
+* PHP 5.5+
 * [Composer](https://getcomposer.org/) Dependency Manager for PHP
 
 ## How do I start?

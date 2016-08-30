@@ -6,7 +6,7 @@
  *  \copyright  Copyright (c) 2007-2015 Fernando Val
  *  \author     Allan Marques - allan.marques@ymail.com
  *	\warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version    0.2.3
+ *	\version    0.2.4
  *	\ingroup    tests
  */
 use Springy\Container\DIContainer;
@@ -66,7 +66,11 @@ class DIContainerTest extends PHPUnit_Framework_TestCase
 
         //Basic
         $DI->bind('object1', function ($attr = null, $val = null) {
-            $obj = $this->createMock('SomeClass', ['someMethod']);
+            if (PHPUnit_Runner_Version::id() >= '5.4') {
+                $obj = $this->createMock('SomeClass', ['someMethod']);
+            } else {
+                $obj = $this->getMock('SomeClass', ['someMethod']);
+            }
 
             if (is_string($attr)) {
                 $obj->$attr = $val;
@@ -90,7 +94,11 @@ class DIContainerTest extends PHPUnit_Framework_TestCase
 
         //Array like
         $DI['object2'] = function () {
-            return $this->createMock('AnotherClass', ['otherMethod']);
+            if (PHPUnit_Runner_Version::id() >= '5.4') {
+                return $this->createMock('AnotherClass', ['otherMethod']);
+            }
+
+            return $this->getMock('AnotherClass', ['otherMethod']);
         };
         $this->assertNotInstanceOf('Closure', $DI['object2']);
         $this->assertTrue(method_exists($DI['object2'], 'otherMethod'));
@@ -110,7 +118,11 @@ class DIContainerTest extends PHPUnit_Framework_TestCase
         $DI = new DIContainer();
 
         $DI['some.service'] = function ($container) {
-            return $this->getMockBuilder('someService');
+            if (PHPUnit_Runner_Version::id() >= '5.4') {
+                return $this->getMockBuilder('someService');
+            }
+
+            return $this->getMock('someService');
         };
 
         $DI->extend('some.service', function ($someService, $container) {
@@ -134,10 +146,17 @@ class DIContainerTest extends PHPUnit_Framework_TestCase
     {
         $DI = new DIContainer();
 
-        $object1 = $this->getMockBuilder('MockedClass');
-        $object2 = $this->getMockBuilder('AnotherMockedClass');
-        $object3 = $this->getMockBuilder('MockedInstance');
-        $object4 = $this->getMockBuilder('AnotherMockedInstance');
+        if (PHPUnit_Runner_Version::id() >= '5.4') {
+            $object1 = $this->getMockBuilder('MockedClass');
+            $object2 = $this->getMockBuilder('AnotherMockedClass');
+            $object3 = $this->getMockBuilder('MockedInstance');
+            $object4 = $this->getMockBuilder('AnotherMockedInstance');
+        } else {
+            $object1 = $this->getMock('MockedClass');
+            $object2 = $this->getMock('AnotherMockedClass');
+            $object3 = $this->getMock('MockedInstance');
+            $object4 = $this->getMock('AnotherMockedInstance');
+        }
 
         //Basic
         $DI->instance('object1', $object1);
