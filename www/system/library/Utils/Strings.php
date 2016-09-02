@@ -6,7 +6,7 @@
  *  \copyright  Copyright (c) 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.10.16
+ *  \version    0.10.17
  *  \ingroup    framework
  */
 namespace Springy\Utils;
@@ -69,7 +69,7 @@ class Strings
     {
         if (
             filter_var($email, FILTER_VALIDATE_EMAIL) &&
-            preg_match('/^[a-z0-9_\-]+(\.[a-z0-9_\-]+)*@([a-z0-9_\.\-]*[a-z0-9_\-]+\.[a-z]{2,4})$/i', $email, $res)
+            preg_match('/^[a-z0-9_\-]+(\.[a-z0-9_\-]+)*@([a-z0-9_\.\-]*[a-z0-9_\-]+\.[a-z]{2,})$/i', $email, $res)
         ) {
             return $checkDNS ? checkdnsrr($res[2]) : true;
         }
