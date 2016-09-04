@@ -6,7 +6,7 @@
  *  \copyright  ₢ 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
- *  \version    2.2.0.32
+ *  \version    2.2.1.33
  *  \ingroup    framework
  */
 namespace Springy;
@@ -231,6 +231,11 @@ class URI
             if (is_array($redirects)) {
                 foreach ($redirects as $key => $data) {
                     if (preg_match('/^'.$key.'$/', $UriString)) {
+                        foreach ($data['segments'] as $segment => $value) {
+                            if (substr($value, 0, 1) == '$') {
+                                $data['segments'][$segment] = isset(self::$segments[(int) substr($value, 1)]) ? self::$segments[(int) substr($value, 1)] : '';
+                            }
+                        }
                         self::redirect(self::buildURL($data['segments'], $data['get'], $data['force_rewrite'], $data['host']), $data['type']);
                         break;
                     }
