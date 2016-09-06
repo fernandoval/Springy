@@ -6,7 +6,7 @@
  *  \copyright  ₢ 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \see        http://www.smarty.net/
- *  \version    1.7.0.12
+ *  \version    1.7.1.13
  *  \ingroup    framework
  */
 namespace Springy\Template;
@@ -83,7 +83,7 @@ class SmartyDriver implements TemplateDriverInterface
                 $toCall = Configuration::get('uri', 'register_method_set_common_urls');
                 if ($toCall['static']) {
                     if (!isset($toCall['method'])) {
-                        throw new Exception('You need to determine which method will be executed.', 500);
+                        throw new \Exception('You need to determine which method will be executed.', 500);
                     }
 
                     //$toCall['class']::$toCall['method'];

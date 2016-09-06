@@ -6,7 +6,7 @@
  *  \copyright  Copyright (c) 2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.3.4
+ *  \version    0.3.1.4
  *  \ingroup    framework
  */
 namespace Springy\DB;
@@ -117,7 +117,7 @@ class Conditions
                 return $expression.' MATCH ('.$condition['column'].') AGAINST (?'.($condition['operator'] === self::OP_MATCH_BOOLEAN_MODE ? ' IN BOOLEAN MODE' : '').')';
         }
 
-        throw new Exception('Unknown condition operator.', 500);
+        throw new \Exception('Unknown condition operator.', 500);
     }
 
     /**

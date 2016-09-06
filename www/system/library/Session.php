@@ -5,7 +5,7 @@
  *	\brief		Session class system.
  *  \copyright	(c) 2007-2016 Fernando Val
  *  \author		Fernando Val - fernando.val@gmail.com
- *  \version    2.1.19
+ *  \version    2.1.1.20
  *	\ingroup	framework
  */
 namespace Springy;
@@ -54,9 +54,9 @@ class Session
 
         // The session engine type
         if (!isset($config['type'])) {
-            throw new Exception('Undefined session type.', 500);
+            throw new \Exception('Undefined session type.', 500);
         } elseif ($config['type'] !== self::ST_STANDARD && $config['type'] !== self::ST_MEMCACHED && $config['type'] !== self::ST_DATABASE) {
-            throw new Exception('Invalid session type.', 500);
+            throw new \Exception('Invalid session type.', 500);
         }
         self::$type = $config['type'];
 

@@ -6,7 +6,7 @@
  *  \copyright  ₢ 2014-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \see        http://twig.sensiolabs.org/
- *  \version    0.16.0.14
+ *  \version    0.16.1.15
  *  \ingroup    framework
  */
 namespace Springy\Template;
@@ -82,7 +82,7 @@ class TwigDriver implements TemplateDriverInterface
                 $toCall = Configuration::get('uri', 'register_method_set_common_urls');
                 if ($toCall['static']) {
                     if (!isset($toCall['method'])) {
-                        throw new Exception('You need to determine which method will be executed.', 500);
+                        throw new \Exception('You need to determine which method will be executed.', 500);
                     }
 
                     //$toCall['class']::$toCall['method'];
