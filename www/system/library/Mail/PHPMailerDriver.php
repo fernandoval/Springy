@@ -6,7 +6,7 @@
  *  \copyright  ₢ 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \see        https://github.com/PHPMailer/PHPMailer
- *  \version    1.0.4
+ *  \version    1.1.0.5
  *  \ingroup    framework
  */
 namespace Springy\Mail;
@@ -118,6 +118,15 @@ class PHPMailerDriver implements MailDriverInterface
     public function addAttachment($path, $name = '', $type = '', $encoding = 'base64')
     {
         $this->mailObj->addAttachment($path, $name, $encoding, $type);
+    }
+
+    /**
+     *  \brief Add a category to the e-mail.
+     *
+     *  \param $category - the category
+     */
+    public function addCategory($category) {
+        throw new \Exception('Resourse unavailable.');
     }
 
     /**

@@ -6,7 +6,7 @@
  *  \copyright  ₢ 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \see        https://github.com/sendgrid/sendgrid-php
- *  \version    3.0.5
+ *  \version    3.1.0.6
  *  \ingroup    framework
  */
 namespace Springy\Mail;
@@ -105,6 +105,15 @@ class SendGridDriver implements MailDriverInterface
         $attachment->setDisposition('attachment');
 
         $this->mailObj->addAttachment($attachment);
+    }
+
+    /**
+     *  \brief Add a category to the e-mail.
+     *
+     *  \param $category - the category
+     */
+    public function addCategory($category) {
+        $this->mailObj->addCategory($category);
     }
 
     /**

@@ -6,7 +6,7 @@
  *  \copyright  ₢ 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \see        http://www.phpclasses.org/package/9-PHP-PHP-mailer-to-compose-and-send-MIME-messages.html
- *  \version    1.0.3
+ *  \version    1.1.0.4
  *  \ingroup    framework
  */
 namespace Springy\Mail;
@@ -171,6 +171,15 @@ class MimeMessageDriver implements MailDriverInterface
             'Name'         => $name,
             'Content-Type' => $type,
         ]);
+    }
+
+    /**
+     *  \brief Add a category to the e-mail.
+     *
+     *  \param $category - the category
+     */
+    public function addCategory($category) {
+        throw new \Exception('Resourse unavailable.');
     }
 
     /**
