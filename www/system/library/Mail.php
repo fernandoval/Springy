@@ -5,7 +5,7 @@
  *	\brief      Classe para envio de email.
  *  \copyright  ₢ 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
- *	\version    3.1.0.20
+ *	\version    3.1.0.21
  *	\ingroup    framework
  */
 namespace Springy;
@@ -216,7 +216,8 @@ class Mail
      *
      *  \param $category - the category
      */
-    public function addCategory($category) {
+    public function addCategory($category)
+    {
         $this->mailObj->addCategory($category);
     }
 

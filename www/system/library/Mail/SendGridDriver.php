@@ -6,7 +6,7 @@
  *  \copyright  ₢ 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \see        https://github.com/sendgrid/sendgrid-php
- *  \version    3.1.0.6
+ *  \version    3.1.0.7
  *  \ingroup    framework
  */
 namespace Springy\Mail;
@@ -112,7 +112,8 @@ class SendGridDriver implements MailDriverInterface
      *
      *  \param $category - the category
      */
-    public function addCategory($category) {
+    public function addCategory($category)
+    {
         $this->mailObj->addCategory($category);
     }
 

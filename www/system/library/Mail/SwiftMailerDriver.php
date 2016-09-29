@@ -6,7 +6,7 @@
  *  \copyright  ₢ 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \see        http://swiftmailer.org/
- *  \version    2.1.0.5
+ *  \version    2.1.0.6
  *  \ingroup    framework
  */
 namespace Springy\Mail;
@@ -129,7 +129,8 @@ class SwiftMailerDriver implements MailDriverInterface
      *
      *  \param $category - the category
      */
-    public function addCategory($category) {
+    public function addCategory($category)
+    {
         throw new \Exception('Resourse unavailable.');
     }
 

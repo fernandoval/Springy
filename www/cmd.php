@@ -5,7 +5,7 @@
  *	\brief      Script de execução via shell para crontab
  *  \copyright  ₢ 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
- *  \version    1.3.0.8
+ *  \version    1.3.0.9
  *  \ingroup    framework
  */
 if (!file_exists('sysconf.php')) {
@@ -48,7 +48,7 @@ while (++$arg < $argc) {
     if ($argv[$arg] == '--query_string') {
         $arg += 1;
         if (isset($argv[$arg])) {
-            $_SERVER['REQUEST_URI']  .= '?'.$argv[$arg];
+            $_SERVER['REQUEST_URI'] .= '?'.$argv[$arg];
             $_SERVER['QUERY_STRING'] .= $argv[$arg];
 
             foreach (explode('&', $argv[$arg]) as $get) {
