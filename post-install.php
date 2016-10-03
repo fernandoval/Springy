@@ -7,7 +7,7 @@
  *  \copyright Copyright (c) 2015-2016 Fernando Val
  *
  *  \brief    Post Install/Update Script for Composer
- *  \version  2.1.7
+ *  \version  3.0.0.8
  *  \author   Fernando Val - fernando.val@gmail.com
  *
  *  This script is executed by Composer after the install/update process.
@@ -20,21 +20,28 @@
  *  If there is no "files" defined for every "vendor/package", their bower.json file is used by
  *  this script to decide which files will be copied.
  *
+ *  \note To minify CSS and JS files, is recommended the use of the Minify class by Matthias Mullie.
+ *      https://github.com/matthiasmullie/minify
+ *
  *  \ingroup framework
  */
 define('DS', DIRECTORY_SEPARATOR);
 
 define('LF', "\n");
-define('CS_RESET', "\033[0m");
+define('CS_GREEN', "\033[32m");
 define('CS_RED', "\033[31m");
+define('CS_RESET', "\033[0m");
 
 if (!$str = file_get_contents('composer.json')) {
     echo 'Can\'t open composer.json file.';
     exit(1);
 }
 
+// Load Composer configuration
 $composer = json_decode($str, true);
 if (json_last_error() !== JSON_ERROR_NONE) {
+    echo CS_RED;
+
     switch (json_last_error()) {
         case JSON_ERROR_DEPTH:
             echo 'The maximum stack depth has been exceeded';
@@ -63,6 +70,9 @@ if (json_last_error() !== JSON_ERROR_NONE) {
         default:
             echo 'Unknown error occurred';
     }
+
+    echo CS_RESET, LF;
+
     exit(1);
 }
 if (!isset($composer['extra'])) {
@@ -77,67 +87,84 @@ if (!isset($composer['config']) || !isset($composer['config']['vendor-dir'])) {
     $vendorDir = $composer['config']['vendor-dir'];
 }
 
-// foreach($require as $component => $target) {
+// Load the Composer's autoload file
+if (file_exists($vendorDir.DS.'autoload.php')) {
+    require $vendorDir.DS.'autoload.php';
+}
+
+echo CS_GREEN, 'Starting the installation of the extra components', CS_RESET, LF;
+
+// Process every component
 foreach ($composer['extra']['post-install'] as $component => $data) {
+    echo '  - Processing ', CS_GREEN, $component, CS_RESET, ' files', LF;
+
+    // Component sub directory
     $path = $vendorDir.DS.implode(DS, explode('/', $component));
 
-    if (!isset($data['target'])) {
-        exit(0);
+    // Check component's source path
+    if (!is_dir($path)) {
+        echo '    ', CS_RED, 'Component\'s "'.$path.'" does not exists.', CS_RESET, LF;
+        continue;
     }
+
+    // Check compnent's configuration
+    if (!isset($data['target'])) {
+        echo '    ', CS_RED, 'Target directory not defined.', CS_RESET, LF;
+        continue;
+    }
+
+    $files = '*';
     $target = $data['target'];
     $noSubdirs = isset($data['ignore-subdirs']) && $data['ignore-subdirs'];
     $minify = isset($data['minify']) ? $data['minify'] : 'off';
 
-    if (is_dir($path)) {
-        if (isset($data['files'])) {
-            $files = $data['files'];
-        } elseif (file_exists($path.DS.'bower.json')) {
-            if (!$str = file_get_contents($path.DS.'bower.json')) {
-                echo CS_RED, 'Can\'t open "'.$path.DS.'bower.json" file.', LF;
-                exit(1);
-            }
+    // Define the files of the component
+    if (isset($data['files'])) {
+        $files = $data['files'];
+    } elseif (file_exists($path.DS.'bower.json')) {
+        if (!$str = file_get_contents($path.DS.'bower.json')) {
+            echo '    ', CS_RED, 'Can\'t open "'.$path.DS.'bower.json" file.', CS_RESET, LF;
+            continue;
+        }
 
-            $bower = json_decode($str, true);
-            if (!isset($bower['main'])) {
-                echo CS_RED, 'Main section does not exists in "'.$path.DS.'bower.json" file.', LF;
-                exit(1);
-            }
+        $bower = json_decode($str, true);
+        if (!isset($bower['main'])) {
+            echo '    ', CS_RED, 'Main section does not exists in "'.$path.DS.'bower.json" file.', CS_RESET, LF;
+            continue;
+        }
 
-            if (is_array($bower['main'])) {
-                $files = $bower['main'];
-            } else {
-                $files = [$bower['main']];
-            }
+        if (is_array($bower['main'])) {
+            $files = $bower['main'];
         } else {
-            $files = '*';
+            $files = [$bower['main']];
         }
-
-        $destination = implode(DS, explode('/', $target));
-        if (!is_dir($destination)) {
-            if (!mkdir($destination, 0755, true)) {
-                echo CS_RED, 'Can\'t create "'.$destination.'" directory.', LF;
-                exit(1);
-            }
-        }
-
-        if (is_array($files)) {
-            foreach ($files as $file) {
-                $file = implode(DS, explode('/', $file));
-                if ($noSubdirs) {
-                    $dstFile = explode('/', $file);
-                    $dstFile = array_pop($dstFile);
-                } else {
-                    $dstFile = $file;
-                }
-                copy_r($path.DS.$file, $destination.DS.$dstFile, $minify);
-            }
-        } else {
-            copy_r($path, $destination, $minify);
-        }
-    } else {
-        echo CS_RED, 'Component "'.$path.'" does not exists.', LF;
-        exit(1);
     }
+
+    // Check the destination directory
+    $destination = implode(DS, explode('/', $target));
+    if (!is_dir($destination)) {
+        if (!mkdir($destination, 0755, true)) {
+            echo '    ', CS_RED, 'Can\'t create "'.$destination.'" directory.', CS_RESET, LF;
+            continue;
+        }
+    }
+
+    if (is_array($files)) {
+        foreach ($files as $file) {
+            $file = implode(DS, explode('/', $file));
+            if ($noSubdirs) {
+                $dstFile = explode('/', $file);
+                $dstFile = array_pop($dstFile);
+            } else {
+                $dstFile = $file;
+            }
+            copy_r($path.DS.$file, $destination.DS.$dstFile, $minify);
+        }
+
+        continue;
+    }
+
+    copy_r($path.DS.$files, $destination.DS.$files, $minify);
 }
 
 /**
@@ -145,55 +172,64 @@ foreach ($composer['extra']['post-install'] as $component => $data) {
  */
 function copy_r($path, $dest, $minify = 'off')
 {
+    // Is the source a directory?
     if (is_dir($path)) {
         $objects = scandir($path);
-        if (count($objects) > 0) {
-            foreach ($objects as $file) {
-                if ($file == '.' || $file == '..') {
-                    continue;
-                }
-
-                if (is_dir($path.DS.$file)) {
-                    copy_r($path.DS.$file, $dest.DS.$file, $minify);
-                } else {
-                    // Copy only if destination does not existis or source is newer
-                    if (!is_file($dest.DS.$file) || filemtime($path.DS.$file) > filemtime($dest.DS.$file)) {
-                        if (!is_dir($dest)) {
-                            mkdir($dest, 0775, true);
-                        }
-                        if (!realCopy($path.DS.$file, $dest.DS.$file, $minify)) {
-                            echo CS_RED, '[ERROR] Can not copy (', $path.DS.$file, ') to (', $dest.DS.$file, ')', CS_RESET, LF;
-                        }
-                    }
-                }
+        foreach ($objects as $file) {
+            if ($file == '.' || $file == '..') {
+                continue;
             }
+
+            copy_r($path.DS.$file, $dest.DS.$file, $minify);
+            // // Is a sub directory?
+            // if (is_dir($path.DS.$file)) {
+
+                // continue;
+            // }
+
+            // // Copy only if destination does not existis or source is newer
+            // if (!is_file($dest.DS.$file) || filemtime($path.DS.$file) > filemtime($dest.DS.$file)) {
+                // if (!is_dir($dest)) {
+                    // mkdir($dest, 0775, true);
+                // }
+                // if (!realCopy($path.DS.$file, $dest.DS.$file, $minify)) {
+                    // echo '    ', CS_RED, '[ERROR] Can not copy (', $path.DS.$file, ') to (', $dest.DS.$file, ')', CS_RESET, LF;
+                // }
+            // }
         }
 
         return true;
-    } elseif (is_file($path)) {
+    }
+    // Is the source a file?
+    elseif (is_file($path)) {
+        // Destination exists?
         $dir = dirname($dest);
         if (!is_dir($dir)) {
             mkdir($dir, 0775, true);
         }
-        // Copy only if destination does not existis or source is newer
-        if (!is_file($dest) || filemtime($path) > filemtime($dest)) {
-            return realCopy($path, $dest, $minify);
-        } else {
+
+        // Copy only if source is new or newer
+        if (is_file($dest) && filemtime($path) < filemtime($dest)) {
             return true;
         }
-    } else {
-        $success = false;
-        $dest = dirname($dest);
-        foreach (glob($path) as $filename) {
-            $success = copy_r($filename, $dest.DS.basename($filename), $minify);
-            if (!$success) {
-                echo CS_RED, '[ERROR] Copying (', $filename, ') to (', $dest.DS.basename($filename), ')', CS_RESET, LF;
-                break;
-            }
+
+        $success = realCopy($path, $dest, $minify);
+        if (!$success) {
+            echo '    ', CS_RED, '[ERROR] Copying (', $filename, ') to (', $dest.DS.basename($filename), ')', CS_RESET, LF;
         }
 
         return $success;
     }
+
+    // Oh! Is a wildcard path.
+
+    $success = false;
+    $dest = dirname($dest);
+    foreach (glob($path) as $filename) {
+        $success = copy_r($filename, $dest.DS.basename($filename), $minify);
+    }
+
+    return true;
 }
 
 /**
@@ -204,6 +240,26 @@ function realCopy($source, $destiny, $minify = 'auto')
     if ($minify == 'auto') {
         $minify = (substr($source, -4) == '.css' ? 'css' : (substr($source, -3) == '.js' ? 'js' : 'off'));
     }
+
+    if ($minify != 'off' && class_exists('MatthiasMullie\Minify\Minify')) {
+        switch ($minify) {
+            case 'css':
+                $minifier = new MatthiasMullie\Minify\CSS($source);
+                break;
+            case 'js':
+                $minifier = new MatthiasMullie\Minify\JS($source);
+                break;
+            default:
+                return true;
+        }
+
+        $minifier->minify($destiny);
+        chmod($destiny, 0664);
+
+        return true;
+    }
+
+    // Matthias Mullie's Minify class not found. I Will try by myself but this is not the best way.
 
     $buffer = file_get_contents($source);
     if ($buffer == false) {

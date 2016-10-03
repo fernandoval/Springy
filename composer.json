@@ -25,6 +25,7 @@
 		"smarty/smarty": "*",
 		"twig/twig": "*",
 		"ircmaxell/password-compat": "*",
+        "matthiasmullie/minify": "*",
 		"sendgrid/sendgrid": "~5.0",
 		"phpmailer/phpmailer": "~5.2",
 		
