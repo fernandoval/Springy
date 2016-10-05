@@ -1,7 +1,7 @@
 Springy framework update history
 
 ------------------------------------------------------------------------------------ --- -- -
-development
+3.6.0
     - New feature: default template directory;
     - New feature: minifing asset files from source directory;
     - New feature: category and transactional template support for SendGrid mailing driver;
