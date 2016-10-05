@@ -6,7 +6,7 @@
  *  \copyright  Copyright (c) 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.9.15
+ *  \version    0.10.17
  *  \ingroup    framework
  */
 namespace Springy\Utils;
@@ -69,7 +69,7 @@ class Strings
     {
         if (
             filter_var($email, FILTER_VALIDATE_EMAIL) &&
-            preg_match('/^[a-z0-9_\-]+(\.[a-z0-9_\-]+)*@([a-z0-9_\.\-]*[a-z0-9_\-]+\.[a-z]{2,4})$/i', $email, $res)
+            preg_match('/^[a-z0-9_\-]+(\.[a-z0-9_\-]+)*@([a-z0-9_\.\-]*[a-z0-9_\-]+\.[a-z]{2,})$/i', $email, $res)
         ) {
             return $checkDNS ? checkdnsrr($res[2]) : true;
         }
@@ -102,6 +102,27 @@ class Strings
     }
 
     /**
+     *  \brief Verify if a IP is from a local area network.
+     */
+    public static function isPraviteNetwork($userIP)
+    {
+        // 10.0.0.0/8 or 192.168.0.0/16
+        if (substr($userIP, 0, 3) == '10.' || substr($userIP, 0, 8) == '192.168.') {
+            return true;
+        }
+
+        // 172.16.0.0/12
+        if (substr($userIP, 0, 4) == '172.') {
+            $oct = (int) trim(substr($userIP, 4, 3), '.');
+            if ($oct >= 16 && $oct <= 31) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      *  \brief Retorna o endereço IP remoto real.
      *
      *  Existem certas situações em que o verdadeiro IP do visitante fica mascarado quando o servidor de aplicação
@@ -127,7 +148,7 @@ class Strings
                 $httpip = explode(',', $httpip);
                 while (list(, $val) = each($httpip)) {
                     $val = trim($val);
-                    if (substr($val, 0, 3) != '10.' && substr($val, 0, 8) != '192.168.' && substr($val, 0, 7) != '172.16.') {
+                    if (!self::isPraviteNetwork($val)) {
                         $ip = $val;
                         break;
                     }
@@ -137,7 +158,7 @@ class Strings
             }
         }
         // Verifica se ainda não chegou ao IP real
-        if (empty($ip) || substr($ip, 0, 3) == '10.' || substr($ip, 0, 8) == '192.168.' || substr($ip, 0, 7) == '172.16.') {
+        if (empty($ip) || self::isPraviteNetwork($ip)) {
             if (!empty($_SERVER['HTTP_X_REAL_IP'])) {
                 $ip = $_SERVER['HTTP_X_REAL_IP'];
             } else {

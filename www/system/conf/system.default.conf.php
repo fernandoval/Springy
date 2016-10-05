@@ -2,7 +2,7 @@
 /** \file
  *  \brief      General system configutations.
  *  \copyright  Copyright (c) 2007-2016 Fernando Val
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido.
+ *  \warning    This file can not be removed.
  */
 
 /**
@@ -31,6 +31,20 @@
  *  - \c authentication - Define o acesso autenticado por HTTP
  *    - Esse parâmetro de configuração espera um valor \c false ou um \c array no seguinte formato:
  *      array('user' => 'usuario', 'pass' => 'senha')
+ *  - \c 'session' - Session configurations
+ *    - \c 'type' - Session type. Possible values:
+ *      'file' = Standard session storage;
+ *      'memcached' = Session stored using MemcacheD service;
+ *      'database' = Session stored in a database table (very slow);
+ *    - \c 'name' - The name of the session cookie;
+ *    - \c 'domain' - The session master domain cookie;
+ *    - \c 'expires' - Session expiration time in minutes;
+ *    - \c 'memcached' - MemcacheD service configuration;
+ *      - \c 'address' - The MemcacheD server address;
+ *      - \c 'port' - The MemcacheD server port;
+ *    - \c 'database' - Database configurations for session:
+ *      - \c 'server' - The server configuration setting in db.conf;
+ *      - \c 'table'  - The session table name.
  *  - \c system_error - Configurações de tratamento de erros da aplicação
  *    - \c save_in_database - Informa ao sistema se as ocorrências de erros devem ser armazenadas em banco de dados.
  *    - \c table_name - Informa ao sistema o nome da tabela onde as ocorrências de erro devem ser armazenadas.
@@ -84,10 +98,25 @@ $conf = [
     'developer_pass'     => '',
     'dba_user'           => '',
     'bug_authentication' => [],
+    'assets_source_path' => $GLOBALS['SYSTEM']['SYSTEM_PATH'].DIRECTORY_SEPARATOR.'assets',
     'assets_path'        => $GLOBALS['SYSTEM']['ROOT_PATH'].DIRECTORY_SEPARATOR.'assets',
     'controller_path'    => $GLOBALS['SYSTEM']['SYSTEM_PATH'].DIRECTORY_SEPARATOR.'controllers',
     'css_path'           => $GLOBALS['SYSTEM']['ROOT_PATH'].DIRECTORY_SEPARATOR.'css',
     'js_path'            => $GLOBALS['SYSTEM']['ROOT_PATH'].DIRECTORY_SEPARATOR.'js',
+    'session'            => [
+        'type'      => 'file', // 'file', 'memcached' or 'database'
+        'name'      => 'SPRINGYSID', // The session cookie name
+        'domain'    => '',
+        'expires'   => 120,
+        'memcached' => [
+            'address' => '127.0.0.1',
+            'port'    => 11211,
+        ],
+        'database' => [
+            'server' => 'default',
+            'table'  => '_sessions',
+        ],
+    ],
     'system_error'       => [
         'reported_errors'  => [405, 406, 408, 409, 410, 412, 413, 414, 415, 416, 500, 501, 502, 504, 505],
         'save_in_database' => false,

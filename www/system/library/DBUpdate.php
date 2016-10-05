@@ -56,7 +56,7 @@ class DBUpdate
     {
         return 'UPDATE '.$this->tabela.' SET'."\n"
              .'    '.implode(' = ?, '."\n    ", $this->columns).' = ?'."\n"
-             .($this->from  ? 'FROM '.$this->from."\n" : '')
+             .($this->from ? 'FROM '.$this->from."\n" : '')
              .($this->conds ? 'WHERE '.$this->conds : '-- sem conds');
     }
 }

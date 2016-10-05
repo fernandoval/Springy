@@ -6,7 +6,7 @@
  *  \copyright  Copyright (c) 2007-2016 Fernando Val
  *  \author     Allan Marques - allan.marques@ymail.com
  *	\warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version    0.2.1
+ *	\version    0.3.2
  *	\ingroup    framework
  */
 namespace Springy\Security;
@@ -133,7 +133,7 @@ class Authentication
                 $this->user->getId(), //Id do usuário
                 5184000, //60 dias
                 '/',
-                config_get('session.master_domain')
+                config_get('system.session.domain')
             );
         }
     }
@@ -193,7 +193,7 @@ class Authentication
             '',
             time() - 3600,
             '/',
-            config_get('session.master_domain')
+            config_get('system.session.domain')
         );
         Cookie::delete($this->driver->getIdentitySessionKey());
     }

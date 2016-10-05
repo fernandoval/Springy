@@ -3,11 +3,10 @@
  *	Springy.
  *
  *	\brief      Classe para construção de arquivos no formato Microsoft(R) Excel(R).
- *  \copyright  Copyright (c) 2007-2016 Fernando Val
- *  \author     Fernando Val  - fernando.val@gmail.com
+ *  \copyright  (c) 2007-2016 Fernando Val
+ *  \author     Fernando Val - fernando.val@gmail.com
  *	\note       Classe baseada no trabalho de Harish Chauhan de 31/12/2004
- *	\warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version    0.4.5
+ *	\version    0.4.6
  *	\ingroup    framework
  */
 namespace Springy\Utils;
@@ -176,7 +175,7 @@ class Excel
                 .'xmlns:x="urn:schemas-microsoft-com:office:excel" '
                 .'xmlns="http://www.w3.org/TR/REC-html40">'
                 .'<head>'
-                .'<meta http-equiv=Content-Type content="text/html; charset=us-ascii">'
+                .'<meta http-equiv=Content-Type content="text/html; charset=utf-8">'
                 .'<meta name=ProgId content=Excel.Sheet>'
                 .'<!--[if gte mso 9]><xml>'
                 .'<o:DocumentProperties>'
@@ -289,11 +288,11 @@ class Excel
             return false;
         }
 
-        $this->open_row();
+        $this->openRow();
         foreach ($line_arr as $index => $column) {
-            $this->add_col($column, $index);
+            $this->addCol($column, $index);
         }
-        $this->close_row();
+        $this->closeRow();
         $this->newRow = false;
     }
 
@@ -352,9 +351,9 @@ class Excel
         }
 
         if (is_null($column) || !isset($this->columns[$column])) {
-            fwrite($this->fp, '<td class="xl24" width="64"'.(is_numeric($value) ? ' x:num' : '').'>'.utf8_decode($value).'</td>');
+            fwrite($this->fp, '<td class="xl24" width="64"'.(is_numeric($value) ? ' x:num' : '').'>'.$value.'</td>');
         } else {
-            fwrite($this->fp, '<td class="xl24" width="'.(empty($this->columns[$column]['width']) ? '64' : $this->columns[$column]['width']).'" x:'.$this->columns[$column]['type'].'>'.utf8_decode($value).'</td>');
+            fwrite($this->fp, '<td class="xl24" width="'.(empty($this->columns[$column]['width']) ? '64' : $this->columns[$column]['width']).'" x:'.$this->columns[$column]['type'].'>'.$value.'</td>');
         }
     }
 }

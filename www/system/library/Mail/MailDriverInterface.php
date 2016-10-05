@@ -3,10 +3,9 @@
  *	Springy.
  *
  *	\brief      Interface for mail drivers.
- *  \copyright  Copyright (c) 2007-2016 Fernando Val
- *  \author     Fernando Val  - fernando.val@gmail.com
- *	\warning    This file is part of the framework and can not be omitted
- *	\version    1.0.1
+ *  \copyright  ₢ 2007-2016 Fernando Val
+ *  \author     Fernando Val - fernando.val@gmail.com
+ *	\version    2.1.0.4
  *	\ingroup    framework
  */
 namespace Springy\Mail;
@@ -58,6 +57,13 @@ interface MailDriverInterface
     public function addAttachment($path, $name = '', $type = '', $encoding = 'base64');
 
     /**
+     *  \brief Add a category to the e-mail.
+     *
+     *  \param $category - the category
+     */
+    public function addCategory($category);
+
+    /**
      *  \brief Set the 'From' field.
      *
      *  \param $email - the email address
@@ -84,6 +90,16 @@ interface MailDriverInterface
      *	\brief Set the alternative plain-text message body for old message readers.
      */
     public function setAlternativeBody($text);
+
+    /**
+     *  \brief Set a template for this email.
+     */
+    public function setTemplate($name);
+
+    /**
+     *  \brief Add value to a template variable.
+     */
+    public function addTemplateVar($name, $value);
 
     /**
      *  \brief Send the mail message

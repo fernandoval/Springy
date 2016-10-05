@@ -20,12 +20,13 @@
 		}
     },
     "require": {
-		"php": ">=5.4.0",
+		"php": ">=5.5.0",
 		
 		"smarty/smarty": "*",
 		"twig/twig": "*",
 		"ircmaxell/password-compat": "*",
-		"sendgrid/sendgrid": "~4.0",
+        "matthiasmullie/minify": "*",
+		"sendgrid/sendgrid": "~5.0",
 		"phpmailer/phpmailer": "~5.2",
 		
 		"components/jquery": "2.1.3",

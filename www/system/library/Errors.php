@@ -6,7 +6,7 @@
  *  \copyright  (c) 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
- *  \version    3.0.0.39
+ *  \version    3.0.2.41
  *  \ingroup    framework
  */
 namespace Springy;
@@ -364,7 +364,7 @@ class Errors
             }
         }
 
-        Kernel::callErrorHook($errorType);
+        Kernel::callErrorHook($errorType, $msg, $errorId, $additionalInfo);
 
         $this->printHtml($errorType, $out);
     }
@@ -564,6 +564,7 @@ class Errors
         $tpl = preg_replace('/<!-- REQUEST_URI -->/', isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : 'empty', $tpl);
         $tpl = preg_replace('/<!-- REQUEST_METHOD -->/', isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : 'empty', $tpl);
         $tpl = preg_replace('/<!-- SERVER_PROTOCOL -->/', isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'empty', $tpl);
+        $tpl = preg_replace('/<!-- HOST -->/', URI::buildURL(), $tpl);
         $tpl = preg_replace('/<!-- URL -->/', URI::getURIString().'?'.implode('&', $getParams), $tpl);
         $tpl = preg_replace('/<!-- KERNEL_DEBUG -->/', Debug::get(), $tpl);
         $tpl = preg_replace('/<!-- BACKTRACE -->/', Debug::backtrace(), $tpl);

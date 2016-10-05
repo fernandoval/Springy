@@ -6,7 +6,7 @@
  *  \copyright  Copyright (c) 2007-2015 Fernando Val
  *  \author     Allan Marques - allan.marques@ymail.com
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.1.1
+ *  \version    0.2.4
  *  \ingroup    tests
  */
 use Springy\Container\DIContainer;
@@ -26,14 +26,16 @@ class MediatorTest extends PHPUnit_Framework_TestCase
     public function testThatMediatorCanRegisterAndForgetHandlers()
     {
         //Normal
-        $this->mediator->registerHandlerFor('global.someevent', function () {});
+        $this->mediator->registerHandlerFor('global.someevent', function () {
+        });
         $this->assertTrue($this->mediator->hasHandlersFor('global.someevent'));
 
         $this->mediator->forget('global.someevent');
         $this->assertFalse($this->mediator->hasHandlersFor('global.someevent'));
 
         //Alternative
-        $this->mediator->on('global.someevent', function () {});
+        $this->mediator->on('global.someevent', function () {
+        });
         $this->assertTrue($this->mediator->hasHandlersFor('global.someevent'), 'message');
 
         $this->mediator->off('global.someevent');
@@ -164,9 +166,15 @@ class MediatorTest extends PHPUnit_Framework_TestCase
 
     public function testThatMediatorCanReturnTHeCurrentEvent()
     {
-        $this->mediator->on('event.subevent1', function () { return 5; });
-        $this->mediator->on('event.subevent2', function () { return -5; });
-        $this->mediator->on('event.subevent3', function () { return 10; });
+        $this->mediator->on('event.subevent1', function () {
+            return 5;
+        });
+        $this->mediator->on('event.subevent2', function () {
+            return -5;
+        });
+        $this->mediator->on('event.subevent3', function () {
+            return 10;
+        });
 
         $this->mediator->on('event.*', function () {
             switch ($this->mediator->current()) {
@@ -193,11 +201,21 @@ class MediatorTest extends PHPUnit_Framework_TestCase
 
     public function testThatMediatorStopsEventPropagationAfterAHandlerReturnsFalse()
     {
-        $this->mediator->on('event', function () { return 5; });
-        $this->mediator->on('event', function () { return -5; });
-        $this->mediator->on('event', function () { return 10; });
-        $this->mediator->on('event', function () { return false; });
-        $this->mediator->on('event', function () { return 10; });
+        $this->mediator->on('event', function () {
+            return 5;
+        });
+        $this->mediator->on('event', function () {
+            return -5;
+        });
+        $this->mediator->on('event', function () {
+            return 10;
+        });
+        $this->mediator->on('event', function () {
+            return false;
+        });
+        $this->mediator->on('event', function () {
+            return 10;
+        });
 
         $response = $this->mediator->fire('event');
 
@@ -221,13 +239,25 @@ class MediatorTest extends PHPUnit_Framework_TestCase
 
     public function testThatMediatorCanAcceptSubscriberClassesAsHandlers()
     {
-        $mockHandler = $this->getMock('MockHandler', ['subscribes']);
+        if (PHPUnit_Runner_Version::id() >= '5.4') {
+            $mockHandler = $this->createMock('MockHandler', ['subscribes']);
+        } else {
+            $mockHandler = $this->getMock('MockHandler', ['subscribes']);
+        }
 
         $mockHandler->expects($this->once())
                     ->method('subscribes')
                     ->with($this->mediator);
 
         $this->mediator->subscribe($mockHandler);
+    }
+}
+
+class MockHandler
+{
+    public function subscribes()
+    {
+        return true;
     }
 }
 

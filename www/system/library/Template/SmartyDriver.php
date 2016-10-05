@@ -6,7 +6,7 @@
  *  \copyright  ₢ 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \see        http://www.smarty.net/
- *  \version    1.5.0.10
+ *  \version    1.7.1.13
  *  \ingroup    framework
  */
 namespace Springy\Template;
@@ -83,7 +83,7 @@ class SmartyDriver implements TemplateDriverInterface
                 $toCall = Configuration::get('uri', 'register_method_set_common_urls');
                 if ($toCall['static']) {
                     if (!isset($toCall['method'])) {
-                        throw new Exception('You need to determine which method will be executed.', 500);
+                        throw new \Exception('You need to determine which method will be executed.', 500);
                     }
 
                     //$toCall['class']::$toCall['method'];
@@ -105,6 +105,14 @@ class SmartyDriver implements TemplateDriverInterface
     public function __destruct()
     {
         unset($this->tplObj);
+    }
+
+    /**
+     *  \brief Add a directory to the list of directories where templates are stored.
+     */
+    public function addTemplateDir($path)
+    {
+        $this->tplObj->addTemplateDir($path);
     }
 
     /**
@@ -170,17 +178,22 @@ class SmartyDriver implements TemplateDriverInterface
         }
 
         // Se o arquivo de template não existir, exibe erro 404
-        if (!$this->templateExists($this->templateName)) {
-            new Errors(404, $this->templateName.self::TPL_NAME_SUFIX);
+        if ($this->templateExists($this->templateName)) {
+            return true;
         }
 
-        return true;
+        $this->addTemplateDir(Configuration::get('template', 'default_template_path'));
+        if ($this->templateExists($this->templateName)) {
+            return true;
+        }
+
+        new Errors(404, $this->templateName.self::TPL_NAME_SUFIX);
     }
 
     /**
      *  \brief Verifica se o template está cacheado.
      *
-     * @return bool
+     *  @return bool
      */
     public function isCached()
     {
@@ -189,8 +202,6 @@ class SmartyDriver implements TemplateDriverInterface
 
     /**
      *  \brief Define o cacheamento dos templates.
-     *
-     * @
      */
     public function setCaching($value = 'current')
     {
@@ -256,7 +267,7 @@ class SmartyDriver implements TemplateDriverInterface
     /**
      *  \brief Define o arquivos de template.
      *
-     * @param string $tpl Nome do template, sem extenção do arquivo
+     *  @param string $tpl Nome do template, sem extenção do arquivo
      */
     public function setTemplate($tpl)
     {
@@ -368,34 +379,23 @@ class SmartyDriver implements TemplateDriverInterface
      */
     public function assetFile($params, $smarty)
     {
-        if (!empty($params['type']) && $params['type'] == 'js') {
-            $filePath = Configuration::get('system', 'js_path').DIRECTORY_SEPARATOR.$params['file'].'.js';
-            $fileURI = Configuration::get('uri', 'js_dir');
-        } elseif (!empty($params['type']) && $params['type'] == 'css') {
-            $filePath = Configuration::get('system', 'css_path').DIRECTORY_SEPARATOR.$params['file'].'.css';
-            $fileURI = Configuration::get('uri', 'css_dir');
-        } elseif (!empty($params['file'])) {
-            $filePath = Configuration::get('system', 'assets_path').DIRECTORY_SEPARATOR.$params['file'];
-            $fileURI = Configuration::get('uri', 'assets_dir');
-        } else {
+        if (empty($params['file'])) {
             return '#';
         }
 
+        $srcPath = Configuration::get('system', 'assets_source_path').DIRECTORY_SEPARATOR.$params['file'];
+        $filePath = Configuration::get('system', 'assets_path').DIRECTORY_SEPARATOR.$params['file'];
+        $fileURI = Configuration::get('uri', 'assets_dir').'/'.$params['file'];
         $get = [];
 
-        if (file_exists($filePath)) {
-            if (!empty($params['type'])) {
-                $fileURI .= '/'.$params['file'].'__'.filemtime($filePath).'.'.$params['type'];
-            } else {
-                $fileURI .= '/'.$params['file'];
-                $get['v'] = filemtime($filePath);
-            }
-        } elseif (!empty($params['type'])) {
-            $fileURI .= '/'.$params['file'].'.'.$params['type'];
-        } else {
-            $fileURI .= '/'.$params['file'];
+        if (file_exists($srcPath) && (!file_exists($filePath) || filemtime($filePath) < filemtime($srcPath))) {
+            minify($srcPath, $filePath);
         }
 
-        return URI::buildURL(explode('/', $fileURI), $get, isset($_SERVER['HTTPS']), 'static', false);
+        if (file_exists($filePath)) {
+            $get['v'] = filemtime($filePath);
+        }
+
+        return URI::buildURL(explode('/', $fileURI), $get, isset($_SERVER['HTTPS']), empty($params['host']) ? 'static' : $params['host'], false);
     }
 }

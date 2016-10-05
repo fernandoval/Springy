@@ -6,7 +6,7 @@
  *  \copyright  ₢ 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
- *  \version    1.3.0.6
+ *  \version    1.3.1.7
  *  \ingroup    framework
  */
 namespace Springy;
@@ -159,7 +159,7 @@ class Cookie
         }
 
         // Otherwise, throw an error
-        throw new Exception('Could not set key -- it is reserved.', 500);
+        throw new \Exception('Could not set key -- it is reserved.', 500);
     }
 
     /**

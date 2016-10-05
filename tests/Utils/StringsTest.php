@@ -6,7 +6,7 @@
  *  \copyright  Copyright (c) 2007-2016 Fernando Val
  *  \author     Allan Marques - allan.marques@ymail.com
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.2.1
+ *  \version    0.3.2
  *  \ingroup    tests
  */
 use Springy\Utils\Strings;
@@ -21,7 +21,7 @@ class StringsTest extends PHPUnit_Framework_TestCase
         $this->assertFalse(Strings::validateEmailAddress('fernando@fval', false));
         $this->assertFalse(Strings::validateEmailAddress('fernandofval.com.br', false));
         $this->assertFalse(Strings::validateEmailAddress('fernando@fval.nonexiuuste'));
-        $this->assertFalse(Strings::validateEmailAddress('fernando@fval.nonexiuuste', false));
+        $this->assertTrue(Strings::validateEmailAddress('fernando@fval.nonexiuuste', false));
     }
 
     public function testThatDateGetsValidatedSuccessfully()

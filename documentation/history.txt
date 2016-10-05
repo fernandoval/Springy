@@ -1,6 +1,17 @@
 Springy framework update history
 
 ------------------------------------------------------------------------------------ --- -- -
+3.6.0
+    - New feature: default template directory;
+    - New feature: minifing asset files from source directory;
+    - New feature: category and transactional template support for SendGrid mailing driver;
+    - Correction in private network IP detection in Utils\Strings::getRealRemoteAddr();
+    - Adjustment in Model->update() method;
+    - Session configurations moved to 'system' configurations files;
+    - Session files configurations removed;
+    - Adjustments in errors templates;
+    - Bug fix in hook errors.
+
 3.5.0
     - New main configuration 'PROJECT_CODE_NAME' to set the project code name;
     - New method Kernel::projectCodeName() to print the value of the project code name;

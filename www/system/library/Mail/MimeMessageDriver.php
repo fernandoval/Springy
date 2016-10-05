@@ -3,11 +3,10 @@
  *  Springy.
  *
  *  \brief      Class driver for use with Manuel Lemos' MIME e-mail message class.
- *  \copyright  Copyright (c) 2007-2016 Fernando Val\n
+ *  \copyright  ₢ 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \see        http://www.phpclasses.org/package/9-PHP-PHP-mailer-to-compose-and-send-MIME-messages.html
- *  \warning    This file is part of the framework and can not be omitted
- *  \version    1.0.2
+ *  \version    1.1.0.5
  *  \ingroup    framework
  */
 namespace Springy\Mail;
@@ -175,6 +174,16 @@ class MimeMessageDriver implements MailDriverInterface
     }
 
     /**
+     *  \brief Add a category to the e-mail.
+     *
+     *  \param $category - the category
+     */
+    public function addCategory($category)
+    {
+        throw new \Exception('Resourse unavailable.');
+    }
+
+    /**
      *  \brief Set the 'From' field.
      *
      *  \param $email - the email address
@@ -220,6 +229,22 @@ class MimeMessageDriver implements MailDriverInterface
     public function setAlternativeBody($text)
     {
         $this->setBody($text, false);
+    }
+
+    /**
+     *  \brief Set a template for this email.
+     */
+    public function setTemplate($name)
+    {
+        throw new \Exception('Resourse unavailable.');
+    }
+
+    /**
+     *  \brief Add value to a template variable.
+     */
+    public function addTemplateVar($name, $value)
+    {
+        throw new \Exception('Resourse unavailable.');
     }
 
     /**

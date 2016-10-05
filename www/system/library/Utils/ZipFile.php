@@ -7,7 +7,7 @@
  *  \author		(c) 2003 by Pascal Rehfeldt - Pascal@Pascal-Rehfeldt.com, under license GNU General Public License (Version 2, June 1991)
  *  \author		Fernando Val - fernando.val@gmail.com
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	0.3.0.10
+ *  \version	0.3.0.11
  *  \ingroup	framework
  */
 namespace Springy\Utils;
@@ -191,10 +191,10 @@ class ZipFile
         eval('$hexdtime = "'.$hexdtime.'";');
 
         $fr = "\x50\x4b\x03\x04";
-        $fr   .= "\x14\x00";            // ver needed to extract
-        $fr   .= "\x00\x00";            // gen purpose bit flag
-        $fr   .= "\x08\x00";            // compression method
-        $fr   .= $hexdtime;             // last mod time and date
+        $fr .= "\x14\x00";            // ver needed to extract
+        $fr .= "\x00\x00";            // gen purpose bit flag
+        $fr .= "\x08\x00";            // compression method
+        $fr .= $hexdtime;             // last mod time and date
 
         // "local file header" segment
         $unc_len = strlen($data);
@@ -202,12 +202,12 @@ class ZipFile
         $zdata = gzcompress($data);
         $zdata = substr(substr($zdata, 0, strlen($zdata) - 4), 2); // fix crc bug
         $c_len = strlen($zdata);
-        $fr      .= pack('V', $crc);             // crc32
-        $fr      .= pack('V', $c_len);           // compressed filesize
-        $fr      .= pack('V', $unc_len);         // uncompressed filesize
-        $fr      .= pack('v', strlen($name));    // length of filename
-        $fr      .= pack('v', 0);                // extra field length
-        $fr      .= $name;
+        $fr .= pack('V', $crc);             // crc32
+        $fr .= pack('V', $c_len);           // compressed filesize
+        $fr .= pack('V', $unc_len);         // uncompressed filesize
+        $fr .= pack('v', strlen($name));    // length of filename
+        $fr .= pack('v', 0);                // extra field length
+        $fr .= $name;
 
         // "file data" segment
         $fr .= $zdata;
@@ -299,20 +299,20 @@ class ZipFile
         } else {
             $filecontent = implode(null, file($file));
 
-            $content    .= '********************************************'."\n";
-            $content    .= '*                                          *'."\n";
-            $content    .= '*   Couldn\'t find FPDF!                   *'."\n";
-            $content    .= '*   Adding this File as plain text file.   *'."\n";
-            $content    .= '*                                          *'."\n";
-            $content    .= '*   Below this box is the sourcefile.      *'."\n";
-            $content    .= '*                                          *'."\n";
-            $content    .= '********************************************'."\n";
+            $content .= '********************************************'."\n";
+            $content .= '*                                          *'."\n";
+            $content .= '*   Couldn\'t find FPDF!                   *'."\n";
+            $content .= '*   Adding this File as plain text file.   *'."\n";
+            $content .= '*                                          *'."\n";
+            $content .= '*   Below this box is the sourcefile.      *'."\n";
+            $content .= '*                                          *'."\n";
+            $content .= '********************************************'."\n";
 
-            $content    .= ' '."\n";
-            $content    .= ' '."\n";
-            $content    .= ' '."\n";
+            $content .= ' '."\n";
+            $content .= ' '."\n";
+            $content .= ' '."\n";
 
-            $content    .= $filecontent;
+            $content .= $filecontent;
 
             $this->addContentAsFile($content, $file);
         }

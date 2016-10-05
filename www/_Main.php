@@ -5,7 +5,7 @@
  *  \brief      System initialization script
  *  \copyright  ₢ 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
- *  \version    4.3.0.30
+ *  \version    4.3.0.31
  *
  *  \defgroup framework Biblioteca do Framework
  *
@@ -235,4 +235,6 @@ if (isset($ControllerClassName)) {
     }
 }
 
-ob_end_flush();
+if (count(ob_list_handlers())) {
+    ob_end_flush();
+}

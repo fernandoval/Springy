@@ -17,7 +17,7 @@ class DBFiltro extends DBExpression
             case parent::IN:
             case parent::NOT_IN:
                 if (!is_array($valor)) {
-                    throw new Exception('$valor precisa ser um array.');
+                    throw new \Exception('$valor precisa ser um array.');
                 }
 
                 $this->cond = $coluna.' '.$operador.'('.implode(', ', array_fill(0, count($valor), '?')).')';

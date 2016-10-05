@@ -6,7 +6,7 @@
  *  \copyright  (c) 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
- *  \version    2.3.0.66
+ *  \version    2.3.2.69
  *  \ingroup    framework
  */
 namespace Springy;
@@ -19,7 +19,7 @@ namespace Springy;
 class Kernel
 {
     /// Versão do framework
-    const VERSION = '3.5.0';
+    const VERSION = '3.6.0';
 
     /// Kernel constants
     const PATH_CLASS = 'CLASS';
@@ -278,7 +278,7 @@ class Kernel
     /**
      *  \brief Set a error hook function that will be executed just before the framework shows the error message.
      */
-    public static function callErrorHook($errno)
+    public static function callErrorHook($errno, $msg, $errorId, $additionalInfo)
     {
         if (isset(self::$errorHooks[$errno])) {
             $hook = self::$errorHooks[$errno];
@@ -292,7 +292,7 @@ class Kernel
 
         if ($hook) {
             if (is_array($hook) && method_exists($hook[0], $hook[1])) {
-                $hook[0]->$hook[1]($msg, $errno, $errorId, $additionalInfo);
+                $hook[0]->{$hook[1]}($msg, $errno, $errorId, $additionalInfo);
             } elseif (function_exists($hook)) {
                 $hook($msg, $errno, $errorId, $additionalInfo);
             }

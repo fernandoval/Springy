@@ -6,7 +6,7 @@
  *  \copyright  (c) 2007-2016 Fernando Val
  *  \author     Allan Marques - allan.marques@ymail.com
  *  \author     Fernando Val - fernando.val@gmail.com
- *  \version    2.1.0.5
+ *  \version    3.1.0.7
  *  \ingroup    framework
  */
 
@@ -99,6 +99,67 @@ function dd($var, $die = true)
     if ($die) {
         die;
     }
+}
+
+/**
+ *  \brief Minify a CSS or JS file.
+ *
+ *  \note Is recommend the use of the Minify class by Matthias Mullie.
+ *      https://github.com/matthiasmullie/minify
+ */
+function minify($source, $destiny)
+{
+    $fileType = (substr($source, -4) == '.css' ? 'css' : (substr($source, -3) == '.js' ? 'js' : 'off'));
+
+    // Check the destination directory exists or create if not
+    $path = pathinfo($destiny, PATHINFO_DIRNAME);
+    if (!is_dir($path)) {
+        mkdir($path, 0755, true);
+    }
+
+    if (class_exists('MatthiasMullie\Minify\Minify')) {
+        switch ($fileType) {
+            case 'css':
+                $minifier = new MatthiasMullie\Minify\CSS($source);
+                break;
+            case 'js':
+                $minifier = new MatthiasMullie\Minify\JS($source);
+                break;
+            default:
+                return false;
+        }
+
+        $minifier->minify($destiny);
+        chmod($destiny, 0664);
+
+        return true;
+    }
+
+    // Matthias Mullie's Minify class not found. I Will try by myself but this is not the best way.
+
+    $buffer = file_get_contents($source);
+    if ($buffer == false) {
+        return false;
+    }
+
+    if ($fileType == 'css') {
+        $buffer = preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $buffer);
+        $buffer = str_replace(["\r\n", "\r", "\n", "\t", '  ', '    ', '     '], '', $buffer);
+        $buffer = preg_replace(['(( )+{)', '({( )+)'], '{', $buffer);
+        $buffer = preg_replace(['(( )+})', '(}( )+)', '(;( )*})'], '}', $buffer);
+        $buffer = preg_replace(['(;( )+)', '(( )+;)'], ';', $buffer);
+    } elseif ($fileType == 'js') {
+        $buffer = preg_replace('/((?:\/\*(?:[^*]|(?:\*+[^*\/]))*\*+\/)|(?:\/\/.*))/', '', $buffer);
+        $buffer = str_replace(["\r\n", "\r", "\t", "\n", '  ', '    ', '     '], '', $buffer);
+        $buffer = preg_replace(['(( )+\))', '(\)( )+)'], ')', $buffer);
+    }
+
+    $return = file_put_contents($destiny, $buffer);
+    if ($return !== false) {
+        chmod($destiny, 0664);
+    }
+
+    return $return;
 }
 
 /**

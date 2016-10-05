@@ -6,7 +6,7 @@
  *  \copyright  ₢ 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \note       Essa classe extende a classe DB.
- *  \version    2.0.0.39
+ *  \version    2.0.2.41
  *  \ingroup    framework
  */
 namespace Springy;
@@ -698,7 +698,7 @@ class Model extends DB implements \Iterator
             $where = new Where();
             $where->filter($conditions);
         } else {
-            throw new Exception('Invalid condition type.', 500);
+            throw new \Exception('Invalid condition type.', 500);
         }
 
         if (!empty($this->deletedColumn) && !$where->get($this->deletedColumn)) {
@@ -709,7 +709,7 @@ class Model extends DB implements \Iterator
         // Clear conditions avoid bug
         $this->where->clear();
 
-        return $this->affectedRows() > 0;
+        return $this->affectedRows();
     }
 
     /**

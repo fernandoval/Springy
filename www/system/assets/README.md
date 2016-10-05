@@ -1,0 +1,1 @@
+This directory contains the source of the asset files
