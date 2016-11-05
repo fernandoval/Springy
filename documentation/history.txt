@@ -1,6 +1,11 @@
 Springy framework update history
 
 ------------------------------------------------------------------------------------ --- -- -
+develompent
+    - Enhancement in JSON class;
+    - Fixed bugs in Model class;
+    - Fixed bugs in Validator class.
+
 3.6.0
     - New feature: default template directory;
     - New feature: minifing asset files from source directory;

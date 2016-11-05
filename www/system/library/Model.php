@@ -6,7 +6,7 @@
  *  \copyright  ₢ 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \note       Essa classe extende a classe DB.
- *  \version    2.0.2.41
+ *  \version    2.1.0.43
  *  \ingroup    framework
  */
 namespace Springy;
@@ -77,7 +77,7 @@ class Model extends DB implements \Iterator
 
         $this->where = new Where();
 
-        if (is_array($filter)) {
+        if (is_array($filter) || $filter instanceof Where) {
             $this->load($filter);
         }
     }
@@ -446,6 +446,7 @@ class Model extends DB implements \Iterator
     {
         if ($this->valid()) {
             $this->rows[key($this->rows)]['**CHANGED**'] = [];
+            unset($this->rows[key($this->rows)]['**CHANGED**']);
         }
     }
 
@@ -455,6 +456,28 @@ class Model extends DB implements \Iterator
     public function isLoaded()
     {
         return $this->loaded;
+    }
+
+    /**
+     *  \brief Sets the values of the calculated columns.
+     */
+    public function calculateColumns()
+    {
+        if (!is_array($this->calculatedColumns) || !count($this->calculatedColumns)) {
+            return;
+        }
+
+        foreach ($this->rows as $idx => $row) {
+            foreach ($this->calculatedColumns as $column => $method) {
+                if (method_exists($this, $method)) {
+                    $this->rows[$idx][$column] = $this->$method($row);
+                    continue;
+                }
+
+                $this->rows[$idx][$column] = null;
+            }
+        }
+        reset($this->rows);
     }
 
     /**
@@ -572,6 +595,7 @@ class Model extends DB implements \Iterator
         }
 
         $this->clearChangedColumns();
+        $this->calculateColumns();
 
         return $this->affectedRows() > 0;
     }
@@ -971,19 +995,8 @@ class Model extends DB implements \Iterator
 
         $this->_queryEmbbed($embbed);
 
-        // Populate de calculated columns
-        if (is_array($this->calculatedColumns) && count($this->calculatedColumns)) {
-            foreach ($this->rows as $idx => $row) {
-                foreach ($this->calculatedColumns as $column => $method) {
-                    if (method_exists($this, $method)) {
-                        $this->rows[$idx][$column] = $this->$method($row);
-                    } else {
-                        $this->rows[$idx][$column] = null;
-                    }
-                }
-            }
-            reset($this->rows);
-        }
+        // Set the values of the calculated columns
+        $this->calculateColumns();
 
         // Clear conditions avoid bug
         $this->where->clear();
@@ -1077,20 +1090,11 @@ class Model extends DB implements \Iterator
         }
 
         // Se há uma coluna de exclusão lógica definida, adiciona-a ao conjunto de filtros
-        if ($this->deletedColumn) {
-            if (isset($filter[$this->deletedColumn])) {
-                $this->where->condition($this->deletedColumn, (int) $filter[$this->deletedColumn]);
-            } else {
-                $this->where->condition($this->deletedColumn, 0);
-            }
-        }
-
-        $this->_queryJoin($embbed, $select, $from); // Table joins?
-
-        // Se há uma coluna de exclusão lógica definida, adiciona-a ao conjunto de filtros
         if ($this->deletedColumn && !$where->get($this->deletedColumn) && !$where->get($this->tableName.'.'.$this->deletedColumn)) {
             $where->condition($this->tableName.'.'.$this->deletedColumn, 0);
         }
+
+        $this->_queryJoin($embbed, $select, $from); // Table joins?
 
         $sql = $select.$from.$where;
 
