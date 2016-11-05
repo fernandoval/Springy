@@ -63,4 +63,4 @@ Controller is part of [MVC](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%
 
 The framework library is a set of classes used by itself and what the application can use too.
 
-You can see it's [documentation here](/documentatnio/en/library).
+You can see it's [documentation here](/documentation/en/library).
