@@ -6,7 +6,7 @@
  *  \copyright  ₢ 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
- *  \version    2.2.1.33
+ *  \version    2.2.2.34
  *  \ingroup    framework
  */
 namespace Springy;
@@ -494,7 +494,7 @@ class URI
      */
     public static function requestMethod()
     {
-        return isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : ((PHP_SAPI === 'cli' || defined('STDIN')) ? 'CIL' : '');
+        return isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : ((PHP_SAPI === 'cli' || defined('STDIN')) ? 'CLI' : '');
     }
 
     /**
