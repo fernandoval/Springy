@@ -6,7 +6,7 @@
  *  \copyright  Copyright (c) 2007-2016 Fernando Val
  *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
  *  \author     Fernando Val - fernando.val@gmail.com
- *  \version    1.1.0.8
+ *  \version    1.1.0.9
  *  \ingroup    framework
  */
 namespace Springy\Utils;
@@ -56,7 +56,7 @@ class JSON
     /**
      *  \brief Pega todos os dados do JSON.
      *  \note This method will be deprecated in future version.
-     *  \deprecated
+     *  \deprecated.
      */
     public function getDados()
     {
@@ -113,9 +113,10 @@ class JSON
     /**
      *  \brief Back compatibility method. Is deprecated. Use the output method.
      *  \note This method is deprecated and will be removed in future version.
-     *  \deprecated
+     *  \deprecated.
      */
-    public function printJ($andDie = true) {
+    public function printJ($andDie = true)
+    {
         $this->output($andDie);
     }
 
