@@ -14,6 +14,7 @@ A micro framework for smart PHP developers.
 * [Models](#models)
 * [Views](#views)
 * [Controllers](#controllers)
+* [Library](#library)
 
 ## About
 
@@ -57,3 +58,9 @@ Views are part of [MVC](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%9
 
 Controller is part of [MVC](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) architecture of the framework. All actions is you application is started by a controller class. They are responsible for processing requests and generating responses.
 [Read more](/documentation/en/Controllers.md)
+
+## Library
+
+The framework library is a set of classes used by itself and what the application can use too.
+
+You can see it's [documentation here](/documentatnio/en/library).
