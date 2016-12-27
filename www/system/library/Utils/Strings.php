@@ -9,6 +9,7 @@
  *  \version    0.10.17
  *  \ingroup    framework
  */
+
 namespace Springy\Utils;
 
 /**

@@ -9,6 +9,7 @@
  *  \version    2.2.3.35
  *  \ingroup    framework
  */
+
 namespace Springy;
 
 use Springy\Utils\Strings_ANSI;

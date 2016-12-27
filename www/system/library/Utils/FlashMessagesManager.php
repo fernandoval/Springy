@@ -9,6 +9,7 @@
  *  \version    0.1.1
  *  \ingroup    framework
  */
+
 namespace Springy\Utils;
 
 use Springy\Session;

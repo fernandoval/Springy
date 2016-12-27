@@ -9,6 +9,7 @@
  *  \version    3.1.0.7
  *  \ingroup    framework
  */
+
 namespace Springy\Mail;
 
 use Springy\Configuration;

@@ -9,6 +9,7 @@
  *  \version    2.2.0.44
  *  \ingroup    framework
  */
+
 namespace Springy;
 
 use Springy\DB\Conditions;

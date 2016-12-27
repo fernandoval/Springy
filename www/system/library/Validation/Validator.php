@@ -10,6 +10,7 @@
  *  \version    0.3.0.4
  *  \ingroup    framework
  */
+
 namespace Springy\Validation;
 
 use Springy\Core\Input;

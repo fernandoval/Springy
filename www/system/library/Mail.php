@@ -8,6 +8,7 @@
  *	\version    3.1.0.21
  *	\ingroup    framework
  */
+
 namespace Springy;
 
 /**

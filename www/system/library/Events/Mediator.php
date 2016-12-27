@@ -9,6 +9,7 @@
  *  \version    0.2.2
  *  \ingroup    framework
  */
+
 namespace Springy\Events;
 
 use Springy\Container\DIContainer;

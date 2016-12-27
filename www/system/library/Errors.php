@@ -9,6 +9,7 @@
  *  \version    3.0.2.41
  *  \ingroup    framework
  */
+
 namespace Springy;
 
 use Springy\Core\Debug;

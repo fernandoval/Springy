@@ -9,6 +9,7 @@
  *	\version	1.6.8
  *	\ingroup	framework
  */
+
 namespace Springy\Utils;
 
 /**

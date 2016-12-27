@@ -8,6 +8,7 @@
  *  \version    1.0.1.3
  *  \ingroup    framework
  */
+
 namespace Springy\Core;
 
 use Springy\Kernel;

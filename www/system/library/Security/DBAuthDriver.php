@@ -9,6 +9,7 @@
  *  \version    0.1.3
  *  \ingroup    framework
  */
+
 namespace Springy\Security;
 
 use Springy\Core\Application;
