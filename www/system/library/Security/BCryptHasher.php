@@ -10,6 +10,7 @@
  *  \note       Esta biblioteca utiliza como dependência a classe password_compat de Anthony Ferrara.
  *  \ingroup    framework
  */
+
 namespace Springy\Security;
 
 //require sysconf('3RDPARTY_PATH').DS.'password_compat'.DS.'lib'.DS.'password.php';

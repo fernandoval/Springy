@@ -10,6 +10,7 @@
  *  \version    1.8.1.32
  *  \ingroup    framework
  */
+
 namespace Springy;
 
 use Springy\Core\Debug;

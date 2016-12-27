@@ -9,6 +9,7 @@
  *	\version    0.3.2
  *	\ingroup    framework
  */
+
 namespace Springy\Security;
 
 use Springy\Cookie;

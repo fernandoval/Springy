@@ -9,6 +9,7 @@
  *  \version    0.4.0.5
  *  \ingroup    framework
  */
+
 namespace Springy\DB;
 
 /**

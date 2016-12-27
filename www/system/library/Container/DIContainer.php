@@ -28,6 +28,7 @@
  *  $DB = new PDO('mysql:host=localhost;dbname=db;charset=utf8', 'root', ''); *
  *  \endcode
  */
+
 namespace Springy\Container;
 
 use ArrayAccess;

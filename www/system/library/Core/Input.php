@@ -9,6 +9,7 @@
  *  \version    0.3.1
  *  \ingroup    framework
  */
+
 namespace Springy\Core;
 
 use Springy\Files\UploadedFile;

@@ -9,6 +9,7 @@
  *  \version    0.2.1
  *  \ingroup    framework
  */
+
 namespace Springy\Core;
 
 use Springy\Container\DIContainer;

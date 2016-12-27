@@ -9,6 +9,7 @@
  *  \version    1.1.0.9
  *  \ingroup    framework
  */
+
 namespace Springy\Utils;
 
 use Springy\Configuration;

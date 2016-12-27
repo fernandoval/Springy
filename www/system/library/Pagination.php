@@ -10,6 +10,7 @@
  *	\version	2.3.8
  *	\ingroup	framework
  */
+
 namespace Springy;
 
 /**
