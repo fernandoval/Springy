@@ -6,7 +6,7 @@
  *  \copyright  ₢ 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \note       Essa classe extende a classe DB.
- *  \version    2.1.0.43
+ *  \version    2.2.0.44
  *  \ingroup    framework
  */
 namespace Springy;
@@ -481,6 +481,114 @@ class Model extends DB implements \Iterator
     }
 
     /**
+     *  \brief Mount the array of values to save.
+     */
+    private function _values()
+    {
+        $values = [];
+        foreach ($this->changedColumns() as $column) {
+            $values[] = $this->get($column);
+        }
+
+        return $values;
+    }
+
+    /**
+     *  \brief Do the INSERT command.
+     */
+    private function _insert()
+    {
+        // Call before insert trigger
+        if (!$this->triggerBeforeInsert()) {
+            return false;
+        }
+
+        // Database function to populate created at column
+        switch ($this->driverName()) {
+            case 'oci':
+            case 'oracle':
+            case 'mysql':
+            case 'pgsql':
+                $cdtFunc = 'NOW()';
+                break;
+            case 'mssql':
+            case 'sqlsrv':
+                $cdtFunc = 'GETDATE()';
+                break;
+            case 'db2':
+            case 'ibm':
+            case 'ibm-db2':
+            case 'firebird':
+                $cdtFunc = 'CURRENT_TIMESTAMP';
+                break;
+            case 'informix':
+                $cdtFunc = 'CURRENT';
+                break;
+            case 'sqlite':
+                $cdtFunc = 'datetime(\'now\')';
+                break;
+            default:
+                $cdtFunc = '\''.date('Y-m-d H:i:s').'\'';
+        }
+
+        $values = $this->_values();
+
+        $this->execute('INSERT INTO '.$this->tableName.' ('.implode(', ', $this->changedColumns()).($this->insertDateColumn ? ', '.$this->insertDateColumn : '').') VALUES ('.rtrim(str_repeat('?,', count($values)), ',').($this->insertDateColumn ? ', '.$cdtFunc : '').')', $values);
+
+        // Load the insertd row
+        if ($this->affectedRows() == 1) {
+            if ($this->lastInsertedId() && !empty($this->primaryKey) && !strpos($this->primaryKey, ',') && empty($this->get($this->primaryKey))) {
+                $this->load([$this->primaryKey => $this->lastInsertedId()]);
+            } elseif ($this->isPrimaryKeyDefined()) {
+                $where = new Where();
+                foreach ($this->getPKColumns() as $column) {
+                    $where->condition($column, $this->get($column));
+                }
+                $this->load($where);
+            }
+        }
+
+        // Call after insert trigger
+        $this->triggerAfterInsert();
+
+        $this->clearChangedColumns();
+        $this->calculateColumns();
+
+        return $this->affectedRows() > 0;
+    }
+
+    /**
+     *  \brief Do the UPDATE command.
+     */
+    private function _update()
+    {
+        // There is no primary key to build condition, do nothing.
+        if (!$this->isPrimaryKeyDefined()) {
+            return false;
+        }
+
+        // Call before update trigger
+        if (!$this->triggerBeforeUpdate()) {
+            return false;
+        }
+
+        $where = new Where();
+        foreach ($this->getPKColumns() as $column) {
+            $where->condition($column, $this->get($column));
+        }
+
+        $this->execute('UPDATE '.$this->tableName.' SET '.implode(' = ?,', $this->changedColumns()).' = ?'.$where, array_merge($this->_values(), $where->params()));
+
+        // Call after update trigger
+        $this->triggerAfterUpdate();
+
+        $this->clearChangedColumns();
+        $this->calculateColumns();
+
+        return $this->affectedRows() > 0;
+    }
+
+    /**
      *  \brief Send the changes in current row to the database.
      *
      *  \return Retorna TRUE se o dado foi salvo ou FALSE caso nenhum dado tenha sido alterado.
@@ -502,102 +610,15 @@ class Model extends DB implements \Iterator
         }
 
         // If there is no change, do nothing.
-        if (!isset($this->rows[key($this->rows)]['**CHANGED**']) || count($this->rows[key($this->rows)]['**CHANGED**']) < 1) {
+        if (!count($this->changedColumns())) {
             return false;
         }
 
-        // Build the list of columns was changed.
-        $columns = [];
-        $values = [];
-        foreach ($this->rows[key($this->rows)]['**CHANGED**'] as $column) {
-            $columns[] = $column;
-            $values[] = $this->rows[key($this->rows)][$column];
-        }
-
         if (!isset($this->rows[key($this->rows)]['**NEW**'])) {
-            /*
-             *  Is not a new record. Then update current.
-             */
-
-            // There is no primary key to build condition, do nothing.
-            if (!$this->isPrimaryKeyDefined()) {
-                return false;
-            }
-
-            // Call before update trigger
-            if (!$this->triggerBeforeUpdate()) {
-                return false;
-            }
-
-            $where = new Where();
-            foreach ($this->getPKColumns() as $column) {
-                $where->condition($column, $this->rows[key($this->rows)][$column]);
-            }
-            $this->execute('UPDATE '.$this->tableName.' SET '.implode(' = ?,', $columns).' = ?'.$where, array_merge($values, $where->params()));
-
-            // Call after update trigger
-            $this->triggerAfterUpdate();
-        } else {
-            /*
-             *  Is a new record.
-             */
-
-            // Call before insert trigger
-            if (!$this->triggerBeforeInsert()) {
-                return false;
-            }
-
-            // Database function to populate created at column
-            switch ($this->driverName()) {
-                case 'oci':
-                case 'oracle':
-                case 'mysql':
-                case 'pgsql':
-                    $cdtFunc = 'NOW()';
-                    break;
-                case 'mssql':
-                case 'sqlsrv':
-                    $cdtFunc = 'GETDATE()';
-                    break;
-                case 'db2':
-                case 'ibm':
-                case 'ibm-db2':
-                case 'firebird':
-                    $cdtFunc = 'CURRENT_TIMESTAMP';
-                    break;
-                case 'informix':
-                    $cdtFunc = 'CURRENT';
-                    break;
-                case 'sqlite':
-                    $cdtFunc = 'datetime(\'now\')';
-                    break;
-                default:
-                    $cdtFunc = '\''.date('Y-m-d H:i:s').'\'';
-            }
-
-            $this->execute('INSERT INTO '.$this->tableName.' ('.implode(', ', $columns).($this->insertDateColumn ? ', '.$this->insertDateColumn : '').') VALUES ('.rtrim(str_repeat('?,', count($values)), ',').($this->insertDateColumn ? ', '.$cdtFunc : '').')', $values);
-            // Load the insertd row
-            if ($this->affectedRows() == 1) {
-                if ($this->lastInsertedId() && !empty($this->primaryKey) && !strpos($this->primaryKey, ',') && empty($this->rows[key($this->rows)][$this->primaryKey])) {
-                    $this->load([$this->primaryKey => $this->lastInsertedId()]);
-                } elseif ($this->isPrimaryKeyDefined()) {
-                    $filter = [];
-                    foreach ($this->getPKColumns() as $col) {
-                        $filter[$col] = $this->rows[key($this->rows)][$col];
-                    }
-                    $this->load($filter);
-                    unset($filter);
-                }
-            }
-
-            // Call after insert trigger
-            $this->triggerAfterInsert();
+            return $this->_update();
         }
 
-        $this->clearChangedColumns();
-        $this->calculateColumns();
-
-        return $this->affectedRows() > 0;
+        return $this->_insert();
     }
 
     /**

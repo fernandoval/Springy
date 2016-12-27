@@ -6,7 +6,7 @@
  *  \copyright  Copyright (c) 2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.3.1.4
+ *  \version    0.4.0.5
  *  \ingroup    framework
  */
 namespace Springy\DB;
@@ -137,7 +137,7 @@ class Conditions
                 $condStr = trim($this->condToString($condition, empty($conditions)));
             } elseif ($condition['type'] == self::EXPR_SUB) {
                 $sub = new self($condition['conditions']);
-                $condStr = (empty($conditions) ? '' : 'AND ').'('.$sub->parse().')';
+                $condStr = (empty($conditions) ? '' : $condition['expression'].' ').'('.$sub->parse().')';
                 $this->parameters = array_merge($this->parameters, $sub->params());
                 unset($sub);
             }
@@ -169,6 +169,7 @@ class Conditions
             $this->conditions[] = [
                 'type'       => self::EXPR_SUB,
                 'conditions' => is_object($column) ? $column->get() : $column,
+                'expression' => ($value === null ? $expression : $value),
             ];
 
             return;
@@ -192,6 +193,22 @@ class Conditions
     }
 
     /**
+     *  \brief Find a column in an array of conditions.
+     */
+    private function _find($column, $conditions)
+    {
+        foreach ($conditions as $condition) {
+            if ($condition['type'] === self::EXPR_SUB && $result = $this->_find($column, $condition['conditions'])) {
+                return $result;
+            } elseif ($condition['type'] === self::EXPR_SIMPLE && $condition['column'] == $column) {
+                return $condition;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      *  \brief Get the content of conditions in internal array form.
      *  \return An array of conditions.
      */
@@ -201,13 +218,7 @@ class Conditions
             return $this->conditions;
         }
 
-        foreach ($this->conditions as $condition) {
-            if ($condition['column'] == $column) {
-                return $condition;
-            }
-        }
-
-        return false;
+        return $this->_find($column, $this->conditions);
     }
 
     /**
