@@ -6,7 +6,7 @@
  *  \copyright  ₢ 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \note       Essa classe extende a classe DB.
- *  \version    2.2.0.44
+ *  \version    2.2.1.45
  *  \ingroup    framework
  */
 
@@ -538,7 +538,7 @@ class Model extends DB implements \Iterator
 
         // Load the insertd row
         if ($this->affectedRows() == 1) {
-            if ($this->lastInsertedId() && !empty($this->primaryKey) && !strpos($this->primaryKey, ',') && empty($this->get($this->primaryKey))) {
+            if ($this->lastInsertedId() && !empty($this->primaryKey) && !strpos($this->primaryKey, ',') && !$this->get($this->primaryKey)) {
                 $this->load([$this->primaryKey => $this->lastInsertedId()]);
             } elseif ($this->isPrimaryKeyDefined()) {
                 $where = new Where();

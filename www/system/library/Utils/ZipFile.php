@@ -181,7 +181,7 @@ class ZipFile
         }
 
         $name = str_replace('\\', '/', $name);
-        $name = preg_replace('/^('.$this->root_path.')?(.*)$/', '\\2', $name);
+        $name = preg_replace('/^('.str_replace('/', '\/', $this->root_path).')?(.*)$/', '\\2', $name);
 
         $dtime = dechex($this->unix2DosTime($time));
         $hexdtime = '\x'.$dtime[6].$dtime[7]
