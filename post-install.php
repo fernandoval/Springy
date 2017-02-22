@@ -7,7 +7,7 @@
  *  \copyright Copyright (c) 2015-2016 Fernando Val
  *
  *  \brief    Post Install/Update Script for Composer
- *  \version  3.1.0.9
+ *  \version  3.1.0.10
  *  \author   Fernando Val - fernando.val@gmail.com
  *
  *  This script is executed by Composer after the install/update process.
@@ -251,6 +251,7 @@ function minify($buffer, $minify)
                 break;
             default:
                 echo '    ', CS_RED, '[ERROR] Invalid minify method: ', $minify, CS_RESET, LF;
+
                 return false;
         }
 
@@ -276,6 +277,7 @@ function minify($buffer, $minify)
             break;
         default:
             echo '    ', CS_RED, '[ERROR] Invalid minify method: ', $minify, CS_RESET, LF;
+
             return false;
     }
 
