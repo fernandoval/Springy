@@ -7,7 +7,7 @@
  *  \copyright Copyright (c) 2015-2016 Fernando Val
  *
  *  \brief    Post Install/Update Script for Composer
- *  \version  3.0.0.8
+ *  \version  3.1.0.9
  *  \author   Fernando Val - fernando.val@gmail.com
  *
  *  This script is executed by Composer after the install/update process.
@@ -233,49 +233,74 @@ function copy_r($path, $dest, $minify = 'off')
 }
 
 /**
- *  \brief Copy file minifyint if necessary.
+ *  \brief Minify the file if turned on.
  */
-function realCopy($source, $destiny, $minify = 'auto')
+function minify($buffer, $minify)
 {
-    if ($minify == 'auto') {
-        $minify = (substr($source, -4) == '.css' ? 'css' : (substr($source, -3) == '.js' ? 'js' : 'off'));
+    if ($minify == 'off') {
+        return $buffer;
     }
 
-    if ($minify != 'off' && class_exists('MatthiasMullie\Minify\Minify')) {
+    if (class_exists('MatthiasMullie\Minify\Minify')) {
         switch ($minify) {
             case 'css':
-                $minifier = new MatthiasMullie\Minify\CSS($source);
+                $minifier = new MatthiasMullie\Minify\CSS($buffer);
                 break;
             case 'js':
-                $minifier = new MatthiasMullie\Minify\JS($source);
+                $minifier = new MatthiasMullie\Minify\JS($buffer);
                 break;
             default:
-                return true;
+                echo '    ', CS_RED, '[ERROR] Invalid minify method: ', $minify, CS_RESET, LF;
+                return false;
         }
 
-        $minifier->minify($destiny);
-        chmod($destiny, 0664);
+        $buffer = $minifier->minify();
 
-        return true;
+        return $buffer;
     }
 
     // Matthias Mullie's Minify class not found. I Will try by myself but this is not the best way.
 
+    switch ($minify) {
+        case 'css':
+            $buffer = preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $buffer);
+            $buffer = str_replace(["\r\n", "\r", "\n", "\t", '  ', '    ', '     '], '', $buffer);
+            $buffer = preg_replace(['(( )+{)', '({( )+)'], '{', $buffer);
+            $buffer = preg_replace(['(( )+})', '(}( )+)', '(;( )*})'], '}', $buffer);
+            $buffer = preg_replace(['(;( )+)', '(( )+;)'], ';', $buffer);
+            break;
+        case 'js':
+            $buffer = preg_replace("/((?:\/\*(?:[^*]|(?:\*+[^*\/]))*\*+\/)|(?:\/\/.*))/", '', $buffer);
+            $buffer = str_replace(["\r\n", "\r", "\t", "\n", '  ', '    ', '     '], '', $buffer);
+            $buffer = preg_replace(['(( )+\))', '(\)( )+)'], ')', $buffer);
+            break;
+        default:
+            echo '    ', CS_RED, '[ERROR] Invalid minify method: ', $minify, CS_RESET, LF;
+            return false;
+    }
+
+    return $buffer;
+}
+
+/**
+ *  \brief Copy file minifyint if necessary.
+ */
+function realCopy($source, $destiny, $minify = 'auto')
+{
+    if ($minify == 'auto' || $minify == 'on') {
+        $minify = (substr($source, -4) == '.css' ? 'css' : (substr($source, -3) == '.js' ? 'js' : 'off'));
+    }
+
     $buffer = file_get_contents($source);
     if ($buffer == false) {
+        echo '    ', CS_RED, '[ERROR] Failed to open ', $source, CS_RESET, LF;
+
         return false;
     }
 
-    if ($minify == 'css') {
-        $buffer = preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $buffer);
-        $buffer = str_replace(["\r\n", "\r", "\n", "\t", '  ', '    ', '     '], '', $buffer);
-        $buffer = preg_replace(['(( )+{)', '({( )+)'], '{', $buffer);
-        $buffer = preg_replace(['(( )+})', '(}( )+)', '(;( )*})'], '}', $buffer);
-        $buffer = preg_replace(['(;( )+)', '(( )+;)'], ';', $buffer);
-    } elseif ($minify == 'js') {
-        $buffer = preg_replace("/((?:\/\*(?:[^*]|(?:\*+[^*\/]))*\*+\/)|(?:\/\/.*))/", '', $buffer);
-        $buffer = str_replace(["\r\n", "\r", "\t", "\n", '  ', '    ', '     '], '', $buffer);
-        $buffer = preg_replace(['(( )+\))', '(\)( )+)'], ')', $buffer);
+    $buffer = minify($buffer, $minify);
+    if ($buffer === false) {
+        return false;
     }
 
     $return = file_put_contents($destiny, $buffer);
