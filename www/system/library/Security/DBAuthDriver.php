@@ -5,8 +5,8 @@
  *  \brief      Driver de autenticação que utiliza o banco de dados como storage.
  *  \copyright  Copyright (c) 2007-2016 Fernando Val
  *  \author     Allan Marques - allan.marques@ymail.com
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.1.3
+ *  \author     Fernando Val - fernando@fval.com.br
+ *  \version    0.2.4
  *  \ingroup    framework
  */
 
@@ -71,7 +71,7 @@ class DBAuthDriver implements AuthDriverInterface
     public function getIdentityById($iid)
     {
         $idField = $this->identity->getIdField();
-        $this->identity->loadByCredencials([$idField => $iid]);
+        $this->identity->loadByCredentials([$idField => $iid]);
 
         return $this->identity;
     }
@@ -106,7 +106,7 @@ class DBAuthDriver implements AuthDriverInterface
         $appInstance->fire('auth.attempt', [$login, $password]);
 
         $credentials = $this->identity->getCredentials();
-        $this->identity->loadByCredencials([$credentials['login'] => $login]);
+        $this->identity->loadByCredentials([$credentials['login'] => $login]);
         $validPassword = $this->identity->{$credentials['password']};
 
         if ($this->hasher->verify($password, $validPassword)) {

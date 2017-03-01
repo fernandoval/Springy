@@ -6,7 +6,7 @@
  *  \copyright  Copyright (c) 2007-2016 Fernando Val
  *  \author     Allan Marques - allan.marques@ymail.com
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.1.1
+ *  \version    0.2.2
  *  \ingroup    framework
  */
 
@@ -21,7 +21,7 @@ interface IdentityInterface
      *  \brief Carrega os dados da identidade de acordo com as credências passadas por parâmetro.
      *  \param [in] (array) $data = Credenciais da identidade.
      */
-    public function loadByCredencials(array $data);
+    public function loadByCredentials(array $data);
 
     /**
      *  \brief Carrega os dados da identidade com os dados que estão guardados na sessão.
