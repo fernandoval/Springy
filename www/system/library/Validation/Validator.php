@@ -7,9 +7,10 @@
  *  \author     Allan Marques - allan.marques@ymail.com
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.2.1
+ *  \version    0.3.0.4
  *  \ingroup    framework
  */
+
 namespace Springy\Validation;
 
 use Springy\Core\Input;
@@ -17,7 +18,7 @@ use Springy\Utils\MessageContainer;
 use Springy\Utils\Strings;
 
 /**
- * \brief		Validador de dados de input do usuário.
+ * \brief  Validador de dados de input do usuário.
  */
 class Validator
 {
@@ -494,7 +495,7 @@ class Validator
             return true;
         }
 
-        return preg_match($params[0], $this->input[$field]);
+        return preg_match(implode(',', $params), $this->input[$field]);
     }
 
     /**

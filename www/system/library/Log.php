@@ -9,6 +9,7 @@
  *	\version	0.11.13
  *	\ingroup	framework
  */
+
 namespace Springy;
 
 use Springy\Utils\Strings;

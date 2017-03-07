@@ -6,9 +6,10 @@
  *  \copyright  Copyright (c) 2007-2016 Fernando Val
  *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
  *  \author     Fernando Val - fernando.val@gmail.com
- *  \version    1.0.1.7
+ *  \version    1.1.0.9
  *  \ingroup    framework
  */
+
 namespace Springy\Utils;
 
 use Springy\Configuration;
@@ -20,73 +21,104 @@ use Springy\Kernel;
  */
 class JSON
 {
-    private $dados = [];
-    private $headerStatus = 200;
+    private $data = [];
+    private $statusCode = 200;
 
-    public function __construct()
+    /**
+     *  \brief Constructor method.
+     */
+    public function __construct($data = null, $status = 200)
     {
         Configuration::set('system', 'ajax', true);
-        header('Content-type: application/json; charset='.Kernel::charset(), true, $this->headerStatus);
+
+        if ($data) {
+            $this->add($data);
+        }
+
+        $this->statusCode = $status;
     }
 
     /**
-     *  \brief Adiciona um dado ao JSON.
+     *  \brief Add data to JSON array.
      */
-    public function add($dados)
+    public function add($data)
     {
-        $this->dados = array_merge($this->dados, $dados);
+        $this->data = array_merge($this->data, $data);
+    }
+
+    /**
+     *  \brief Get the array of the JSON.
+     */
+    public function getData()
+    {
+        return $this->data;
     }
 
     /**
      *  \brief Pega todos os dados do JSON.
+     *  \note This method will be deprecated in future version.
+     *  \deprecated.
      */
     public function getDados()
     {
-        return $this->dados;
+        return $this->getData();
     }
 
     /**
-     *  \brief Inicializa o HTTP Header para objeto JSON.
+     *  \brief Change the header status code.
      */
     public function setHeaderStatus($status)
     {
-        $this->headerStatus = $status;
-        header('Content-type: application/json; charset='.Kernel::charset(), true, $this->headerStatus);
+        $this->statusCode = $status;
+    }
+
+    /**
+     *  \brief Parse the array of data in a JSON object.
+     */
+    public function fetch()
+    {
+        // Add static default variables to the json data if is not defined dinamicly
+        foreach (JSON_Static::getDefaultVars() as $name => $value) {
+            if (!isset($this->data[$name])) {
+                $this->data[$name] = $value;
+            }
+        }
+
+        return json_encode($this->data);
+    }
+
+    /**
+     *  \brief Print the JSON to the standard output.
+     */
+    public function output($andDie = true)
+    {
+        if (Configuration::get('system', 'debug')) {
+            $this->data['debug'] = Debug::get();
+        }
+
+        // Send the header
+        header('Content-type: application/json; charset='.Kernel::charset(), true, $this->statusCode);
         header('Expires: Sat, 26 Jul 1997 05:00:00 GMT');
         header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
         header('Cache-Control: no-store, no-cache, must-revalidate');
         header('Cache-Control: post-check=0, pre-check=0', false);
         header('Pragma: no-cache');
-    }
-
-    /**
-     *  \brief Codifica o objeto JSON.
-     */
-    public function fetch()
-    {
-        foreach (JSON_Static::getDefaultVars() as $name => $value) {
-            if (!isset($this->dados[$name])) {
-                $this->dados[$name] = $value;
-            }
-        }
-
-        return json_encode($this->dados);
-    }
-
-    /**
-     *  \brief Imprime o objeto JSON.
-     */
-    public function printJ($andDie = true)
-    {
-        if (Configuration::get('system', 'debug')) {
-            $this->dados['debug'] = Debug::get();
-        }
 
         echo $this->fetch();
 
         if ($andDie) {
-            die;
+            exit;
         }
+    }
+
+    /**
+     *  \brief Back compatibility method. Is deprecated. Use the output method.
+     *  \note This method is deprecated and will be removed in future version.
+     *  \deprecated.
+     */
+    public function printJ($andDie = true)
+    {
+        $this->output($andDie);
     }
 
     /**
@@ -94,6 +126,6 @@ class JSON
      */
     public function __toString()
     {
-        $this->printJ();
+        return $this->fetch();
     }
 }

@@ -1,40 +1,40 @@
 {
-	"name": "fval/springy",
-	"description": "Springy",
-	"license": "MIT",
-	"type": "project",
-	"config": {
+    "name": "fval/springy",
+    "description": "Springy",
+    "license": "MIT",
+    "type": "project",
+    "config": {
         "vendor-dir": "www/system/vendor"
     },
-	"extra": {
+    "extra": {
         "installer-paths": {
             "www/system/vendor/{$name}": ["vendor/package"]
         },
-		"post-install": {
-			"components/jquery": {
-				"target": "www/assets/jquery"
-			},
-			"twbs/bootstrap": {
-				"target": "www/assets/bootstrap"
-			}
-		}
+        "post-install": {
+            "components/jquery": {
+                "target": "www/assets/jquery"
+            },
+            "twbs/bootstrap": {
+                "target": "www/assets/bootstrap"
+            }
+        }
     },
     "require": {
-		"php": ">=5.5.0",
-		
-		"smarty/smarty": "*",
-		"twig/twig": "*",
-		"ircmaxell/password-compat": "*",
+        "php": ">=5.5.0",
+
+        "smarty/smarty": "*",
+        "twig/twig": "*",
+        "ircmaxell/password-compat": "*",
         "matthiasmullie/minify": "*",
-		"sendgrid/sendgrid": "~5.0",
-		"phpmailer/phpmailer": "~5.2",
-		
-		"components/jquery": "2.1.3",
-		"twbs/bootstrap": "3.3.*"
+        "sendgrid/sendgrid": "~5.0",
+        "phpmailer/phpmailer": "~5.2",
+
+        "components/jquery": "2.1.3",
+        "twbs/bootstrap": "3.3.*"
     },
-	"change-this-to-scripts": {
-		"post-install-cmd": "php -f post-install.php",
-		"post-update-cmd": "php -f post-install.php"
-	},
-	"repositories": []
+    "change-this-to-scripts": {
+        "post-install-cmd": "php -f post-install.php",
+        "post-update-cmd": "php -f post-install.php"
+    },
+    "repositories": []
 }

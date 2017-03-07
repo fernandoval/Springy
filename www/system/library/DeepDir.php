@@ -36,6 +36,7 @@
  *  Para baixar a classe original use o seguinte endereço:
  *  http://www.phpclasses.org/browse.html/package/1025.html
  */
+
 namespace Springy;
 
 /**

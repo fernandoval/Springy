@@ -92,7 +92,7 @@ class User extends Model implements IdentityInterface, AclUserInterface
     /**
      *  \brief Load the class by credencial.
      */
-    public function loadByCredencials(array $data)
+    public function loadByCredentials(array $data)
     {
         $this->load($data);
 

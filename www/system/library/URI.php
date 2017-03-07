@@ -6,9 +6,10 @@
  *  \copyright  ₢ 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
- *  \version    2.2.1.33
+ *  \version    2.2.3.35
  *  \ingroup    framework
  */
+
 namespace Springy;
 
 use Springy\Utils\Strings_ANSI;
@@ -66,7 +67,7 @@ class URI
     }
 
     /**
-     *  \brief Define o nome da classe da controller.
+     *  \brief Define the name of the controller class.
      */
     private static function _set_class_controller($classname)
     {
@@ -74,9 +75,11 @@ class URI
     }
 
     /**
-     *  \brief Lê a URLs (em modo re-write) e transforma em variáveis $_GET.
+     *  \brief Parse the URI and initiate the internal variables.
      *
-     *  \note Este método não retorna valor
+     *  Translate the URI in segments and query string variables. This method is used by the framework starter to determine the controller which is be called.
+     *
+     *  \return void.
      */
     public static function parseURI()
     {
@@ -248,53 +251,54 @@ class URI
     }
 
     /**
-     *  \brief Valida a quantidade de segmentos da URI conforme a controladora.
+     *  \brief Validate the segments quantity for the current controller.
      */
     public static function validateURI()
     {
+        if (!$pctlr = Configuration::get('uri', 'prevalidate_controller')) {
+            return;
+        }
+
         $ctrl = trim(str_replace(DIRECTORY_SEPARATOR, '/', (Kernel::controllerRoot() ? implode(DIRECTORY_SEPARATOR, Kernel::controllerRoot()) : '')).'/'.self::getControllerClass(), '/');
 
-        if ($pctlr = Configuration::get('uri', 'prevalidate_controller')) {
-            if (isset($pctlr[$ctrl.'/'.self::getSegment(0)])) {
-                $ctrl .= '/'.self::getSegment(0);
-            }
+        if (isset($pctlr[$ctrl.'/'.self::getSegment(0)])) {
+            $ctrl .= '/'.self::getSegment(0);
+        }
 
-            if (isset($pctlr[$ctrl]) && isset($pctlr[$ctrl]['command'])) {
-                $action = 200;
-                if (isset($pctlr[$ctrl]['segments'])) {
-                    if (count(self::$segments) - self::$segment_page - 1 > $pctlr[$ctrl]['segments']) {
-                        $action = $pctlr[$ctrl]['command'];
-                    }
-                }
-                if (isset($pctlr[$ctrl]['validate'])) {
-                    foreach ($pctlr[$ctrl]['validate'] as $idx => $expression) {
-                        if (!preg_match($expression, self::getSegment($idx))) {
-                            $action = $pctlr[$ctrl]['command'];
-                        }
-                    }
-                }
-                switch ($action) {
-                    case 301:
-                    case 302:
-                        while (count(self::$segments) - self::$segment_page - 1 > $pctlr[$ctrl]['segments']) {
-                            array_pop(self::$segments);
-                        }
-                        self::redirect(self::buildURL(self::$segments, empty($_GET) ? [] : $_GET), $action);
-                        break;
-                    case 404:
-                    case 500:
-                    case 503:
-                        new Errors($action);
-                        break;
+        if (!isset($pctlr[$ctrl]) && !isset($pctlr[$ctrl]['command'])) {
+            return;
+        }
+
+        $action = 200;
+        if (isset($pctlr[$ctrl]['segments']) && count(self::$segments) - self::$segment_page - 1 > $pctlr[$ctrl]['segments']) {
+            $action = $pctlr[$ctrl]['command'];
+        }
+        if (isset($pctlr[$ctrl]['validate'])) {
+            foreach ($pctlr[$ctrl]['validate'] as $idx => $expression) {
+                if (!preg_match($expression, self::getSegment($idx))) {
+                    $action = $pctlr[$ctrl]['command'];
                 }
             }
+        }
+
+        switch ($action) {
+            case 301:
+            case 302:
+                while (count(self::$segments) - self::$segment_page - 1 > $pctlr[$ctrl]['segments']) {
+                    array_pop(self::$segments);
+                }
+                self::redirect(self::buildURL(self::$segments, empty($_GET) ? [] : $_GET), $action);
+            case 404:
+            case 500:
+            case 503:
+                new Errors($action);
         }
     }
 
     /**
-     *  \brief Retorna o nome da classe da controller.
+     *  \brief Return the name of the controller class.
      *
-     *  \return O nome da classe da controller
+     *  \return A string with tha name of the controller class.
      */
     public static function getControllerClass()
     {
@@ -302,9 +306,7 @@ class URI
     }
 
     /**
-     *  \brief Retorna a URI atual.
-     *
-     *  \return A string da URI
+     *  \brief Return the current URI string.
      */
     public static function getURIString()
     {
@@ -312,9 +314,7 @@ class URI
     }
 
     /**
-     *  \brief Retorna a página atual.
-     *
-     *  \return O segmento que representa a página atual
+     *  \brief Return the content of the segment which represent the current page.
      */
     public static function currentPage()
     {
@@ -322,9 +322,7 @@ class URI
     }
 
     /**
-     *  \brief Retorna o caminho relativo da página atual.
-     *
-     *  \return Uma string contendo o caminho relativo à página atual
+     *  \brief Return a string with the relative path to the current page.
      */
     public static function relativePathPage($consider_controller_root = false)
     {
@@ -337,9 +335,7 @@ class URI
     }
 
     /**
-     *  \brief Retorna a URI da página atual.
-     *
-     *  \returns Uma string contendo a URI da página atual
+     *  \brief Return a string with the path URL the current page (without the protocol).
      */
     public static function currentPageURI()
     {
@@ -347,10 +343,10 @@ class URI
     }
 
     /**
-     *  \brief Define o segmento relativo à página atual.
+     *  \brief Define the segment of the current page.
      *
-     *  \param[in] $segment_num número relativo ao segmento da URI
-     *  \return \c trus se definiu o segmento relativo à página atual e \c false em caso contrário
+     *  \param[in] $segment_num integer with the number of the segment to fix as current page
+     *  \return \c true if exists a $segment_num relative to the current page in the array of segments or \c false if does not exists.
      */
     public static function setCurrentPage($segment_num)
     {
@@ -364,12 +360,14 @@ class URI
     }
 
     /**
-     *  \brief Retorna o segmento da URI selecionado.
+     *  \brief Get any segment of the URI.
      *
-     *  \param[in] $segment_num O número do segmento desejado.
-     *  \param[in] $relative_to_page Flag (true/false) que determina se o segmento desejado é
-     *  	relativo ao segmento que determina a página atual. Default = true.
-     *  \return o valor do segmento ou \c false caso o segmento não exista.
+     *  \param[in] $segment_num is an integer with the number of the segment desired.
+     *  \param[in] $relative_to_page is a boolean value to determine if the desired segment is relative to the
+     *      current page (default = true) or the begin (false) of the array of segments.
+     *  \param[in] $consider_controller_root is a boolean value to determine if the number of segments of the
+     *      root path of contollers must be decremented (true) or not (false = default).
+     *  \return the value of the segment or \c false if it does not exists.
      */
     public static function getSegment($segment_num, $relative_to_page = true, $consider_controller_root = false)
     {
@@ -387,10 +385,10 @@ class URI
     }
 
     /**
-     *  \brief Retorna o segmento ignorado da URI selecionado.
+     *  \brief Get any ignored segment of the URI.
      *
-     *  \param[in] $segment_num O número do segmento desejado
-     *  \return o valor do segmento ignorado ou \c false caso o segmento não exista
+     *  \param[in] $segment_num is an \c integer with the number of the segment desired.
+     *  \return the value of the segment or \c false if it does not exists.
      */
     public static function getIgnoredSegment($segment_num)
     {
@@ -402,9 +400,7 @@ class URI
     }
 
     /**
-     *  \brief Retorna todos os segmentos.
-     *
-     *  \return um array contendo todos os segmentos
+     *  \brief Return the array of segments.
      */
     public static function getAllSegments()
     {
@@ -412,9 +408,7 @@ class URI
     }
 
     /**
-     *  \brief Retorna todos os segmentos ignorados.
-     *
-     *  \return um array contendo todos os segmentos ignorados
+     *  \brief Return the array of ignored segments.
      */
     public static function getAllIgnoredSegments()
     {
@@ -422,10 +416,9 @@ class URI
     }
 
     /**
-     *  \brief Adiciona um novo segmento de URI.
+     *  \brief Add a segment to the end of segments array.
      *
-     *  \param[in] $segment String contendo o valor do segmento
-     *  \return \c true se tiver sucesso e \c false em caso contrário
+     *  \param[in] $segment is an string with segment to be added to the end of the array of segments.
      */
     public static function addSegment($segment)
     {
@@ -439,11 +432,10 @@ class URI
     }
 
     /**
-     *  \brief Insere um novo segmento de URI.
+     *  \brief Insert a segment in any position of the segments array.
      *
-     *  \param[in] (int) $position Inteiro contendo a posição de inserção
-     *  \param[in] (string) $segment String contendo o valor do segmento
-     *  \return \c true se tiver sucesso e \c false em caso contrário
+     *  \param[in] (int) $position integer with the position where the segment must be inserted.
+     *  \param[in] (string) $segment string with segment to be inserted.
      */
     public static function insertSegment($position, $segment)
     {
@@ -457,10 +449,10 @@ class URI
     }
 
     /**
-     *  \brief Retorna o valor de um parâmetro GET.
+     *  \brief Return the value of a query string variable.
      *
-     *  \param[i] $var String contendo o nome da variável desesada
-     *  \return O valor da variável, caso exista, ou \c false caso a variável não exista
+     *  \param[i] $var is the name of the query string variable desired.
+     *  \return the value of the variable or \c false if it does not exists.
      */
     public static function _GET($var)
     {
@@ -481,8 +473,7 @@ class URI
     }
 
     /**
-     *  \brief retorna todo o _GET
-     *  \see _GET.
+     *  \brief Return the array of query string variables.
      */
     public static function getParams()
     {
@@ -490,17 +481,16 @@ class URI
     }
 
     /**
-     *  \brief Return the request method.
+     *  \brief Return the request method string.
      */
     public static function requestMethod()
     {
-        return isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : ((PHP_SAPI === 'cli' || defined('STDIN')) ? 'CIL' : '');
+        return isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : ((PHP_SAPI === 'cli' || defined('STDIN')) ? 'CLI' : '');
     }
 
     /**
-     *  \brief remove um parametro do _GET.
-     *
-     *  \param[in] $var String contendo o nome da variável a ser excluida
+     *  \brief Remove a variable from the array of query string variables.
+     *  \param[in] $var is the name of the query string variable to be deleted.
      */
     public static function removeParam($var)
     {
@@ -508,10 +498,10 @@ class URI
     }
 
     /**
-     *  \brief Define o valor de um parâmetro.
+     *  \brief Set value to a query string parameter.
      *
-     *  \param[in] $var String contendo o nome da variável a ser definida
-     *  \param[in] $value O valor da variável
+     *  \param[in] $var is the name of the query string variable
+     *  \param[in] $value is the value to be assigned to the variable.
      */
     public static function setParam($var, $value)
     {
@@ -519,12 +509,14 @@ class URI
     }
 
     /**
-     *  \brief Monta uma URL.
+     *  \brief Return the string of an URI with the received parameters.
      *
-     *  \param[in] $segments Array contendo os segmentos da URI
-     *  \param[in] $query Array contendo as variáveis a serem passadas via na URL GET
-     *  \param[in] $forceRewrite flag (true/false) que determina se o formato SEF deve ser forçado
-     *  \return Uma \c string contendo a URL
+     *  \param[in] $segments is an \c array with the segments of the URL.
+     *  \param[in] $query is an \c array with the query string variables.
+     *  \param[in] $forceRewrite is a \c boolean value to define if URI will be writed in
+     *      URL redirection form (user frendly - SEF) forced or the value of configuration will be used to it.
+     *  \param[in] $include_ignores_segments is a \c boolean value to define if URI will receive the ignored segments as prefix (default = \c true).
+     *  \return an URI.
      */
     public static function buildURL($segments = [], $query = [], $forceRewrite = false, $host = 'dynamic', $include_ignores_segments = true)
     {
@@ -559,7 +551,7 @@ class URI
     }
 
     /**
-     *  \brief Pega o host acessado.
+     *  \brief Return the current host with protocol.
      */
     public static function http_host()
     {
@@ -605,15 +597,13 @@ class URI
     }
 
     /**
-     *  \brief Manda o header de redirecionamento para uma URL.
+     *  \brief Set a redirect status header and finish the application.
      *
-     *  Este método envia o cabeçalho (header) de redirecionamento para o usuário e termina a
-     *  execução do sistema.
+     *  This method sends the status header with a URI redirection to the user browser and finish the application execution.
      *
-     *  \param[in] $url A URL para qual o usuário deve ser redirecionado
-     *  \param[in] $header Um inteiro com o código de redirecionamento
-     *      (302 = permanente, 301 = temporário, etc.).\n
-     *      Se omitido usa 302 por padrão.
+     *  \param[in] $url is a string with the URI.
+     *  \param[in] $header is an integer value with the redirection code (default = 302).\n
+     *      (302 = permanente, 301 = temporário).
      */
     public static function redirect($url, $header = 302)
     {
@@ -635,15 +625,13 @@ class URI
     }
 
     /**
-     *  \brief Gera o slug de uma expressão.
+     *  \brief Generate a slug, removing the accented and special characters from a string and convert spaces into minus symbol.
      *
-     *  \param[in] (string)$txt Expressão a ser convertida em slug.
-     *  \paran[in] (string)$space Caracter que será usado para substituir os espaços na expressão. Se omitodo será usado o caracter "-" como padrão.
-     *  \param[in] (string)$accept String contendo relação de caracteres também aceitos para montagem do slug.
-     *      Essa sting será usada numa expressão regular, então alguns caracteres como o ponto, precisam ser escapados.
-     *      Se nenhum caracter for informado, apenas letras, números e os caracteres "_" e "-" serão aceitos. Todos os demais serão removidos.
-     *  \param[in] (bool)$lowercase Converte para letras minúsculas.
-     *  \return Uma string com o slug
+     *  \param[in] $txt is a \c string with the text to be converted to slug format.
+     *  \paran[in] $space is a \c string with the character used as word separator. (default = '-')
+     *  \param[in] $accept is a \c string with other characters to be added to regular expression of accpted characters is slug.
+     *  \param[in] $lowercase is a \c boolean value that determine if the slug will be returned as lowercase string or as is.
+     *  \return the slug string.
      */
     public static function makeSlug($txt, $space = '-', $accept = '', $lowercase = true)
     {
@@ -669,12 +657,12 @@ class URI
     }
 
     /**
-     *  \brief Informa se a requisição recebida foi um Ajax.
+     *  \brief Return true if is an XML HTTL request (AJAX).
      *
      *  Verifica se a requisição recebida contém HTTP_X_REQUESTED_WITH no cabeçalho do pacote.
      *  Test to see if a request contains the HTTP_X_REQUESTED_WITH header.
      *
-     *  @return (bool) Retorna true ou false
+     *  \return \c true if the request is an AJAX call.
      */
     public static function isAjaxRequest()
     {

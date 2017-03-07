@@ -9,6 +9,7 @@
  *  \version   0.3.7
  *  \ingroup   framework
  */
+
 namespace Springy;
 
 class Migrator extends DB

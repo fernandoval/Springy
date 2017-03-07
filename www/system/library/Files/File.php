@@ -9,6 +9,7 @@
  *  \version    0.1
  *  \ingroup    framework
  */
+
 namespace Springy\Files;
 
 use finfo;

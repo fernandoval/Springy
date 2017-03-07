@@ -8,6 +8,7 @@
  *  \version    1.1.0.3
  *  \ingroup    framework
  */
+
 namespace Springy\Template;
 
 /**

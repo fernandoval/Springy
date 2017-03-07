@@ -17,6 +17,11 @@ It was created based upon the KISS principle in which the simplicity is the base
 * PHP 5.5+
 * [Composer](https://getcomposer.org/) Dependency Manager for PHP
 
+## Language dependencies
+
+* [Multibyte String](http://php.net/manual/en/intro.mbstring.php) library
+* [Mcrypt](http://php.net/manual/en/intro.mcrypt.php) library
+
 ## How do I start?
 
 Read the documentation:

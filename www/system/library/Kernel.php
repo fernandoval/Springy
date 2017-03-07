@@ -6,9 +6,10 @@
  *  \copyright  (c) 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
- *  \version    2.3.2.69
+ *  \version    2.3.2.70
  *  \ingroup    framework
  */
+
 namespace Springy;
 
 /**
@@ -19,7 +20,7 @@ namespace Springy;
 class Kernel
 {
     /// Versão do framework
-    const VERSION = '3.6.0';
+    const VERSION = '3.6.1';
 
     /// Kernel constants
     const PATH_CLASS = 'CLASS';

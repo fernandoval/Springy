@@ -9,6 +9,7 @@
  *  \version    1.7.1.13
  *  \ingroup    framework
  */
+
 namespace Springy\Template;
 
 use Springy\Configuration;
