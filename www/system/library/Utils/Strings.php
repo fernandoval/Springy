@@ -6,7 +6,7 @@
  *  \copyright  Copyright (c) 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.10.17
+ *  \version    0.11.18
  *  \ingroup    framework
  */
 
@@ -124,6 +124,19 @@ class Strings
     }
 
     /**
+     *  \brief Verify if given IP is valid.
+     *  \return Return true when given IP is valid or false if not.
+     */
+    public static function isValidIP($ipValue)
+    {
+        if (filter_var($ipValue, FILTER_VALIDATE_IP) === false || self::isPraviteNetwork($ipValue) || !strcasecmp($ipValue, 'unknown')) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      *  \brief Retorna o endereço IP remoto real.
      *
      *  Existem certas situações em que o verdadeiro IP do visitante fica mascarado quando o servidor de aplicação
@@ -137,41 +150,33 @@ class Strings
      */
     public static function getRealRemoteAddr()
     {
-        // Pega o IP que vem por trás de proxies
-        // $ApacheHeader = apache_request_headers();
-        // if (!empty($_SERVER['HTTP_X_FORWARDED_FOR']) || !empty($ApacheHeader['X-Forwarded-For']))
-        if (empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            $ip = '';
-        } else {
-            // $httpip = empty($_SERVER['HTTP_X_FORWARDED_FOR']) ? $ApacheHeader['X-Forwarded-For'] : $_SERVER['HTTP_X_FORWARDED_FOR'];
-            $httpip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-            if (strpos($httpip, ',')) {
-                $httpip = explode(',', $httpip);
-                while (list(, $val) = each($httpip)) {
-                    $val = trim($val);
-                    if (!self::isPraviteNetwork($val)) {
-                        $ip = $val;
-                        break;
-                    }
+        // Check if behind a proxy
+        if (isset($_SERVER['HTTP_X_FORWARDED_FOR']) && strcasecmp($_SERVER['HTTP_X_FORWARDED_FOR'], 'unknown')) {
+            foreach (explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']) as $val) {
+                $val = trim($val);
+
+                if (self::isValidIP($val)) {
+                    return $val;
                 }
-            } else {
-                $ip = $httpip;
-            }
-        }
-        // Verifica se ainda não chegou ao IP real
-        if (empty($ip) || self::isPraviteNetwork($ip)) {
-            if (!empty($_SERVER['HTTP_X_REAL_IP'])) {
-                $ip = $_SERVER['HTTP_X_REAL_IP'];
-            } else {
-                $ip = empty($_SERVER['REMOTE_ADDR']) ? '' : $_SERVER['REMOTE_ADDR'];
             }
         }
 
-        if (filter_var($ip, FILTER_VALIDATE_IP) === false) {
-            return '';
+        // Check header HTTP_X_REAL_IP
+        if (isset($_SERVER['HTTP_X_REAL_IP']) && self::isValidIP(trim($_SERVER['HTTP_X_REAL_IP']))) {
+            return trim($_SERVER['HTTP_X_REAL_IP']);
         }
 
-        return $ip;
+        // Check header HTTP_CLIENT_IP
+        if (isset($_SERVER['HTTP_CLIENT_IP']) && self::isValidIP(trim($_SERVER['HTTP_CLIENT_IP']))) {
+            return trim($_SERVER['HTTP_CLIENT_IP']);
+        }
+
+        // Check header HTTP_CLIENT_IP
+        if (isset($_SERVER['REMOTE_ADDR']) && self::isValidIP(trim($_SERVER['REMOTE_ADDR']))) {
+            return trim($_SERVER['REMOTE_ADDR']);
+        }
+
+        return '';
     }
 
     /**

@@ -5,6 +5,7 @@ develompent
     - Enhancement in JSON class;
     - Fixed bugs in Model class;
     - Fixed bugs in Validator class;
+    - Fixed bugs in minify helper when using Minify class by Matthias Mullie;
     - Documentation of URI class translated to English;
     - Correction of the name of the method who load the user data by given array of conditions.
 

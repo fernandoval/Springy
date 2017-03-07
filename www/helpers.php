@@ -6,7 +6,7 @@
  *  \copyright  (c) 2007-2016 Fernando Val
  *  \author     Allan Marques - allan.marques@ymail.com
  *  \author     Fernando Val - fernando.val@gmail.com
- *  \version    3.1.0.7
+ *  \version    3.2.0.8
  *  \ingroup    framework
  */
 
@@ -117,32 +117,25 @@ function minify($source, $destiny)
         mkdir($path, 0755, true);
     }
 
-    if (class_exists('MatthiasMullie\Minify\Minify')) {
-        switch ($fileType) {
-            case 'css':
-                $minifier = new MatthiasMullie\Minify\CSS($source);
-                break;
-            case 'js':
-                $minifier = new MatthiasMullie\Minify\JS($source);
-                break;
-            default:
-                return false;
-        }
-
-        $minifier->minify($destiny);
-        chmod($destiny, 0664);
-
-        return true;
-    }
-
-    // Matthias Mullie's Minify class not found. I Will try by myself but this is not the best way.
-
     $buffer = file_get_contents($source);
+
     if ($buffer == false) {
         return false;
     }
 
-    if ($fileType == 'css') {
+    if (class_exists('MatthiasMullie\Minify\Minify')) {
+        // Use Matthias Mullie's Minify class.
+        switch ($fileType) {
+            case 'css':
+                $minifier = new MatthiasMullie\Minify\CSS($buffer);
+                $buffer = $minifier->minify();
+                break;
+            case 'js':
+                $minifier = new MatthiasMullie\Minify\JS($buffer);
+                $buffer = $minifier->minify();
+                break;
+        }
+    } elseif ($fileType == 'css') {
         $buffer = preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $buffer);
         $buffer = str_replace(["\r\n", "\r", "\n", "\t", '  ', '    ', '     '], '', $buffer);
         $buffer = preg_replace(['(( )+{)', '({( )+)'], '{', $buffer);
