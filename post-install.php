@@ -7,7 +7,7 @@
  *  \copyright Copyright (c) 2015-2016 Fernando Val
  *
  *  \brief    Post Install/Update Script for Composer
- *  \version  3.1.0.10
+ *  \version  3.2.0.11
  *  \author   Fernando Val - fernando.val@gmail.com
  *
  *  This script is executed by Composer after the install/update process.
@@ -32,8 +32,13 @@ define('CS_GREEN', "\033[32m");
 define('CS_RED', "\033[31m");
 define('CS_RESET', "\033[0m");
 
+define('TAB', '    ');
+
+define('LOCK_FILE', 'components.lock');
+define('BOWER_FILE', 'bower.json');
+
 if (!$str = file_get_contents('composer.json')) {
-    echo 'Can\'t open composer.json file.';
+    echo CS_RED, 'Can\'t open composer.json file.', CS_RESET, LF;
     exit(1);
 }
 
@@ -81,9 +86,13 @@ if (!isset($composer['extra'])) {
 if (!isset($composer['extra']['post-install'])) {
     exit(0);
 }
-if (!isset($composer['config']) || !isset($composer['config']['vendor-dir'])) {
-    $vendorDir = 'vendor';
-} else {
+if (!is_array($composer['extra']['post-install'])) {
+    echo CS_RED, 'Invalid format for extra.post-install entry', CS_RESET, LF;
+    exit(1);
+}
+
+$vendorDir = 'vendor';
+if (isset($composer['config']) && isset($composer['config']['vendor-dir'])) {
     $vendorDir = $composer['config']['vendor-dir'];
 }
 
@@ -94,42 +103,84 @@ if (file_exists($vendorDir.DS.'autoload.php')) {
 
 echo CS_GREEN, 'Starting the installation of the extra components', CS_RESET, LF;
 
+// The control lock file
+$components = [];
+if (file_exists(LOCK_FILE)) {
+    if (!$components = file_get_contents(LOCK_FILE)) {
+        echo CS_RED, 'Can\'t open ', LOCK_FILE, ' file.', CS_RESET, LF;
+        exit(1);
+    }
+
+    $components = unserialize($components);
+}
+
+// Verify if any component was removed
+foreach (array_reverse($components) as $component => $files) {
+    if (!isset($composer['extra']['post-install'][$component])) {
+        echo '  - Deleting ', CS_GREEN, $component, CS_RESET, ' files', LF;
+
+        foreach (array_reverse($files) as $file) {
+            switch ($file['type']) {
+                case 'd':
+                    if (is_dir($file['path'])) {
+                        if (!rmdir($file['path'])) {
+                            echo TAB, CS_RED, 'Fail to delete "', $file['path'], '" file.', CS_RESET, LF;
+                        }
+                    }
+
+                    break;
+                case 'f':
+                    if (is_file($file['path'])) {
+                        if (!unlink($file['path'])) {
+                            echo TAB, CS_RED, 'Fail to delete "', $file['path'], '" file.', CS_RESET, LF;
+                        }
+                    }
+
+                    break;
+            }
+        }
+    }
+}
+$components = [];
+
 // Process every component
 foreach ($composer['extra']['post-install'] as $component => $data) {
     echo '  - Processing ', CS_GREEN, $component, CS_RESET, ' files', LF;
+
+    $components[$component] = [];
 
     // Component sub directory
     $path = $vendorDir.DS.implode(DS, explode('/', $component));
 
     // Check component's source path
     if (!is_dir($path)) {
-        echo '    ', CS_RED, 'Component\'s "'.$path.'" does not exists.', CS_RESET, LF;
+        echo TAB, CS_RED, 'Component\'s "', $path, '" does not exists.', CS_RESET, LF;
         continue;
     }
 
     // Check compnent's configuration
     if (!isset($data['target'])) {
-        echo '    ', CS_RED, 'Target directory not defined.', CS_RESET, LF;
+        echo TAB, CS_RED, 'Target directory not defined.', CS_RESET, LF;
         continue;
     }
 
+    // Component properties
     $files = '*';
-    $target = $data['target'];
     $noSubdirs = isset($data['ignore-subdirs']) && $data['ignore-subdirs'];
     $minify = isset($data['minify']) ? $data['minify'] : 'off';
 
     // Define the files of the component
     if (isset($data['files'])) {
         $files = $data['files'];
-    } elseif (file_exists($path.DS.'bower.json')) {
-        if (!$str = file_get_contents($path.DS.'bower.json')) {
-            echo '    ', CS_RED, 'Can\'t open "'.$path.DS.'bower.json" file.', CS_RESET, LF;
+    } elseif (file_exists($path.DS.BOWER_FILE)) {
+        if (!$str = file_get_contents($path.DS.BOWER_FILE)) {
+            echo TAB, CS_RED, 'Can\'t open "'.$path.DS.BOWER_FILE.'" file.', CS_RESET, LF;
             continue;
         }
 
         $bower = json_decode($str, true);
         if (!isset($bower['main'])) {
-            echo '    ', CS_RED, 'Main section does not exists in "'.$path.DS.'bower.json" file.', CS_RESET, LF;
+            echo TAB, CS_RED, 'Main section does not exists in "'.$path.DS.BOWER_FILE.'" file.', CS_RESET, LF;
             continue;
         }
 
@@ -141,72 +192,70 @@ foreach ($composer['extra']['post-install'] as $component => $data) {
     }
 
     // Check the destination directory
-    $destination = implode(DS, explode('/', $target));
+    $destination = implode(DS, explode('/', $data['target']));
     if (!is_dir($destination)) {
         if (!mkdir($destination, 0755, true)) {
-            echo '    ', CS_RED, 'Can\'t create "'.$destination.'" directory.', CS_RESET, LF;
+            echo TAB, CS_RED, 'Can\'t create "', $destination, '" directory.', CS_RESET, LF;
             continue;
         }
+
+        $components[$component][] = [
+            'path' => $destination,
+            'type' => 'd',
+        ];
     }
 
     if (is_array($files)) {
         foreach ($files as $file) {
             $file = implode(DS, explode('/', $file));
+            $dstFile = $file;
             if ($noSubdirs) {
                 $dstFile = explode('/', $file);
                 $dstFile = array_pop($dstFile);
-            } else {
-                $dstFile = $file;
             }
-            copy_r($path.DS.$file, $destination.DS.$dstFile, $minify);
+
+            copy_r($path.DS.$file, $destination.DS.$dstFile, $minify, $components[$component]);
         }
 
         continue;
     }
 
-    copy_r($path.DS.$files, $destination.DS.$files, $minify);
+    copy_r($path.DS.$files, $destination.DS.$files, $minify, $components[$component]);
+}
+
+// Write the lock file
+echo CS_GREEN, 'Writing lock file', CS_RESET, LF;
+if (!file_put_contents(LOCK_FILE, serialize($components))) {
+    echo CS_RED, 'Can\'t write ', LOCK_FILE, ' file.', CS_RESET, LF;
+    exit(1);
 }
 
 /**
  *  \brief Recursive Copy Function.
  */
-function copy_r($path, $dest, $minify = 'off')
+function copy_r($path, $dest, $minify = 'off', &$cFiles)
 {
-    // Is the source a directory?
-    if (is_dir($path)) {
-        $objects = scandir($path);
-        foreach ($objects as $file) {
-            if ($file == '.' || $file == '..') {
-                continue;
-            }
-
-            copy_r($path.DS.$file, $dest.DS.$file, $minify);
-            // // Is a sub directory?
-            // if (is_dir($path.DS.$file)) {
-
-                // continue;
-            // }
-
-            // // Copy only if destination does not existis or source is newer
-            // if (!is_file($dest.DS.$file) || filemtime($path.DS.$file) > filemtime($dest.DS.$file)) {
-                // if (!is_dir($dest)) {
-                    // mkdir($dest, 0775, true);
-                // }
-                // if (!realCopy($path.DS.$file, $dest.DS.$file, $minify)) {
-                    // echo '    ', CS_RED, '[ERROR] Can not copy (', $path.DS.$file, ') to (', $dest.DS.$file, ')', CS_RESET, LF;
-                // }
-            // }
-        }
-
-        return true;
-    }
     // Is the source a file?
-    elseif (is_file($path)) {
+    if (is_file($path)) {
         // Destination exists?
         $dir = dirname($dest);
         if (!is_dir($dir)) {
-            mkdir($dir, 0775, true);
+            if (!mkdir($dir, 0775, true)) {
+                echo TAB, CS_RED, 'Can\'t create "', $dir, '" directory.', CS_RESET, LF;
+
+                return false;
+            }
+
+            $cFiles[] = [
+                'path' => $dir,
+                'type' => 'd',
+            ];
         }
+
+        $cFiles[] = [
+            'path' => $dest,
+            'type' => 'f',
+        ];
 
         // Copy only if source is new or newer
         if (is_file($dest) && filemtime($path) < filemtime($dest)) {
@@ -215,10 +264,24 @@ function copy_r($path, $dest, $minify = 'off')
 
         $success = realCopy($path, $dest, $minify);
         if (!$success) {
-            echo '    ', CS_RED, '[ERROR] Copying (', $filename, ') to (', $dest.DS.basename($filename), ')', CS_RESET, LF;
+            echo TAB, CS_RED, '[ERROR] Copying (', $filename, ') to (', $dest.DS.basename($filename), ')', CS_RESET, LF;
         }
 
         return $success;
+    }
+
+    // Is the source a directory?
+    if (is_dir($path)) {
+        $objects = scandir($path);
+        foreach ($objects as $file) {
+            if ($file == '.' || $file == '..') {
+                continue;
+            }
+
+            copy_r($path.DS.$file, $dest.DS.$file, $minify, $cFiles);
+        }
+
+        return true;
     }
 
     // Oh! Is a wildcard path.
@@ -226,7 +289,7 @@ function copy_r($path, $dest, $minify = 'off')
     $success = false;
     $dest = dirname($dest);
     foreach (glob($path) as $filename) {
-        $success = copy_r($filename, $dest.DS.basename($filename), $minify);
+        $success = copy_r($filename, $dest.DS.basename($filename), $minify, $cFiles);
     }
 
     return true;
@@ -250,7 +313,7 @@ function minify($buffer, $minify)
                 $minifier = new MatthiasMullie\Minify\JS($buffer);
                 break;
             default:
-                echo '    ', CS_RED, '[ERROR] Invalid minify method: ', $minify, CS_RESET, LF;
+                echo TAB, CS_RED, '[ERROR] Invalid minify method: ', $minify, CS_RESET, LF;
 
                 return false;
         }
@@ -265,18 +328,18 @@ function minify($buffer, $minify)
     switch ($minify) {
         case 'css':
             $buffer = preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $buffer);
-            $buffer = str_replace(["\r\n", "\r", "\n", "\t", '  ', '    ', '     '], '', $buffer);
+            $buffer = str_replace(["\r\n", "\r", "\n", "\t", '  ', TAB, '     '], '', $buffer);
             $buffer = preg_replace(['(( )+{)', '({( )+)'], '{', $buffer);
             $buffer = preg_replace(['(( )+})', '(}( )+)', '(;( )*})'], '}', $buffer);
             $buffer = preg_replace(['(;( )+)', '(( )+;)'], ';', $buffer);
             break;
         case 'js':
             $buffer = preg_replace("/((?:\/\*(?:[^*]|(?:\*+[^*\/]))*\*+\/)|(?:\/\/.*))/", '', $buffer);
-            $buffer = str_replace(["\r\n", "\r", "\t", "\n", '  ', '    ', '     '], '', $buffer);
+            $buffer = str_replace(["\r\n", "\r", "\t", "\n", '  ', TAB, '     '], '', $buffer);
             $buffer = preg_replace(['(( )+\))', '(\)( )+)'], ')', $buffer);
             break;
         default:
-            echo '    ', CS_RED, '[ERROR] Invalid minify method: ', $minify, CS_RESET, LF;
+            echo TAB, CS_RED, '[ERROR] Invalid minify method: ', $minify, CS_RESET, LF;
 
             return false;
     }
@@ -295,7 +358,7 @@ function realCopy($source, $destiny, $minify = 'auto')
 
     $buffer = file_get_contents($source);
     if ($buffer == false) {
-        echo '    ', CS_RED, '[ERROR] Failed to open ', $source, CS_RESET, LF;
+        echo TAB, CS_RED, '[ERROR] Failed to open ', $source, CS_RESET, LF;
 
         return false;
     }
