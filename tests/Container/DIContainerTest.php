@@ -6,12 +6,12 @@
  *  \copyright  Copyright (c) 2007-2015 Fernando Val
  *  \author     Allan Marques - allan.marques@ymail.com
  *	\warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version    0.2.4
+ *	\version    0.2.5
  *	\ingroup    tests
  */
 use Springy\Container\DIContainer;
 
-class DIContainerTest extends PHPUnit_Framework_TestCase
+class DIContainerTest extends \PHPUnit_Framework_TestCase
 {
     private $data;
 
