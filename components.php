@@ -6,8 +6,8 @@
  *
  *  \copyright Copyright (c) 2015-2016 Fernando Val
  *
- *  \brief    Post Install/Update Script for Composer
- *  \version  3.2.0.11
+ *  \brief    Components - a post-install script for Composer
+ *  \version  3.2.0.12
  *  \author   Fernando Val - fernando.val@gmail.com
  *
  *  This script is executed by Composer after the install/update process.
@@ -233,7 +233,7 @@ if (!file_put_contents(LOCK_FILE, serialize($components))) {
 /**
  *  \brief Recursive Copy Function.
  */
-function copy_r($path, $dest, $minify = 'off', &$cFiles)
+function copy_r($path, $dest, $minify, &$cFiles)
 {
     // Is the source a file?
     if (is_file($path)) {

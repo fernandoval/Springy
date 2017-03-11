@@ -12,10 +12,16 @@
         },
         "post-install": {
             "components/jquery": {
-                "target": "www/assets/jquery"
+                "target": "www/assets/jquery",
+                "files": "jquery.min.js"
             },
             "twbs/bootstrap": {
-                "target": "www/assets/bootstrap"
+                "target": "www/assets/bootstrap",
+                "files": [
+                    "dist/css/*",
+                    "dist/js/*",
+                    "dist/fonts/*"
+                ]
             }
         }
     },
@@ -29,12 +35,12 @@
         "sendgrid/sendgrid": "~5.0",
         "phpmailer/phpmailer": "~5.2",
 
-        "components/jquery": "2.1.3",
+        "components/jquery": "~3.1",
         "twbs/bootstrap": "3.3.*"
     },
     "change-this-to-scripts": {
-        "post-install-cmd": "php -f post-install.php",
-        "post-update-cmd": "php -f post-install.php"
+        "post-install-cmd": "php -f components.php",
+        "post-update-cmd": "php -f components.php"
     },
     "repositories": []
 }
