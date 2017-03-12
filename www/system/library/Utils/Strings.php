@@ -6,7 +6,7 @@
  *  \copyright  Copyright (c) 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.11.18
+ *  \version    0.12.19
  *  \ingroup    framework
  */
 
@@ -176,7 +176,7 @@ class Strings
             return trim($_SERVER['REMOTE_ADDR']);
         }
 
-        return '';
+        return isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '';
     }
 
     /**
