@@ -1,6 +1,11 @@
 Springy framework update history
 
 ------------------------------------------------------------------------------------ --- -- -
+dev
+    - Added a method to remove a column from the conditions in DB\Condition class;
+    - Added support to configuration files in JSON format;
+    - Added support to save configuration files in JSON.
+
 3.6.1
     - Enhancement in JSON class;
     - Fixed bugs in Model class;

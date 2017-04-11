@@ -6,7 +6,7 @@
  *  \copyright  Copyright (c) 2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.4.0.5
+ *  \version    0.5.0.6
  *  \ingroup    framework
  */
 
@@ -237,6 +237,21 @@ class Conditions
     public function parse()
     {
         return $this->__toString();
+    }
+
+    /**
+     *  \brief Remove a conditions.
+     *  \note  Need revisions to check in sub expressions.
+     */
+    public function remove($column)
+    {
+        foreach ($this->conditions as $key => $condition) {
+            if ($condition['type'] === self::EXPR_SIMPLE && $condition['column'] == $column) {
+                unset($this->conditions[$key]);
+
+                return;
+            }
+        }
     }
 
     /**
