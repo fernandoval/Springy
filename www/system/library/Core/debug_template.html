@@ -203,7 +203,7 @@
                 $('#Spring-Debug').find('.Spring-Debug-Button').first().bind('click', Debug.open);
                 $('#Spring-Debug').find('.Spring-Tool-Close').first().bind('click', Debug.close);
                 $('#Spring-Debug').find('.Spring-Tool-Clear').first().bind('click', Debug.clear);
-                if ($('#Spring-Debug .Spring-Debug-Content .Spring-Debug-Data div.Spring-Debug-Info').size() > 1) {
+                if ($('#Spring-Debug .Spring-Debug-Content .Spring-Debug-Data div.Spring-Debug-Info').length > 1) {
                     Debug.startPulsate();
                 }
             },
@@ -230,7 +230,7 @@
             },
             printAjaxResults: function(titulo, infos, txt) {
                 var d = Debug.w.$('.Spring-Debug-Box');
-                if (d.size()) {
+                if (d.length) {
                     var dbar,
                         now = new Date(),
                         to = d.find('.Spring-Debug-Content').first().find('.Spring-Debug-Data').first(),
