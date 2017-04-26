@@ -1,6 +1,9 @@
 Springy framework update history
 
 ------------------------------------------------------------------------------------ --- -- -
+3.6.2
+    - Fixed bug in Model that reset the row pointer after a save when it has calculated columns.
+
 3.6.1
     - Enhancement in JSON class;
     - Fixed bugs in Model class;

@@ -6,7 +6,7 @@
  *  \copyright  ₢ 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \note       Essa classe extende a classe DB.
- *  \version    2.2.1.45
+ *  \version    2.3.0.46
  *  \ingroup    framework
  */
 
@@ -460,6 +460,30 @@ class Model extends DB implements \Iterator
     }
 
     /**
+     *  \brief Fill calculated columns of a row.
+     *  \param $row - number of the row to be processed. If null given, process current row.
+     */
+    public function calculeteColumnsRow($row = null)
+    {
+        if (!is_array($this->calculatedColumns) || !count($this->calculatedColumns)) {
+            return;
+        }
+
+        if ($row === null) {
+            $row = key($this->rows);
+        }
+
+        foreach ($this->calculatedColumns as $column => $method) {
+            if (method_exists($this, $method)) {
+                $this->rows[$row][$column] = $this->$method($this->rows[$row]);
+                continue;
+            }
+
+            $this->rows[$row][$column] = null;
+        }
+    }
+
+    /**
      *  \brief Sets the values of the calculated columns.
      */
     public function calculateColumns()
@@ -469,15 +493,9 @@ class Model extends DB implements \Iterator
         }
 
         foreach ($this->rows as $idx => $row) {
-            foreach ($this->calculatedColumns as $column => $method) {
-                if (method_exists($this, $method)) {
-                    $this->rows[$idx][$column] = $this->$method($row);
-                    continue;
-                }
-
-                $this->rows[$idx][$column] = null;
-            }
+            $this->calculeteColumnsRow($idx);
         }
+
         reset($this->rows);
     }
 
@@ -553,7 +571,7 @@ class Model extends DB implements \Iterator
         $this->triggerAfterInsert();
 
         $this->clearChangedColumns();
-        $this->calculateColumns();
+        $this->calculeteColumnsRow();
 
         return $this->affectedRows() > 0;
     }
@@ -584,7 +602,7 @@ class Model extends DB implements \Iterator
         $this->triggerAfterUpdate();
 
         $this->clearChangedColumns();
-        $this->calculateColumns();
+        $this->calculeteColumnsRow();
 
         return $this->affectedRows() > 0;
     }
