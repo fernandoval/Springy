@@ -9,6 +9,7 @@
  *  \version    0.3.0.4
  *  \ingroup    framework
  */
+
 namespace Springy;
 
 use Springy\Security\AclManager;
