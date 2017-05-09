@@ -6,7 +6,7 @@
  *  \copyright	Copyright (c) 2007-2016 Fernando Val
  *  \author		Fernando Val  - fernando.val@gmail.com
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.6.8
+ *	\version	1.6.9
  *	\ingroup	framework
  */
 
@@ -24,31 +24,52 @@ class Strings_UTF8 extends Strings
      */
     public static function removeAccentedChars($txt)
     {
-        // $txt = preg_replace('/[áàâãåäªÁÀÂÄÃª]/u', 'a', $txt);
-        // $txt = preg_replace('/[éèêëÉÈÊË]/u',      'e', $txt);
-        // $txt = preg_replace('/[íìîïÍÌÎÏ]/u',      'i', $txt);
-        // $txt = preg_replace('/[óòôõöºÓÒÔÕÖºð]/u', 'o', $txt);
-        // $txt = preg_replace('/[úùûüÚÙÛÜµ]/u',     'u', $txt);
-        // $txt = preg_replace('/[ñÑ]/u',            'n', $txt);
-        // $txt = preg_replace('/[ß]/u',             'b', $txt);
-        // $txt = preg_replace('/[çÇ]/u',            'c', $txt);
-        // $txt = preg_replace('/[Ð]/u',             'd', $txt);
-        // $txt = preg_replace('/[Šš]/u',            's', $txt);
-        // $txt = preg_replace('/[ŸÝÿ¥ýÿ]/u',        'y', $txt);
-        // $txt = preg_replace('/[Žž]/u'             'z', $txt);
-        // $txt = preg_replace('/[¹]/u',             '1', $txt);
-        // $txt = preg_replace('/[²]/u',             '2', $txt);
-        // $txt = preg_replace('/[³]/u',             '3', $txt);
-        $txt = preg_replace('/[Ææ]/u', 'ae', $txt);
-        // $txt = preg_replace('/[Øø]/u',            '0', $txt);
-        // $txt = preg_replace('/[†°¢£§•¶ß®©™´¨≠±≤≥∂∑∏π∫Ω]/u', '', $txt);
-        // // $txt = iconv('UTF-8', 'US-ASCII//TRANSLIT', $txt);
+        // $txt = preg_replace('/[ÀÁÂÃÄÅ]/u', 'A', $txt);
+        // $txt = preg_replace('/[àáâãäå]/u', 'a', $txt);
+        $txt = preg_replace('/[Æ]/u', 'AE', $txt);
+        $txt = preg_replace('/[æ]/u', 'ae', $txt);
+        // $txt = preg_replace('/[Ç]/u', 'C', $txt);
+        // $txt = preg_replace('/[ç¢©]/u', 'c', $txt);
+        $txt = preg_replace('/[Ð]/u', 'D', $txt);
+        $txt = preg_replace('/[∂ð]/u', 'd', $txt);
+        // $txt = preg_replace('/[ÈÉÊË]/u', 'E', $txt);
+        // $txt = preg_replace('/[èéêë]/u', 'e', $txt);
+        // $txt = preg_replace('/[ÌÍÎÏ]/u', 'I', $txt);
+        // $txt = preg_replace('/[ìíîï]/u', 'i', $txt);
+        // $txt = preg_replace('/[Ñ]/u', 'N', $txt);
+        // $txt = preg_replace('/[ñ]/u', 'n', $txt);
+        // $txt = preg_replace('/[ÒÓÔÕÖ]/u', 'O', $txt);
+        $txt = preg_replace('/[Ø]/u', 'O', $txt);
+        // $txt = preg_replace('/[òóôõö°]/u', 'o', $txt);
+        $txt = preg_replace('/[ø°]/u', 'o', $txt);
+        $txt = preg_replace('/[Œ]/u', 'OE', $txt);
+        $txt = preg_replace('/[œ]/u', 'oe', $txt);
+        $txt = preg_replace('/[®]/u', 'r', $txt);
+        $txt = preg_replace('/[Šß]/u', 'S', $txt);
+        $txt = preg_replace('/[§]/u', 'SS', $txt);
+        $txt = preg_replace('/[š]/u', 's', $txt);
+        $txt = preg_replace('/[™]/u', 'TM', $txt);
+        // $txt = preg_replace('/[ÙÚÛÜ]/u', 'U', $txt);
+        // $txt = preg_replace('/[ùúûü]/u', 'u', $txt);
+        $txt = preg_replace('/[µ]/u', 'u', $txt);
+        $txt = preg_replace('/[Ÿ]/u', 'Y', $txt);
+        $txt = preg_replace('/[ýÿ]/u', 'y', $txt);
+        $txt = preg_replace('/[Ž]/u', 'Z', $txt);
+        $txt = preg_replace('/[ž]/u', 'z', $txt);
+        // $txt = preg_replace('/[¹]/u', '1', $txt);
+        // $txt = preg_replace('/[²]/u', '2', $txt);
+        // $txt = preg_replace('/[³]/u', '3', $txt);
+        $txt = preg_replace('/[¥]/u', 'JPY', $txt);
+        $txt = preg_replace('/[£]/u', 'GBP', $txt);
+        $txt = preg_replace('/[†•¶´¨≠±≤≥∑∏π∫Ω]/u', '', $txt);
 
         // return $txt;
-        return strtr(utf8_decode($txt),
+        return strtr(
+            utf8_decode($txt),
             utf8_decode(
-            'ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýÿ¹²³'),
-            'SOZsozYYuAAAAAAACEEEEIIIIDNOOOOOOUUUUYsaaaaaaaceeeeiiiionoooooouuuuyy123');
+            'ÀÁÂÃÄÅÇÈÉÊËÌÍÎÏÑÒÓÔÕÖÙÚÛÜÝàáâãäåçèéêëìíîïñòóôõöùúûüýÿ¹²³'),
+            'AAAAAACEEEEIIIINOOOOOUUUUYaaaaaaceeeeiiiinooooouuuuyy123'
+        );
     }
 
     /**

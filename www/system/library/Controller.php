@@ -6,10 +6,9 @@
  *  \copyright  ₢ 2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \note       This class can be used to construct application controllers.
- *  \version    0.2.0.3
+ *  \version    0.3.0.4
  *  \ingroup    framework
  */
-
 namespace Springy;
 
 use Springy\Security\AclManager;
@@ -20,8 +19,6 @@ class Controller extends AclManager
     protected $authNeeded = false;
     /// Define a URL to redirect the user if it is not signed ($authNeeded must be true). Can be a string or an array used by URI::buildUrl();
     protected $redirectUnsigned = false;
-    /// The current user signed in.
-    protected $signedUser = null;
 
     /// Define if the template's page must be cached.
     protected $tplIsCached = false;
@@ -38,16 +35,19 @@ class Controller extends AclManager
      */
     public function __construct()
     {
+        if (app('user.auth.manager')->check()) {
+            parent::__construct(app('user.auth.manager')->user());
+        } else {
+            parent::__construct(app('user.auth.identity'));
+        }
+
         // Do nothing if is free for unsigned users
         if (!$this->authNeeded) {
             return true;
         }
 
         // Verify if is an authenticated user
-        if (app('user.auth.manager')->check()) {
-            // Start the user property
-            $this->signedUser = app('user.auth.manager')->user();
-
+        if ($this->user->isLoaded()) {
             // Call user special verifications
             if (!$this->_userSpecialVerifications()) {
                 $this->_forbidden();
@@ -70,8 +70,6 @@ class Controller extends AclManager
      */
     protected function _authorizationCheck()
     {
-        // Call the parent constructor to start user permissions
-        parent::__construct($this->signedUser);
         // Check if the controller and respective method is permitted to the user
         if (!$this->isPermitted()) {
             $this->_forbidden();

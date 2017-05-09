@@ -6,6 +6,13 @@
     "config": {
         "vendor-dir": "www/system/vendor"
     },
+    "authors": [
+        {
+            "name": "Fernando Val",
+            "homepage": "http://fval.com.br",
+            "role": "Developer"
+        }
+    ],
     "extra": {
         "installer-paths": {
             "www/system/vendor/{$name}": ["vendor/package"]

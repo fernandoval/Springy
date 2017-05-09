@@ -6,7 +6,7 @@
  *  \copyright  (c) 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
- *  \version    3.0.2.41
+ *  \version    3.0.3.42
  *  \ingroup    framework
  */
 
@@ -321,7 +321,7 @@ class Errors
                     if (!$dbc->execute('SELECT id FROM '.$table.' WHERE error_code = ?', [$errorId])) {
                         if ($dbc->statmentErrorCode()) {
                             if (Configuration::get('system', 'system_error.create_table') && $sql = file_get_contents(dirname(__FILE__).DIRECTORY_SEPARATOR.'system_errors_create_table.sql')) {
-                                $dbc->execute($sql);
+                                $dbc->execute(str_replace('%table_name%', $table, $sql));
                             }
                         }
                     } else {
