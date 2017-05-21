@@ -1,12 +1,7 @@
 RewriteEngine On
 
-RewriteCond %{REQUEST_METHOD} ^(delete|head|trace|track) [NC]
+RewriteCond %{REQUEST_METHOD} ^(head|trace|track) [NC]
 RewriteRule ^(.*)$ - [F,L]
-
-# Rewrite para arquivos estáticos com controle de versão para evitar cache do browser
-# COMENTAR OU EXCLUIR ESSAS LINHAS CASO NÃO UTILIZE
-RewriteCond %{REQUEST_URI} \__([0-9]*)\.(css|js)$ [NC]
-RewriteRule ^(.*)__([0-9]*)\.(css|js)$ $1.$3 [L]
 
 # Rewrite para dominio sem URI (ex: www.seusite.com.br/, o que faria cair no index.php)
 RewriteCond %{REQUEST_FILENAME} -d [OR]

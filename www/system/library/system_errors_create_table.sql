@@ -1,4 +1,4 @@
-CREATE TABLE `system_errors` (
+CREATE TABLE `%table_name%` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `error_code` CHAR(8) NOT NULL,
   `description` TEXT NOT NULL,

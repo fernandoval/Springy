@@ -6,7 +6,7 @@
  *  \copyright  ₢ 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
- *  \version    2.2.3.35
+ *  \version    2.2.4.36
  *  \ingroup    framework
  */
 
@@ -652,6 +652,7 @@ class URI
         //$txt = mb_ereg_replace('[__]+', '_', $txt);
         $txt = mb_ereg_replace('[^a-zA-Z0-9 _\-'.$accept.']', '', $txt);
         $txt = mb_ereg_replace('[ ]+', $space, $txt);
+        $txt = preg_replace('/'.$space.$space.'+/', $space, $txt);
 
         return $txt;
     }

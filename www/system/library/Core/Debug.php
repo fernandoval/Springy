@@ -3,9 +3,9 @@
  *  Springy.
  *
  *  \brief      Framework debug class.
- *  \copyright  ₢ 2007-2016 Fernando Val
+ *  \copyright  ₢ 2007-2017 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
- *  \version    1.0.1.2
+ *  \version    1.0.1.3
  *  \ingroup    framework
  */
 
@@ -151,9 +151,11 @@ class Debug
 
             if (preg_match('/<\/body>/', $conteudo)) {
                 echo preg_replace('/<\/body>/', $htmlDebug.'</body>', $conteudo);
-            } else {
-                echo preg_replace('/^(.*?)$/', '<script type="text/javascript" src="'.URI::buildURL([Configuration::get('uri', 'js_dir')], [], true, 'static').'/jquery.js"></script>'.$htmlDebug.'\\1', $conteudo);
+
+                return;
             }
+
+            echo preg_replace('/^(.*?)$/', '<script type="text/javascript" src="'.URI::buildURL([Configuration::get('uri', 'js_dir')], [], true, 'static').'/jquery.js"></script>'.$htmlDebug.'\\1', $conteudo);
         }
     }
 
@@ -168,11 +170,11 @@ class Debug
         if (is_object($par)) {
             if (method_exists($par, '__toString')) {
                 return str_replace('&lt;?php&nbsp;', '', str_replace('&nbsp;?&gt;', '', highlight_string('<?php '.var_export($par->__toString(), true), true)));
-            } else {
-                return (PHP_SAPI === 'cli' || defined('STDIN')) ? print_r($par, true) : '<pre>'.print_r($par, true).'</pre>';
             }
-        } else {
-            return str_replace('&lt;?php&nbsp;', '', str_replace('&nbsp;?&gt;', '', highlight_string('<?php '.print_r($par, true), true)));
+
+            return (PHP_SAPI === 'cli' || defined('STDIN')) ? print_r($par, true) : '<pre>'.print_r($par, true).'</pre>';
         }
+
+        return str_replace('&lt;?php&nbsp;', '', str_replace('&nbsp;?&gt;', '', highlight_string('<?php '.print_r($par, true), true)));
     }
 }

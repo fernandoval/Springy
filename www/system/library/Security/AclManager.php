@@ -6,7 +6,7 @@
  *  \copyright  Copyright (c) 2007-2016 Fernando Val
  *  \author     Allan Marques - allan.marques@ymail.com
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.1.1
+ *  \version    0.2.2
  *  \ingroup    framework
  */
 
@@ -27,7 +27,7 @@ class AclManager
     /// Nome da action na qual o usuário se encontra no request atual
     protected $action;
     /// Prefixo dos módulos
-    protected $modulePrefix = 'admin/';
+    protected $modulePrefix = '';
     /// Usuário atualmente autenticado no sistema
     protected $user;
     /// Caracter separador utilizado para concatenar o nome da permissão

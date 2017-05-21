@@ -118,9 +118,9 @@ $conf = [
         ],
     ],
     'system_error'       => [
-        'reported_errors'  => [405, 406, 408, 409, 410, 412, 413, 414, 415, 416, 500, 501, 502, 504, 505],
+        'reported_errors'  => [405, 406, 408, 409, 410, 412, 413, 414, 415, 416, 417, 418, 422, 423, 424, 425, 426, 450, 499, 500, 501, 502, 504, 505],
         'save_in_database' => false,
-        'table_name'       => 'system_errors',
+        'table_name'       => '_system_errors',
         'db_server'        => 'default',
         'create_table'     => true,
     ],

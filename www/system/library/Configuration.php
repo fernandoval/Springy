@@ -6,7 +6,7 @@
  *  \copyright  ₢ 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \author     Allan Marques - allan.marques@ymail.com
- *	\version    2.1.0.11
+ *	\version    3.0.1.13
  *	\ingroup    framework
  */
 
@@ -21,6 +21,12 @@ class Configuration
 {
     /// Array interno com dados de configuração
     private static $confs = [];
+
+    const LC_DB = 'db';
+    const LC_MAIL = 'mail';
+    const LC_SYSTEM = 'system';
+    const LC_TEMPLATE = 'template';
+    const LC_URI = 'uri';
 
     /**
      *  \brief Pega o conteúdo de um registro de configuração.
@@ -88,48 +94,101 @@ class Configuration
     }
 
     /**
-     *  \brief Carrega o arquivo de configuração e seta o atributo de configuração.
+     *  \bried Load the configuration file in JSON format.
      */
-    private static function _load($config_file, $local)
+    private static function _loadJSON($file, $local)
     {
-        if (file_exists($config_file)) {
-            $conf = [];
-            require_once $config_file;
-            self::$confs[$local] = array_replace_recursive(self::$confs[$local], $conf);
-
-            $host = URI::http_host();
-
-            if ($host && isset($over_conf[$host])) {
-                self::$confs[$local] = array_replace_recursive(self::$confs[$local], $over_conf[$host]);
-            }
-
-            return true;
+        if (!file_exists($file.'.json')) {
+            return;
         }
 
-        return false;
+        if (!$str = file_get_contents($file.'.json')) {
+            new Errors(500, 'Can not open the configuration file '.$file.'.json');
+        }
+
+        $conf = json_decode($str, true);
+        if (json_last_error() != JSON_ERROR_NONE) {
+            new Errors(500, 'Parse error at '.$file.'.json: '.json_last_error_msg());
+        }
+
+        self::$confs[$local] = array_replace_recursive(self::$confs[$local], $conf);
     }
 
     /**
-     *	\brief Carrega um arquivo de configuração.
+     *  \brief Load the configuration file in PHP format.
+     */
+    private static function _loadPHP($file, $local)
+    {
+        if (!file_exists($file.'.conf.php')) {
+            return;
+        }
+
+        $conf = [];
+
+        require_once $file.'.conf.php';
+        self::$confs[$local] = array_replace_recursive(self::$confs[$local], $conf);
+
+        // Overwrite the configuration for a specific host
+        if (!isset($over_conf)) {
+            return;
+        }
+
+        $host = URI::http_host();
+
+        if (!$host || !isset($over_conf[$host])) {
+            return;
+        }
+
+        self::$confs[$local] = array_replace_recursive(self::$confs[$local], $over_conf[$host]);
+    }
+
+    /**
+     *  \brief Load the configuration file to the local.
+     */
+    private static function _load($file, $local)
+    {
+        self::_loadPHP($file, $local);
+        self::_loadJSON($file, $local);
+
+        // Overwrite the configuration for a specific host, if exists
+        if (!$host = URI::http_host()) {
+            return;
+        }
+
+        self::_loadPHP($file.'-'.$host, $local);
+        self::_loadJSON($file.'-'.$host, $local);
+    }
+
+    /**
+     *	\brief Load a configuration for the given local.
      *
-     *	\param[in] (string) $local - nome do arquivo de configuração
-     *	\return \c true se tiver carregado o arquivo de configuração ou \c false em caso contrário
+     *	\param[in] (string) $local - the name of the local.
      */
     public static function load($local)
     {
         self::$confs[$local] = [];
 
-        // Carrega a configuração DEFAULT para $local
-        self::_load(Kernel::path(Kernel::PATH_CONFIGURATION).DIRECTORY_SEPARATOR.$local.'.default.conf.php', $local);
+        // Load the default configuration file
+        self::_load(Kernel::path(Kernel::PATH_CONFIGURATION).DS.$local.'.default', $local);
 
-        // Carreta a configuração para o ambiente ativo
-        self::_load(Kernel::path(Kernel::PATH_CONFIGURATION).DIRECTORY_SEPARATOR.Kernel::environment().DIRECTORY_SEPARATOR.$local.'.conf.php', $local);
+        // Load the configuration file for the current environment
+        self::_load(Kernel::path(Kernel::PATH_CONFIGURATION).DS.Kernel::environment().DS.$local, $local);
 
-        // Confere se a configuração foi carregada
+        // Check if configuration was loaded
         if (empty(self::$confs[$local])) {
             new Errors(500, 'Settings for "'.$local.'" not found in the environment "'.Kernel::environment().'".');
         }
+    }
 
-        return true;
+    /**
+     *  \brief Save the local configuration to a JSON file.
+     */
+    public static function save($local)
+    {
+        $fileName = Kernel::path(Kernel::PATH_CONFIGURATION).DS.Kernel::environment().DS.$local.'.json';
+
+        if (!file_put_contents($fileName, json_encode(self::$confs[$local]))) {
+            new Errors(500, 'Can not write to '.$fileName);
+        }
     }
 }
