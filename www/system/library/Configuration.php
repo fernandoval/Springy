@@ -6,7 +6,7 @@
  *  \copyright  ₢ 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \author     Allan Marques - allan.marques@ymail.com
- *	\version    3.0.0.12
+ *	\version    3.0.1.13
  *	\ingroup    framework
  */
 
@@ -135,11 +135,11 @@ class Configuration
 
         $host = URI::http_host();
 
-        if (!$host || !isset($over[$host])) {
+        if (!$host || !isset($over_conf[$host])) {
             return;
         }
 
-        self::$confs[$local] = array_replace_recursive(self::$confs[$local], $over[$host]);
+        self::$confs[$local] = array_replace_recursive(self::$confs[$local], $over_conf[$host]);
     }
 
     /**
