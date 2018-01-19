@@ -3,9 +3,11 @@
  *  Springy.
  *
  *  @brief      Framework debug class.
- *  @copyright  ₢ 2007-2017 Fernando Val
+ *
+ *  @copyright  ₢ 2007-2018 Fernando Val
  *  @author     Fernando Val - fernando.val@gmail.com
- *  @version    1.0.2.4
+ *
+ *  @version    1.0.2.5
  *  @ingroup    framework
  */
 
@@ -26,7 +28,7 @@ class Debug
     private static $debug = [];
 
     /**
-     *	@brief Add a information to the debug window.
+     *  @brief Add a information to the debug window.
      */
     public static function add($txt, $name = '', $highlight = true, $revert = true)
     {
@@ -47,9 +49,12 @@ class Debug
     }
 
     /**
-     *	@brief Get the debug backtrace.
+     *  @brief Get the debug backtrace.
      *
-     *	@param[in] (array) $debug array com o backtrace gerado
+     *  @param array $debug array with the backtrace or null to get from the system.
+     *  @param int $limit this parameter can be used to limit the number of stack frames loaded.
+     *      Setting zero value (0) it catch all stack frames.
+     *      By default (limit=10) it catch 10 stack frames.
      */
     public static function backtrace($debug = null, $limit = 10)
     {
@@ -100,9 +105,9 @@ class Debug
     }
 
     /**
-     *	@brief Get the debug content in the string format.
+     *  @brief Get the debug content in the string format.
      *
-     *	@return Retorna uma string contendo os dados capturados em debug.
+     *  @return string Retorna uma string contendo os dados capturados em debug.
      */
     public static function get()
     {
@@ -126,9 +131,9 @@ class Debug
     }
 
     /**
-     *	@brief Print out the debug content.
+     *  @brief Print out the debug content.
      *
-     *	@return void
+     *  @return void
      */
     public static function printOut()
     {
@@ -160,10 +165,11 @@ class Debug
     }
 
     /**
-     *	@brief Imprime os detalhes de uma variável em cores.
+     *  @brief Imprime os detalhes de uma variável em cores.
      *
-     *	@param[in] (variant) $par - variável
-     *	@return Retorna uma string HTML
+     *  @param variant $par - variável
+     *
+     *  @return string Retorna uma string HTML.
      */
     public static function print_rc($par)
     {

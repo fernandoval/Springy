@@ -3,10 +3,12 @@
  *  Springy.
  *
  *  \brief      Classe com métodos para diversos tipos de tratamento e validação de dados string.
- *  \copyright  Copyright (c) 2007-2017 Fernando Val
+ *
+ *  \copyright  Copyright (c) 2007-2018 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
+ *
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.13.20
+ *  \version    0.13.20.21
  *  \ingroup    framework
  */
 
@@ -125,6 +127,7 @@ class Strings
 
     /**
      *  \brief Verify if given IP is valid.
+     *
      *  \return Return true when given IP is valid or false if not.
      */
     public static function isValidIP($ipValue)
@@ -326,16 +329,18 @@ class Strings
     }
 
     /**
-     *  \brief 
+     * @brief Verify a brazilian document number CPF.
+     *
+     * @param string $cpf the CPF number.
      */
     public static function cpf($cpf)
     {
         if (!preg_match('/^[0-9]{3}\.?[0-9]{3}\.?[0-9]{3}\-?[0-9]{2}$/', $cpf)) {
             return false;
         }
-        
+
         $cpf = preg_replace('/[^0-9]/', '', $cpf);
-        
+
         if (self::checkIsFake($cpf, 11)) {
             return false;
         }

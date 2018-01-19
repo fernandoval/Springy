@@ -6,7 +6,7 @@
  *  \copyright	Copyright (c) 2007-2016 Fernando Val\n
  *  \author		Fernando Val  - fernando.val@gmail.com
  *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	3.2.16
+ *  \version	3.2.17
  */
 
 /**
@@ -48,27 +48,9 @@
  *  A configuração dos arquivos de configuração é feita pela definição da variável de nome \c $conf que é um array de definições de
  *  configuração.
  *
- *  Exemplo:
- *
- *  \code{.php}
- $conf = array(
- 'entrada' => 'valor',
- 'outra_configuracao' => 'valor da outra configuracao'
- ); \endcode
- *
  *  É possível sobrescrever as configurações para determinados hosts de sua aplicação, utilizando a variável \c $over_conf, que é um array
  *  contendo no primeiro nível de índices o nome do host para o qual se deseja sobrescrever determinada(s) entrada(s) de configuração,
  *  que por sua vez, receberá um array contendo cada entrada de configuração a ser sobrescrita.
- *
- *  Exemplo:
- *
- *  \code{.php}
- $over_conf = array(
- 'host.meudominio.com' => array(
- 'entrada1' => 'novo valor',
- 'entrada2' => 'outro novo valor'
- )
- ); \endcode
  *
  *  Os arquivos pré-distribuídos com o framework são de uso interno das classes e não podem ser renomeados ou omitidos.
  *

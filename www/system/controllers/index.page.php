@@ -2,11 +2,11 @@
 /**	\file
  * 	\brief Sample controller for the main page.
  *
- *  \copyright  ₢ 2007-2016 Fernando Val.
+ *  \copyright  ₢ 2007-2018 Fernando Val.
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \ingroup    controllers
  */
-use \Springy\Controller;
+use Springy\Controller;
 
 class Index_Controller extends Controller
 {

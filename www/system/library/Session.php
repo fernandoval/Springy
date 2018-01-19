@@ -1,12 +1,14 @@
 <?php
-/**	\file
- *	Springy.
+/** \file
+ *  Springy.
  *
- *	\brief		Session class system.
- *  \copyright	(c) 2007-2016 Fernando Val
- *  \author		Fernando Val - fernando.val@gmail.com
- *  \version    2.1.1.20
- *	\ingroup	framework
+ *  \brief      Session class system.
+ *
+ *  \copyright  (c) 2007-2018 Fernando Val
+ *  \author     Fernando Val - fernando.val@gmail.com
+ *
+ *  \version    2.1.1.21
+ *  \ingroup    framework
  */
 
 namespace Springy;
@@ -155,7 +157,7 @@ class Session
     }
 
     /**
-     *	\brief Starts the session engine.
+     *  \brief Starts the session engine.
      */
     public static function start($name = null)
     {
@@ -197,7 +199,7 @@ class Session
     }
 
     /**
-     *	\brief Save the session data in database table.
+     *  \brief Save the session data in database table.
      */
     public static function _save_db_session()
     {
@@ -208,7 +210,7 @@ class Session
     }
 
     /**
-     *	\brief Save session data in Memcached service.
+     *  \brief Save session data in Memcached service.
      */
     public static function _save_mc_session()
     {
@@ -229,7 +231,7 @@ class Session
     }
 
     /**
-     *	\brief Informa se a variável de sessão está definida.
+     *  \brief Informa se a variável de sessão está definida.
      */
     public static function defined($var)
     {
@@ -239,7 +241,7 @@ class Session
     }
 
     /**
-     *	\brief Coloca um valor em variável de sessão.
+     *  \brief Coloca um valor em variável de sessão.
      */
     public static function set($var, $value)
     {
@@ -247,55 +249,47 @@ class Session
         self::$data[$var] = $value;
         if (self::$type == self::ST_STANDARD) {
             $_SESSION['_ffw_'][$var] = $value;
-        // } else {
-            // self::_save_db_session();
         }
     }
 
     /**
-     *	\brief Pega o valor de uma variável de sessão.
+     *  \brief Pega o valor de uma variável de sessão.
      */
     public static function get($var)
     {
         self::start();
-        // if (isset($_SESSION['_ffw_'][$var])) {
-            // return $_SESSION['_ffw_'][$var];
-        // }
         if (isset(self::$data[$var])) {
             return self::$data[$var];
         }
     }
 
     /**
-     *	\brief Retorna todos os dados armazenados na sessão.
+     *  \brief Retorna todos os dados armazenados na sessão.
      *
-     *	\return retorna \c array() se tiver sucesso ou \c NULL se não houver sessão
+     *  \return retorna \c array() se tiver sucesso ou \c NULL se não houver sessão
      */
     public static function getAll()
     {
         self::start();
-        // if (isset($_SESSION['_ffw_'])) {
-            // return $_SESSION['_ffw_'];
-        // }
         if (!empty(self::$data)) {
             return self::$data;
         }
     }
 
     /**
-     *	\brief Pega o ID da sessão.
+     *  \brief Pega o ID da sessão.
      *
-     *	\return retorna o ID da sessão ativa
+     *  \return retorna o ID da sessão ativa
      */
     public static function getId()
     {
         self::start();
-        // return session_id();
+
         return self::$sid;
     }
 
     /**
-     *	\brief Remove uma variável de sessão.
+     *  \brief Remove uma variável de sessão.
      */
     public static function unregister($var)
     {
@@ -303,8 +297,6 @@ class Session
         unset(self::$data[$var]);
         if (self::$type == self::ST_STANDARD && isset($_SESSION) && isset($_SESSION['_ffw_']) && isset($_SESSION['_ffw_'][$var])) {
             unset($_SESSION['_ffw_'][$var]);
-        // } else {
-            // self::_save_db_session();
         }
     }
 }

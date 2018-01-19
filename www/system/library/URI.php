@@ -3,10 +3,12 @@
  *  Springy.
  *
  *  \brief      URI handler class.
- *  \copyright  ₢ 2007-2016 Fernando Val
+ *
+ *  \copyright  ₢ 2007-2018 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
- *  \version    2.2.4.36
+ *
+ *  \version    2.2.4.37
  *  \ingroup    framework
  */
 
@@ -40,12 +42,6 @@ class URI
      */
     private static function _fetch_uri_string()
     {
-        // Verifica se há um único parâmetro na query string e esse parâmetro não é uma vafiável GET
-        // DEPRECATED
-        // if (is_array($_GET) && count($_GET) == 1 && (trim(key($_GET), '/') != '') && empty($_GET[key($_GET)])) {
-            // return key($_GET);
-        // }
-
         // There is the old SUPERVAR in $_GET, given by .htaccess?
         if (is_array($_GET) && !empty($_GET['SUPERVAR'])) {
             return $_GET['SUPERVAR'];
@@ -77,7 +73,8 @@ class URI
     /**
      *  \brief Parse the URI and initiate the internal variables.
      *
-     *  Translate the URI in segments and query string variables. This method is used by the framework starter to determine the controller which is be called.
+     *  Translate the URI in segments and query string variables.
+     *  This method is used by the framework starter to determine the controller which is be called.
      *
      *  \return void.
      */
@@ -490,6 +487,7 @@ class URI
 
     /**
      *  \brief Remove a variable from the array of query string variables.
+     *
      *  \param[in] $var is the name of the query string variable to be deleted.
      */
     public static function removeParam($var)
@@ -516,6 +514,7 @@ class URI
      *  \param[in] $forceRewrite is a \c boolean value to define if URI will be writed in
      *      URL redirection form (user frendly - SEF) forced or the value of configuration will be used to it.
      *  \param[in] $include_ignores_segments is a \c boolean value to define if URI will receive the ignored segments as prefix (default = \c true).
+     *
      *  \return an URI.
      */
     public static function buildURL($segments = [], $query = [], $forceRewrite = false, $host = 'dynamic', $include_ignores_segments = true)
@@ -561,7 +560,8 @@ class URI
     /**
      *  \brief Retorna o host com protocolo.
      *
-     *  \param[in] $host String contendo o host com ou sem o protocolo, ou a entrada de configuração do host
+     *  \param[in] $host String contendo o host com ou sem o protocolo, ou a entrada de configuração do host.
+     *
      *  \return Retorna a string contendo o protocolo e o host
      */
     private static function _host($host = 'dynamic')
@@ -583,6 +583,7 @@ class URI
      *  \param[in] $query Array contendo os parâmetros chave => valor
      *  \param[in] $key Nome da chave para quando query possuir apenas os valores
      *  \param[out] $param variável de retorno da query string
+     *
      *  \return Void
      */
     private static function encode_param($query, $key, &$param)
@@ -631,6 +632,7 @@ class URI
      *  \paran[in] $space is a \c string with the character used as word separator. (default = '-')
      *  \param[in] $accept is a \c string with other characters to be added to regular expression of accpted characters is slug.
      *  \param[in] $lowercase is a \c boolean value that determine if the slug will be returned as lowercase string or as is.
+     *
      *  \return the slug string.
      */
     public static function makeSlug($txt, $space = '-', $accept = '', $lowercase = true)

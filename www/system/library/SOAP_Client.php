@@ -1,12 +1,14 @@
 <?php
-/**	\file
- *	Springy.
+/** \file
+ *  Springy.
  *
- *	\brief		Classe para cliente SOAP.
- *  \copyright	Copyright (c) 2007-2016 Fernando Val
- *  \author		Fernando Val - fernando.val@gmail.com
- *	\version	2.0.1.13
- *	\ingroup	framework
+ *  \brief      Classe para cliente SOAP.
+ *
+ *  \copyright  Copyright (c) 2007-2018 Fernando Val
+ *  \author     Fernando Val - fernando.val@gmail.com
+ *
+ *  \version    2.0.1.14
+ *  \ingroup    framework
  */
 
 namespace Springy;
@@ -22,11 +24,11 @@ class SOAP_Client
     private $error = '';
 
     /**
-     *	\brief Construtor da classe.
+     *  \brief Construtor da classe.
      *
-     *	@param[in] (string) $endpoint - endereço URI do web service
-     *	@param[in] (bool) $wsdl - define o modo de chamada como WSDL
-     *	@param[in] (array) $options - array de opções
+     *  @param[in] (string) $endpoint - endereço URI do web service
+     *  @param[in] (bool) $wsdl - define o modo de chamada como WSDL
+     *  @param[in] (array) $options - array de opções
      */
     public function __construct($endpoint = '', $wsdl = false, $options = [], $wsse = false)
     {
@@ -54,6 +56,7 @@ class SOAP_Client
         set_time_limit(0);
 
         Kernel::addIgnoredError([0, E_WARNING, E_ERROR]);
+
         try {
             // Monta a autenticação W.S.Security
             if ($wsse && isset($options['Username']) && isset($options['Password'])) {
@@ -78,6 +81,7 @@ class SOAP_Client
 
             return false;
         }
+
         Kernel::delIgnoredError([0, E_WARNING, E_ERROR]);
 
         set_time_limit(30);
@@ -87,12 +91,13 @@ class SOAP_Client
     }
 
     /**
-     *	\brief Faz uma chamada ao web service.
+     *  \brief Faz uma chamada ao web service.
      *
-     *	@param[out] (mixed) &$result - variável passada por referência que receberá o retorno da chamada ao método SOAP
-     *	@param[in] (string) $operation - nome da função SOAP
-     *	@param[in] (array|stdClass) $params - parâmatros a serem passados para o web service
-     *	@result (boolean) Retornará true se a chamada for bem sucedida ou false se houver um erro de conexão com o serviço
+     *  @param[out] (mixed) &$result - variável passada por referência que receberá o retorno da chamada ao método SOAP
+     *  @param[in] (string) $operation - nome da função SOAP
+     *  @param[in] (array|stdClass) $params - parâmatros a serem passados para o web service
+     *
+     *  @result (boolean) Retornará true se a chamada for bem sucedida ou false se houver um erro de conexão com o serviço
      */
     public function call(&$result, $operation, $params = [], $options = null, $input_headers = null)
     {
@@ -104,6 +109,7 @@ class SOAP_Client
         // restore_error_handler();
 
         Kernel::addIgnoredError([0, E_WARNING]);
+
         try {
             // $result = $this->client->$operation($params);
             $result = $this->client->__soapCall($operation, $params, $options, $input_headers, $output_headers);
@@ -113,6 +119,7 @@ class SOAP_Client
 
             return false;
         }
+
         Kernel::delIgnoredError([0, E_WARNING]);
 
         // set_error_handler('springyErrorHandler');
@@ -122,7 +129,7 @@ class SOAP_Client
     }
 
     /**
-     *	\brief Retorna a última requisição.
+     *  \brief Retorna a última requisição.
      */
     public function getLastRequest()
     {
@@ -130,7 +137,7 @@ class SOAP_Client
     }
 
     /**
-     *	\brief Retorna a última resposta.
+     *  \brief Retorna a última resposta.
      */
     public function getLastResponse()
     {
@@ -138,9 +145,9 @@ class SOAP_Client
     }
 
     /**
-     *	\brief Pega o último erro.
+     *  \brief Pega o último erro.
      *
-     *	@return Retorna o último erro de execução do método SOAP
+     *  @return Retorna o último erro de execução do método SOAP
      */
     public function getError()
     {
@@ -149,7 +156,7 @@ class SOAP_Client
 }
 
 /**
- *	\brief Classe para construção de cabeçalho de autenticação Web Service Security (WSSE).
+ *  \brief Classe para construção de cabeçalho de autenticação Web Service Security (WSSE).
  */
 class WsseAuthHeader extends \SoapHeader
 {
@@ -157,11 +164,11 @@ class WsseAuthHeader extends \SoapHeader
     private $wss_ns = 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd';
 
     /**
-     *	\brief Método construtur.
+     *  \brief Método construtur.
      *
-     *	@param[in] (string) $user - username
-     *	@param[in] (string) $pass - password
-     *	@param[in] (string) $ns - namespace (optional)
+     *  @param[in] (string) $user - username
+     *  @param[in] (string) $pass - password
+     *  @param[in] (string) $ns - namespace (optional)
      */
     public function __construct($user, $pass, $ns = null)
     {

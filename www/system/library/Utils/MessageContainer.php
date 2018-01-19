@@ -3,10 +3,12 @@
  *  Springy.
  *
  *  \brief      Classe container de mensagens de texto.
- *  \copyright  Copyright (c) 2007-2016 Fernando Val
+ *
+ *  \copyright  Copyright (c) 2007-2018 Fernando Val
  *  \author     Allan Marques - allan.marques@ymail.com
+ *
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.1.2
+ *  \version    0.1.2.1
  *  \ingroup    framework
  */
 
@@ -124,16 +126,19 @@ class MessageContainer implements ArrayAccess
 
     /**
      *  \brief Concatena este container de mensagens com outro.
+     *
      *  \param [in] (\Springy\Utils\MessageContainer $messageContainer).
      */
-    public function merge(MessageContainer $messageContainer)
+    public function merge(self $messageContainer)
     {
         $this->setMessages($messageContainer->getMessages());
     }
 
     /**
      *  \brief Seta as mensagens do container.
-     *  \param [in] (rray) $messages
+     *
+     *  \param array $messages.
+     *
      *  \return (\Springy\Utils\MessageContainer).
      */
     public function setMessages(array $messages)
@@ -147,6 +152,7 @@ class MessageContainer implements ArrayAccess
 
     /**
      *  \brief Retorna as mensagens do container.
+     *
      *  \return (array).
      */
     public function getMessages()
@@ -156,6 +162,7 @@ class MessageContainer implements ArrayAccess
 
     /**
      *  \brief Destroi as mensagens com essa chave de identificação.
+     *
      *  \param [in] (string) $key.
      */
     public function forget($key)
@@ -165,8 +172,10 @@ class MessageContainer implements ArrayAccess
 
     /**
      *  \brief Retorna se a mensagem é única para a chave identificadora.
+     *
      *  \param [in] (string) $key - Chave identificadora
      *  \param [in] (string) $msg - Mensagem
+     *
      *  \return (boolean).
      */
     protected function unique($key, $msg)
@@ -176,9 +185,11 @@ class MessageContainer implements ArrayAccess
 
     /**
      *  \brief Compila a mensagem substituindo os placeholders pelas mensagens em si.
+     *
      *  \param [in] (string) $key - Chave identificadora
      *  \param [in] (string) $msg - Mensagem
      *  \param [in] (variant) $format - Formato com o placeholder
+     *
      *  \return (array).
      */
     protected function formatMsg($key, $msg, $format = null)
@@ -195,7 +206,9 @@ class MessageContainer implements ArrayAccess
 
     /**
      *  \brief Retorna o formato com o placeholder.
+     *
      *  \param [in] (string) $format
+     *
      *  \return (string).
      */
     protected function format($format = null)
@@ -209,7 +222,9 @@ class MessageContainer implements ArrayAccess
 
     /**
      *  \brief mesmo que 'has()'.
+     *
      *  \param [in] (variant) $offset
+     *
      *  \return (variant).
      */
     public function offsetExists($offset)
@@ -219,7 +234,9 @@ class MessageContainer implements ArrayAccess
 
     /**
      *  \brief mesmo que 'get()'.
+     *
      *  \param [in] (variant) $offset
+     *
      *  \return (variant).
      */
     public function offsetGet($offset)
@@ -229,6 +246,7 @@ class MessageContainer implements ArrayAccess
 
     /**
      *  \brief Mesmo que 'add()'.
+     *
      *  \param [in] (variant) $offset
      *  \param [in] (variant) $value.
      */
@@ -239,6 +257,7 @@ class MessageContainer implements ArrayAccess
 
     /**
      *  \brief Mesmo que 'forget()'.
+     *
      *  \param [in] (variant) $offset.
      */
     public function offsetUnset($offset)

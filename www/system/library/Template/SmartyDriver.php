@@ -3,10 +3,12 @@
  *  Springy.
  *
  *  \brief      Classe driver de tratamento de templates utilizando Smarty como mecanismo de renderização.
- *  \copyright  ₢ 2007-2016 Fernando Val
+ *
+ *  \copyright  ₢ 2007-2018 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
+ *
  *  \see        http://www.smarty.net/
- *  \version    1.7.1.13
+ *  \version    1.7.1.14
  *  \ingroup    framework
  */
 
@@ -167,9 +169,9 @@ class SmartyDriver implements TemplateDriverInterface
             // Verifica se existe o diretório e dentro dele um template com o nome da página e
             // havendo, usa como caminho relativo adicionao. Se não houver, limpa o caminho relativo.
             // if (is_dir($path) && file_exists($path . DIRECTORY_SEPARATOR . $templateName . self::TPL_NAME_SUFIX)) {
-                // $relative_path = (empty($relative_path_page) ? '' : DIRECTORY_SEPARATOR) . $relative_path_page;
+            //     $relative_path = (empty($relative_path_page) ? '' : DIRECTORY_SEPARATOR) . $relative_path_page;
             // } else {
-                // $relative_path = '';
+            //     $relative_path = '';
             // }
 
             // Ajusta os caminhos de template
@@ -258,8 +260,8 @@ class SmartyDriver implements TemplateDriverInterface
         }
 
         // if ( Configuration::get('template', 'debug') ) {
-            // $this->tplObj->muteExpectedErrors();
-            // $this->tplObj->display_debug( $this->tplObj );
+        //     $this->tplObj->muteExpectedErrors();
+        //     $this->tplObj->display_debug( $this->tplObj );
         // }
 
         return $this->tplObj->fetch($this->templateName.self::TPL_NAME_SUFIX, $this->templateCacheId, $this->templateCompileId);

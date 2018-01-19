@@ -181,11 +181,7 @@ class DBSelect extends DBExpression
 
         $sql .= ($this->inner ? $this->inner : '');
 
-        /**if (Session::defined('_developer')) {
-            $sql .= (($this->conds instanceof DBWhere) ? 'WHERE ' . $this->conds . "\n" : '');
-        } else {*/
-            $sql .= (strlen($this->conds) ? 'WHERE '.$this->conds."\n" : '');
-        //}
+        $sql .= (strlen($this->conds) ? 'WHERE '.$this->conds."\n" : '');
 
         $sql .= ($this->group ? 'GROUP BY '.implode(', ', $this->group)."\n" : '');
 
