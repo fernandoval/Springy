@@ -3,10 +3,12 @@
  *  Springy.
  *
  *  \brief      Classe para manipulação de arquivos do sistema de arquivos.
- *  \copyright  Copyright (c) 2007-2016 Fernando Val
+ *
+ *  \copyright  Copyright (c) 2007-2018 Fernando Val
  *  \author     Allan Marques - allan.marques@ymail.com
+ *
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.1
+ *  \version    0.1.0.1
  *  \ingroup    framework
  */
 
@@ -23,9 +25,11 @@ use SplFileInfo;
 class File extends SplFileInfo
 {
     /**
-     * \brief Construtor da classe
+     * \brief Construtor da classe.
+     *
      * \param [in] (string) $filename - Caminho do arquivo
      * \param [in} (bool) $checkFile - Indicador se o arquivo deve ser checado
+     *
      * \throws InvalidArgumentException.
      */
     public function __construct($filename, $checkFile = true)
@@ -38,7 +42,8 @@ class File extends SplFileInfo
     }
 
     /**
-     * \brief Retorna a extensão do arquivo
+     * \brief Retorna a extensão do arquivo.
+     *
      * \return (string).
      */
     public function getExtension()
@@ -47,7 +52,8 @@ class File extends SplFileInfo
     }
 
     /**
-     * \brief Retorna o mimeType do arquivo
+     * \brief Retorna o mimeType do arquivo.
+     *
      * \return (string).
      */
     public function getMimeType()
@@ -58,10 +64,13 @@ class File extends SplFileInfo
     }
 
     /**
-     * \brief Move o arquivo para outro diretório e retorna um objeto representando-o
+     * \brief Move o arquivo para outro diretório e retorna um objeto representando-o.
+     *
      * \param [in] (string) $directory - Caminho do diretório para mover
      * \param [in] (string) $name - Novo nome do arquivo
+     *
      * \return (Springy\Files\File)
+     *
      * \throws RuntimeException.
      */
     public function moveTo($directory, $name = null)
@@ -70,6 +79,7 @@ class File extends SplFileInfo
 
         if (!@rename($this->getPathname(), $target)) {
             $error = error_get_last();
+
             throw new RuntimeException(sprintf('Could not move the file "%s" to "%s" (%s)', $this->getPathname(), $target, strip_tags($error['message'])));
         }
 
@@ -79,10 +89,13 @@ class File extends SplFileInfo
     }
 
     /**
-     * \brief Cria um objeto reresentando que será movido no futuro
+     * \brief Cria um objeto reresentando que será movido no futuro.
+     *
      * \param [in] (string) $directory - Camino do diretório para mover
      * \param [in] (string) $name - Novo nome do arquivo
+     *
      * \return Springy\Files\File
+     *
      * \throws RuntimeException.
      */
     protected function getTargetFile($directory, $name = null)
@@ -99,8 +112,10 @@ class File extends SplFileInfo
     }
 
     /**
-     * \brief Retorna o nome real do arquivo
+     * \brief Retorna o nome real do arquivo.
+     *
      * \param [in] (string) $name
+     *
      * \return (string).
      */
     protected function getName($name)

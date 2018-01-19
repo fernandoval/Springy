@@ -3,10 +3,12 @@
  *  Springy.
  *
  *  \brief      Classe para manipulação de arquivos que foram criados por upload no sistema de arquivos.
- *  \copyright  Copyright (c) 2007-2016 Fernando Val
+ *
+ *  \copyright  Copyright (c) 2007-2018 Fernando Val
  *  \author     Allan Marques - allan.marques@ymail.com
+ *
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.1.2
+ *  \version    0.1.2.3
  *  \ingroup    framework
  */
 
@@ -29,12 +31,14 @@ class UploadedFile extends File
     protected $error;
 
     /**
-     * \brief Construtor da classe
+     * \brief Construtor da classe.
+     *
      * \param [in] (string) $filename - Caminho atual do arquivo
      * \param [in] (string) $originalName - Nome original do arquivo
      * \param [in] (string) $mimeType - MimeType do arquivo
      * \param [in] (integer) $size - Tamanho do arquivo em bytes
      * \param [in] (integer) $error - Código do erro
+     *
      * \throws RuntimeException.
      */
     public function __construct($filename, $originalName, $mimeType = null, $size = null, $error = null)
@@ -52,7 +56,8 @@ class UploadedFile extends File
     }
 
     /**
-     * \brief Retorna o nome original do arquivo enviado
+     * \brief Retorna o nome original do arquivo enviado.
+     *
      * \return (string).
      */
     public function getOriginalName()
@@ -61,7 +66,8 @@ class UploadedFile extends File
     }
 
     /**
-     * \brief Retorna a extensão original do arquivo enviado
+     * \brief Retorna a extensão original do arquivo enviado.
+     *
      * \return (string).
      */
     public function getOriginalExtension()
@@ -70,7 +76,8 @@ class UploadedFile extends File
     }
 
     /**
-     * \brief Retorna o mimeType original do arquivo enviado
+     * \brief Retorna o mimeType original do arquivo enviado.
+     *
      * \return (string).
      */
     public function getOriginalMimeType()
@@ -79,7 +86,8 @@ class UploadedFile extends File
     }
 
     /**
-     * \brief Retorna o tamanho original do arquivo enviado
+     * \brief Retorna o tamanho original do arquivo enviado.
+     *
      * \return (integer).
      */
     public function getOriginalSize()
@@ -88,7 +96,8 @@ class UploadedFile extends File
     }
 
     /**
-     * \brief Retorna o código do erro do upload se houve algum
+     * \brief Retorna o código do erro do upload se houve algum.
+     *
      * \return (integer).
      */
     public function getErrorCode()
@@ -97,8 +106,10 @@ class UploadedFile extends File
     }
 
     /**
-     * \brief Retorna a mensagem de erro do upload
+     * \brief Retorna a mensagem de erro do upload.
+     *
      * \staticvar array $errors
+     *
      * \return type.
      */
     public function getErrorMessage()
@@ -121,7 +132,8 @@ class UploadedFile extends File
     }
 
     /**
-     * \brief Retorna se o arquivo enviado é válido
+     * \brief Retorna se o arquivo enviado é válido.
+     *
      * \return (bool).
      */
     public function isValid()
@@ -130,10 +142,13 @@ class UploadedFile extends File
     }
 
     /**
-     * \brief Move o arquivo enviado para o diretório indicado
+     * \brief Move o arquivo enviado para o diretório indicado.
+     *
      * \param [in] (string) $directory - Caminho do diretório
      * \param [in] (string) $name - Novo nome do arquivo
+     *
      * \return Springy\Files\File
+     *
      * \throws RuntimeException.
      */
     public function moveTo($directory, $name = null)
@@ -143,6 +158,7 @@ class UploadedFile extends File
 
             if (!@move_uploaded_file($this->getPathname(), $target)) {
                 $error = error_get_last();
+
                 throw new RuntimeException(sprintf('Could not move the file "%s" to "%s" (%s)', $this->getPathname(), $target, strip_tags($error['message'])));
             }
 
@@ -155,7 +171,8 @@ class UploadedFile extends File
     }
 
     /**
-     * \brief Retorna o tamanho máximo do arquivo que pode ser enviado por upload
+     * \brief Retorna o tamanho máximo do arquivo que pode ser enviado por upload.
+     *
      * \return int.
      */
     public static function getMaxFilesize()
@@ -187,8 +204,10 @@ class UploadedFile extends File
 
     /**
      * \brief Transforma o array superglobal de arquivos $_FILES em uma
-     *        coleção de objetos Springy\Files\UploadedFile para manipulação facilitada
+     *        coleção de objetos Springy\Files\UploadedFile para manipulação facilitada.
+     *
      * \param [in] (array) $files - $_FILES superglobal
+     *
      * \return (array).
      */
     public static function convertPHPUploadedFiles($files)
@@ -203,8 +222,10 @@ class UploadedFile extends File
     }
 
     /**
-     * \brief Transforma um item unico do arrey superglobal $_FILES em um objeto Springy\Files\UploadedFile
+     * \brief Transforma um item unico do arrey superglobal $_FILES em um objeto Springy\Files\UploadedFile.
+     *
      * \param [in] (array) $file
+     *
      * \return \Springy\Files\UploadedFile.
      */
     protected static function convertPHPSinglePHPUploadedFile($file)
