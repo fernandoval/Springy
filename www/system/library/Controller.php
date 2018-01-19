@@ -3,10 +3,10 @@
  *  Springy.
  *
  *  \brief      Class Controller.
- *  \copyright  ₢ 2016 Fernando Val
+ *  \copyright  ₢ 2018 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \note       This class can be used to construct application controllers.
- *  \version    0.3.0.4
+ *  \version    0.4.0.5
  *  \ingroup    framework
  */
 
@@ -21,6 +21,8 @@ class Controller extends AclManager
     /// Define a URL to redirect the user if it is not signed ($authNeeded must be true). Can be a string or an array used by URI::buildUrl();
     protected $redirectUnsigned = false;
 
+    /// The template object
+    protected $template = null;
     /// Define if the template's page must be cached.
     protected $tplIsCached = false;
     /// Define the live time (in seconds) of the cache.
@@ -116,26 +118,26 @@ class Controller extends AclManager
      *
      *  This method can be used to start your controller's view template.
      *
-     *  A new Template object is created, it's cache is validated and then it is returned to the controller.
+     *  The $template object is created, it's cache is validated and then it is returned to the controller.
      *
-     *  \return Retorn the template object.
+     *  \return Return the template object.
      */
     protected function _template($template = null)
     {
-        $tpl = new Template($template);
+        $this->template = new Template($template);
 
         if ($this->tplIsCached) {
-            $tpl->setCaching('current');
-            $tpl->setCacheLifetime($this->tplCacheTime);
+            $this->template->setCaching('current');
+            $this->template->setCacheLifetime($this->tplCacheTime);
 
             if (!$this->tplCacheId) {
                 $this->tplCacheId = URI::currentPage();
             }
 
-            $tpl->setCacheId($this->tplCacheId);
+            $this->template->setCacheId($this->tplCacheId);
         }
 
-        return $tpl;
+        return $this->template;
     }
 
     /**

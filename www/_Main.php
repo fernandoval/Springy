@@ -3,9 +3,9 @@
  *  Springy.
  *
  *  \brief      System initialization script
- *  \copyright  ₢ 2007-2016 Fernando Val
+ *  \copyright  ₢ 2007-2018 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
- *  \version    4.3.0.31
+ *  \version    4.3.0.32
  *
  *  \defgroup framework Biblioteca do Framework
  *
@@ -170,7 +170,7 @@ if (isset($ControllerClassName)) {
         $PageController = new $ControllerClassName();
         $PageMethod = str_replace('-', '_', Springy\URI::getSegment(0, true));
 
-        if ($PageMethod && method_exists($PageController, $PageMethod)) {
+        if ($PageMethod && is_callable([$PageController, $PageMethod])) {
             call_user_func([$PageController, $PageMethod]);
         } elseif (method_exists($PageController, '_default')) {
             call_user_func([$PageController, '_default']);

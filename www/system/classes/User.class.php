@@ -136,7 +136,7 @@ class User extends Model implements IdentityInterface, AclUserInterface
     /**
      *  \brief The valitation rules to save into table.
      */
-    public function validationRules()
+    protected function validationRules()
     {
         return [
             'name'     => 'required',
@@ -149,7 +149,7 @@ class User extends Model implements IdentityInterface, AclUserInterface
     /**
      *  \brief Validation error messages.
      */
-    public function validationErrorMessages()
+    protected function validationErrorMessages()
     {
         return [
             'name' => [

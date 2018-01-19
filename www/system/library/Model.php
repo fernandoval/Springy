@@ -6,7 +6,7 @@
  *  \copyright  ₢ 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \note       Essa classe extende a classe DB.
- *  \version    2.3.0.46
+ *  \version    2.3.1.47
  *  \ingroup    framework
  */
 
@@ -417,9 +417,9 @@ class Model extends DB implements \Iterator
      *
      *  \return Retorna TRUE se encontrar um registro que se adeque aos filtros de busca. Retorna FALSE em caso contrário.
      */
-    public function load($filter = null)
+    public function load($filter = null, $embed = false)
     {
-        if ($this->query($filter) && $this->dbNumRows == 1) {
+        if ($this->query($filter, [], 0, 0, $embed) && $this->dbNumRows == 1) {
             $this->loaded = true;
         } else {
             $this->rows = [];

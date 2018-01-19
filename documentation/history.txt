@@ -2,9 +2,27 @@ Springy framework update history
 
 ------------------------------------------------------------------------------------ --- -- -
 dev
+    - cmd.php changed to be a *nix command line executable script (must run "chmod ug+x" to works);
+    - Added a template property into Controller class;
+    - Added option to embed in load method of Model;
+    - Bug fix in _Main.php to prevent execution trying of a non public function in controllers;
+    - Bug fix in Debug class;
+    - Bug fix in Error class to prevent memory overflow;
+    - Bug fix in cpf validation funcion of the Strings class;
+    - Function types into sample model User corrected.
+
+3.6.3
     - Added a method to remove a column from the conditions in DB\Condition class;
     - Added support to configuration files in JSON format;
-    - Added support to save configuration files in JSON.
+    - Added support to save configuration files in JSON;
+    - Implemented a better control of the component files;
+    - Adjustment in the template of the debug;
+    - Adjustment into Controller lib class;
+    - Adjustment into Errors lib class;
+    - Bug fix in method to get remote IP when used inside a local area network;
+    - Bug fix into Securyti\AclManager lib class;
+    - Bug fix into Utils\Strings_UTF8's removeAccentedChars method;
+    - Ended support to PHP 5.5.
 
 3.6.2
     - Fixed bug in Model that reset the row pointer after a save when it has calculated columns.

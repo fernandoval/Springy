@@ -3,10 +3,10 @@
  *  Springy.
  *
  *  \brief      Classe com métodos para diversos tipos de tratamento e validação de dados string.
- *  \copyright  Copyright (c) 2007-2016 Fernando Val
+ *  \copyright  Copyright (c) 2007-2017 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.12.19
+ *  \version    0.13.20
  *  \ingroup    framework
  */
 
@@ -325,11 +325,18 @@ class Strings
         return false;
     }
 
-    public static function cpf(&$cpf)
+    /**
+     *  \brief 
+     */
+    public static function cpf($cpf)
     {
+        if (!preg_match('/^[0-9]{3}\.?[0-9]{3}\.?[0-9]{3}\-?[0-9]{2}$/', $cpf)) {
+            return false;
+        }
+        
         $cpf = preg_replace('/[^0-9]/', '', $cpf);
-        // VERIFICA SE O QUE FOI INFORMADO É NÚMERO
-        if (!trim($cpf) || !is_numeric($cpf) || self::checkIsFake($cpf, 11)) {
+        
+        if (self::checkIsFake($cpf, 11)) {
             return false;
         }
 

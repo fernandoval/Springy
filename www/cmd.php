@@ -1,3 +1,4 @@
+#!/usr/bin/php
 <?php
 /** \file
  *  Springy.
@@ -5,7 +6,7 @@
  *	\brief      Script de execução via shell para crontab
  *  \copyright  ₢ 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
- *  \version    1.3.0.9
+ *  \version    2.0.0.10
  *  \ingroup    framework
  */
 if (!file_exists('sysconf.php')) {

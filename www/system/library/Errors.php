@@ -6,7 +6,7 @@
  *  \copyright  (c) 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
- *  \version    3.0.3.42
+ *  \version    3.0.4.43
  *  \ingroup    framework
  */
 
@@ -31,7 +31,7 @@ class Errors
     public function __construct($httpStatus = 200, $message = '')
     {
         if ($httpStatus >= 400) {
-            $debug = debug_backtrace();
+            $debug = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 1);
             $this->handler(E_USER_ERROR, $message, $debug[0]['file'], $debug[0]['line'], '', $httpStatus);
         }
     }

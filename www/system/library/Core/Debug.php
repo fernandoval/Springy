@@ -1,12 +1,12 @@
 <?php
-/** \file
+/** @file
  *  Springy.
  *
- *  \brief      Framework debug class.
- *  \copyright  ₢ 2007-2017 Fernando Val
- *  \author     Fernando Val - fernando.val@gmail.com
- *  \version    1.0.1.3
- *  \ingroup    framework
+ *  @brief      Framework debug class.
+ *  @copyright  ₢ 2007-2017 Fernando Val
+ *  @author     Fernando Val - fernando.val@gmail.com
+ *  @version    1.0.2.4
+ *  @ingroup    framework
  */
 
 namespace Springy\Core;
@@ -16,9 +16,9 @@ use Springy\Kernel;
 use Springy\URI;
 
 /**
- *  \brief Framework debug class.
+ *  @brief Framework debug class.
  *
- *  \warning This is a static class and can not be instantiated by user.
+ *  @warning This is a static class and can not be instantiated by user.
  */
 class Debug
 {
@@ -26,7 +26,7 @@ class Debug
     private static $debug = [];
 
     /**
-     *	\brief Add a information to the debug window.
+     *	@brief Add a information to the debug window.
      */
     public static function add($txt, $name = '', $highlight = true, $revert = true)
     {
@@ -47,14 +47,14 @@ class Debug
     }
 
     /**
-     *	\brief Get the debug backtrace.
+     *	@brief Get the debug backtrace.
      *
-     *	\param[in] (array) $debug array com o backtrace gerado
+     *	@param[in] (array) $debug array com o backtrace gerado
      */
-    public static function backtrace($debug = null)
+    public static function backtrace($debug = null, $limit = 10)
     {
         if (!is_array($debug)) {
-            $debug = debug_backtrace();
+            $debug = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, $limit);
         }
         array_shift($debug);
 
@@ -100,9 +100,9 @@ class Debug
     }
 
     /**
-     *	\brief Get the debug content in the string format.
+     *	@brief Get the debug content in the string format.
      *
-     *	\return Retorna uma string contendo os dados capturados em debug.
+     *	@return Retorna uma string contendo os dados capturados em debug.
      */
     public static function get()
     {
@@ -126,9 +126,9 @@ class Debug
     }
 
     /**
-     *	\brief Print out the debug content.
+     *	@brief Print out the debug content.
      *
-     *	\return void
+     *	@return void
      */
     public static function printOut()
     {
@@ -160,10 +160,10 @@ class Debug
     }
 
     /**
-     *	\brief Imprime os detalhes de uma variável em cores.
+     *	@brief Imprime os detalhes de uma variável em cores.
      *
-     *	\param[in] (variant) $par - variável
-     *	\return Retorna uma string HTML
+     *	@param[in] (variant) $par - variável
+     *	@return Retorna uma string HTML
      */
     public static function print_rc($par)
     {
