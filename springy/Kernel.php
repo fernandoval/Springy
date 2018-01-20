@@ -1,21 +1,23 @@
 <?php
-/** \file
+/** @file
  *  Springy.
  *
- *  \brief      Framework kernel class.
- *  \copyright  (c) 2007-2016 Fernando Val
- *  \author     Fernando Val - fernando.val@gmail.com
- *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
- *  \version    2.3.2.72
- *  \ingroup    framework
+ *  @brief      Framework kernel.
+ *
+ *  @copyright  (c) 2007-2018 Fernando Val
+ *  @author     Fernando Val - fernando.val@gmail.com
+ *  @author     Lucas Cardozo - lucas.cardozo@gmail.com
+ *
+ *  @version    2.4.0.73
+ *  @ingroup    framework
  */
 
 namespace Springy;
 
 /**
- *  \brief Framework kernel class.
+ *  @brief Framework kernel class.
  *
- *  \warning This is a static class and can not be instantiated by user.
+ *  @warning This is a static class and can not be instantiated by user.
  */
 class Kernel
 {
@@ -30,6 +32,7 @@ class Kernel
     const PATH_ROOT = 'ROOT';
     const PATH_SYSTEM = 'SYSTEM';
     const PATH_VENDOR = 'VENDOR';
+    const PATH_MIGRATION = 'MIGRATION';
 
     /// Start time
     private static $startime = null;
@@ -37,6 +40,12 @@ class Kernel
     private static $controller_root = [];
     /// Caminho do namespace do controller
     private static $controller_namespace = null;
+    /// The controller file path name
+    private static $controllerFile = null;
+    /// The controller file class name
+    private static $controllerName = null;
+    /// Run global pre-controller switch
+    private static $runGlobal = true;
 
     /// System environment
     private static $environment = '';
@@ -62,12 +71,342 @@ class Kernel
     private static $templateFuncs = [];
 
     /**
+     *  @brief Call the application controller if defined.
+     *
+     *  @return void
+     */
+    private static function _callController()
+    {
+        // Has a controller defined?
+        if (is_null(self::$controllerName)) {
+            return;
+        }
+
+        // Call hook controller
+        self::_callHookController();
+
+        // Controller class exists?
+        if (!class_exists(self::$controllerName)) {
+            new Errors(404, 'No '.self::$controllerName.' on '.self::$controllerFile);
+        }
+
+        /// The controller
+        $controller = new self::$controllerName();
+        /// The controller function
+        $pageMethod = self::_getControllerMethod($controller);
+
+        // The page method can be executed?
+        if (is_callable([$controller, $pageMethod])) {
+            call_user_func([$controller, $pageMethod]);
+        }
+
+        // Print out the debug
+        Core\Debug::printOut();
+    }
+
+    /**
+     *  @brief Start the global pre-controller hook if needed.
+     *
+     *  @return void
+     */
+    private static function _callGlobal()
+    {
+        // The global is disabled?
+        if (!self::$runGlobal) {
+            return;
+        }
+
+        /// Global pre-controller file path name
+        $globalPath = self::path(self::PATH_CONTROLLER).DIRECTORY_SEPARATOR.'_global.php';
+
+        // The global pre-controller exists?
+        if (!file_exists($globalPath)) {
+            return;
+        }
+
+        // Load the global pre-controller file
+        require_once $globalPath;
+        if (class_exists('Global_Controller')) {
+            // Create the global pre-controller class
+            new \Global_Controller();
+        }
+    }
+
+    /**
+     *  @brief Call the hook controller if exists.
+     *
+     *  @return void
+     */
+    private static function _callHookController()
+    {
+        /// The hook controller file name
+        $defaultFile = dirname(self::$controllerFile).DIRECTORY_SEPARATOR.'_default.php';
+
+        // Hook controller exists?
+        if (!file_exists($defaultFile)) {
+            return;
+        }
+
+        // Load the hook controller file
+        require $defaultFile;
+        if (class_exists('Default_Controller')) {
+            new \Default_Controller();
+        }
+    }
+
+    private static function _callSpecialCommands()
+    {
+        // Has a controller?
+        if (!is_null(self::$controllerName)) {
+            return;
+        }
+
+        /// The command
+        $command = URI::getSegment(0, false);
+
+        switch ($command) {
+            case '_':
+            case '_springy_':
+                new Core\Copyright(true);
+
+                return;
+            case '_pi_':
+                phpinfo();
+                ob_end_flush();
+
+                return;
+            case '_error_':
+                self::_testError();
+
+                break;
+            case '_system_bug_':
+            case '_system_bug_solved_':
+                self::_systemBugPage($command);
+
+                return;
+            case '__migration__':
+                // Cli mode only
+                if (!defined('STDIN')) {
+                    echo 'This script can be executed only in CLI mode.';
+                    exit(998);
+                }
+
+                require self::path(self::PATH_MIGRATION).DS.'app'.DS.'migrator.php';
+
+                $controller = new Migrator();
+                $controller->run();
+
+                return;
+
+        }
+
+        new Errors(404, 'Page not found');
+    }
+
+    /**
+     *  @brief Check if has a developer accessing for debug.
+     *
+     *  @return void
+     */
+    private static function _checkDevAccessDebug()
+    {
+        // Has a developer credential?
+        $devUser = Configuration::get('system', 'developer_user');
+        $devPass = Configuration::get('system', 'developer_pass');
+        if (!$devUser || !$devPass) {
+            return;
+        }
+
+        // Has developer credential access in query string?
+        if (URI::_GET($devUser) == $devPass) {
+            Cookie::set('_developer', true);
+        } elseif (URI::_GET($devUser) == 'off') {
+            // Turning off dev debug access?
+            Cookie::delete('_developer');
+        }
+
+        // Has a dev cookie?
+        if (Cookie::exists('_developer')) {
+            Configuration::set('system', 'maintenance', false);
+            Configuration::set('system', 'debug', true);
+        }
+
+        // Has a DBA credential?
+        $dbaUser = Configuration::get('system', 'dba_user');
+        if (!Configuration::get('system', 'debug') || !$dbaUser) {
+            return;
+        }
+
+        // Has DBA credential access in query string?
+        if (URI::_GET($dbaUser) == $devPass) {
+            Cookie::set('_dba', true);
+        } elseif (URI::_GET($dbaUser) == 'off') {
+            // Turning off DBA debug access?
+            Cookie::delete('_dba');
+        }
+
+        // Has a DBA cookie?
+        if (Cookie::exists('_dba')) {
+            Configuration::set('system', 'sql_debug', true);
+        }
+    }
+
+    /**
+     *  @brief Define the application controller.
+     *
+     *  @return void
+     */
+    private static function _defineController()
+    {
+        // Get controller file name
+        self::$controllerFile = URI::parseURI();
+        if (is_null(self::$controllerFile)) {
+            return;
+        }
+
+        // Validate the URI before load the controller
+        URI::validateURI();
+
+        // Load the controller file
+        require_once self::$controllerFile;
+
+        // Define o nome da classe controladora
+        self::$controllerName = str_replace('-', '_', URI::getControllerClass()).'_Controller';
+
+        // Bypass the global pre-controller?
+        if (defined('BYPASS_CONTROLLERS') || method_exists(self::$controllerName, '_ignore_global')) {
+            self::$runGlobal = false;
+        }
+    }
+
+    /**
+     *  @brief Get the name of method to be called in controller.
+     *
+     *  @param object $controller the controller.
+     *
+     *  @return string The name of method.
+     */
+    private static function _getControllerMethod($controller)
+    {
+        $pageMethod = str_replace('-', '_', URI::getSegment(0, true));
+
+        if (!$pageMethod || !is_callable([$controller, $pageMethod])) {
+            $pageMethod = '_default';
+        }
+
+        return $pageMethod;
+    }
+
+    /**
+     *  @brief Verify if HTTP authentication is required.
+     *
+     *  @return void
+     */
+    private static function _httpAuthNeeded()
+    {
+        $auth = Configuration::get('system', 'authentication');
+
+        // HTTP authentication credential not defined?
+        if (defined('STDIN') || !is_array($auth) || !isset($auth['user']) || !isset($auth['pass']) || Cookie::get('__sys_auth__')) {
+            return;
+        }
+
+        // HTTP authentication credential received and match?
+        if (isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW']) && $_SERVER['PHP_AUTH_USER'] == $auth['user'] && $_SERVER['PHP_AUTH_PW'] == $auth['pass']) {
+            Cookie::set('__sys_auth__', true);
+
+            return;
+        }
+
+        header('WWW-Authenticate: Basic realm="'.utf8_decode('What are you doing here?').'"');
+        header('HTTP/1.0 401 Unauthorized');
+        die('Unauthorized!');
+    }
+
+    /**
+     *  @brief Set HTTP headers.
+     *
+     *  @return void
+     */
+    private static function _httpStartup()
+    {
+        if (defined('STDIN')) {
+            return;
+        }
+
+        // Send Cache-Control header
+        header('Cache-Control: '.Configuration::get('system', 'cache-control'), true);
+    }
+
+    /**
+     *  @brief Verify the access to system bug page must be autenticated.
+     *
+     *  @return void
+     */
+    private static function _systemBugAccess()
+    {
+        // Has a credential to system bug page?
+        $auth = Configuration::get('system', 'bug_authentication');
+        if (empty($auth['user']) || empty($auth['pass'])) {
+            return;
+        }
+
+        // Is authenticated?
+        if (Cookie::get('__sys_bug_auth__')) {
+            return;
+        }
+
+        // Verify the credential
+        if (!isset($_SERVER['PHP_AUTH_USER']) || !isset($_SERVER['PHP_AUTH_PW']) || $_SERVER['PHP_AUTH_USER'] != $auth['user'] || $_SERVER['PHP_AUTH_PW'] != $auth['pass']) {
+            header('WWW-Authenticate: Basic realm="'.utf8_decode('What r u doing here?').'"');
+            new Springy\Errors(401, 'Unauthorized');
+        }
+
+        Cookie::set('__sys_bug_auth__', true);
+    }
+
+    private static function _systemBugPage($page)
+    {
+        // Check the access
+        self::_systemBugAccess();
+
+        $error = new Errors();
+
+        if ($page == '_system_bug_') {
+            $error->bugList();
+
+            return;
+        }
+
+        if (preg_match('/^[0-9a-z]{8}$/', URI::getSegment(1, false))) {
+            $error->bugSolved(URI::getSegment(1, false));
+
+            return;
+        }
+
+        $error->handler(E_USER_ERROR, 'Page not found', __FILE__, __LINE__, '', 404);
+    }
+
+    /**
+     *  @brief Test a HTTP error.
+     *
+     *  @return void
+     */
+    private static function _testError()
+    {
+        if ($error = URI::getSegment(0)) {
+            new Errors((int)$error, 'System error');
+        }
+    }
+
+    /**
      *  \brief Start system environment.
      */
     public static function initiate($sysconf, $startime = null)
     {
         ini_set('date.timezone', $sysconf['TIMEZONE']);
 
+        // Define the application properties
         self::$startime = is_null($startime) ? microtime(true) : $startime;
         self::systemName($sysconf['SYSTEM_NAME']);
         self::systemVersion($sysconf['SYSTEM_VERSION']);
@@ -79,17 +418,40 @@ class Kernel
             isset($sysconf['ENVIRONMENT_VARIABLE']) ? $sysconf['ENVIRONMENT_VARIABLE'] : ''
         );
 
-        self::path(self::PATH_LIBRARY, isset($sysconf['LIBRARY_PATH']) ? $sysconf['LIBRARY_PATH'] : realpath(dirname(__FILE__)));
+        // Define the application paths
+        self::path(self::PATH_LIBRARY, isset($sysconf['SPRINGY_PATH']) ? $sysconf['SPRINGY_PATH'] : realpath(dirname(__FILE__)));
         self::path(self::PATH_SYSTEM, isset($sysconf['SYSTEM_PATH']) ? $sysconf['SYSTEM_PATH'] : realpath(self::path(self::PATH_LIBRARY).DIRECTORY_SEPARATOR.'..'));
         self::path(self::PATH_ROOT, isset($sysconf['ROOT_PATH']) ? $sysconf['ROOT_PATH'] : realpath(self::path(self::PATH_SYSTEM).DIRECTORY_SEPARATOR.'..'));
         self::path(self::PATH_CONTROLLER, isset($sysconf['CONTROLER_PATH']) ? $sysconf['CONTROLER_PATH'] : realpath(self::path(self::PATH_SYSTEM).DIRECTORY_SEPARATOR.'controllers'));
         self::path(self::PATH_CLASS, isset($sysconf['CLASS_PATH']) ? $sysconf['CLASS_PATH'] : realpath(self::path(self::PATH_SYSTEM).DIRECTORY_SEPARATOR.'classes'));
         self::path(self::PATH_CONFIGURATION, isset($sysconf['CONFIG_PATH']) ? $sysconf['CONFIG_PATH'] : realpath(self::path(self::PATH_SYSTEM).DIRECTORY_SEPARATOR.'conf'));
-        self::path(self::PATH_VENDOR, isset($sysconf['3RDPARTY_PATH']) ? $sysconf['3RDPARTY_PATH'] : realpath(self::path(self::PATH_SYSTEM).DIRECTORY_SEPARATOR.'other'));
+        self::path(self::PATH_VENDOR, isset($sysconf['VENDOR_PATH']) ? $sysconf['VENDOR_PATH'] : realpath(self::path(self::PATH_SYSTEM).DIRECTORY_SEPARATOR.'vendor'));
+        self::path(self::PATH_MIGRATION, isset($sysconf['PATH_MIGRATION']) ? $sysconf['PATH_MIGRATION'] : realpath(self::path(self::PATH_SYSTEM).DIRECTORY_SEPARATOR.'migration'));
+
+        // Pre start check list of application
+        self::_httpAuthNeeded();
+        self::_httpStartup();
+        self::_checkDevAccessDebug();
+
+        // Debug mode?
+        ini_set('display_errors', Configuration::get('system', 'debug') ? 1 : 0);
+
+        // System is under maintenance mode?
+        if (Configuration::get('system', 'maintenance')) {
+            Errors::displayError(503, 'The system is under maintenance');
+        }
+
+        // Start the application
+        self::_defineController();
+        self::_callGlobal();
+        self::_callController();
+        self::_callSpecialCommands();
     }
 
     /**
-     *  \brief Return the system runtime until now.
+     *  @brief Return the system runtime until now.
+     *
+     *  @return void
      */
     public static function runTime()
     {
@@ -97,10 +459,11 @@ class Kernel
     }
 
     /**
-     *  \brief The system environment.
+     *  @brief The system environment.
      *
-     *  \param string $env - if defined, set the system environment
-     *  \return A string containing the system environment
+     *  @param string $env - if defined, set the system environment.
+     *
+     *  @return A string containing the system environment
      */
     public static function environment($env = null, $alias = [], $envar = '')
     {
@@ -134,10 +497,11 @@ class Kernel
     }
 
     /**
-     *  \brief The system name.
+     *  @brief The system name.
      *
-     *  \param string $name - if defined, set the system name
-     *  \return A string containing the system name
+     *  @param string $name - if defined, set the system name.
+     *
+     *  @return string A string containing the system name.
      */
     public static function systemName($name = null)
     {
@@ -149,12 +513,13 @@ class Kernel
     }
 
     /**
-     *  \brief The system version.
+     *  @brief The system version.
      *
-     *  \param $major - if defined, set the major part of the system version. Can be an array with all parts.
-     *  \param $minor - if defined, set the minor part of the system version
-     *  \param $build - if defined, set the build part of the system version
-     *  \return A string containing the system version
+     *  @param mixed $major - if defined, set the major part of the system version. Can be an array with all parts.
+     *  @param mixed $minor - if defined, set the minor part of the system version.
+     *  @param mixed $build - if defined, set the build part of the system version.
+     *
+     *  @return string A string containing the system version.
      */
     public static function systemVersion($major = null, $minor = null, $build = null)
     {
@@ -174,11 +539,13 @@ class Kernel
     }
 
     /**
-     *  \brief The project code name.
+     *  @brief The project code name.
      *
-     *  \param string $name - if defined, set the project code name.
-     *  \return A string containing the project code name.
-     *  \see https://en.wikipedia.org/wiki/Code_name#Project_code_name
+     *  @param string $name - if defined, set the project code name.
+     *
+     *  @return string A string containing the project code name.
+     *
+     *  @see https://en.wikipedia.org/wiki/Code_name#Project_code_name
      */
     public static function projectCodeName($name = null)
     {
@@ -190,12 +557,13 @@ class Kernel
     }
 
     /**
-     *  \brief The system charset.
+     *  @brief The system charset.
      *
      *  Default UTF-8
      *
-     *  \param string $charset - if defined, set the system charset
-     *  \return A string containing the system charset
+     *  @param string $charset - if defined, set the system charset.
+     *
+     *  @return string A string containing the system charset.
      */
     public static function charset($charset = null)
     {
@@ -213,11 +581,12 @@ class Kernel
     }
 
     /**
-     *  \brief A path of the system.
+     *  @brief A path of the system.
      *
-     *  \param string $component - the component constant
-     *  \param string $path - if defined, change the path of the component
-     *  \return A string containing the path of the component
+     *  @param string $component - the component constant.
+     *  @param string $path - if defined, change the path of the component.
+     *
+     *  @return string A string containing the path of the component.
      */
     public static function path($component, $path = null)
     {
