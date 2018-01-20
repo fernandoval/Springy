@@ -14,6 +14,7 @@
 - Vendor directory moved to root;
 - Kernel now has the responsability by find controller and start the application;
 - Moved autoload and error handlers initiations to helper script;
+- Migrator class moved to library directory.
 - Starter script simplified.
 
 ## Version 3

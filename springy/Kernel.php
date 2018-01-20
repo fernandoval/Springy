@@ -191,8 +191,6 @@ class Kernel
                     exit(998);
                 }
 
-                require self::path(self::PATH_MIGRATION).DS.'app'.DS.'migrator.php';
-
                 $controller = new Migrator();
                 $controller->run();
 
