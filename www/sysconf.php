@@ -1,12 +1,15 @@
 <?php
-/** \file
+/** @file
  *  Springy.
  *
- *  \brief      Configurações do cerne do sistema
- *  \copyright	Copyright (c) 2007-2016 Fernando Val\n
- *  \author		Fernando Val  - fernando.val@gmail.com
- *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	3.2.17
+ *  @brief      Springy Framework configuration file.
+ *
+ *  @copyright	Copyright (c) 2007-2018 Fernando Val
+ *  @author		Fernando Val  - fernando.val@gmail.com
+ *
+ *  @warning	This is an important file and required to the good work of the system. Do not delete, move or rename it.
+ *
+ *  @version	3.3.18
  */
 
 /**
@@ -58,7 +61,7 @@
  */
 /**@{*/
 
-/// Configurações gerais do sistema
+/// General framework configuration
 $GLOBALS['SYSTEM'] = [
     'SYSTEM_NAME'       => 'Your system name',
     'SYSTEM_VERSION'    => [1, 0, 0],
@@ -89,8 +92,8 @@ $GLOBALS['SYSTEM'] = [
 $GLOBALS['SYSTEM']['SYSTEM_PATH'] = realpath($GLOBALS['SYSTEM']['ROOT_PATH'].DIRECTORY_SEPARATOR.'system');
 /// Diretório da biblioteca do sistema
 $GLOBALS['SYSTEM']['LIBRARY_PATH'] = realpath($GLOBALS['SYSTEM']['SYSTEM_PATH'].DIRECTORY_SEPARATOR.'library');
-/// Diretório de classes de terceiros que não são carregadas pelo autoload
-$GLOBALS['SYSTEM']['3RDPARTY_PATH'] = realpath($GLOBALS['SYSTEM']['SYSTEM_PATH'].DIRECTORY_SEPARATOR.'vendor');
+/// Vendor directory
+$GLOBALS['SYSTEM']['3RDPARTY_PATH'] = realpath($GLOBALS['SYSTEM']['ROOT_PATH'].DIRECTORY_SEPARATOR.'vendor');
 /// Diretório das controladoras
 $GLOBALS['SYSTEM']['CONTROLER_PATH'] = realpath($GLOBALS['SYSTEM']['SYSTEM_PATH'].DIRECTORY_SEPARATOR.'controllers');
 /// Diretório das classes da aplicação
