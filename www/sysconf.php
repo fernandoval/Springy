@@ -9,7 +9,7 @@
  *
  *  @warning	This is an important file and required to the good work of the system. Do not delete, move or rename it.
  *
- *  @version	3.3.18
+ *  @version	3.4.0.19
  */
 
 /**
@@ -79,10 +79,14 @@ $GLOBALS['SYSTEM'] = [
 
     'ROOT_PATH'      => realpath(dirname(__FILE__)),
     'SYSTEM_PATH'    => '',
-    'LIBRARY_PATH'   => '',
+    // Springy library directory
+    'SPRINGY_PATH'   => realpath(dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'springy'),
     'CONTROLER_PATH' => '',
     'CLASS_PATH'     => '',
-    'CONFIG_PATH'    => '',
+    // Configuration directory
+    'CONFIG_PATH'    => realpath(dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'conf'),
+    /// Vendor directory
+    'VENDOR_PATH'    => realpath(dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'vendor'),
 
     'CHARSET'  => 'UTF-8',
     'TIMEZONE' => 'America/Sao_Paulo',
@@ -90,16 +94,14 @@ $GLOBALS['SYSTEM'] = [
 
 /// Diretório do sistema
 $GLOBALS['SYSTEM']['SYSTEM_PATH'] = realpath($GLOBALS['SYSTEM']['ROOT_PATH'].DIRECTORY_SEPARATOR.'system');
-/// Diretório da biblioteca do sistema
-$GLOBALS['SYSTEM']['LIBRARY_PATH'] = realpath($GLOBALS['SYSTEM']['SYSTEM_PATH'].DIRECTORY_SEPARATOR.'library');
-/// Vendor directory
-$GLOBALS['SYSTEM']['3RDPARTY_PATH'] = realpath($GLOBALS['SYSTEM']['ROOT_PATH'].DIRECTORY_SEPARATOR.'vendor');
+/// Springy library directory (back compatibility entry)
+$GLOBALS['SYSTEM']['LIBRARY_PATH'] = $GLOBALS['SYSTEM']['SPRINGY_PATH'];
+/// Vendor directory (back compatibility)
+$GLOBALS['SYSTEM']['3RDPARTY_PATH'] = $GLOBALS['SYSTEM']['VENDOR_PATH'];
 /// Diretório das controladoras
 $GLOBALS['SYSTEM']['CONTROLER_PATH'] = realpath($GLOBALS['SYSTEM']['SYSTEM_PATH'].DIRECTORY_SEPARATOR.'controllers');
 /// Diretório das classes da aplicação
 $GLOBALS['SYSTEM']['CLASS_PATH'] = realpath($GLOBALS['SYSTEM']['SYSTEM_PATH'].DIRECTORY_SEPARATOR.'classes');
-/// Diretório das configurações do sistema
-$GLOBALS['SYSTEM']['CONFIG_PATH'] = realpath($GLOBALS['SYSTEM']['SYSTEM_PATH'].DIRECTORY_SEPARATOR.'conf');
 
 /// Diretório da classe de controle de versionamento de banco de dados
 $GLOBALS['SYSTEM']['MIGRATION_PATH'] = realpath($GLOBALS['SYSTEM']['SYSTEM_PATH'].DIRECTORY_SEPARATOR.'migration');

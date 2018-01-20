@@ -8,7 +8,10 @@
 - Bug fix in Debug class;
 - Bug fix in Error class to prevent memory overflow;
 - Bug fix in cpf validation funcion of the Strings class;
-- Function types into sample model User corrected.
+- Function types into sample model User corrected;
+- Configuration directory moved to root;
+- Library directory moved to /springy;
+- Vendor directory moved to root.
 
 ## Version 3
 ### 3.6.3

@@ -2,11 +2,11 @@
 /**	\file
  *	Springy.
  *
- *  \copyright Copyright (c) 2007-2015 FVAL Consultoria e Informática Ltda.\n
+ *  \copyright Copyright (c) 2007-2015 FVAL Consultoria e Informï¿½tica Ltda.\n
  *  \copyright Copyright (c) 2007-2015 Fernando Val\n
  *
  *	\brief     Autoload initialization script for PHPUnit
- *	\warning   Este arquivo é parte integrante do framework e não pode ser omitido
+ *	\warning   Este arquivo ï¿½ parte integrante do framework e nï¿½o pode ser omitido
  *	\version   0.2
  *  \author    Fernando Val - fernando.val@gmail.com
  *	\ingroup   tests
