@@ -33,8 +33,8 @@
  *  \li 'CMS' - Liga ou desliga o sistema Mini CMS.
  *  \li 'ROOT_PATH' - Diretório root da aplicação.
  *  \li 'SYSTEM_PATH' - Diretório do sistema.
- *  \li 'LIBRARY_PATH' - Diretório da biblioteca do sistema.
- *  \li '3RDPARTY_PATH' - Diretório da biblioteca de classes de terceiros.
+ *  \li 'SPRINGY_PATH' - Diretório da biblioteca do sistema.
+ *  \li 'VENDOR_PATH' - Diretório da biblioteca de classes de terceiros.
  *  \li 'CONTROLER_PATH' - Diretório das classes da aplicação.
  *  \li 'CLASS_PATH' - Diretório das classes da aplicação.
  *  \li 'CONFIG_PATH' - Diretório das configurações do sistema.

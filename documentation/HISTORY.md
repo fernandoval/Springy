@@ -12,9 +12,9 @@
 - Configuration directory moved to root;
 - Library directory moved to /springy;
 - Vendor directory moved to root;
-- Kernel received the responsability to find controller and start the application;
+- Kernel now has the responsability by find controller and start the application;
 - Moved autoload and error handlers initiations to helper script;
-- Starter script simplified;.
+- Starter script simplified.
 
 ## Version 3
 ### 3.6.3

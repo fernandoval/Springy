@@ -1,24 +1,23 @@
 <?php
-/** \file
+/** @file
  *  Springy.
  *
- *  \brief      Classe pa geração de hashes via BCrypt.
- *  \copyright  Copyright (c) 2007-2016 Fernando Val
- *  \author     Allan Marques - allan.marques@ymail.com
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.2.3
- *  \note       Esta biblioteca utiliza como dependência a classe password_compat de Anthony Ferrara.
- *  \ingroup    framework
+ *  @brief      BCrypt hash generator class.
+ *
+ *  @copyright  Copyright (c) 2007-2018 Fernando Val
+ *  @author     Allan Marques - allan.marques@ymail.com
+ *
+ *  @version    0.2.3.4
+ *  @note       This class uses the password_compat class of Anthony Ferrara as a dependency.
+ *  @ingroup    framework
  */
 
 namespace Springy\Security;
 
-//require sysconf('3RDPARTY_PATH').DS.'password_compat'.DS.'lib'.DS.'password.php';
-
 /**
- *  \brief  Classe pa geração de hashes via BCrypt.
+ *  @brief  BCrypt hash generator class.
  *
- *  \note   Esta classe utiliza como dependência a classe password_compat de Anthony Ferrara,
+ *  @note   Esta classe utiliza como dependência a classe password_compat de Anthony Ferrara,
  *          que deve ser previamente instalada com Composer ou manualmente.
  */
 class BCryptHasher implements HasherInterface
@@ -27,9 +26,10 @@ class BCryptHasher implements HasherInterface
     protected $salt;
 
     /**
-     *  \brief Construtor da classe.
-     *  \param [in] (int) $algorithm - Algoritmo.
-     *  \param [in] (string) $salt - Sal customizado.
+     *  @brief Construtor da classe.
+     *
+     *  @param int $algorithm - Algoritmo.
+     *  @param string $salt - Sal customizado.
      */
     public function __construct($algorithm = PASSWORD_DEFAULT, $salt = '')
     {
@@ -38,10 +38,12 @@ class BCryptHasher implements HasherInterface
     }
 
     /**
-     *  \brief Cria e retorna a string com o hash gerado da string passada por parâmetro.
-     *  \param [in] (string) $stringToHash - string para gerar o hash.
-     *  \param [in] (string) $times - numero de vezes para rodar o algorítmo.
-     *  \return (string).
+     *  @brief Cria e retorna a string com o hash gerado da string passada por parâmetro.
+     *
+     *  @param string $stringToHash - string para gerar o hash.
+     *  @param string $times - numero de vezes para rodar o algorítmo.
+     *
+     *  @return string.
      */
     public function make($stringToHash, $times = 10)
     {
@@ -49,10 +51,12 @@ class BCryptHasher implements HasherInterface
     }
 
     /**
-     *  \brief Verifica se a string equivale ao hash.
-     *  \param [in] (string) $stringToCHeck - String para comparar.
-     *  \param [in] (string) $hash - Hash para comparação.
-     *  \return (bool).
+     *  @brief Verifica se a string equivale ao hash.
+     *
+     *  @param string $stringToCHeck - String para comparar.
+     *  @param string $hash - Hash para comparação.
+     *
+     *  @return bool.
      */
     public function verify($stringToCheck, $hash)
     {
@@ -60,10 +64,12 @@ class BCryptHasher implements HasherInterface
     }
 
     /**
-     *  \brief Verifica se a string necessita ser criptografada novamente.
-     *  \param [in] (string) $hash - String para verificar.
-     *  \param [in] (string) $times - Quantas vezes o hash deveria ter sido rodado.
-     *  \return (bool).
+     *  @brief Verifica se a string necessita ser criptografada novamente.
+     *
+     *  @param string $hash - String para verificar.
+     *  @param string $times - Quantas vezes o hash deveria ter sido rodado.
+     *
+     *  @return bool.
      */
     public function needsRehash($hash, $times = 10)
     {
@@ -71,9 +77,11 @@ class BCryptHasher implements HasherInterface
     }
 
     /**
-     *  \brief Retorna array de opções para a função de hash do BCrypt.
-     *  \param [in] (int) $times - Numero de vezes que o algorítmo deve ser executado.
-     *  \return (array).
+     *  @brief Retorna array de opções para a função de hash do BCrypt.
+     *
+     *  @param int $times - Numero de vezes que o algorítmo deve ser executado.
+     *
+     *  @return array.
      */
     protected function options($times)
     {
