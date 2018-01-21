@@ -3,13 +3,16 @@
  *  Springy.
  *
  *  @brief      Child database class to construct embbeded objects.
+ *
+ *  @note       This class is experimental and not is terminated yet.
+ *
  *  @copyright  Copyright (c) 2016 Fernando Val
  *  @author     Fernando Val - fernando.val@gmail.com
- *  @warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  @version    0.1
+ *
+ *  @version    0.1.0.1
  *  @ingroup    framework
  */
-class Embed extends Conditions
+class Embed
 {
     /// The attribute name
     protected $name = '';
@@ -52,6 +55,7 @@ class Embed extends Conditions
 
     /**
      *  @brief Add an embedded object in this embedded object.
+     *
      *  @params $embedded must be an Embed object.
      */
     public function addEmbedded(self $embedded)
@@ -102,7 +106,9 @@ class Embed extends Conditions
 
     /**
      *  @brief The attribute name of the embedded object.
+     *
      *  @params string $name if defined change the attribute name.
+     *
      *  @return A string with the attribute name.
      */
     public function name($name = null)

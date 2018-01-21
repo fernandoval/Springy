@@ -8,7 +8,7 @@
  *  @author     Fernando Val - fernando.val@gmail.com
  *  @author     Lucas Cardozo - lucas.cardozo@gmail.com
  *
- *  @version    2.4.0.73
+ *  @version    2.4.0.74
  *  @ingroup    framework
  */
 
@@ -393,7 +393,7 @@ class Kernel
     private static function _testError()
     {
         if ($error = URI::getSegment(0)) {
-            new Errors((int)$error, 'System error');
+            new Errors((int) $error, 'System error');
         }
     }
 

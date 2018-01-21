@@ -8,7 +8,7 @@
  *  @author     Allan Marques - allan.marques@ymail.com
  *  @author     Fernando Val - fernando.val@gmail.com
  *
- *  @version    4.0.0.9
+ *  @version    4.0.0.10
  *  @ingroup    framework
  */
 
@@ -43,9 +43,9 @@ function app($service = null)
 /**
  *  @brief An alias for Springy\Configuration::get() method.
  *
- *  @param string $key
+ *  @param string $key the name of the configuration key in dotted notation.
  *
- *  @return mixed.
+ *  @return mixed the value of the key.
  */
 function config_get($key)
 {
@@ -55,9 +55,8 @@ function config_get($key)
 /**
  *  @brief An alias for Springy\Configuration::set() method.
  *
- *  @param string $key.
- *
- *  @param mixed $val.
+ *  @param string $key the name of the configuration key in dotted notation.
+ *  @param string $val the new value of the configuration key.
  */
 function config_set($key, $val)
 {
@@ -79,9 +78,9 @@ function sysconf($key)
 /**
  *  @brief An alias for Springy\Core\Debug::add() method.
  *
- *  @param string $txt
- *  @param string $name
- *  @param boolean $highlight
+ *  @param string $txt the text to be printed in debug.
+ *  @param string $name a name to the debut information.
+ *  @param boolean $highlight a flag to set if information will be highlighted.
  *  @param boolean $revert.
  *
  *  @return void
@@ -94,8 +93,8 @@ function debug($txt, $name = '', $highlight = true, $revert = true)
 /**
  *  @brief A var_dump and die help function.
  *
- *  @param mixed $var
- *  @param boolean $die.
+ *  @param mixed $var the variable or value to be sent to standard output.
+ *  @param boolean $die a boolen flag to determine if system die after print the value of $var.
  *
  *  @return void
  */
