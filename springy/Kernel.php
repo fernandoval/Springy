@@ -8,7 +8,7 @@
  *  @author     Fernando Val - fernando.val@gmail.com
  *  @author     Lucas Cardozo - lucas.cardozo@gmail.com
  *
- *  @version    2.4.0.74
+ *  @version    2.4.0.75
  *  @ingroup    framework
  */
 
@@ -379,6 +379,7 @@ class Kernel
      *  @brief System bug pages.
      *
      *  @param string $page the command.
+     *
      *  @return void
      */
     private static function _systemBugPage($page)

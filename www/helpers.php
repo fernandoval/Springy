@@ -8,7 +8,7 @@
  *  @author     Allan Marques - allan.marques@ymail.com
  *  @author     Fernando Val - fernando.val@gmail.com
  *
- *  @version    4.0.0.10
+ *  @version    4.0.0.11
  *  @ingroup    framework
  */
 
@@ -80,8 +80,8 @@ function sysconf($key)
  *
  *  @param string $txt the text to be printed in debug.
  *  @param string $name a name to the debut information.
- *  @param boolean $highlight a flag to set if information will be highlighted.
- *  @param boolean $revert.
+ *  @param bool $highlight a flag to set if information will be highlighted.
+ *  @param bool $revert.
  *
  *  @return void
  */
@@ -94,7 +94,7 @@ function debug($txt, $name = '', $highlight = true, $revert = true)
  *  @brief A var_dump and die help function.
  *
  *  @param mixed $var the variable or value to be sent to standard output.
- *  @param boolean $die a boolen flag to determine if system die after print the value of $var.
+ *  @param bool $die a boolen flag to determine if system die after print the value of $var.
  *
  *  @return void
  */

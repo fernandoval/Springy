@@ -1,15 +1,15 @@
 <?php
-/**	@file
- *	Springy.
+/** @file
+ *  Springy.
  *
- *	@brief      Application configuration handler.
-
+ *  @brief      Application configuration handler.
+ *
  *  @copyright  ₢ 2007-2018 Fernando Val
  *  @author     Fernando Val - fernando.val@gmail.com
  *  @author     Allan Marques - allan.marques@ymail.com
  *
- *	@version    3.0.1.14
- *	@ingroup    framework
+ *  @version    3.0.1.15
+ *  @ingroup    framework
  */
 
 namespace Springy;
@@ -164,9 +164,9 @@ class Configuration
     }
 
     /**
-     *	@brief Load a configuration for the given local.
+     *  @brief Load a configuration for the given local.
      *
-     *	@param string $local - the name of the local.
+     *  @param string $local - the name of the local.
      */
     public static function load($local)
     {
