@@ -81,10 +81,12 @@ $GLOBALS['SYSTEM'] = [
     'SYSTEM_PATH'    => '',
     // Springy library directory
     'SPRINGY_PATH'   => realpath(dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'springy'),
-    'CONTROLER_PATH' => '',
-    'CLASS_PATH'     => '',
     // Configuration directory
     'CONFIG_PATH'    => realpath(dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'conf'),
+    'CONTROLER_PATH' => '',
+    'CLASS_PATH'     => '',
+    // Migration scripts directory
+    'MIGRATION_PATH' => realpath(dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'migration'),
     /// Vendor directory
     'VENDOR_PATH'    => realpath(dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'vendor'),
 
@@ -102,8 +104,5 @@ $GLOBALS['SYSTEM']['3RDPARTY_PATH'] = $GLOBALS['SYSTEM']['VENDOR_PATH'];
 $GLOBALS['SYSTEM']['CONTROLER_PATH'] = realpath($GLOBALS['SYSTEM']['SYSTEM_PATH'].DIRECTORY_SEPARATOR.'controllers');
 /// Diretório das classes da aplicação
 $GLOBALS['SYSTEM']['CLASS_PATH'] = realpath($GLOBALS['SYSTEM']['SYSTEM_PATH'].DIRECTORY_SEPARATOR.'classes');
-
-/// Diretório da classe de controle de versionamento de banco de dados
-$GLOBALS['SYSTEM']['MIGRATION_PATH'] = realpath($GLOBALS['SYSTEM']['SYSTEM_PATH'].DIRECTORY_SEPARATOR.'migration');
 
 /**@}*/

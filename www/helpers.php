@@ -200,8 +200,8 @@ function springyAutoload($class)
         $file = $aclass[0];
     }
 
-    if (file_exists(sysconf('LIBRARY_PATH').DIRECTORY_SEPARATOR.$file.'.php')) {
-        require_once sysconf('LIBRARY_PATH').DIRECTORY_SEPARATOR.$file.'.php';
+    if (file_exists(sysconf('SPRINGY_PATH').DIRECTORY_SEPARATOR.$file.'.php')) {
+        require_once sysconf('SPRINGY_PATH').DIRECTORY_SEPARATOR.$file.'.php';
     } else {
         // procura na user_classes
 

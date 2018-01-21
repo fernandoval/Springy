@@ -424,7 +424,7 @@ class Kernel
         self::path(self::PATH_CLASS, isset($sysconf['CLASS_PATH']) ? $sysconf['CLASS_PATH'] : realpath(self::path(self::PATH_SYSTEM).DIRECTORY_SEPARATOR.'classes'));
         self::path(self::PATH_CONFIGURATION, isset($sysconf['CONFIG_PATH']) ? $sysconf['CONFIG_PATH'] : realpath(self::path(self::PATH_SYSTEM).DIRECTORY_SEPARATOR.'conf'));
         self::path(self::PATH_VENDOR, isset($sysconf['VENDOR_PATH']) ? $sysconf['VENDOR_PATH'] : realpath(self::path(self::PATH_SYSTEM).DIRECTORY_SEPARATOR.'vendor'));
-        self::path(self::PATH_MIGRATION, isset($sysconf['PATH_MIGRATION']) ? $sysconf['PATH_MIGRATION'] : realpath(self::path(self::PATH_SYSTEM).DIRECTORY_SEPARATOR.'migration'));
+        self::path(self::PATH_MIGRATION, isset($sysconf['MIGRATION_PATH']) ? $sysconf['MIGRATION_PATH'] : realpath(self::path(self::PATH_SYSTEM).DIRECTORY_SEPARATOR.'migration'));
 
         // Pre start check list of application
         self::_httpAuthNeeded();

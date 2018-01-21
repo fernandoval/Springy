@@ -1,20 +1,21 @@
 <?php
-/** \file
+/** @file
  *  Springy.
  *
- *  \brief     Script da classe de acesso a banco de dados.
- *  \copyright Copyright (c) 2007-2016 Fernando Val
- *  \author    Fernando Val - fernando.val@gmail.com
- *  \warning   Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version   0.3.7
- *  \ingroup   framework
+ *  @brief     Database migration structure class.
+ *
+ *  @copyright Copyright (c) 2007-2018 Fernando Val
+ *  @author    Fernando Val - fernando.val@gmail.com
+ *
+ *  @version   0.4.0.8
+ *  @ingroup   framework
  */
 
 namespace Springy;
 
 class Migrator extends DB
 {
-    const VERSION = '0.3.6';
+    const VERSION = '0.4.0.8';
     const MSG_INFORMATION = 0;
     const MSG_WARNING = 1;
     const MSG_ERROR = 2;
@@ -28,9 +29,7 @@ class Migrator extends DB
     const CS_SUCCESS = "\033[1;32m";
     const CS_WARNING = "\033[1;33m";
 
-    private $mgPath = '';
     private $revPath = '';
-    private $revFile = '';
     private $command = null;
     private $target = null;
     private $parameter = null;
@@ -40,13 +39,11 @@ class Migrator extends DB
     private $mustByApplied = [];
 
     /**
-     *  \brief Initiate the class.
+     *  @brief Initiate the class.
      */
     public function __construct()
     {
-        $this->mgPath = $GLOBALS['SYSTEM']['MIGRATION_PATH'];
-        $this->revPath = $this->mgPath.DS.'revisions'.DS;
-        $this->revFile = $this->revPath.'current'; // Legacy contral file
+        $this->revPath = Kernel::path(Kernel::PATH_MIGRATION).DS;
 
         $this->disableReportError();
 
@@ -54,38 +51,45 @@ class Migrator extends DB
     }
 
     /**
-     *  \brief Run the migrator.
+     *  @brief Run the migrator.
      */
     public function run()
     {
         ob_end_flush();
-        $this->output([
-            'FVAL PHP Framework for Web Applications'                         => self::MSG_INFORMATION,
-            'Database Migration Tool v'.self::VERSION                         => self::MSG_INFORMATION,
-            '---------------------------------------'                         => self::MSG_INFORMATION,
-            'Application: '.Kernel::systemName().' v'.Kernel::systemVersion() => self::MSG_INFORMATION,
-            ''                                                                => self::MSG_INFORMATION,
-        ]);
+
+        $this->output('', self::MSG_INFORMATION);
+        $this->output(self::CS_INFORMATION.'Springy'.self::CS_RESET.' v'.Kernel::VERSION, self::MSG_INFORMATION);
+        $this->output('A micro framework for smart developers.', self::MSG_INFORMATION);
+        $this->output('', self::MSG_INFORMATION);
+        $this->output('Database Migration Tool v'.self::VERSION, self::MSG_INFORMATION);
+        $this->output('--------------------------------', self::MSG_INFORMATION);
+        $this->output('', self::MSG_INFORMATION);
+        $this->output('Application: '.Kernel::systemName().' v'.Kernel::systemVersion(), self::MSG_INFORMATION);
+        $this->output('', self::MSG_INFORMATION);
 
         // Checks the configuration
         $this->controlTable = Configuration::get('db', '_migration.table_name') ?: '_database_version_control';
 
         // Checks existence of the control table
         $this->checkControlTable();
+        $this->getArguments();
         $this->checkCurrentRevision();
 
-        $this->getArguments();
-
-        if ($this->command == 'status') {
-            $this->showCurrentStatus();
-        } elseif ($this->command == 'migrate') {
-            $this->migrate();
-        } elseif ($this->command == 'rollback') {
-            $this->revert();
-        } elseif ($this->command == 'help') {
-            $this->showHelp();
-        } else {
-            $this->output('Invalid command!', self::MSG_WARNING);
+        switch ($this->command) {
+            case 'status':
+                $this->showCurrentStatus();
+                break;
+            case 'migrate':
+                $this->migrate();
+                break;
+            case 'rollback':
+                $this->revert();
+                break;
+            case 'help':
+                $this->showHelp();
+                break;
+            default:
+                $this->output('Invalid command!', self::MSG_WARNING);
         }
 
         $this->output('');
@@ -94,7 +98,7 @@ class Migrator extends DB
     }
 
     /**
-     *  \brief Checks the existence of the control table.
+     *  @brief Checks the existence of the control table.
      */
     private function checkControlTable()
     {
@@ -117,19 +121,23 @@ class Migrator extends DB
     }
 
     /**
-     *  \brief Checks the current release of the database.
+     *  @brief Checks the current release of the database.
      */
     private function checkCurrentRevision()
     {
+        $animatedChar = '|/-\\';
+
         $command = 'SELECT migration_at FROM '.$this->controlTable.' WHERE revision_number = ? AND script_file = ?';
-        $this->loadCurrentRevision(); // Legacy
         $revisions = $this->getRevisions();
-        $this->output('Loading revisions ', self::MSG_INFORMATION, false);
+        $this->output('Loading revisions : *', self::MSG_INFORMATION, false);
         foreach ($revisions as $revision) {
             $files = $this->getRevisionFiles($revision, self::DIR_UP);
             $oldControl = null;
             foreach ($files as $file) {
-                $this->output('.', self::MSG_INFORMATION, false);
+                $this->output(chr(8).substr($animatedChar, 0, 1), self::MSG_INFORMATION, false);
+
+                $animatedChar = substr($animatedChar, 1).substr($animatedChar, 0, 1);
+
                 $this->execute($command, [$revision, $file]);
                 if ($res = $this->fetchNext()) {
                     continue;
@@ -159,15 +167,11 @@ class Migrator extends DB
                 $this->mustByApplied[$revision][] = $file;
             }
         }
-        $this->output(self::CS_SUCCESS.' [OK]', self::MSG_INFORMATION, true);
-
-        if (file_exists($this->revFile)) {
-            unlink($this->revFile);
-        }
+        $this->output(chr(8).self::CS_SUCCESS.'OK', self::MSG_INFORMATION, true);
     }
 
     /**
-     *  \brief Set migration file as applied.
+     *  @brief Set migration file as applied.
      */
     private function setMigrationApplied($revision, $file, $result)
     {
@@ -178,7 +182,7 @@ class Migrator extends DB
     }
 
     /**
-     *  \brief Get arguments passed to the program.
+     *  @brief Get arguments passed to the program.
      */
     private function getArguments()
     {
@@ -203,7 +207,7 @@ class Migrator extends DB
     }
 
     /**
-     *  \brief Verify if two or more incompatible arguments was passed.
+     *  @brief Verify if two or more incompatible arguments was passed.
      */
     private function validateArgument($arguments, $list, $isExclusive = false)
     {
@@ -235,7 +239,7 @@ class Migrator extends DB
     }
 
     /**
-     *  \brief Show help instructions.
+     *  @brief Show help instructions.
      */
     private function showHelp()
     {
@@ -256,7 +260,7 @@ class Migrator extends DB
     }
 
     /**
-     *  \brief Show current status.
+     *  @brief Show current status.
      */
     private function showCurrentStatus()
     {
@@ -271,7 +275,7 @@ class Migrator extends DB
     }
 
     /**
-     *  \brief Execute migrations.
+     *  @brief Execute migrations.
      */
     private function migrate()
     {
@@ -338,7 +342,7 @@ class Migrator extends DB
     }
 
     /**
-     *  \brief Execute migrations.
+     *  @brief Execute migrations.
      */
     private function revert()
     {
@@ -421,34 +425,7 @@ class Migrator extends DB
     }
 
     /**
-     *  \brief Load the current revisions from control file.
-     */
-    private function loadCurrentRevision()
-    {
-        $this->currentRevision = [];
-
-        // Check if revision control file exists and is writable
-        if (file_exists($this->revFile)) {
-            // return intval(file_get_contents($this->revFile));
-            $revisions = file_get_contents($this->revFile);
-            $aRevs = explode(',', $revisions);
-            foreach ($aRevs as $range) {
-                $aRange = explode('-', $range);
-                if (count($aRange) == 1) {
-                    $this->currentRevision[(int) $aRange[0]] = (int) $aRange[0];
-                } else {
-                    $this->currentRevision[(int) $aRange[0]] = (int) $aRange[1];
-                }
-            }
-
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     *  \brief Get all revision directories.
+     *  @brief Get all revision directories.
      */
     private function getRevisions()
     {
@@ -466,7 +443,7 @@ class Migrator extends DB
     }
 
     /**
-     *  \brief Get script files from revision directory.
+     *  @brief Get script files from revision directory.
      */
     private function getRevisionFiles($revision, $direction)
     {
@@ -493,7 +470,7 @@ class Migrator extends DB
     }
 
     /**
-     *  \brief Get the path of revisions' scripts.
+     *  @brief Get the path of revisions' scripts.
      */
     private function getScriptsPath($revision, $direction)
     {
@@ -501,7 +478,7 @@ class Migrator extends DB
     }
 
     /**
-     *  \brief Get name of the scripts' subdirectory.
+     *  @brief Get name of the scripts' subdirectory.
      */
     private function getScriptsSubdir($direction)
     {
@@ -515,40 +492,41 @@ class Migrator extends DB
     }
 
     /**
-     *  \brief Run a revision file.
+     *  @brief Run a revision file.
      */
     private function runFile($file)
     {
         $extension = strtolower(pathinfo($file, PATHINFO_EXTENSION));
 
         switch ($extension) {
-        case 'sql':
-            $content = file_get_contents($file);
-            if ($content === false) {
-                $this->setError('Cannot open file '.self::CS_INFORMATION.$file.self::CS_RESET);
-
-                return false;
-            }
-
-            try {
-                if (!$this->execute($content)) {
-                    $this->setError($this->statmentErrorInfo());
+            case 'sql':
+                $content = file_get_contents($file);
+                if ($content === false) {
+                    $this->setError('Cannot open file '.self::CS_INFORMATION.$file.self::CS_RESET);
 
                     return false;
                 }
 
-                return true;
-            } catch (Exception $e) {
-                $this->setError('['.self::CS_ERROR.$e->getCode().self::CS_RESET.'] '.$e->getMessage().' in '.self::CS_WARNING.$file.self::CS_RESET);
-            }
-            break;
+                try {
+                    if (!$this->execute($content)) {
+                        $this->setError($this->statmentErrorInfo());
+
+                        return false;
+                    }
+
+                    return true;
+                } catch (Exception $e) {
+                    $this->setError('['.self::CS_ERROR.$e->getCode().self::CS_RESET.'] '.$e->getMessage().' in '.self::CS_WARNING.$file.self::CS_RESET);
+                }
+
+                break;
         }
 
         return false;
     }
 
     /**
-     *  \brief Print a message to output device.
+     *  @brief Print a message to output device.
      */
     private function output($message, $type = 0, $lineBreak = true)
     {
@@ -556,33 +534,36 @@ class Migrator extends DB
             foreach ($message as $part => $type) {
                 $this->output($part, $type);
             }
-        } else {
-            switch ($type) {
-                case self::MSG_INFORMATION:
-                    $msgTemplate = '%s';
-                    break;
-                case self::MSG_WARNING:
-                    $msgTemplate = self::CS_WARNING.'WARNING:'.self::CS_RESET.' %s';
-                    break;
-                case self::MSG_ERROR:
-                    $msgTemplate = self::CS_ERROR.'ERROR:'.self::CS_RESET.' %s';
-                    break;
-                default:
-                    $msgTemplate = '%s';
-            }
 
-            printf($msgTemplate, $message);
-            echo self::CS_RESET;
-
-            if (!$lineBreak) {
-                return;
-            }
-            echo "\n";
+            return;
         }
+
+        switch ($type) {
+            case self::MSG_INFORMATION:
+                $msgTemplate = '%s';
+                break;
+            case self::MSG_WARNING:
+                $msgTemplate = self::CS_WARNING.'WARNING:'.self::CS_RESET.' %s';
+                break;
+            case self::MSG_ERROR:
+                $msgTemplate = self::CS_ERROR.'ERROR:'.self::CS_RESET.' %s';
+                break;
+            default:
+                $msgTemplate = '%s';
+        }
+
+        printf($msgTemplate, $message);
+        echo self::CS_RESET;
+
+        if (!$lineBreak) {
+            return;
+        }
+
+        echo "\n";
     }
 
     /**
-     *  \brief Set a sistem error message.
+     *  @brief Set a sistem error message.
      */
     private function setError($error)
     {
