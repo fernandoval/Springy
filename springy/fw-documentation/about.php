@@ -1,13 +1,13 @@
 <?php
-/** \mainpage
+/** @mainpage
  *  ## Springy.
  *
- *  \version 3.6.1
+ *  @version 3.7.0
  *
- *  \copyright  Copyright (c) 2007-2016 Fernando Val
- *  \author     Fernando Val  - fernando.val@gmail.com
- *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
- *  \author     Allan Marques - allan.marques@ymail.com
+ *  @copyright  Copyright (c) 2007-2018 Fernando Val
+ *  @author     Fernando Val  - fernando.val@gmail.com
+ *  @author     Lucas Cardozo - lucas.cardozo@gmail.com
+ *  @author     Allan Marques - allan.marques@ymail.com
  *
  *
  *  ### Documentação ###

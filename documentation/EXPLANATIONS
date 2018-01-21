@@ -1,4 +1,4 @@
-# Springy
+Ôªø# Springy
 
 A micro framework for smart PHP developers.
 
@@ -8,100 +8,100 @@ Developer team:
 
 * 2007-2017 - Fernando Val
 
-### DocumentaÁ„o ###
+### Documenta√ß√£o ###
 
 
 
 O sistema MVC deste framework:
 ------------------------------
 
-Os models (modelos) nada mais s„o que classes para tratamento de dados ou funÁıes genÈricas ou de uso comum que n„o fazem parte do cerne do framework. Nesse framework os models s„o tratados simplesmento como "classes propriet·rias" e ficam armazenadas no diterÛrio de classes propriet·rias (ver estrutura de diretÛrios). O framework possui uma classe de tratamento de bancos da qual vocÍ poder· herdar suas classes para tratamento de tabelas em banco, simplesmente crie suas classes extendendo a classe Springy\Model.
+Os models (modelos) nada mais s√£o que classes para tratamento de dados ou fun√ß√µes gen√©ricas ou de uso comum que n√£o fazem parte do cerne do framework. Nesse framework os models s√£o tratados simplesmento como "classes propriet√°rias" e ficam armazenadas no diter√≥rio de classes propriet√°rias (ver estrutura de diret√≥rios). O framework possui uma classe de tratamento de bancos da qual voc√™ poder√° herdar suas classes para tratamento de tabelas em banco, simplesmente crie suas classes extendendo a classe Springy\Model.
 
-As views (visıes), que s„o o resultado visual do processamento, s„o tratadas como templates (modelos) e o desenvolvedor pode optar por utiliza as bibliotecas [Smarty](http://smarty.net) ou [Twig](http://twig.sensiolabs.org) como mecanismos de renderizaÁ„o, sendo que os templates Smarty dever„o ter a terminaÁ„o ".tpl.html" em seus nomes, enquanto para Twig dever„o ser terminados por ".twig.html". Os templates s„o armazenados no diretÛrio de templates que pode ter m˙ltiplos nÌveis de acordo com a necessidade do projeto.
+As views (vis√µes), que s√£o o resultado visual do processamento, s√£o tratadas como templates (modelos) e o desenvolvedor pode optar por utiliza as bibliotecas [Smarty](http://smarty.net) ou [Twig](http://twig.sensiolabs.org) como mecanismos de renderiza√ß√£o, sendo que os templates Smarty dever√£o ter a termina√ß√£o ".tpl.html" em seus nomes, enquanto para Twig dever√£o ser terminados por ".twig.html". Os templates s√£o armazenados no diret√≥rio de templates que pode ter m√∫ltiplos n√≠veis de acordo com a necessidade do projeto.
 
-As controladoras s„o os respons·veis pelo processamento especÌfico de cada funcionalidade da aplicaÁ„o e ficam armazenadas no diretÛrio de controladoras que, assim como o diretÛrio de templates, pode conter m˙ltiplos nÌveis para atender ‡s necessidades do projeto.
+As controladoras s√£o os respons√°veis pelo processamento espec√≠fico de cada funcionalidade da aplica√ß√£o e ficam armazenadas no diret√≥rio de controladoras que, assim como o diret√≥rio de templates, pode conter m√∫ltiplos n√≠veis para atender √†s necessidades do projeto.
 
 
-A estrurura de diretÛrios do framework:
+A estrurura de diret√≥rios do framework:
 ---------------------------------------
 
-Como todo framework voltado para o desemvolvimento de aplicaÁıes para web, o diretÛrio principal deste framework, È o diretÛrio raiz do site que, no caso do servidor web Apache (http://www.apache.org) È chamado de DOCUMENT_ROOT.
+Como todo framework voltado para o desemvolvimento de aplica√ß√µes para web, o diret√≥rio principal deste framework, √© o diret√≥rio raiz do site que, no caso do servidor web Apache (http://www.apache.org) √© chamado de DOCUMENT_ROOT.
 
-Dentro do diretÛrio principal, est· o script de inicializaÁ„o e respons·vel pela carga da controladora adequado, alÈm da localizaÁ„o e carga das classes propriet·rias e classes do framework que venham a ser utilizadas pela aplicaÁ„o, que chamaremos simplemente de "inicializador". No pacote de distribuiÁ„o, o inicializador vem denominado _Main.php.
+Dentro do diret√≥rio principal, est√° o script de inicializa√ß√£o e respons√°vel pela carga da controladora adequado, al√©m da localiza√ß√£o e carga das classes propriet√°rias e classes do framework que venham a ser utilizadas pela aplica√ß√£o, que chamaremos simplemente de "inicializador". No pacote de distribui√ß√£o, o inicializador vem denominado _Main.php.
 
-Existe um arquivo index.php, que normalmente È chamado pelo servidor web, mas este script simplesmente mata a execuÁ„o do PHP e retorna uma mensagem de acesso inv·lido. Isso foi feito pensando que vocÍ ir· trabalhar com MOD_REWRITE do Apache. Por esse motivo existe um arquivo .htaccess no diretÛrio raiz da aplicaÁ„o.
+Existe um arquivo index.php, que normalmente √© chamado pelo servidor web, mas este script simplesmente mata a execu√ß√£o do PHP e retorna uma mensagem de acesso inv√°lido. Isso foi feito pensando que voc√™ ir√° trabalhar com MOD_REWRITE do Apache. Por esse motivo existe um arquivo .htaccess no diret√≥rio raiz da aplica√ß√£o.
 
-T„o importante quando o inicializador È o script sysconf.php. Este script È o primeiro a ser carregado pelo inicializador e sua funÁ„o È definir as configuraÁıes principais do cerne da aplicaÁ„o.
+T√£o importante quando o inicializador √© o script sysconf.php. Este script √© o primeiro a ser carregado pelo inicializador e sua fun√ß√£o √© definir as configura√ß√µes principais do cerne da aplica√ß√£o.
 
-A seguir ser· explicada a funÁ„o de cada um dos diretÛrios do framework e, para isso, ser· utilizado o nome usado no pacote de distribuiÁ„o, pois nada impede que a equipe de desemvolvedores os altere e regonfigure o framework.
+A seguir ser√° explicada a fun√ß√£o de cada um dos diret√≥rios do framework e, para isso, ser√° utilizado o nome usado no pacote de distribui√ß√£o, pois nada impede que a equipe de desemvolvedores os altere e regonfigure o framework.
 
-Lista padr„o de diretÛrios do framework:
+Lista padr√£o de diret√≥rios do framework:
 
-* "www" : È o diretÛrio onde est· o inicializador e o sysconf.php. Em alguns ambientes essa pasta tem nomes como httpdocs ou public_html;
-* "system" : È onde est„o os subdiretÛrios do arquivos do framework e da aplicaÁ„o. Pos questıes de seguramÁa, recomenda-se que este diretÛrio esteja * fora da ·rvore naveg·vel da aplicaÁ„o, se seu servidor web permitir o acesso a arquivos fora da ·rvore do www. Neste caso È necess·rio ajustar o caminho no arquivo sysconf.php;
-* "library" : diretÛrio onde est„o armazenados as classes e bibliotecas do framework;
-* "classes" : diretÛrio onde s„o armazenadas as classes propriet·rias;
-* "conf" : diretÛrio onde s„o armazenados os scripts de configuraÁ„o do sistema;
-* "controllers" : diretÛrio onde as controladoras s„o armazenados (pode conter subdiretÛrios);
-* "other" : diretÛrio onde est„o armazenados as classes e bibliotecas de terceiros;
-* "templates" : diretÛrio onde s„o asmazenados os templates (pode conter subdiretÛrios);
-* "tpl_comp" : diretÛrio onde s„o asmazenados os templates compilados (o PHP deve ter direito de escrita dentro dele);
-* "tpl_cache" : diretÛrio onde a classe de templates ir· salvar as p·ginas cacheadas (o PHP deve ter direito de escrita dentro dele).
+* "www" : √© o diret√≥rio onde est√° o inicializador e o sysconf.php. Em alguns ambientes essa pasta tem nomes como httpdocs ou public_html;
+* "system" : √© onde est√£o os subdiret√≥rios do arquivos do framework e da aplica√ß√£o. Pos quest√µes de seguram√ßa, recomenda-se que este diret√≥rio esteja * fora da √°rvore naveg√°vel da aplica√ß√£o, se seu servidor web permitir o acesso a arquivos fora da √°rvore do www. Neste caso √© necess√°rio ajustar o caminho no arquivo sysconf.php;
+* "library" : diret√≥rio onde est√£o armazenados as classes e bibliotecas do framework;
+* "classes" : diret√≥rio onde s√£o armazenadas as classes propriet√°rias;
+* "conf" : diret√≥rio onde s√£o armazenados os scripts de configura√ß√£o do sistema;
+* "controllers" : diret√≥rio onde as controladoras s√£o armazenados (pode conter subdiret√≥rios);
+* "other" : diret√≥rio onde est√£o armazenados as classes e bibliotecas de terceiros;
+* "templates" : diret√≥rio onde s√£o asmazenados os templates (pode conter subdiret√≥rios);
+* "tpl_comp" : diret√≥rio onde s√£o asmazenados os templates compilados (o PHP deve ter direito de escrita dentro dele);
+* "tpl_cache" : diret√≥rio onde a classe de templates ir√° salvar as p√°ginas cacheadas (o PHP deve ter direito de escrita dentro dele).
 
 
 Como o sistema elege um script de controle (controladora):
 ----------------------------------------------------------
 
-Para determinar qual script de controle ser· carregado e executado, o sistema se baseia na URI recebida. Ele desmembra o URI em segmentos e varre o diretÛrio das controladoras, comeÁando pelo primeiro segmento do URI, da seguinte forma atÈ que a primeira condiÁ„o se revele verdadeira:
+Para determinar qual script de controle ser√° carregado e executado, o sistema se baseia na URI recebida. Ele desmembra o URI em segmentos e varre o diret√≥rio das controladoras, come√ßando pelo primeiro segmento do URI, da seguinte forma at√© que a primeira condi√ß√£o se revele verdadeira:
 
-1. H· um script PHP de nome igual ao segmento:p, acrescido do sufixo ".page";
-2. H· um subdiretÛrio de nome igual ao segmento e dentro dele h· um script denominado "index.page" e n„o mais segmentos.
+1. H√° um script PHP de nome igual ao segmento:p, acrescido do sufixo ".page";
+2. H√° um subdiret√≥rio de nome igual ao segmento e dentro dele h√° um script denominado "index.page" e n√£o mais segmentos.
 
-Se nenhuma das condiÁıes acima se mostrarem verdadeiras e houver um subdiretÛrio de nome igual ao segmento e houver mais algum segmento, o sistema passa para o prÛximo segmento e refaz as verificaÁıes acima. Isso repete atÈ que um script seja elegido controladora ou esgotem-se os segmentos do URI.
+Se nenhuma das condi√ß√µes acima se mostrarem verdadeiras e houver um subdiret√≥rio de nome igual ao segmento e houver mais algum segmento, o sistema passa para o pr√≥ximo segmento e refaz as verifica√ß√µes acima. Isso repete at√© que um script seja elegido controladora ou esgotem-se os segmentos do URI.
 
-Caso o sistema tenha eleito uma controladora, ele a carrega para a memÛria e a partir daÌ faz as verificaÁıes de exeÁ„o da controladora (veja o prÛximo capÌtulo).
+Caso o sistema tenha eleito uma controladora, ele a carrega para a mem√≥ria e a partir da√≠ faz as verifica√ß√µes de exe√ß√£o da controladora (veja o pr√≥ximo cap√≠tulo).
 
-N„o havendo uma controladora eleita, a p·gina de erro 404 È mostrada.
+N√£o havendo uma controladora eleita, a p√°gina de erro 404 √© mostrada.
 
 
-A prÈ-controladora _global:
+A pr√©-controladora _global:
 ---------------------------
 
-Antes de construir a controladora e fazer a chamada de seus mÈtodos, o framework verifica a existÍncia do script _global.php, no diretÛrio de controladoras. Caso esse arquivo exista, ser· carregado e seu mÈtodo construtor executado. Este script serve como um hook de inicializaÁ„o que sempre È executado antes de qualquer controladora ser carregada.
+Antes de construir a controladora e fazer a chamada de seus m√©todos, o framework verifica a exist√™ncia do script _global.php, no diret√≥rio de controladoras. Caso esse arquivo exista, ser√° carregado e seu m√©todo construtor executado. Este script serve como um hook de inicializa√ß√£o que sempre √© executado antes de qualquer controladora ser carregada.
 
-Caso alguma controladora necessite que a prÈ-controladora _global n„o seja carregada, acrescente o mÈtodo est·tico p˙bico de nome _ignore_global, ‡ mesma. Esse mÈtodo n„o ser· executado, mas sua existÍncia orientar· o framework a n„o executar a _global.
+Caso alguma controladora necessite que a pr√©-controladora _global n√£o seja carregada, acrescente o m√©todo est√°tico p√∫bico de nome _ignore_global, √† mesma. Esse m√©todo n√£o ser√° executado, mas sua exist√™ncia orientar√° o framework a n√£o executar a _global.
  
 
-A controladora e seus mÈtodos:
+A controladora e seus m√©todos:
 ------------------------------
 
-Eleito a controladora, o sistema cria uma classe com seu nome (o script È carregado automaticamente pelo sistema). Consequentemente o PHP ir· executar o mÈtodo construtor da classe, que poder· ser usado pela equipe de desenvolvimento para inicializar a vari·veis ou atÈ mesmo executar a principal aÁ„o da controladora, caso este n„o possua um mÈtodo para o tratamento do segmento de URI seguinte (como veremos a seguir).
+Eleito a controladora, o sistema cria uma classe com seu nome (o script √© carregado automaticamente pelo sistema). Consequentemente o PHP ir√° executar o m√©todo construtor da classe, que poder√° ser usado pela equipe de desenvolvimento para inicializar a vari√°veis ou at√© mesmo executar a principal a√ß√£o da controladora, caso este n√£o possua um m√©todo para o tratamento do segmento de URI seguinte (como veremos a seguir).
 
-Tendo sucesso ao carregar a controladora, o sistema verifica se h· segmento de URI seguinte e em caso afirmativo, busca por um mÈtodo de nome igual a este segmento. Havendo este mÈdoto, o executa.
+Tendo sucesso ao carregar a controladora, o sistema verifica se h√° segmento de URI seguinte e em caso afirmativo, busca por um m√©todo de nome igual a este segmento. Havendo este m√©doto, o executa.
 
-Caso a condiÁ„o anterior n„o aconteÁa, o sistema procura pelo mÈtodo _default e o executa, se existir.
+Caso a condi√ß√£o anterior n√£o aconte√ßa, o sistema procura pelo m√©todo _default e o executa, se existir.
 
 
 Fim do processamento:
 ---------------------
 
-ApÛs os mÈtodos da controladora terminarem sua execuÁ„o e devolverem o controle para o inicializador, este faz os tratamentos finais e encerra a aplicaÁ„o.
+Ap√≥s os m√©todos da controladora terminarem sua execu√ß√£o e devolverem o controle para o inicializador, este faz os tratamentos finais e encerra a aplica√ß√£o.
 
-Est· previsto para uma vers„o futura do framework o desenvolvimento de um hook de finalizaÁ„o a ser executado antes do sistema terminar.
+Est√° previsto para uma vers√£o futura do framework o desenvolvimento de um hook de finaliza√ß√£o a ser executado antes do sistema terminar.
 
 
 A biblioteca de classes:
 ------------------------
 
-O framework j· possuiu uma sÈrie de classes que podem ser utilizadas pela equipe de programadores a fim de facilitar e agilizar o desenvolvimento do projeto.
+O framework j√° possuiu uma s√©rie de classes que podem ser utilizadas pela equipe de programadores a fim de facilitar e agilizar o desenvolvimento do projeto.
 
-Para uma listagem completa das classes da biblioteca, acesse a documentaÁ„o do framework no seguinte endereÁo: http://framework.fval.net.br
+Para uma listagem completa das classes da biblioteca, acesse a documenta√ß√£o do framework no seguinte endere√ßo: http://framework.fval.net.br
 
 
 Bibliotecas Javascript inclusas no pacote:
 ------------------------------------------
 
-O framework j· contÈm as sequintes bibliotecas e componentes Javascript:
+O framework j√° cont√©m as sequintes bibliotecas e componentes Javascript:
 
 * jQuery - http://jquery.com/ - jQuery is a fast and concise JavaScript Library that simplifies HTML document traversing, event handling, animating, and Ajax interactions for rapid web development.
 * TinyMCE - http://tinymce.moxiecode.com/ - TinyMCE is a platform independent web based Javascript HTML WYSIWYG editor control released as Open Source under LGPL by Moxiecode Systems AB. It has the ability to convert HTML TEXTAREA fields or other HTML elements to editor instances. TinyMCE is very easy to integrate into other Content Management Systems.
@@ -111,14 +111,14 @@ O framework j· contÈm as sequintes bibliotecas e componentes Javascript:
 Direitos Autorais e Propriedade Intelectual:
 --------------------------------------------
 
-Este framework utiliza componentes na licenÁa GPL e outras licenÁas Open Source, entretanto esse framework È distribuÌdo sob a licenÁa MIT.
+Este framework utiliza componentes na licen√ßa GPL e outras licen√ßas Open Source, entretanto esse framework √© distribu√≠do sob a licen√ßa MIT.
 
-A pesar desse framework ser distribuÌdo sob uma licenÁa Open Source, recomendamos a leitura da Lei 9609 de 19/02/1998 para esclarecimentos quanto a direitos autorais http://www.planalto.gov.br/ccivil/Leis/L9609.htm brasileiros.
+A pesar desse framework ser distribu√≠do sob uma licen√ßa Open Source, recomendamos a leitura da Lei 9609 de 19/02/1998 para esclarecimentos quanto a direitos autorais http://www.planalto.gov.br/ccivil/Leis/L9609.htm brasileiros.
 
 Para detalhes de como utilizar esse framework, entre em contato com os autores.
 
 
-HistÛrico:
+Hist√≥rico:
 ----------
 
 Veja o arquivo history.txt
