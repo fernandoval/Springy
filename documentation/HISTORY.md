@@ -10,10 +10,11 @@
 - Bug fix in cpf validation funcion of the Strings class;
 - Function types into sample model User corrected;
 - Configuration directory moved to project root;
-- Created the var directory where system writes data during the course of its operation.
+- Created the var directory where system writes data during the course of its operation;
 - Template cache directory moved to var/cache;
 - Compiled template directory moved to var/compiled;
-- Library directory moved to /springy;
+- Library directory moved to project root and renamed from library to springy;
+- Application directory moved to project root and renamed from system to app;
 - Vendor directory moved to project root;
 - Kernel now has the responsability by find controller and start the application;
 - Moved autoload and error handlers initiations to helper script;

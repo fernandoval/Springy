@@ -24,7 +24,7 @@
 $conf = [
     'round_robin' => [
         'type'        => 'file',
-        'server_addr' => $GLOBALS['SYSTEM']['SYSTEM_PATH'].DIRECTORY_SEPARATOR.'tpl_comp',
+        'server_addr' => sysconf('VAR_PATH'),
         'server_port' => 11211,
     ],
     'cache' => [

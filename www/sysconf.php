@@ -30,14 +30,16 @@
  *  \li 'CONSIDER_PORT_NUMBER' - Informa à configuração por host que a porta deve ser considerada como parte do conteúdo.
  *  \li 'ENVIRONMENT_ALIAS' - Array contendo um conjunto \c chave => \c valor, onde \c chave representa um apelido para o ambiente \c valor.
  *    A \c chave pode ser uma expressão regular.
- *  \li 'CMS' - Liga ou desliga o sistema Mini CMS.
  *  \li 'ROOT_PATH' - Diretório root da aplicação.
- *  \li 'SYSTEM_PATH' - Diretório do sistema.
+ *  \li 'PROJECT_PATH' - Diretório root do projeto.
  *  \li 'SPRINGY_PATH' - Diretório da biblioteca do sistema.
- *  \li 'VENDOR_PATH' - Diretório da biblioteca de classes de terceiros.
+ *  \li 'CONFIG_PATH' - Diretório das configurações do sistema.
+ *  \li 'APP_PATH' - Diretório da aplicação.
  *  \li 'CONTROLER_PATH' - Diretório das classes da aplicação.
  *  \li 'CLASS_PATH' - Diretório das classes da aplicação.
- *  \li 'CONFIG_PATH' - Diretório das configurações do sistema.
+ *  \li 'VAR_PATH' - Diretório onde a aplicação irá salvar arquivos durante sua execução.
+ *  \li 'MIGRATION_PATH' - Diretório onde ficam os subdiretórios com os scriptes de mudança estrutural de banco de dados.
+ *  \li 'VENDOR_PATH' - Diretório da biblioteca de classes de terceiros.
  *  \li 'CHARSET' - Charset do sistema.
  *  \li 'TIMEZONE' - Timestamp do sistema
  *
@@ -84,12 +86,13 @@ $GLOBALS['SYSTEM'] = [
     'SPRINGY_PATH'   => realpath(dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'springy'),
     // Configuration directory
     'CONFIG_PATH'    => realpath(dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'conf'),
-    'SYSTEM_PATH'    => '',
+    // Application directory
+    'APP_PATH'       => realpath(dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'app'),
     'CONTROLER_PATH' => '',
     'CLASS_PATH'     => '',
     // Directory where the system writes data during the course of its operation
     'VAR_PATH'       => realpath(dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'var'),
-    // Migration scripts directory
+    // Directory for the subdirectories with migration scripts
     'MIGRATION_PATH' => realpath(dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'migration'),
     /// Vendor directory
     'VENDOR_PATH'    => realpath(dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'vendor'),
@@ -98,15 +101,15 @@ $GLOBALS['SYSTEM'] = [
     'TIMEZONE' => 'America/Sao_Paulo',
 ];
 
-/// Diretório do sistema
-$GLOBALS['SYSTEM']['SYSTEM_PATH'] = realpath($GLOBALS['SYSTEM']['ROOT_PATH'].DIRECTORY_SEPARATOR.'system');
+/// Application directory (back comptaibility entry)
+$GLOBALS['SYSTEM']['SYSTEM_PATH'] = $GLOBALS['SYSTEM']['APP_PATH'];
 /// Springy library directory (back compatibility entry)
 $GLOBALS['SYSTEM']['LIBRARY_PATH'] = $GLOBALS['SYSTEM']['SPRINGY_PATH'];
 /// Vendor directory (back compatibility)
 $GLOBALS['SYSTEM']['3RDPARTY_PATH'] = $GLOBALS['SYSTEM']['VENDOR_PATH'];
 /// Diretório das controladoras
-$GLOBALS['SYSTEM']['CONTROLER_PATH'] = realpath($GLOBALS['SYSTEM']['SYSTEM_PATH'].DIRECTORY_SEPARATOR.'controllers');
+$GLOBALS['SYSTEM']['CONTROLER_PATH'] = realpath($GLOBALS['SYSTEM']['APP_PATH'].DIRECTORY_SEPARATOR.'controllers');
 /// Diretório das classes da aplicação
-$GLOBALS['SYSTEM']['CLASS_PATH'] = realpath($GLOBALS['SYSTEM']['SYSTEM_PATH'].DIRECTORY_SEPARATOR.'classes');
+$GLOBALS['SYSTEM']['CLASS_PATH'] = realpath($GLOBALS['SYSTEM']['APP_PATH'].DIRECTORY_SEPARATOR.'classes');
 
 /**@}*/

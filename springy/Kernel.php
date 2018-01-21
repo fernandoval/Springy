@@ -29,16 +29,17 @@ class Kernel
     const PATH_CONF = 'CONF';
     const PATH_APPLICATION = 'APP';
     const PATH_VAR = 'VAR';
-    const PATH_CLASS = 'CLASS';
+    const PATH_CLASSES = 'CLASSES';
     const PATH_CONTROLLER = 'CONTROLLER';
     const PATH_LIBRARY = 'LIB';
     const PATH_ROOT = 'ROOT';
     const PATH_WEB_ROOT = 'ROOT';
-    const PATH_SYSTEM = 'APP';
     const PATH_VENDOR = 'VENDOR';
     const PATH_MIGRATION = 'MIGRATION';
     /// Path constants to back compatibility
     const PATH_CONFIGURATION = self::PATH_CONF;
+    const PATH_SYSTEM = self::APPLICATION;
+    const PATH_CLASS = self::PATH_CLASSES;
 
     /// Start time
     private static $startime = null;
@@ -443,12 +444,12 @@ class Kernel
         self::path(self::PATH_LIBRARY, isset($sysconf['SPRINGY_PATH']) ? $sysconf['SPRINGY_PATH'] : realpath(dirname(__FILE__)));
         self::path(self::PATH_PROJECT, isset($sysconf['PROJECT_PATH']) ? $sysconf['PROJECT_PATH'] : realpath(self::path(self::PATH_LIBRARY).DIRECTORY_SEPARATOR.'..'));
         self::path(self::PATH_CONF, isset($sysconf['CONFIG_PATH']) ? $sysconf['CONFIG_PATH'] : realpath(self::path(self::PATH_PROJECT).DIRECTORY_SEPARATOR.'conf'));
-        self::path(self::PATH_VAR, isset($sysconf['VAR_PATH']) ? $sysconf['VAR_PATH'] : realpath(self::path(self::PATH_PROJECT).DIRECTORY_SEPARATOR.'conf'));
-        self::path(self::PATH_SYSTEM, isset($sysconf['SYSTEM_PATH']) ? $sysconf['SYSTEM_PATH'] : realpath(self::path(self::PATH_LIBRARY).DIRECTORY_SEPARATOR.'..'));
-        self::path(self::PATH_CONTROLLER, isset($sysconf['CONTROLER_PATH']) ? $sysconf['CONTROLER_PATH'] : realpath(self::path(self::PATH_SYSTEM).DIRECTORY_SEPARATOR.'controllers'));
-        self::path(self::PATH_CLASS, isset($sysconf['CLASS_PATH']) ? $sysconf['CLASS_PATH'] : realpath(self::path(self::PATH_SYSTEM).DIRECTORY_SEPARATOR.'classes'));
-        self::path(self::PATH_VENDOR, isset($sysconf['VENDOR_PATH']) ? $sysconf['VENDOR_PATH'] : realpath(self::path(self::PATH_SYSTEM).DIRECTORY_SEPARATOR.'vendor'));
-        self::path(self::PATH_MIGRATION, isset($sysconf['MIGRATION_PATH']) ? $sysconf['MIGRATION_PATH'] : realpath(self::path(self::PATH_SYSTEM).DIRECTORY_SEPARATOR.'migration'));
+        self::path(self::PATH_VAR, isset($sysconf['VAR_PATH']) ? $sysconf['VAR_PATH'] : realpath(self::path(self::PATH_PROJECT).DIRECTORY_SEPARATOR.'var'));
+        self::path(self::PATH_APPLICATION, isset($sysconf['APP_PATH']) ? $sysconf['APP_PATH'] : realpath(self::path(self::PATH_PROJECT).DIRECTORY_SEPARATOR.'app'));
+        self::path(self::PATH_CONTROLLER, isset($sysconf['CONTROLER_PATH']) ? $sysconf['CONTROLER_PATH'] : realpath(self::path(self::PATH_APPLICATION).DIRECTORY_SEPARATOR.'controllers'));
+        self::path(self::PATH_CLASSES, isset($sysconf['CLASS_PATH']) ? $sysconf['CLASS_PATH'] : realpath(self::path(self::PATH_APPLICATION).DIRECTORY_SEPARATOR.'classes'));
+        self::path(self::PATH_MIGRATION, isset($sysconf['MIGRATION_PATH']) ? $sysconf['MIGRATION_PATH'] : realpath(self::path(self::PATH_PROJECT).DIRECTORY_SEPARATOR.'migration'));
+        self::path(self::PATH_VENDOR, isset($sysconf['VENDOR_PATH']) ? $sysconf['VENDOR_PATH'] : realpath(self::path(self::PATH_PROJECT).DIRECTORY_SEPARATOR.'vendor'));
 
         // Pre start check list of application
         self::_httpAuthNeeded();
