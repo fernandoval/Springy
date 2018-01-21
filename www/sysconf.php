@@ -76,14 +76,19 @@ $GLOBALS['SYSTEM'] = [
         '(www\.)?mydomain\.com' => 'production',
     ],
 
+    // Web server doc root directory
     'ROOT_PATH'      => realpath(dirname(__FILE__)),
-    'SYSTEM_PATH'    => '',
+    // Project root directory
+    'PROJECT_PATH'  => realpath(dirname(__FILE__).DIRECTORY_SEPARATOR.'..'),
     // Springy library directory
     'SPRINGY_PATH'   => realpath(dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'springy'),
     // Configuration directory
     'CONFIG_PATH'    => realpath(dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'conf'),
+    'SYSTEM_PATH'    => '',
     'CONTROLER_PATH' => '',
     'CLASS_PATH'     => '',
+    // Directory where the system writes data during the course of its operation
+    'VAR_PATH'       => realpath(dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'var'),
     // Migration scripts directory
     'MIGRATION_PATH' => realpath(dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'migration'),
     /// Vendor directory

@@ -9,13 +9,16 @@
 - Bug fix in Error class to prevent memory overflow;
 - Bug fix in cpf validation funcion of the Strings class;
 - Function types into sample model User corrected;
-- Configuration directory moved to root;
+- Configuration directory moved to project root;
+- Created the var directory where system writes data during the course of its operation.
+- Template cache directory moved to var/cache;
+- Compiled template directory moved to var/compiled;
 - Library directory moved to /springy;
-- Vendor directory moved to root;
+- Vendor directory moved to project root;
 - Kernel now has the responsability by find controller and start the application;
 - Moved autoload and error handlers initiations to helper script;
 - Migrator class moved to library directory;
-- Migration scripts directory moved to root;
+- Migration scripts directory moved to project root;
 - Starter script simplified.
 
 ## Version 3

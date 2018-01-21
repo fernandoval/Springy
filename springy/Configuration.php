@@ -1,19 +1,21 @@
 <?php
-/**	\file
+/**	@file
  *	Springy.
  *
- *	\brief      Application configuration handler.
- *  \copyright  ₢ 2007-2016 Fernando Val
- *  \author     Fernando Val - fernando.val@gmail.com
- *  \author     Allan Marques - allan.marques@ymail.com
- *	\version    3.0.1.13
- *	\ingroup    framework
+ *	@brief      Application configuration handler.
+
+ *  @copyright  ₢ 2007-2018 Fernando Val
+ *  @author     Fernando Val - fernando.val@gmail.com
+ *  @author     Allan Marques - allan.marques@ymail.com
+ *
+ *	@version    3.0.1.14
+ *	@ingroup    framework
  */
 
 namespace Springy;
 
 /**
- *  \brief Classe de configuração.
+ *  @brief Application configuration handler.
  *
  *  Esta classe é estática e invocada automaticamente pelo framework.
  */
@@ -29,13 +31,14 @@ class Configuration
     const LC_URI = 'uri';
 
     /**
-     *  \brief Pega o conteúdo de um registro de configuração.
+     *  @brief Pega o conteúdo de um registro de configuração.
      *
-     *  \param[in] (string) $local - nome do arquivo de configuração
-     *  \param[in] (string) $var - registro desejado
-     *  \param[in] (string) $var - registro desejado.\n
-     *      Se omitido, poderá ser utilizado o conceito de sub-níveis separedos por ponto.
-     *  \return se o registro existir, retorna seu valor, caso contrário retorna NULL
+     *  @param string $local - nome do arquivo de configuração
+     *  @param string $var - registro desejado
+     *  @param string $var - registro desejado.\n
+     *    Se omitido, poderá ser utilizado o conceito de sub-níveis separedos por ponto.
+     *
+     *  @return se o registro existir, retorna seu valor, caso contrário retorna NULL
      */
     public static function get($local, $var = null)
     {
@@ -60,18 +63,19 @@ class Configuration
     }
 
     /**
-     *  \brief Altera o valor de uma entrada de configuração.
+     *  @brief Altera o valor de uma entrada de configuração.
      *
      *  Esta alteração é temporária e estará ativa apenas durante a execução da aplicação.
      *  Nenhuma alteração será feita nos arquivos de configuração.
      *
-     *  \param[in] (string) $local - nome do arquivo de configuração
-     *  \param[in] (string) $var - nome da entrada de configuração
-     *  \param[in] (variant) $valor - novo valor da entrada de configuração
-     *  \param[in] (string) $var - registro desejado.\n
+     *  @param string $local - nome do arquivo de configuração
+     *  @param string $var - nome da entrada de configuração
+     *  @param mixed $valor - novo valor da entrada de configuração
+     *  @param string $var - registro desejado.\n
      *      Se omitido, poderá ser utilizado o conceito de sub-níveis separedos por ponto.
      *      Nesse caso, $local receberá o local separado por pontos e $var o valor a ser armazenado.
-     *  \return void
+     *
+     *  @return void
      */
     public static function set($local, $var, $value = null)
     {
@@ -94,7 +98,7 @@ class Configuration
     }
 
     /**
-     *  \bried Load the configuration file in JSON format.
+     *  @brief Load the configuration file in JSON format.
      */
     private static function _loadJSON($file, $local)
     {
@@ -115,7 +119,7 @@ class Configuration
     }
 
     /**
-     *  \brief Load the configuration file in PHP format.
+     *  @brief Load the configuration file in PHP format.
      */
     private static function _loadPHP($file, $local)
     {
@@ -143,7 +147,7 @@ class Configuration
     }
 
     /**
-     *  \brief Load the configuration file to the local.
+     *  @brief Load the configuration file to the local.
      */
     private static function _load($file, $local)
     {
@@ -160,19 +164,19 @@ class Configuration
     }
 
     /**
-     *	\brief Load a configuration for the given local.
+     *	@brief Load a configuration for the given local.
      *
-     *	\param[in] (string) $local - the name of the local.
+     *	@param string $local - the name of the local.
      */
     public static function load($local)
     {
         self::$confs[$local] = [];
 
         // Load the default configuration file
-        self::_load(Kernel::path(Kernel::PATH_CONFIGURATION).DS.$local.'.default', $local);
+        self::_load(Kernel::path(Kernel::PATH_CONF).DS.$local.'.default', $local);
 
         // Load the configuration file for the current environment
-        self::_load(Kernel::path(Kernel::PATH_CONFIGURATION).DS.Kernel::environment().DS.$local, $local);
+        self::_load(Kernel::path(Kernel::PATH_CONF).DS.Kernel::environment().DS.$local, $local);
 
         // Check if configuration was loaded
         if (empty(self::$confs[$local])) {
@@ -181,11 +185,11 @@ class Configuration
     }
 
     /**
-     *  \brief Save the local configuration to a JSON file.
+     *  @brief Save the local configuration to a JSON file.
      */
     public static function save($local)
     {
-        $fileName = Kernel::path(Kernel::PATH_CONFIGURATION).DS.Kernel::environment().DS.$local.'.json';
+        $fileName = Kernel::path(Kernel::PATH_CONF).DS.Kernel::environment().DS.$local.'.json';
 
         if (!file_put_contents($fileName, json_encode(self::$confs[$local]))) {
             new Errors(500, 'Can not write to '.$fileName);
