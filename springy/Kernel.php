@@ -8,7 +8,7 @@
  *  @author     Fernando Val - fernando.val@gmail.com
  *  @author     Lucas Cardozo - lucas.cardozo@gmail.com
  *
- *  @version    2.4.0.75
+ *  @version    2.4.0.76
  *  @ingroup    framework
  */
 
@@ -38,7 +38,7 @@ class Kernel
     const PATH_MIGRATION = 'MIGRATION';
     /// Path constants to back compatibility
     const PATH_CONFIGURATION = self::PATH_CONF;
-    const PATH_SYSTEM = self::APPLICATION;
+    const PATH_SYSTEM = self::PATH_APPLICATION;
     const PATH_CLASS = self::PATH_CLASSES;
 
     /// Start time
