@@ -15,7 +15,7 @@
     ],
     "extra": {
         "installer-paths": {
-            "www/system/vendor/{$name}": ["vendor/package"]
+            "vendor/{$name}": ["vendor/package"]
         },
         "post-install": {
             "components/jquery": {

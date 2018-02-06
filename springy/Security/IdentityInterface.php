@@ -1,61 +1,78 @@
 <?php
-/** \file
+/** @file
  *  Springy.
  *
- *  \brief      Interface para representar identidades que terão uma sessão na aplicação.
- *  \copyright  Copyright (c) 2007-2016 Fernando Val
- *  \author     Allan Marques - allan.marques@ymail.com
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.2.2
- *  \ingroup    framework
+ *  @brief      Interface para representar identidades que terão uma sessão na aplicação.
+ *
+ *  @copyright  (c) 2007-2018 Fernando Val
+ *  @author     Allan Marques - allan.marques@ymail.com
+ *  @author     Fernando Val - fernando.val@gmail.com
+ *
+ *  @version    0.2.2.4
+ *  @ingroup    framework
  */
 
 namespace Springy\Security;
 
 /**
- * \brief Interface para representar identidades que terão uma sessão na aplicação.
+ *  Session identity interface.
  */
 interface IdentityInterface
 {
     /**
-     *  \brief Carrega os dados da identidade de acordo com as credências passadas por parâmetro.
-     *  \param [in] (array) $data = Credenciais da identidade.
+     *  Loads the identity data by given credential.
+     *
+     *  This method is executed when the user is loaded by a given array of conditions for a query.
+     *
+     *  @param array $data the array with the condition to load the data.
+     *
+     *  @return void
      */
     public function loadByCredentials(array $data);
 
     /**
-     *  \brief Carrega os dados da identidade com os dados que estão guardados na sessão.
-     *  \param [in] (array) $data = Dados da sessão.
+     *  Load the identity class from the session.
+     *
+     *  @param array $data the array with the identity data.
+     *
+     *  @return void
      */
     public function fillFromSession(array $data);
 
     /**
-     *  \brief Retorna a chave identificadora da identidade.
-     *  \return (variant).
+     *  Get the identity id key.
+     *
+     *  @return string the identity id key
      */
     public function getId();
 
     /**
-     *  \brief Retorna o nome da coluna identificadora da identidade.
-     *  \return (string).
+     *  Get the identity id column name.
+     *
+     *  @return string the column name for the identity id key.
      */
     public function getIdField();
 
     /**
-     *  \brief Retorna o nome identificador da sessão da identidade.
-     *  \return (string).
+     *  Get the session key name for the identity.
+     *
+     *  @return string the session key name for the identity.
      */
     public function getSessionKey();
 
     /**
-     *  \brief Retorna os dados que serão guardados na sessão da identidade.
-     *  \return (array).
+     *  Get the identity session data.
+     *
+     *  @return array the array with data to be saved in identity session.
      */
     public function getSessionData();
 
     /**
-     *  \brief Retorna o nome dos campos de credenciais da identidade (ex. Login e Senha).
-     *  \return (array).
+     *  Get the identity credentials.
+     *
+     *  @example Login and password.
+     *
+     *  @return array the array with credential data.
      */
     public function getCredentials();
 }

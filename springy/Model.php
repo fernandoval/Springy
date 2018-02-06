@@ -1,13 +1,16 @@
 <?php
-/** \file
+/** @file
  *  Springy.
  *
- *  \brief      Class used to create Model classes the access relational database tables.
- *  \copyright  ₢ 2007-2016 Fernando Val
- *  \author     Fernando Val - fernando.val@gmail.com
- *  \note       Essa classe extende a classe DB.
- *  \version    2.3.1.47
- *  \ingroup    framework
+ *  @brief      Class used to create Model classes to access relational database tables.
+ *
+ *  @copyright  ₢ 2007-2018 Fernando Val
+ *  @author     Fernando Val - fernando.val@gmail.com
+ *
+ *  @note       Essa classe extende a classe DB.
+ *
+ *  @version    2.3.1.48
+ *  @ingroup    framework
  */
 
 namespace Springy;
@@ -17,7 +20,7 @@ use Springy\DB\Where;
 use Springy\Validation\Validator;
 
 /**
- *  \brief Classe Model para acesso a banco de dados.
+ *  Classe Model para acesso a banco de dados.
  *
  *  Esta classe extende a classe DB.
  *
@@ -264,11 +267,11 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     * \brief Retorna as configurações de regras para validação dos dados do model.
+     *  Returns the data validation rules configuration.
      *
-     * \note Este método deve ser extendido na classe herdeira
+     *  @note Este método deve ser extendido na classe herdeira
      *
-     * \return array
+     *  @return array
      */
     protected function validationRules()
     {
@@ -276,12 +279,11 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     * \brief Mensagens de erros customizadas para cada tipo de validação à ser
-     *        realizado neste model.
+     *  Returns the customized error messages to the validation rules.
      *
-     * \note Este método deve ser extendido na classe herdeira
+     *  @note Este método deve ser extendido na classe herdeira
      *
-     * \return array
+     *  @return array
      */
     protected function validationErrorMessages()
     {
@@ -289,10 +291,12 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     *  \brief Gatilho que será executado antes de um DELETE.
+     *  A trigger which will be called by delete method on Model object before do the exclusion.
      *
-     *  Esse método existe para ser estendido, opcionalmente, na classe herdeira
-     *  caso algum tratamento precise ser feito antes da exclusão de um registro
+     *  This method exists to be optionally extended in the child class
+     *  if any treatment needs to be done prior to the deletion of a registry.
+     *
+     *  @return bool True if all is ok or false if has an error.
      */
     protected function triggerBeforeDelete()
     {
@@ -300,10 +304,12 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     *  \brief Gatilho que será executado antes de um INSERT.
+     *  A trigger which will be called by save method on Model object before insert data.
      *
-     *  Esse método existe para ser estendido, opcionalmente, na classe herdeira
-     *  caso algum tratamento precise ser feito antes da enclusão de um registro
+     *  This method exists to be optionally extended in the child class
+     *  if any treatment needs to be done prior to the insertion of a registry.
+     *
+     *  @return bool True if all is ok or false if has an error.
      */
     protected function triggerBeforeInsert()
     {
@@ -311,10 +317,12 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     *  \brief Gatilho que será executado antes de um UPDATE.
+     *  A trigger which will be called by save method on Model object before update data.
      *
-     *  Esse método existe para ser estendido, opcionalmente, na classe herdeira
-     *  caso algum tratamento precise ser feito antes da alteração de um registro
+     *  This method exists to be optionally extended in the child class
+     *  if any treatment needs to be done prior to the update of a registry.
+     *
+     *  @return bool True if all is ok or false if has an error.
      */
     protected function triggerBeforeUpdate()
     {
@@ -322,10 +330,12 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     *  \brief Gatilho que será executado depois de um DELETE.
+     *  A trigger which will be called by delete method on Model object after the exclusion done.
      *
-     *  Esse método existe para ser estendido, opcionalmente, na classe herdeira
-     *  caso algum tratamento precise ser feito depois da exclusão de um registro
+     *  This method exists to be optionally extended in the child class
+     *  if any treatment needs to be done after the exclusion of the registry.
+     *
+     *  @return void
      */
     protected function triggerAfterDelete()
     {
@@ -333,10 +343,12 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     *  \brief Gatilho que será executado depois de um INSERT.
+     *  A trigger which will be called by save method on Model object after insert data.
      *
-     *  Esse método existe para ser estendido, opcionalmente, na classe herdeira
-     *  caso algum tratamento precise ser feito depois da inclusão de um registro
+     *  This method exists to be optionally extended in the child class
+     *  if any treatment needs to be done after the insertion of a registry.
+     *
+     *  @return void
      */
     protected function triggerAfterInsert()
     {
@@ -344,10 +356,12 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     *  \brief Gatilho que será executado depois de um UPDATE.
+     *  A trigger which will be called by save method on Model object after update data.
      *
-     *  Esse método existe para ser estendido, opcionalmente, na classe herdeira
-     *  caso algum tratamento precise ser feito depois da alteração de um registro
+     *  This method exists to be optionally extended in the child class
+     *  if any treatment needs to be done after the update of a registry.
+     *
+     *  @return void
      */
     protected function triggerAfterUpdate()
     {
