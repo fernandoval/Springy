@@ -1,44 +1,50 @@
 <?php
-/**	\file
- *  Springy.
+/**
+ * Valuation class for the user-assigned data.
  *
- *  \brief      Validador de dados de input do usuário.
- *  \copyright  Copyright (c) 2007-2016 Fernando Val
- *  \author     Allan Marques - allan.marques@ymail.com
- *  \author     Fernando Val - fernando.val@gmail.com
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.3.0.4
- *  \ingroup    framework
+ * @package   Springy\Validation
+ *
+ * @copyright 2007-2018 Fernando Val
+ * @author    Allan Marques <allan.marques@ymail.com>
+ * @author    Fernando Val <fernando.val@gmail.com>
+ * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
+ *
+ * @version   0.4.0.5
  */
 
 namespace Springy\Validation;
 
 use Springy\Core\Input;
+use Springy\Kernel;
 use Springy\Utils\MessageContainer;
 use Springy\Utils\Strings;
 
 /**
- * \brief  Validador de dados de input do usuário.
+ * Valuation class for the user-assigned data.
  */
 class Validator
 {
-    /// Dados de input do usuário
+    /// Default charset
+    protected $charset = 'UTF-8';
+    /// User-assigned data
     protected $input;
-    /// Regras de validação
+    /// Validation rules
     protected $rules;
-    /// Mensagens de erro
+    /// Custom error messages
     protected $messages;
-    /// Erros gerados após a validação
+    /// Errors generated after validation
     protected $errors;
-    /// Mensagem de erro padrão
+    /// Default error message
     protected $defaultErrorMessage = 'The field :field is invalid. Please enter a valid value.';
 
     /**
-     *  \brief Cria e retorna uma instancia desta classe de validador.
-     *  \param [in] (array) $input - Dados de input do usuário.
-     *  \param [in] (array) $rules - Regras de validação.
-     *  \param [in] (array) $messages - Mensagens de erros para cada campo.
-     *  \return \static.
+     * Creates and returns an instance of this validator class.
+     *
+     * @param array $input    User-assigned data
+     * @param array $rules    Validation rules
+     * @param array $messages Custom error messages
+     *
+     * @return Validator
      */
     public static function make($input = [], array $rules = [], $messages = [])
     {
@@ -46,13 +52,15 @@ class Validator
     }
 
     /**
-     *  \brief Construtor da classe.
-     *  \param [in] (array) $input - Dados de input do usuário.
-     *  \param [in] (array) $rules - Regras de validação.
-     *  \param [in] (array) $messages - Mensagens de erros para cada campo.
+     * Constructor.
+     *
+     * @param array $input    User-assigned data
+     * @param array $rules    Validation rules
+     * @param array $messages Custom error messages
      */
     public function __construct($input = [], array $rules = [], $messages = [])
     {
+        $this->charset = Kernel::charset();
         $this->setInput($input);
         $this->rules = $rules;
         $this->messages = $messages;
@@ -60,8 +68,9 @@ class Validator
     }
 
     /**
-     *  \brief Seta os dados de input do usuário.
-     *  \param [in] (variant) $input.
+     * Sets the data provided by the user.
+     *
+     * @param mixed $input An array or a instance of Springy\Core\Input object.
      */
     public function setInput($input)
     {
@@ -69,8 +78,9 @@ class Validator
     }
 
     /**
-     *  \brief Retorna os dados de input do usuário.
-     *  \return (array).
+     * Returns the data provided by the user.
+     *
+     * @return array
      */
     public function getInput()
     {
@@ -78,8 +88,9 @@ class Validator
     }
 
     /**
-     *  \brief Seta as regras de validação.
-     *  \param [in] (array) $rules.
+     * Sets the validation rules.
+     *
+     * @param array $rules
      */
     public function setRules(array $rules)
     {
@@ -87,8 +98,9 @@ class Validator
     }
 
     /**
-     *  \brief Retorna as regras de validação.
-     *  \return (array).
+     * Gets the validation rules.
+     *
+     * @return array
      */
     public function getRules()
     {
@@ -96,8 +108,9 @@ class Validator
     }
 
     /**
-     *  \brief Seta as mensagens de erro para cada campo.
-     *  \param [in] (array) $messages.
+     * Sets the custom error messages.
+     *
+     * @param array $messages
      */
     public function setMessages($messages)
     {
@@ -105,8 +118,9 @@ class Validator
     }
 
     /**
-     *  \brief Retorna as mensagens de erro para cada campo.
-     *  \return (array).
+     * Gets the custom error messges.
+     *
+     * @return array
      */
     public function getMessages()
     {
@@ -114,8 +128,9 @@ class Validator
     }
 
     /**
-     *  \brief Seta a mensagem de erro padrão.
-     *  \param [in] (string) $errorMsg.
+     * Sets the default error message.
+     *
+     * @param string $errorMsg
      */
     public function setDefaultErrorMessage($errorMsg)
     {
@@ -123,8 +138,9 @@ class Validator
     }
 
     /**
-     *  \brief Seta a mensagem de erro padrão.
-     *  \return string.
+     * Gets the default error message.
+     *
+     * @return string
      */
     public function getDefaultErrorMessage()
     {
@@ -132,8 +148,9 @@ class Validator
     }
 
     /**
-     *  \brief Retorna as mensagens de erros geradas pela última validação.
-     *  \return Springy\Utils\MessageContainer.
+     * Gets the generated errors.
+     *
+     * @return Springy\Utils\MessageContainer
      */
     public function errors()
     {
@@ -141,8 +158,11 @@ class Validator
     }
 
     /**
-     *  \brief Alias de 'validate()'.
-     *  \return (boolean).
+     * An alias for validate method.
+     *
+     * @see validade
+     *
+     * @return bool
      */
     public function passes()
     {
@@ -150,8 +170,9 @@ class Validator
     }
 
     /**
-     *  \brief Alias 'inverso' de 'validate()'.
-     *  \return (boolean).
+     * An inverted alias to validate.
+     *
+     * @return bool The inverted value of validate medhot.
      */
     public function fails()
     {
@@ -159,9 +180,9 @@ class Validator
     }
 
     /**
-     *  \brief Roda a validação dos campos de acordo com as regras
-     *         e retorna verdadeiro se passou e falso caso contrário.
-     *  \return (boolean).
+     * Run the validation.
+     *
+     * @return bool Returns true if no errors in validation or false if has errors.
      */
     public function validate()
     {
@@ -177,10 +198,12 @@ class Validator
     }
 
     /**
-     *  \brief Aplica as regras para cada campo existente.
-     *  \param [in] (string) $field - Campo sendo validado atualmente.
-     *  \param [in] (string) $rules - Regras à serem aplicadas neste campo.
-     *  \throws \BadMethodCallException.
+     * Applies the rules to each existing field.
+     *
+     * @param string $field name of the field.
+     * @param mixed  $rules an array or a pipe separeted validation rules.
+     *
+     * @throws \BadMethodCallException in case of an inexistent validation type.
      */
     protected function applyRules($field, $rules)
     {
@@ -196,9 +219,11 @@ class Validator
     }
 
     /**
-     *  \brief Parse the rules.
-     *  \param [in] (string|array) $rules - An array or a string with the rules delimiter by pipe char '|'.
-     *  \return (array) an array with parsed rules.
+     * Parse the rules.
+     *
+     * @param string|array $rules An array or a string with the rules delimited by pipe char '|'.
+     *
+     * @return array an array with parsed rules.
      */
     protected function explodeRules($rules)
     {
@@ -216,9 +241,11 @@ class Validator
     }
 
     /**
-     *  \brief Compila a regra atual para um array amigável para tratamento.
-     *  \param [in] (string) $rule - Regra atual.
-     *  \return (array).
+     * Compiles the actual rule to an friendly array.
+     *
+     * @param string $rule
+     *
+     * @return array
      */
     protected function parseRule($rule)
     {
@@ -232,9 +259,11 @@ class Validator
     }
 
     /**
-     *  \brief Gera o nome do método equivalente à regra.
-     *  \param [in] (string) $rule - Nome da Regra.
-     *  \return (string).
+     * Generates the method name equivalent to the rule.
+     *
+     * @param string $rule the name of the rule.
+     *
+     * @return string
      */
     protected function parseMethod($rule)
     {
@@ -242,10 +271,12 @@ class Validator
     }
 
     /**
-     *  \brief Gera a mensagem de erro para o campo e mensagem atual.
-     *  \param [in] (string) $field - Campo atual.
-     *  \param [in] (string) $rule - Regra atual.
-     *  \return (string).
+     * Generates the error message for the current field and message.
+     *
+     * @param string $field the field.
+     * @param string $rule  the rule.
+     *
+     * @return string
      */
     protected function parseErrorMessage($field, $rule)
     {
@@ -256,21 +287,25 @@ class Validator
     }
 
     /**
-     *  \brief Valida se o campo está presente e tem algum valor.
-     *  \param [in] (string) $field - Campo atual.
-     *  \param [in] (array) $params - Parâmetros da regra.
-     *  \return (boolan).
+     * Validates if the field exists and has some value.
+     *
+     * @param string $field  the name of the field.
+     * @param array  $params an array with parameters.
+     *
+     * @return boolan
      */
     public function validateRequired($field, $params)
     {
-        return isset($this->input[$field]) && $this->input[$field] != '';
+        return isset($this->input[$field]) && $this->input[$field] !== '';
     }
 
     /**
-     *  \brief Valida se o valor entrado pelo usuário tem no mínimo o valor do parâmetro da regra.
-     *  \param [in] (string) $field - Campo atual.
-     *  \param [in] (array) $params - Parâmetros da regra.
-     *  \return (boolan).
+     * Validates if the value meets the minimum required
+     *
+     * @param string $field  the name of the field.
+     * @param array  $params an array with parameters.
+     *
+     * @return boolan
      */
     public function validateMin($field, $params)
     {
@@ -282,10 +317,12 @@ class Validator
     }
 
     /**
-     *  \brief Valida se o valor entrado pelo usuário tem no máximo o valor do parâmetro da regra.
-     *  \param [in] (string) $field - Campo atual.
-     *  \param [in] (array) $params - Parâmetros da regra.
-     *  \return (boolan).
+     * Validates if the value meets the maximum allowed.
+     *
+     * @param string $field  the name of the field.
+     * @param array  $params an array with parameters.
+     *
+     * @return boolan
      */
     public function validateMax($field, $params)
     {
@@ -297,10 +334,12 @@ class Validator
     }
 
     /**
-     *  \brief Valida se o valor entrado pelo usuário possui valor entre os parâmetros da regra.
-     *  \param [in] (string) $field - Campo atual.
-     *  \param [in] (array) $params - Parâmetros da regra.
-     *  \return (boolan).
+     * Validates if the value is between the minimum and maximum range.
+     *
+     * @param string $field  the name of the field.
+     * @param array  $params an array with parameters.
+     *
+     * @return boolan
      */
     public function validateBetween($field, $params)
     {
@@ -312,11 +351,12 @@ class Validator
     }
 
     /**
-     *  \brief Valida se o texto entrado pelo usuário possui a qtd de caracteres
-     *         de pelo menos o valor passado por parâmetro pela regra.
-     *  \param [in] (string) $field - Campo atual.
-     *  \param [in] (array) $params - Parâmetros da regra.
-     *  \return (boolan).
+     * Validates if the text has the shortest required length.
+     *
+     * @param string $field  the name of the field.
+     * @param array  $params an array with parameters.
+     *
+     * @return bool Returns true is case of success or false if has no minimum size.
      */
     public function validateMinLength($field, $params)
     {
@@ -324,15 +364,16 @@ class Validator
             return true;
         }
 
-        return strlen($this->input[$field]) >= $params[0];
+        return mb_strlen($this->input[$field], $this->charset) >= $params[0];
     }
 
     /**
-     *  \brief Valida se o texto entrado pelo usuário possui a qtd de caracteres
-     *         de no máximo o valor passado por parâmetro pela regra.
-     *  \param [in] (string) $field - Campo atual.
-     *  \param [in] (array) $params - Parâmetros da regra.
-     *  \return (boolan).
+     * Validates if text matches the longest length allowed.
+     *
+     * @param string $field  the name of the field.
+     * @param array  $params an array with parameters.
+     *
+     * @return boolan
      */
     public function validateMaxLength($field, $params)
     {
@@ -340,15 +381,16 @@ class Validator
             return true;
         }
 
-        return strlen($this->input[$field]) <= $params[0];
+        return mb_strlen($this->input[$field], $this->charset) <= $params[0];
     }
 
     /**
-     *  \brief Valida se o texto entrado pelo usuário possui a qtd de caracteres
-     *         entre os valores passados por parâmetro pela regra.
-     *  \param [in] (string) $field - Campo atual.
-     *  \param [in] (array) $params - Parâmetros da regra.
-     *  \return (boolan).
+     * Validates if the text length is within the allowed range.
+     *
+     * @param string $field  the name of the field.
+     * @param array  $params an array with parameters.
+     *
+     * @return boolan
      */
     public function validateLengthBetween($field, $params)
     {
@@ -356,16 +398,18 @@ class Validator
             return true;
         }
 
-        $length = strlen($this->input[$field]);
+        $length = mb_strlen($this->input[$field], $this->charset);
 
         return ($length >= $params[0]) && ($length <= $params[1]);
     }
 
     /**
-     *  \brief Valida se é um numérico.
-     *  \param [in] (string) $field - Campo atual.
-     *  \param [in] (array) $params - Parâmetros da regra.
-     *  \return (boolan).
+     * Validates whether the value is numeric.
+     *
+     * @param string $field  the name of the field.
+     * @param array  $params an array with parameters.
+     *
+     * @return boolan
      */
     public function validateNumeric($field, $params)
     {
@@ -377,10 +421,12 @@ class Validator
     }
 
     /**
-     *  \brief Valida se é um email.
-     *  \param [in] (string) $field - Campo atual.
-     *  \param [in] (array) $params - Parâmetros da regra.
-     *  \return (boolan).
+     * Validate if value is an email address.
+     *
+     * @param string $field  the name of the field.
+     * @param array  $params an array with parameters.
+     *
+     * @return boolan
      */
     public function validateEmail($field, $params)
     {
@@ -392,10 +438,12 @@ class Validator
     }
 
     /**
-     *  \brief Valida se são caracteres somente alfabéticos.
-     *  \param [in] (string) $field - Campo atual.
-     *  \param [in] (array) $params - Parâmetros da regra.
-     *  \return (boolan).
+     * Valida se o texto contÃ©m apenas letras.
+     *
+     * @param string $field  the name of the field.
+     * @param array  $params an array with parameters.
+     *
+     * @return boolan
      */
     public function validateAlpha($field, $params)
     {
@@ -407,10 +455,12 @@ class Validator
     }
 
     /**
-     *  \brief Valida se são caracteres somente alfa-numericos.
-     *  \param [in] (string) $field - Campo atual.
-     *  \param [in] (array) $params - Parâmetros da regra.
-     *  \return (boolan).
+     * Valida se o texto contÃ©m apenas letras e nÃºmeros.
+     *
+     * @param string $field  the name of the field.
+     * @param array  $params an array with parameters.
+     *
+     * @return boolan
      */
     public function validateAlphaNum($field, $params)
     {
@@ -422,10 +472,12 @@ class Validator
     }
 
     /**
-     *  \brief Valida se tem o mesmo valor que outro campo passado por parâmetro.
-     *  \param [in] (string) $field - Campo atual.
-     *  \param [in] (array) $params - Parâmetros da regra.
-     *  \return (boolan).
+     * Validates whether the value is the same as that of another field.
+     *
+     * @param string $field  the name of the field.
+     * @param array  $params an array with parameters.
+     *
+     * @return boolan
      */
     public function validateSame($field, $params)
     {
@@ -437,10 +489,12 @@ class Validator
     }
 
     /**
-     *  \brief Valida se tem o valor diferente de outro campo passado por parâmetro.
-     *  \param [in] (string) $field - Campo atual.
-     *  \param [in] (array) $params - Parâmetros da regra.
-     *  \return (boolan).
+     * Validates if the value differs from that of another field.
+     *
+     * @param string $field  the name of the field.
+     * @param array  $params an array with parameters.
+     *
+     * @return boolan
      */
     public function validateDifferent($field, $params)
     {
@@ -452,10 +506,12 @@ class Validator
     }
 
     /**
-     *  \brief Valida se é uma data válida.
-     *  \param [in] (string) $field - Campo atual.
-     *  \param [in] (array) $params - Parâmetros da regra.
-     *  \return (boolan).
+     * Validates if the value is a valid date.
+     *
+     * @param string $field  the name of the field.
+     * @param array  $params an array with parameters.
+     *
+     * @return boolan
      */
     public function validateDate($field, $params)
     {
@@ -469,10 +525,12 @@ class Validator
     }
 
     /**
-     *  \brief Valida se é um inteiro.
-     *  \param [in] (string) $field - Campo atual.
-     *  \param [in] (array) $params - Parâmetros da regra.
-     *  \return (boolan).
+     * Validates whether the value is an integer.
+     *
+     * @param string $field  the name of the field.
+     * @param array  $params an array with parameters.
+     *
+     * @return boolan
      */
     public function validateInteger($field, $params)
     {
@@ -484,10 +542,12 @@ class Validator
     }
 
     /**
-     *  \brief Valida se o valor passa pela expressão regular.
-     *  \param [in] (string) $field - Campo atual.
-     *  \param [in] (array) $params - Parâmetros da regra.
-     *  \return (boolan).
+     * Validate value using regular expression.
+     *
+     * @param string $field  the name of the field.
+     * @param array  $params an array with parameters.
+     *
+     * @return boolan
      */
     public function validateRegex($field, $params)
     {
@@ -499,10 +559,12 @@ class Validator
     }
 
     /**
-     *  \brief Valida se é uma url válida.
-     *  \param [in] (string) $field - Campo atual.
-     *  \param [in] (array) $params - Parâmetros da regra.
-     *  \return (boolan).
+     * Validates if the value is a URL.
+     *
+     * @param string $field  the name of the field.
+     * @param array  $params an array with parameters.
+     *
+     * @return boolan
      */
     public function validateUrl($field, $params)
     {
@@ -514,10 +576,12 @@ class Validator
     }
 
     /**
-     *  \brief Valida valor é igual à um dos da lista passada por parâmetro.
-     *  \param [in] (string) $field - Campo atual.
-     *  \param [in] (array) $params - Parâmetros da regra.
-     *  \return (boolan).
+     * Validates if the value is in a list.
+     *
+     * @param string $field  the name of the field.
+     * @param array  $params an array with parameters.
+     *
+     * @return boolan
      */
     public function validateIn($field, $params)
     {
@@ -529,10 +593,12 @@ class Validator
     }
 
     /**
-     *  \brief Valida valor é diferentes de todos da lista passada por parâmetro.
-     *  \param [in] (string) $field - Campo atual.
-     *  \param [in] (array) $params - Parâmetros da regra.
-     *  \return (boolan).
+     * Validates if the value is not in a list.
+     *
+     * @param string $field  the name of the field.
+     * @param array  $params an array with parameters.
+     *
+     * @return boolan
      */
     public function validateNotIn($field, $params)
     {
@@ -544,10 +610,12 @@ class Validator
     }
 
     /**
-     *  \brief Valida se é um IP Válido.
-     *  \param [in] (string) $field - Campo atual.
-     *  \param [in] (array) $params - Parâmetros da regra.
-     *  \return (boolan).
+     * Validates whether the value is an IP address.
+     *
+     * @param string $field  the name of the field.
+     * @param array  $params an array with parameters.
+     *
+     * @return boolan
      */
     public function validateIp($field, $params)
     {

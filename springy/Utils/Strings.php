@@ -1,57 +1,61 @@
 <?php
-/** \file
- *  Springy.
+/**
+ * Class library for string processing.
  *
- *  \brief      Classe com métodos para diversos tipos de tratamento e validação de dados string.
+ * @package   Springy\Utils
  *
- *  \copyright  Copyright (c) 2007-2018 Fernando Val
- *  \author     Fernando Val - fernando.val@gmail.com
+ * @copyright 2007-2018 Fernando Val
+ * @author    Fernando Val <fernando.val@gmail.com>
+ * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.13.20.21
- *  \ingroup    framework
+ * @version   0.13.21.22
  */
 
 namespace Springy\Utils;
 
 /**
- *  \brief Classe com métodos para diversos tipos de tratamento e validação de dados string.
+ * Class library for string processing.
  */
 class Strings
 {
     /**
-     *  \brief Verifica se uma string está codificada em UTF-8.
+     * Checks whether a string is encoded in UTF-8.
      *
-     *  @param $str - string
+     * In order to check if a string is encoded correctly in utf-8,
+     * I suggest the following function, that implements the
+     * RFC3629 better than mb_check_encoding()
      *
-     *  \note Esta foi escrita por javalc6@gmail.com e disponibilizada pelo autor na documentação do PHP
+     * @author <javalc6@gmail.com>
      *
-     *  In order to check if a string is encoded correctly in utf-8, I suggest the following function, that implements the RFC3629 better than mb_check_encoding()
+     * @param string $str
+     *
+     * @return bool
      */
     public static function checkUTF8($str)
     {
         $len = strlen($str);
-        for ($i = 0; $i < $len; $i++) {
-            $c = ord($str[$i]);
-            if ($c > 128) {
-                if (($c > 247)) {
+        for ($pos = 0; $pos < $len; $pos++) {
+            $chr = ord($str[$pos]);
+
+            if ($chr > 128) {
+                if ($chr > 247 || $chr <= 191) {
                     return false;
-                } elseif ($c > 239) {
+                } elseif ($chr > 239) {
                     $bytes = 4;
-                } elseif ($c > 223) {
+                } elseif ($chr > 223) {
                     $bytes = 3;
-                } elseif ($c > 191) {
+                } elseif ($chr > 191) {
                     $bytes = 2;
-                } else {
+                }
+
+                if (($pos + $bytes) > $len) {
                     return false;
                 }
-                if (($i + $bytes) > $len) {
-                    return false;
-                }
+
                 while ($bytes > 1) {
-                    $i++;
-                    $b = ord($str[$i]);
-                    if ($b < 128 || $b > 191) {
+                    $pos++;
+                    $chr = ord($str[$pos]);
+                    if ($chr < 128 || $chr > 191) {
                         return false;
                     }
                     $bytes--;
@@ -63,10 +67,12 @@ class Strings
     }
 
     /**
-     *  \brief Verifica se um endereço de email.
+     * Verify that this is a valid email address.
      *
-     *  @param string $email - email a ser validado
-     *  @param bool $checkDNS - determina se a existência do domínio do email deve ser verificado
+     * @param string $email    the email address.
+     * @param bool   $checkDNS determines whether the existence of the email domain should be verified.
+     *
+     * @return bool
      */
     public static function validateEmailAddress($email, $checkDNS = true)
     {

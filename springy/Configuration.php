@@ -1,27 +1,27 @@
 <?php
-/** @file
- *  Springy.
+/**
+ * Application configuration handler.
  *
- *  @brief      Application configuration handler.
+ * @package   Springy
  *
- *  @copyright  ₢ 2007-2018 Fernando Val
- *  @author     Fernando Val - fernando.val@gmail.com
- *  @author     Allan Marques - allan.marques@ymail.com
+ * @copyright ₢ 2007-2018 Fernando Val
+ * @author    Fernando Val <fernando.val@gmail.com>
+ * @author    Allan Marques <allan.marques@ymail.com>
+ * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- *  @version    3.0.1.15
- *  @ingroup    framework
+ * @version    3.0.1.16
  */
 
 namespace Springy;
 
 /**
- *  @brief Application configuration handler.
+ * Application configuration handler.
  *
- *  Esta classe é estática e invocada automaticamente pelo framework.
+ * Esta classe é estática e invocada automaticamente pelo framework.
  */
 class Configuration
 {
-    /// Array interno com dados de configuração
+    /// Configuration array
     private static $confs = [];
 
     const LC_DB = 'db';
@@ -31,14 +31,12 @@ class Configuration
     const LC_URI = 'uri';
 
     /**
-     *  @brief Pega o conteúdo de um registro de configuração.
+     * Gets the content of a configuration key.
      *
-     *  @param string $local - nome do arquivo de configuração
-     *  @param string $var - registro desejado
-     *  @param string $var - registro desejado.\n
-     *    Se omitido, poderá ser utilizado o conceito de sub-níveis separedos por ponto.
+     * @param string $local name of the configuration set.
+     * @param string $var   configuration key.
      *
-     *  @return se o registro existir, retorna seu valor, caso contrário retorna NULL
+     * @return mixed the value of configuration key or null if not defined.
      */
     public static function get($local, $var = null)
     {
@@ -63,19 +61,16 @@ class Configuration
     }
 
     /**
-     *  @brief Altera o valor de uma entrada de configuração.
+     * Changes the value of a configuration key.
      *
-     *  Esta alteração é temporária e estará ativa apenas durante a execução da aplicação.
-     *  Nenhuma alteração será feita nos arquivos de configuração.
+     * This change is temporary and will exist only during application execution.
+     * No changes will be made to the configuration files.
      *
-     *  @param string $local - nome do arquivo de configuração
-     *  @param string $var - nome da entrada de configuração
-     *  @param mixed $valor - novo valor da entrada de configuração
-     *  @param string $var - registro desejado.\n
-     *      Se omitido, poderá ser utilizado o conceito de sub-níveis separedos por ponto.
-     *      Nesse caso, $local receberá o local separado por pontos e $var o valor a ser armazenado.
+     * @param string $local name of the configuration set.
+     * @param string $var   configuration key.
+     * @param mixed  $valus new value for configuration.
      *
-     *  @return void
+     * @return void
      */
     public static function set($local, $var, $value = null)
     {
@@ -98,7 +93,12 @@ class Configuration
     }
 
     /**
-     *  @brief Load the configuration file in JSON format.
+     * Loads the configuration file in JSON format.
+     *
+     * @param string $file  configuration file name.
+     * @param string $local name of the configuration set.
+     *
+     * @return void
      */
     private static function _loadJSON($file, $local)
     {
@@ -119,7 +119,12 @@ class Configuration
     }
 
     /**
-     *  @brief Load the configuration file in PHP format.
+     * Loads the configuration file in PHP format.
+     *
+     * @param string $file  configuration file name.
+     * @param string $local name of the configuration set.
+     *
+     * @return void
      */
     private static function _loadPHP($file, $local)
     {
@@ -147,7 +152,12 @@ class Configuration
     }
 
     /**
-     *  @brief Load the configuration file to the local.
+     * Loads the configuration file.
+     *
+     * @param string $file  configuration file name.
+     * @param string $local name of the configuration set.
+     *
+     * @return void
      */
     private static function _load($file, $local)
     {
@@ -164,9 +174,11 @@ class Configuration
     }
 
     /**
-     *  @brief Load a configuration for the given local.
+     * Loads a configuration set.
      *
-     *  @param string $local - the name of the local.
+     * @param string $local name of the configuration set.
+     *
+     * @return void
      */
     public static function load($local)
     {
@@ -185,7 +197,11 @@ class Configuration
     }
 
     /**
-     *  @brief Save the local configuration to a JSON file.
+     * Saves the configuration set to a JSON file.
+     *
+     * @param string $local name of the configuration set.
+     *
+     * @return void
      */
     public static function save($local)
     {

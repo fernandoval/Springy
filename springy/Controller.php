@@ -1,13 +1,16 @@
 <?php
-/** \file
- *  Springy.
+/**
+ * Parent class for controllers.
  *
- *  \brief      Class Controller.
- *  \copyright  ₢ 2018 Fernando Val
- *  \author     Fernando Val - fernando.val@gmail.com
- *  \note       This class can be used to construct application controllers.
- *  \version    0.4.0.5
- *  \ingroup    framework
+ * Extends this class to construct controllers in the applications.
+ *
+ * @package   Springy
+ *
+ * @copyright 2016-2018 Fernando Val
+ * @author    Allan Marques <allan.marques@ymail.com>
+ * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
+ *
+ * @version   0.4.0.6
  */
 
 namespace Springy;
@@ -31,10 +34,10 @@ class Controller extends AclManager
     protected $tplCacheId = null;
 
     /**
-     *  \brief The constructor method.
+     * The constructor method.
      *
-     *  This method is called by PHP when the object is created.\n
-     *  All default verification is made by this method, before other methos been called by the framework.
+     * This method is called by PHP when the object is created.\n
+     * All default verification is made by this method, before other methods been called by the framework.
      */
     public function __construct()
     {
@@ -67,9 +70,9 @@ class Controller extends AclManager
     }
 
     /**
-     *  \brief Check the user permission for the called method.
+     * Checks the user permission for the called method.
      *
-     *  This is an internal method you can use to check the user permission.
+     * This is an internal method you can use to check the user permission.
      */
     protected function _authorizationCheck()
     {
@@ -80,7 +83,7 @@ class Controller extends AclManager
     }
 
     /**
-     *  \brief Ends with a 403 - Forbidden error.
+     * Sends a "403 - Forbidden" error and kill the application.
      */
     protected function _forbidden()
     {
@@ -98,7 +101,7 @@ class Controller extends AclManager
     }
 
     /**
-     *  \brief Ends with a 404 - Page not found error.
+     * Sends a "404 - Page not found" error and kill the application.
      */
     protected function _pageNotFound()
     {
@@ -106,7 +109,7 @@ class Controller extends AclManager
     }
 
     /**
-     *  \brief Redirect user to another URL.
+     * Sends a URL redirect to the user browser and kill the application.
      */
     protected function _redirect($url)
     {
@@ -114,13 +117,13 @@ class Controller extends AclManager
     }
 
     /**
-     *  \brief Template initialization method.
+     * Template initialization method.
      *
-     *  This method can be used to start your controller's view template.
+     * This method can be used to start your controller's view template.
      *
-     *  The $template object is created, it's cache is validated and then it is returned to the controller.
+     * The $template object is created, it's cache is validated and then it is returned to the controller.
      *
-     *  \return Return the template object.
+     * @return Template Returns the template object.
      */
     protected function _template($template = null)
     {
@@ -141,13 +144,14 @@ class Controller extends AclManager
     }
 
     /**
-     *  \brief Do all user special verifications.
+     * Does all user special verifications.
      *
-     *  This method can be changed in child controller to extends all verification you need to do on user account to grant access to page.
+     * This method can be changed in child controller to extends all verification
+     * you need to do on user account to grant access to page.
      *
-     *  Example: if you need to check the user account is suspended.
+     * Example: if you need to checks the user account is suspended.
      *
-     *  \return true if user can access the module or false if not.
+     * @return bool true if user can access the module or false if not.
      */
     protected function _userSpecialVerifications()
     {

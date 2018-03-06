@@ -1,23 +1,23 @@
 <?php
-/** @file
- *  Springy.
+/**
+ * Framework kernel.
  *
- *  @brief      Framework kernel.
+ * @package   Springy
  *
- *  @copyright  (c) 2007-2018 Fernando Val
- *  @author     Fernando Val - fernando.val@gmail.com
- *  @author     Lucas Cardozo - lucas.cardozo@gmail.com
+ * @copyright 2007-2018 Fernando Val
+ * @author    Fernando Val <fernando.val@gmail.com>
+ * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
+ * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- *  @version    2.4.0.76
- *  @ingroup    framework
+ * @version    2.4.0.77
  */
 
 namespace Springy;
 
 /**
- *  @brief Framework kernel class.
+ * Framework kernel class.
  *
- *  @warning This is a static class and can not be instantiated by user.
+ * This is a static class and can not be instantiated by user.
  */
 class Kernel
 {
@@ -78,9 +78,9 @@ class Kernel
     private static $templateFuncs = [];
 
     /**
-     *  @brief Call the application controller if defined.
+     * Calls the application controller if defined.
      *
-     *  @return void
+     * @return void
      */
     private static function _callController()
     {
@@ -112,9 +112,9 @@ class Kernel
     }
 
     /**
-     *  @brief Start the global pre-controller hook if needed.
+     * Starts the global pre-controller hook if needed.
      *
-     *  @return void
+     * @return void
      */
     private static function _callGlobal()
     {
@@ -140,9 +140,9 @@ class Kernel
     }
 
     /**
-     *  @brief Call the hook controller if exists.
+     * Calls the hook controller if exists.
      *
-     *  @return void
+     * @return void
      */
     private static function _callHookController()
     {
@@ -162,9 +162,9 @@ class Kernel
     }
 
     /**
-     *  @brief Execute a framework special command.
+     * Executes a framework special command.
      *
-     *  @return void
+     * @return void
      */
     private static function _callSpecialCommands()
     {
@@ -214,9 +214,9 @@ class Kernel
     }
 
     /**
-     *  @brief Check if has a developer accessing for debug.
+     * Checks if has a developer accessing for debug.
      *
-     *  @return void
+     * @return void
      */
     private static function _checkDevAccessDebug()
     {
@@ -262,9 +262,9 @@ class Kernel
     }
 
     /**
-     *  @brief Define the application controller.
+     * Defines the application controller.
      *
-     *  @return void
+     * @return void
      */
     private static function _defineController()
     {
@@ -290,11 +290,11 @@ class Kernel
     }
 
     /**
-     *  @brief Get the name of method to be called in controller.
+     * Gets the name of method to be called in controller.
      *
-     *  @param object $controller the controller.
+     * @param object $controller the controller.
      *
-     *  @return string The name of method.
+     * @return string The name of method.
      */
     private static function _getControllerMethod($controller)
     {
@@ -308,9 +308,9 @@ class Kernel
     }
 
     /**
-     *  @brief Verify if HTTP authentication is required.
+     * Verifies if HTTP authentication is required.
      *
-     *  @return void
+     * @return void
      */
     private static function _httpAuthNeeded()
     {
@@ -334,9 +334,9 @@ class Kernel
     }
 
     /**
-     *  @brief Set HTTP headers.
+     * Sets HTTP headers.
      *
-     *  @return void
+     * @return void
      */
     private static function _httpStartup()
     {
@@ -349,9 +349,9 @@ class Kernel
     }
 
     /**
-     *  @brief Verify the access to system bug page must be autenticated.
+     * Verifies the access to system bug page must be autenticated.
      *
-     *  @return void
+     * @return void
      */
     private static function _systemBugAccess()
     {
@@ -376,11 +376,11 @@ class Kernel
     }
 
     /**
-     *  @brief System bug pages.
+     * The system bug pages.
      *
-     *  @param string $page the command.
+     * @param string $page the command.
      *
-     *  @return void
+     * @return void
      */
     private static function _systemBugPage($page)
     {
@@ -405,9 +405,9 @@ class Kernel
     }
 
     /**
-     *  @brief Test a HTTP error.
+     * Tests a HTTP error.
      *
-     *  @return void
+     * @return void
      */
     private static function _testError()
     {
@@ -417,7 +417,7 @@ class Kernel
     }
 
     /**
-     *  \brief Start system environment.
+     * Starts system environment.
      */
     public static function initiate($sysconf, $startime = null)
     {
@@ -473,9 +473,9 @@ class Kernel
     }
 
     /**
-     *  @brief Return the system runtime until now.
+     * Returns the system runtime until now.
      *
-     *  @return void
+     * @return void
      */
     public static function runTime()
     {
@@ -483,11 +483,11 @@ class Kernel
     }
 
     /**
-     *  @brief The system environment.
+     * The system environment.
      *
-     *  @param string $env - if defined, set the system environment.
+     * @param string $env - if defined, set the system environment.
      *
-     *  @return A string containing the system environment
+     * @return A string containing the system environment
      */
     public static function environment($env = null, $alias = [], $envar = '')
     {
@@ -521,11 +521,11 @@ class Kernel
     }
 
     /**
-     *  @brief The system name.
+     * The system name.
      *
-     *  @param string $name - if defined, set the system name.
+     * @param string $name - if defined, set the system name.
      *
-     *  @return string A string containing the system name.
+     * @return string A string containing the system name.
      */
     public static function systemName($name = null)
     {
@@ -537,13 +537,13 @@ class Kernel
     }
 
     /**
-     *  @brief The system version.
+     * The system version.
      *
-     *  @param mixed $major - if defined, set the major part of the system version. Can be an array with all parts.
-     *  @param mixed $minor - if defined, set the minor part of the system version.
-     *  @param mixed $build - if defined, set the build part of the system version.
+     * @param mixed $major - if defined, set the major part of the system version. Can be an array with all parts.
+     * @param mixed $minor - if defined, set the minor part of the system version.
+     * @param mixed $build - if defined, set the build part of the system version.
      *
-     *  @return string A string containing the system version.
+     * @return string A string containing the system version.
      */
     public static function systemVersion($major = null, $minor = null, $build = null)
     {
@@ -563,13 +563,13 @@ class Kernel
     }
 
     /**
-     *  @brief The project code name.
+     * The project code name.
      *
-     *  @param string $name - if defined, set the project code name.
+     * @param string $name - if defined, set the project code name.
      *
-     *  @return string A string containing the project code name.
+     * @return string A string containing the project code name.
      *
-     *  @see https://en.wikipedia.org/wiki/Code_name#Project_code_name
+     * @see https://en.wikipedia.org/wiki/Code_name#Project_code_name
      */
     public static function projectCodeName($name = null)
     {
@@ -581,13 +581,13 @@ class Kernel
     }
 
     /**
-     *  @brief The system charset.
+     * The system charset.
      *
-     *  Default UTF-8
+     * Default UTF-8
      *
-     *  @param string $charset - if defined, set the system charset.
+     * @param string $charset - if defined, set the system charset.
      *
-     *  @return string A string containing the system charset.
+     * @return string A string containing the system charset.
      */
     public static function charset($charset = null)
     {
@@ -605,12 +605,12 @@ class Kernel
     }
 
     /**
-     *  @brief A path of the system.
+     * A path of the system.
      *
-     *  @param string $component - the component constant.
-     *  @param string $path - if defined, change the path of the component.
+     * @param string $component - the component constant.
+     * @param string $path - if defined, change the path of the component.
      *
-     *  @return string A string containing the path of the component.
+     * @return string A string containing the path of the component.
      */
     public static function path($component, $path = null)
     {
@@ -622,9 +622,11 @@ class Kernel
     }
 
     /**
-     *  \brief Add a error code to the list of ignored errors.
+     * Adds an error code to the list of ignored errors.
      *
-     *  \param (int|array)$error - a error code os a array of errors code
+     * @param int|array $error an error code or an array of errors codes.
+     *
+     * @return void
      */
     public static function addIgnoredError($error)
     {
@@ -642,9 +644,11 @@ class Kernel
     }
 
     /**
-     *  \brief Remove a error code from the list of ignoded errors.
+     * Removes an error code from the list of ignoded errors.
      *
-     *  \param (int|array)$error - a error code os a array of errors code
+     * @param int|array $error an error code or an array of errors codes.
+     *
+     * @return void
      */
     public static function delIgnoredError($error)
     {
@@ -662,7 +666,9 @@ class Kernel
     }
 
     /**
-     *  \brief Get the array of the ignoded errors.
+     * Gets the array of the ignoded errors.
+     *
+     * @return array
      */
     public static function getIgnoredError()
     {
@@ -670,7 +676,14 @@ class Kernel
     }
 
     /**
-     *  \brief Set a error hook function that will be executed just before the framework shows the error message.
+     * Calls an error hook function that will be executed just before the framework shows the error message.
+     *
+     * @param int|string $errno   the number of the error.
+     * @param string     $msg     the message for the error.
+     * @param int        $errorId the id of the error.
+     * @param mixed      $additionalInfo
+     *
+     * @return void
      */
     public static function callErrorHook($errno, $msg, $errorId, $additionalInfo)
     {
@@ -694,7 +707,12 @@ class Kernel
     }
 
     /**
-     *  \brief Set a error hook function that will be executed just before the framework shows the error message.
+     * Sets an error hook function that will be executed just before the framework shows the error message.
+     *
+     * @param int|string $errno    the number of the error.
+     * @param mixed      $funcHook a string with the name of the function or an array with object and function names.
+     *
+     * @return void
      */
     public static function setErrorHook($errno, $funcHook)
     {
@@ -702,24 +720,27 @@ class Kernel
     }
 
     /**
-     *  \brief Pega ou seta o root de controladoras.
+     * Gets and/or sets the root controller.
      *
-     *  \param (array)$controller_root - ae definido, altera o root de controladoras
-     *  \return Retorna um array contendo o root de controladoras
+     * @param array $cRoot if defined sets the new root controller.
+     *
+     * @return array
      */
-    public static function controllerRoot($controller_root = null)
+    public static function controllerRoot($cRoot = null)
     {
-        if (!is_null($controller_root)) {
-            self::$controller_root = $controller_root;
+        if (!is_null($cRoot)) {
+            self::$controller_root = $cRoot;
         }
 
         return self::$controller_root;
     }
 
     /**
-     *	\brief Define o namespace da controller a ser carregada.
+     * Gets and/or sets the controller namespace.
      *
-     *	\param string $controller
+     * @param string $controller if defined sets the new controller namespace.
+     *
+     * @return string
      */
     public static function controllerNamespace($controller = null)
     {
@@ -734,9 +755,12 @@ class Kernel
     }
 
     /**
-     *  \brief Assign a template var used by all templates in system.
-     *  \param string $name defines the name of the variable.
-     *  \param mixed $value the value to assign to the variable.
+     * Assigns a template var used by all templates in system.
+     *
+     * @param string $name  defines the name of the variable.
+     * @param mixed  $value the value to assign to the variable.
+     *
+     * @return void
      */
     public static function assignTemplateVar($name, $value)
     {
@@ -744,9 +768,12 @@ class Kernel
     }
 
     /**
-     *  \brief Get a template variable or all is its name is omitted.
-     *  \param string $var the name of the variable desired. If omitted the function will return an array containing all template vars.
-     *  \return mixed.
+     * Gets a template variable or all is its name is omitted.
+     *
+     * @param string $var the name of the variable desired.
+     * If omitted the function will return an array containing all template vars.
+     *
+     * @return mixed.
      */
     public static function getTemplateVar($var = null)
     {
@@ -762,18 +789,24 @@ class Kernel
     }
 
     /**
-     *  \brief Register a global function used by all templates is system.
-     *  \param string $type defines the type of the function.\n
-     *      Valid values for Smarty driver are "function", "block", "compiler" and "modifier".\n
-     *      For Twig driver always use "function".
-     *  \param string $name defines the name of the function.
-     *  \param mixed $callback defines the PHP callback.
-     *      For Twig driver it must be a function declaration like this: function ($value) { return $value; }\n
-     *      For Smarty driver it can be either:\n
-     *          - A string containing the function name;\n
-     *          - An array of the form array($object, $method) with $object being a reference to an object and $method being a string containing the method-name;\n
-     *          - An array of the form array($class, $method) with $class being the class name and $method being a method of the class.
-     *  \param $cacheable and $cacheAttrs can be omitted in most cases. Used only by Smarty driver.
+     * Registers a global function used by all templates is system.
+     *
+     * @param string $type defines the type of the function.\n
+     *     Valid values for Smarty driver are "function", "block", "compiler" and "modifier".\n
+     *     For Twig driver always use "function".
+     * @param string $name defines the name of the function.
+     * @param mixed $callback defines the PHP callback.
+     *     For Twig driver it must be a function declaration like this:
+     *         function ($value) { return $value; }\n
+     *     For Smarty driver it can be either:\n
+     *         - A string containing the function name;\n
+     *         - An array of the form array($object, $method) with $object being a reference to an
+     *           object and $method being a string containing the method-name;\n
+     *         - An array of the form array($class, $method) with $class being the
+     *           class name and $method being a method of the class.
+     * @param $cacheable and $cacheAttrs can be omitted in most cases. Used only by Smarty driver.
+     *
+     * @return void
      */
     public static function registerTemplateFunction($type, $name, $callback, $cacheable = null, $cacheAttrs = null)
     {
@@ -781,8 +814,9 @@ class Kernel
     }
 
     /**
-     *  \brief Get all teplate plugins registered.
-     *  \return Return an array containing all template plugins registered.
+     * Gets all teplate plugins registered.
+     *
+     * @return array an array containing all template plugins registered.
      */
     public static function getTemplateFunctions()
     {
@@ -790,10 +824,11 @@ class Kernel
     }
 
     /**
-     *	\brief Converte um array multidimensional no objeto stdClass.
+     * Converts a multidimensional array to the stdClass object.
      *
-     *	\param[in] $array (mixed) array a ser convertido
-     *	\return Retorna um objeto stdClasse
+     * @param mixed $array the array to be converted.
+     *
+     * @return stdClass
      */
     public static function arrayToObject($array)
     {
@@ -817,10 +852,11 @@ class Kernel
     }
 
     /**
-     *	\brief Converte um objeto num array multidimensional.
+     * Converts an object to a multidimensional array.
      *
-     *	\param[in] $object (mixed) objeto a ser convertido
-     *	\return Retorna um array
+     * @param mixed $object the object to be converted.
+     *
+     * @return array
      */
     public static function objectToArray($object)
     {

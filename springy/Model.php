@@ -1,16 +1,16 @@
 <?php
-/** @file
- *  Springy.
+/**
+ * Parent class for models.
  *
- *  @brief      Class used to create Model classes to access relational database tables.
+ * Extends this class used to create Model classes to access relational database tables.
  *
- *  @copyright  ₢ 2007-2018 Fernando Val
- *  @author     Fernando Val - fernando.val@gmail.com
+ * @package   Springy
  *
- *  @note       Essa classe extende a classe DB.
+ * @copyright 2014-2018 Fernando Val
+ * @author    Allan Marques <allan.marques@ymail.com>
+ * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- *  @version    2.3.1.48
- *  @ingroup    framework
+ * @version    2.4.0.49
  */
 
 namespace Springy;
@@ -20,19 +20,12 @@ use Springy\DB\Where;
 use Springy\Validation\Validator;
 
 /**
- *  Classe Model para acesso a banco de dados.
+ * Parent class for models.
  *
- *  Esta classe extende a classe DB.
- *
- *  Esta classe deve ser utilizada como herança para as classes de acesso a banco.
- *
- *  Utilize-a para diminuir a quantidade de métodos que sua classe precisará ter para consultas e manutenção em bancos de dados.
+ * This class extends the DB class.
  */
 class Model extends DB implements \Iterator
 {
-    /**
-     *  Atributos da classe.
-     */
     /// Tabela utilizada pela classe
     protected $tableName = '';
     /// Relação de colunas da tabela para a consulta (pode ser uma string separada por vírgula ou um array com nos nomes das colunas)
@@ -423,23 +416,22 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     *  \brief Método de carga do objeto.
+     * Load the registry.
      *
-     *  Busca um registro específico e o carrega para as propriedades.
+     * This method query for received filter and set loaded property to true if one
+     * and only one row was found.
      *
-     *  Caso mais de um registro seja localizado, descarta a busca e considera com não carregado.
+     * @param mixed $filter a Where object or an array with the conditions.
+     * @param mixed $embed  the embed count or join array. Default false to no embed or join.
      *
-     *  \return Retorna TRUE se encontrar um registro que se adeque aos filtros de busca. Retorna FALSE em caso contrário.
+     * @return True if one and only one row was found or false in other case.
      */
-    public function load($filter = null, $embed = false)
+    public function load($filter, $embed = false)
     {
-        if ($this->query($filter, [], 0, 0, $embed) && $this->dbNumRows == 1) {
-            $this->loaded = true;
-        } else {
-            $this->rows = [];
-        }
+        $this->rows = [];
+        $this->loaded = ($this->query($filter, [], 0, 0, $embed) && $this->dbNumRows == 1);
 
-        return $this->dbNumRows == 1;
+        return $this->loaded;
     }
 
     /**
