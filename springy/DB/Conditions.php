@@ -1,28 +1,31 @@
 <?php
-/** \file
- *  Springy.
+/**
+ * Class to construct database conditions clauses.
  *
- *  \brief      Child database class to construct conditions.
- *  \copyright  Copyright (c) 2016 Fernando Val
- *  \author     Fernando Val - fernando.val@gmail.com
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.5.0.6
- *  \ingroup    framework
+ * @copyright 2016-2018 Fernando Val
+ * @author    Fernando Val <fernando.val@gmail.com>
+ * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
+ *
+ * @version   0.5.1.7
  */
 
 namespace Springy\DB;
 
 /**
- *  \brief Class to construct database conditions clauses.
+ * Class to construct database conditions clauses.
  */
 class Conditions
 {
+    /// Conditions array
     private $conditions = [];
+    /// Parameters array
     private $parameters = [];
 
+    /// Conditional constants
     const COND_AND = 'AND';
     const COND_OR = 'OR';
 
+    /// Comparison constants
     const OP_EQUAL = '=';
     const OP_NOT_EQUAL = '!=';
     const OP_GREATER = '>';
@@ -38,6 +41,7 @@ class Conditions
     const OP_MATCH = 'MATCH';
     const OP_MATCH_BOOLEAN_MODE = 'MATCH BOOLEAN';
 
+    /// Comparison constants aliases
     const OP_EQUAL_ALIAS = 'EQ';
     const OP_NOT_EQUAL_ALIAS = 'NE';
     const OP_GREATER_ALIAS = 'GT';
@@ -49,7 +53,9 @@ class Conditions
     const EXPR_SUB = 'sub';
 
     /**
-     *  \brief The constructor method.
+     * Constructor.
+     *
+     * @param array|null $conditions initial conditions.
      */
     public function __construct($conditions = null)
     {
@@ -61,7 +67,11 @@ class Conditions
     }
 
     /**
-     *  \brief Convert an alias operator to the real operator.
+     * Converts an alias operator to the real operator.
+     *
+     * @param string $operator
+     *
+     * @return string
      */
     private function convertAliasOperator($operator)
     {
@@ -84,13 +94,18 @@ class Conditions
     }
 
     /**
-     *  \brief Conver the condition array element to string form.
+     * Converts the condition array element to string form.
      *
-     *  Will feed the array of parameters too.
+     * Will feed the array of parameters too.
+     *
+     * @param array $condition    the condition.
+     * @param bool  $omitCondType defines to omit the condition type at the beginning.
+     *
+     * @return string
      */
-    private function condToString(array $condition, $ommitCondType = false)
+    private function condToString(array $condition, $omitCondType = false)
     {
-        $expression = ($ommitCondType ? '' : $condition['expression']);
+        $expression = ($omitCondType ? '' : $condition['expression']);
 
         switch ($this->convertAliasOperator($condition['operator'])) {
             case self::OP_EQUAL:
@@ -122,9 +137,11 @@ class Conditions
     }
 
     /**
-     *  \brief Convert the objet to a string in database conditions form.
+     * Converts the objet to a string in database conditions form.
      *
-     *  The values of the parameter will be in question mark form and can be obtained with params() method.
+     * The values of the parameter will be in question mark form and can be obtained with params() method.
+     *
+     * @return string
      */
     public function __toString()
     {
@@ -150,7 +167,9 @@ class Conditions
     }
 
     /**
-     *  \brief Clear the clause.
+     * Clears the clause.
+     *
+     * @return void
      */
     public function clear()
     {
@@ -159,10 +178,17 @@ class Conditions
     }
 
     /**
-     *  \brief Add a condition to the clause.
+     * Adds a condition to the clause.
      *
-     *  If $column is an array of conditions made by other conditions object, this will create a set of
-     *  conditions inside parentesis group.
+     * If $column is an array of conditions made by other conditions object,
+     * this will create a set of conditions inside parentesis group.
+     *
+     * @param mixed  $column     the column name.
+     * @param mixed  $value      the value of the condition.
+     * @param string $operator   the comparison operator.
+     * @param string $expression the expression to put before this condition.
+     *
+     * @return void
      */
     public function condition($column, $value = null, $operator = self::OP_EQUAL, $expression = self::COND_AND)
     {
@@ -186,7 +212,9 @@ class Conditions
     }
 
     /**
-     *  \brief Return the number of conditions.
+     * Returns the number of conditions.
+     *
+     * @return int
      */
     public function count()
     {
@@ -194,7 +222,12 @@ class Conditions
     }
 
     /**
-     *  \brief Find a column in an array of conditions.
+     * Finds a column in the array of conditions.
+     *
+     * @param string $column     the name of the column.
+     * @param array  $conditions the array of the conditions.
+     *
+     * @return mixed the condition for given column or false if not found.
      */
     private function _find($column, $conditions)
     {
@@ -210,8 +243,11 @@ class Conditions
     }
 
     /**
-     *  \brief Get the content of conditions in internal array form.
-     *  \return An array of conditions.
+     * Gets the content of conditions in internal array form.
+     *
+     * @param mixed $column the name of the column or null to all conditions.
+     *
+     * @return mixed An array of conditions of false.
      */
     public function get($column = null)
     {
@@ -223,8 +259,9 @@ class Conditions
     }
 
     /**
-     *  \brief Get the params after parse the clause.
-     *  \return An array of parameters in same sequence of the question marks.
+     * Gets the params after parse the clause.
+     *
+     * @return array of parameters in same sequence of the question marks into conditional string.
      */
     public function params()
     {
@@ -232,7 +269,9 @@ class Conditions
     }
 
     /**
-     *  \brief An alias to __toString() method.
+     * An alias to __toString() method.
+     *
+     * @return string
      */
     public function parse()
     {
@@ -240,8 +279,13 @@ class Conditions
     }
 
     /**
-     *  \brief Remove a conditions.
-     *  \note  Need revisions to check in sub expressions.
+     * Removes a conditions.
+     *
+     * Need revisions to check in sub expressions.
+     *
+     * @param string $column the name of the column to be removed from conditions.
+     *
+     * @return void
      */
     public function remove($column)
     {
@@ -255,58 +299,35 @@ class Conditions
     }
 
     /**
-     *  \brief Populate object with legacy array.
+     * Populates object with a legacy array.
+     *
+     * @param array $filter legacy array of conditions used by Model->query().
+     *
+     * @return void
      */
     public function filter($filter)
     {
+        $operators = [
+            'eq'                    => self::OP_EQUAL,
+            'gt'                    => self::OP_GREATER,
+            'gte'                   => self::OP_GREATER_EQUAL,
+            'lt'                    => self::OP_LESS,
+            'lte'                   => self::OP_LESS_EQUAL,
+            'ne'                    => self::OP_NOT_EQUAL,
+            'in'                    => self::OP_IN,
+            'not in'                => self::OP_NOT_IN,
+            'is'                    => self::OP_IS,
+            'is not'                => self::OP_IS_NOT,
+            'like'                  => self::OP_LIKE,
+            'match'                 => self::OP_MATCH,
+            'match in boolean mode' => self::OP_MATCH_BOOLEAN_MODE,
+        ];
+
         foreach ($filter as $field => $value) {
             if (is_array($value)) {
                 foreach ($value as $method => $key) {
-                    switch (strtolower($method)) {
-                        case 'eq':
-                            $operator = self::OP_EQUAL;
-                            break;
-                        case 'gt':
-                            $operator = self::OP_GREATER;
-                            break;
-                        case 'gte':
-                            $operator = self::OP_GREATER_EQUAL;
-                            break;
-                        case 'lt':
-                            $operator = self::OP_LESS;
-                            break;
-                        case 'lte':
-                            $operator = self::OP_LESS_EQUAL;
-                            break;
-                        case 'ne':
-                            $operator = self::OP_NOT_EQUAL;
-                            break;
-                        case 'in':
-                            $operator = self::OP_IN;
-                            break;
-                        case 'not in':
-                            $operator = self::OP_NOT_IN;
-                            break;
-                        case 'is':
-                            $operator = self::OP_IS;
-                            break;
-                        case 'is not':
-                            $operator = self::OP_IS_NOT;
-                            break;
-                        case 'like':
-                            $operator = self::OP_LIKE;
-                            break;
-                        case 'match':
-                            $operator = self::OP_MATCH;
-                            break;
-                        case 'match in boolean mode':
-                            $operator = self::OP_MATCH_BOOLEAN_MODE;
-                            break;
-                        default:
-                            $operator = self::OP_EQUAL;
-                    }
-
-                    $this->condition($field, $key, $operator);
+                    $method = strtolower($method);
+                    $this->condition($field, $key, isset($operators[$method]) ? $operators[$method] : self::OP_EQUAL);
                 }
             } else {
                 $this->condition($field, $value);

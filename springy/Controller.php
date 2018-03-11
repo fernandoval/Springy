@@ -4,13 +4,11 @@
  *
  * Extends this class to construct controllers in the applications.
  *
- * @package   Springy
- *
  * @copyright 2016-2018 Fernando Val
  * @author    Allan Marques <allan.marques@ymail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   0.4.0.6
+ * @version   0.4.0.7
  */
 
 namespace Springy;

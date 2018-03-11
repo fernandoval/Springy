@@ -2,14 +2,12 @@
 /**
  * Valuation class for the user-assigned data.
  *
- * @package   Springy\Validation
- *
  * @copyright 2007-2018 Fernando Val
  * @author    Allan Marques <allan.marques@ymail.com>
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   0.4.0.5
+ * @version   0.4.0.6
  */
 
 namespace Springy\Validation;
@@ -300,7 +298,7 @@ class Validator
     }
 
     /**
-     * Validates if the value meets the minimum required
+     * Validates if the value meets the minimum required.
      *
      * @param string $field  the name of the field.
      * @param array  $params an array with parameters.
@@ -421,7 +419,7 @@ class Validator
     }
 
     /**
-     * Validate if value is an email address.
+     * Validates whether the value is an email address.
      *
      * @param string $field  the name of the field.
      * @param array  $params an array with parameters.
@@ -438,7 +436,7 @@ class Validator
     }
 
     /**
-     * Valida se o texto contÃ©m apenas letras.
+     * Validates whether the value has only letters.
      *
      * @param string $field  the name of the field.
      * @param array  $params an array with parameters.
@@ -455,7 +453,7 @@ class Validator
     }
 
     /**
-     * Valida se o texto contÃ©m apenas letras e nÃºmeros.
+     * Validates whether the value has only letters and numbers.
      *
      * @param string $field  the name of the field.
      * @param array  $params an array with parameters.

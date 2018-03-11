@@ -1,26 +1,25 @@
 <?php
-/** \file
- *  Springy.
+/**
+ * Class to construct WHERE clause.
  *
- *  \brief      Child database class to construct WHERE clause.
- *  \copyright  Copyright (c) 2016 Fernando Val
- *  \author     Fernando Val - fernando.val@gmail.com
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.1.2
- *  \ingroup    framework
+ * @copyright 2016-2018 Fernando Val
+ * @author    Fernando Val <fernando.val@gmail.com>
+ * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
+ *
+ * @version   0.1.0.3
  */
 
 namespace Springy\DB;
 
 /**
- *  \brief Class to construct database WHERE clauses.
+ * Class to construct WHERE clause.
  */
 class Where extends Conditions
 {
     /**
-     *  \brief Convert the objet to a string in database WHERE form.
+     * Convert the objet to a string in database WHERE form.
      *
-     *  The values of the parameter will be in question mark form and can be obtained with params() method.
+     * The values of the parameter will be in question mark form and can be obtained with params() method.
      */
     public function __toString()
     {

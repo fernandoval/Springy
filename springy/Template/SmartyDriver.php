@@ -1,15 +1,16 @@
 <?php
-/** \file
- *  Springy.
+/**
+ * Class driver for Smarty template engine.
  *
- *  \brief      Classe driver de tratamento de templates utilizando Smarty como mecanismo de renderização.
+ * This class implements Smarty template engine inside Springy\Template.
  *
- *  \copyright  ₢ 2007-2018 Fernando Val
- *  \author     Fernando Val - fernando.val@gmail.com
+ * @see       http://www.smarty.net/
  *
- *  \see        http://www.smarty.net/
- *  \version    1.7.1.14
- *  \ingroup    framework
+ * @copyright 2014-2018 Fernando Val
+ * @author    Fernando Val <fernando.val@gmail.com>
+ * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
+ *
+ * @version   1.7.2.15
  */
 
 namespace Springy\Template;
@@ -20,29 +21,34 @@ use Springy\Kernel;
 use Springy\URI;
 
 /**
- *  \brief Classe driver de tratamento de templates utilizando Smarty como mecanismo.
+ * Class driver for Smarty template engine.
  *
- *  \note Esta classe é um driver para a classe Springy\Template e utiliza internamente a classe Smarty.
- *        Não utilize a classe Smarty diretamente.
- *        Não utilize esta classe diretamente em sua aplicação.
- *        Instancie a classe Template em sua aplicação.
+ * This class is a driver for Springy\Template class and uses the
+ * Smarty template engine.
  */
 class SmartyDriver implements TemplateDriverInterface
 {
     const TPL_NAME_SUFIX = '.tpl.html';
 
+    /// Internal template object
     private $tplObj = null;
-
+    /// Template name
     private $templateName = null;
-
+    /// Template cache identifier
     private $templateCacheId = null;
+    /// Template compile identifier
     private $templateCompileId = null;
-
+    /// Template variables
     private $templateVars = [];
+    /// Template plugins
     private $templateFuncs = [];
 
     /**
-     *  \brief Inicializa a classe de template.
+     * Constructor.
+     *
+     * Initializes the Smarty class.
+     *
+     * @param string|array $tpl
      */
     public function __construct($tpl = null)
     {
@@ -57,14 +63,13 @@ class SmartyDriver implements TemplateDriverInterface
         $this->tplObj->use_sub_dirs = Configuration::get('template', 'use_sub_dirs');
 
         $this->setCacheDir(Configuration::get('template', 'template_cached_path'));
-
-        $this->setTemplateDir(Configuration::get('template', 'template_path'));
+        $this->setTemplateDir([
+            'main'    => Configuration::get('template', 'template_path'),
+            'default' => Configuration::get('template', 'default_template_path'),
+        ]);
         $this->setCompileDir(Configuration::get('template', 'compiled_template_path'));
         $this->setConfigDir(Configuration::get('template', 'template_config_path'));
-
-        if ($tpl) {
-            $this->setTemplate($tpl);
-        }
+        $this->setTemplate($tpl);
 
         // Iniciliza as variáveis com URLs padrão de template
         if (Configuration::get('uri', 'common_urls')) {
@@ -103,7 +108,7 @@ class SmartyDriver implements TemplateDriverInterface
     }
 
     /**
-     *  \brief Destrói o objeto.
+     * Destructor.
      */
     public function __destruct()
     {
@@ -111,7 +116,11 @@ class SmartyDriver implements TemplateDriverInterface
     }
 
     /**
-     *  \brief Add a directory to the list of directories where templates are stored.
+     * Adds an alternate path to the templates folder.
+     *
+     * @param mixed $path path in the file system.
+     *
+     * @return void
      */
     public function addTemplateDir($path)
     {
@@ -119,7 +128,11 @@ class SmartyDriver implements TemplateDriverInterface
     }
 
     /**
-     *  \brief Define o local dos arquivos de template.
+     * Sets the path to the template folder.
+     *
+     * @param mixed $path path in the file system.
+     *
+     * @return void
      */
     public function setTemplateDir($path)
     {
@@ -127,7 +140,11 @@ class SmartyDriver implements TemplateDriverInterface
     }
 
     /**
-     *  \brief Define o local dos arquivos de template compilados.
+     * Defines the compiled template folder path.
+     *
+     * @param mixed $path path in the file system.
+     *
+     * @return void
      */
     public function setCompileDir($path)
     {
@@ -135,7 +152,11 @@ class SmartyDriver implements TemplateDriverInterface
     }
 
     /**
-     *  \brief Define o local dos arquivos .conf usados nas tpls.
+     * Defines the folder path of the configuration files for templates.
+     *
+     * @param mixed $path path in the file system.
+     *
+     * @return void
      */
     public function setConfigDir($path)
     {
@@ -143,7 +164,11 @@ class SmartyDriver implements TemplateDriverInterface
     }
 
     /**
-     *  \brief Define o local dos arquivos de template cacheados.
+     * Sets the template cache folder path.
+     *
+     * @param mixed $path path in the file system.
+     *
+     * @return void
      */
     public function setCacheDir($path)
     {
@@ -151,52 +176,9 @@ class SmartyDriver implements TemplateDriverInterface
     }
 
     /**
-     *  \brief Verifica o template ideal de acordo com a página.
-     */
-    private function setAutoTemplatePaths()
-    {
-        // Se o nome do template não foi informado, define como relativo à controladora atual
-        if ($this->templateName === null) {
-            // Pega o caminho relativo da página atual
-            $relative_path_page = URI::relativePathPage(true);
-            $this->setTemplate($relative_path_page.(empty($relative_path_page) ? '' : DIRECTORY_SEPARATOR).URI::getControllerClass());
-
-            // $this->templateName = URI::getControllerClass();
-
-            // Monta o caminho do diretório do arquivo de template
-            // $path = Configuration::get('template', 'template_path') . (empty($relative_path_page) ? "" : DIRECTORY_SEPARATOR) . $relative_path_page;
-
-            // Verifica se existe o diretório e dentro dele um template com o nome da página e
-            // havendo, usa como caminho relativo adicionao. Se não houver, limpa o caminho relativo.
-            // if (is_dir($path) && file_exists($path . DIRECTORY_SEPARATOR . $templateName . self::TPL_NAME_SUFIX)) {
-            //     $relative_path = (empty($relative_path_page) ? '' : DIRECTORY_SEPARATOR) . $relative_path_page;
-            // } else {
-            //     $relative_path = '';
-            // }
-
-            // Ajusta os caminhos de template
-            // $this->setTemplateDir( Configuration::get('template', 'template_path') . $relative_path);
-            // $this->setCompileDir( Configuration::get('template', 'compiled_template_path') . $relative_path);
-            // $this->setConfigDir( Configuration::get('template', 'template_config_path'));
-        }
-
-        // Se o arquivo de template não existir, exibe erro 404
-        if ($this->templateExists($this->templateName)) {
-            return true;
-        }
-
-        $this->addTemplateDir(Configuration::get('template', 'default_template_path'));
-        if ($this->templateExists($this->templateName)) {
-            return true;
-        }
-
-        new Errors(404, $this->templateName.self::TPL_NAME_SUFIX);
-    }
-
-    /**
-     *  \brief Verifica se o template está cacheado.
+     * Checks if the template is cached.
      *
-     *  @return bool
+     * @return bool
      */
     public function isCached()
     {
@@ -204,7 +186,11 @@ class SmartyDriver implements TemplateDriverInterface
     }
 
     /**
-     *  \brief Define o cacheamento dos templates.
+     * Defines template caching.
+     *
+     * @param string $value
+     *
+     * @return void
      */
     public function setCaching($value = 'current')
     {
@@ -212,8 +198,11 @@ class SmartyDriver implements TemplateDriverInterface
     }
 
     /**
-     *  \brief Define o tempo de vida dos arquivos de cache
-     *  \param (int)$seconds - tempo de vida em segundos.
+     * Sets the template cache lifetime.
+     *
+     * @param int $seconds
+     *
+     * @return void
      */
     public function setCacheLifetime($seconds)
     {
@@ -221,12 +210,15 @@ class SmartyDriver implements TemplateDriverInterface
     }
 
     /**
-     *  \brief Renderiza o template
-     *  \return Retorna uma string contendo o template renderizado.
+     * Returns the template output.
+     *
+     * @return string
      */
     public function fetch()
     {
-        $this->setAutoTemplatePaths();
+        if (!$this->templateExists($this->templateName)) {
+            new Errors(404, $this->templateName.self::TPL_NAME_SUFIX);
+        }
 
         // Alimenta as variáveis CONSTANTES
         $this->tplObj->assign('HOST', URI::buildURL());
@@ -268,12 +260,23 @@ class SmartyDriver implements TemplateDriverInterface
     }
 
     /**
-     *  \brief Define o arquivos de template.
+     * Sets the template file.
      *
-     *  @param string $tpl Nome do template, sem extenção do arquivo
+     * @param string $tpl name of the template, without file extension
+     *
+     * @return void
      */
     public function setTemplate($tpl)
     {
+        // Se o nome do template não foi informado, define como relativo à controladora atual
+        if ($tpl === null) {
+            // Pega o caminho relativo da página atual
+            $path = URI::relativePathPage(true);
+            $this->setTemplate($path.(empty($path) ? '' : DIRECTORY_SEPARATOR).URI::getControllerClass());
+
+            return;
+        }
+
         $this->templateName = ((is_array($tpl)) ? implode(DIRECTORY_SEPARATOR, $tpl) : $tpl);
 
         $compile = '';
@@ -286,7 +289,11 @@ class SmartyDriver implements TemplateDriverInterface
     }
 
     /**
-     *  \brief Define o id do cache.
+     * Sets the cache id.
+     *
+     * @param mixed $cid
+     *
+     * @return void
      */
     public function setCacheId($cid)
     {
@@ -294,7 +301,11 @@ class SmartyDriver implements TemplateDriverInterface
     }
 
     /**
-     *  \brief Define o id da compilação.
+     * Sets the compile identifier.
+     *
+     * @param mixed $cid
+     *
+     * @return void
      */
     public function setCompileId($cid)
     {
@@ -302,7 +313,13 @@ class SmartyDriver implements TemplateDriverInterface
     }
 
     /**
-     *  \brief Define uma variável do template.
+     * Assigns a variable to the template.
+     *
+     * @param string $var     the name of the variable.
+     * @param mixed  $value   the value of the variable.
+     * @param bool   $nocache (optional) if true, the variable is assigned as nocache variable.
+     *
+     * @return void
      */
     public function assign($var, $value = null, $nocache = false)
     {
@@ -316,7 +333,15 @@ class SmartyDriver implements TemplateDriverInterface
     }
 
     /**
-     *  \brief Método statico que define um pluguin para todas as instancias da Template.
+     * Registers custom functions or methods as template plugins.
+     *
+     * @param mixed        $type        defines the type of the plugin.
+     * @param strin        $name        defines the name of the plugin.
+     * @param string|array $callback    defines the callback.
+     * @param mixed        $cacheable
+     * @param mixed        $cache_attrs
+     *
+     * @return void
      */
     public function registerPlugin($type, $name, $callback, $cacheable = null, $cache_attrs = null)
     {
@@ -324,7 +349,11 @@ class SmartyDriver implements TemplateDriverInterface
     }
 
     /**
-     *  \brief Limpa uma variável do template.
+     * Clears the value of an assigned variable.
+     *
+     * @param string $var the name of the variable.
+     *
+     * @return void
      */
     public function clearAssign($var)
     {
@@ -332,9 +361,9 @@ class SmartyDriver implements TemplateDriverInterface
     }
 
     /**
-     *  \brief clears the entire template cache.
+     * Clears the entire template cache.
      *
-     *  As an optional parameter, you can supply a minimum age in seconds the cache files must be before they will get cleared.
+     * As an optional parameter, you can supply a minimum age in seconds the cache files must be before they will get cleared.
      */
     public function clearAllCache($expire_time)
     {
@@ -342,7 +371,11 @@ class SmartyDriver implements TemplateDriverInterface
     }
 
     /**
-     *  \brief Limpa o cache para o template corrente.
+     * Clears the cache of the template.
+     *
+     * @param int $expireTime only compiled templates older than exp_time seconds are cleared.
+     *
+     * @todo Implement cache and compiled identifiers.
      */
     public function clearCache($expireTime = null)
     {
@@ -350,7 +383,11 @@ class SmartyDriver implements TemplateDriverInterface
     }
 
     /**
-     *  \brief Limpa a versão compilada do template atual.
+     * Clears the compiled version of the template
+     *
+     * @param int $expTime only compiled templates older than exp_time seconds are cleared.
+     *
+     * @todo Implement compiled identifier.
      */
     public function clearCompiled($expTime)
     {
@@ -366,7 +403,11 @@ class SmartyDriver implements TemplateDriverInterface
     }
 
     /**
-     *  \brief Verifica se um arquivo de template existe.
+     * Checks whether the specified template exists
+     *
+     * @param string $tplName name of the template, without file extension
+     *
+     * @return bool
      */
     public function templateExists($tplName)
     {
@@ -374,11 +415,11 @@ class SmartyDriver implements TemplateDriverInterface
     }
 
     /**
-     *  \brief Mascara nome de arquivo estático para evitar cache do navegador.
+     * Mascara nome de arquivo estático para evitar cache do navegador.
      *
-     *  Este método é inserido como função de template para utilização na criação da URI
-     *  de arquivos estáticos de CSS e JavaScript com objetivo de evitar que o cache
-     *  do navegador utilize versões desatualizadas deles.
+     * Este método é inserido como função de template para utilização na criação da URI
+     * de arquivos estáticos de CSS e JavaScript com objetivo de evitar que o cache
+     * do navegador utilize versões desatualizadas deles.
      */
     public function assetFile($params, $smarty)
     {

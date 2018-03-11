@@ -1,118 +1,185 @@
 <?php
-/** \file
- *  Springy.
+/**
+ * Interface for template plugin drivers.
  *
- *  \brief      Interface para driver de tratamento de templates.
- *  \copyright  ₢ 2007-2016 Fernando Val
- *  \author     Fernando Val - fernando.val@gmail.com
- *  \version    1.1.0.3
- *  \ingroup    framework
+ * This class is an interface for building drivers for interaction
+ * with template plugins.
+ *
+ * @copyright 2015-2018 Fernando Val
+ * @author    Fernando Val <fernando.val@gmail.com>
+ * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
+ *
+ * @version   1.1.0.4
  */
 
 namespace Springy\Template;
 
 /**
- *  \brief Interface para driver de renderização de templates.
- *
- *  \note Esta classe é uma interface para construção de classes utilizadas como drivers
- *        para utilização de classes de renderização de template HTML.
+ * Interface for template plugin drivers.
  */
 interface TemplateDriverInterface
 {
     // const TPL_NAME_SUFIX = '.tpl.html';
 
     /**
-     *  \brief Add an alternate path to the templates.
+     * Adds an alternate path to the templates folder.
+     *
+     * @param mixed $path path in the file system.
+     *
+     * @return void
      */
     public function addTemplateDir($path);
 
     /**
-     *  \brief Define o local dos arquivos de template.
+     * Sets the path to the template folder.
+     *
+     * @param mixed $path path in the file system.
+     *
+     * @return void
      */
     public function setTemplateDir($path);
 
     /**
-     *  \brief Define o local dos arquivos de template compilados.
+     * Defines the compiled template folder path.
+     *
+     * @param mixed $path path in the file system.
+     *
+     * @return void
      */
     public function setCompileDir($path);
 
     /**
-     *  \brief Define o local dos arquivos .conf usados nas tpls.
+     * Defines the folder path of the configuration files for templates.
+     *
+     * @param mixed $path path in the file system.
+     *
+     * @return void
      */
     public function setConfigDir($path);
 
     /**
-     *  \brief Define o local dos arquivos de template cacheados.
+     * Sets the template cache folder path.
+     *
+     * @param mixed $path path in the file system.
+     *
+     * @return void
      */
     public function setCacheDir($path);
 
     /**
-     *  \brief Verifica se o template está cacheado.
+     * Checks if the template is cached.
      *
      * @return bool
      */
     public function isCached();
 
     /**
-     *  \brief Define o cacheamento dos templates.
+     * Defines template caching.
      *
-     *  @
+     * @param string $value
+     *
+     * @return void
      */
     public function setCaching($value = 'current');
 
+    /**
+     * Sets the template cache lifetime.
+     *
+     * @param int $seconds
+     *
+     * @return void
+     */
     public function setCacheLifetime($seconds);
 
     /**
-     *  \brief Retorna a página montada.
+     * Returns the template output.
+     *
+     * @return string
      */
     public function fetch();
 
     /**
-     *  \brief Define o arquivos de template.
+     * Sets the template file.
      *
-     * @param string $tpl Nome do template, sem extenção do arquivo
+     * @param string $tpl name of the template, without file extension
+     *
+     * @return void
      */
     public function setTemplate($tpl);
 
     /**
-     *  \brief Define o id do cache.
+     * Sets the cache id.
+     *
+     * @param mixed $cid
+     *
+     * @return void
      */
     public function setCacheId($cid);
 
     /**
-     *  \brief Define o id da compilação.
+     * Sets the compile identifier.
+     *
+     * @param mixed $cid
+     *
+     * @return void
      */
     public function setCompileId($cid);
 
     /**
-     *  \brief Define uma variável do template.
+     * Assigns a variable to the template.
+     *
+     * @param string $var     the name of the variable.
+     * @param mixed  $value   the value of the variable.
+     * @param bool   $nocache (optional) if true, the variable is assigned as nocache variable.
+     *
+     * @return void
      */
     public function assign($var, $value = null, $nocache = false);
 
     /**
-     *  \brief Método statico que define um pluguin para todas as instancias da Template.
+     * Registers custom functions or methods as template plugins.
+     *
+     * @param mixed        $type        defines the type of the plugin.
+     * @param strin        $name        defines the name of the plugin.
+     * @param string|array $callback    defines the callback.
+     * @param mixed        $cacheable
+     * @param mixed        $cache_attrs
+     *
+     * @return void
      */
     public function registerPlugin($type, $name, $callback, $cacheable = null, $cache_attrs = null);
 
     /**
-     *  \brief Limpa uma variável do template.
+     * Clears the value of an assigned variable.
+     *
+     * @param string $var the name of the variable.
+     *
+     * @return void
      */
     public function clearAssign($var);
 
     /**
-     *  \brief clears the entire template cache.
+     * Clears the entire template cache.
      *
-     *  As an optional parameter, you can supply a minimum age in seconds the cache files must be before they will get cleared.
+     * As an optional parameter, you can supply a minimum age in seconds the cache files must be before they will get cleared.
      */
     public function clearAllCache($expire_time);
 
     /**
-     *  \brief Limpa o cache para o template corrente.
+     * Clears the cache of the template.
+     *
+     * @param int $expireTime only compiled templates older than exp_time seconds are cleared.
+     *
+     * @todo Implement cache and compiled identifiers.
      */
     public function clearCache($expireTime = null);
 
     /**
-     *  \brief Limpa a versão compilada do template atual.
+     * Clears the compiled version of the template
+     *
+     * @param int $expTime only compiled templates older than exp_time seconds are cleared.
+     *
+     * @todo Implement compiled identifier.
      */
     public function clearCompiled($expTime);
 
@@ -122,7 +189,11 @@ interface TemplateDriverInterface
     public function clearConfig($var);
 
     /**
-     *  \brief Verifica se um arquivo de template existe.
+     * Checks whether the specified template exists
+     *
+     * @param string $tplName name of the template, without file extension
+     *
+     * @return bool
      */
     public function templateExists($tplName);
 }

@@ -4,13 +4,12 @@
  *
  * Extends this class used to create Model classes to access relational database tables.
  *
- * @package   Springy
- *
  * @copyright 2014-2018 Fernando Val
+ * @author    Fernando Val <fernando.val@gmail.com>
  * @author    Allan Marques <allan.marques@ymail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version    2.4.0.49
+ * @version   2.5.1.51
  */
 
 namespace Springy;
@@ -42,6 +41,8 @@ class Model extends DB implements \Iterator
     protected $writableColumns = [];
     /// Colunas que precisam passar por algum método de alteração
     protected $hookedColumns = [];
+    /// Join other tables structured array
+    protected $join;
     /// Colunas passíveis de ordenação para a busca
     protected $orderColumns = [];
     /// Propriedades do objeto
@@ -64,19 +65,96 @@ class Model extends DB implements \Iterator
     public $where = null;
 
     /**
-     *  \brief Método construtor da classe.
+     * Constructor.
      *
-     *  \param $filtro - Filto de busca, opcional. Deve ser um array de campos ou inteiro com ID do usuário.
+     * @param Where|array $filter optional search filter.
      */
     public function __construct($filter = null, $database = 'default')
     {
         parent::__construct($database);
 
+        $this->setJoin([]);
         $this->where = new Where();
 
         if (is_array($filter) || $filter instanceof Where) {
             $this->load($filter);
         }
+    }
+
+    /**
+     * Gets the Where object of the filter.
+     *
+     * @param array|Where $filter
+     *
+     * @return Where
+     */
+    private function _fFilter($filter)
+    {
+        // Filter is a Where object?
+        if ($filter instanceof Where) {
+            return clone $filter;
+        }
+
+        // Filter is a legacy array?
+        if (is_array($filter)) {
+            $where = new Where();
+            $where->filter($filter);
+
+            return $where;
+        }
+
+        return clone $this->where;
+    }
+
+    /**
+     * Gets the Where object of the filter.
+     *
+     * @param array|Where $filter
+     *
+     * @return Where
+     */
+    private function _filter($filter)
+    {
+        $where = $this->_fFilter($filter);
+
+        if ($this->deletedColumn && !$where->get($this->deletedColumn)
+            && !$where->get($this->tableName.'.'.$this->deletedColumn)) {
+            $where->condition($this->tableName.'.'.$this->deletedColumn, 0);
+        }
+
+        return $where;
+    }
+
+    /**
+     * Returns a string with column names separated by comma.
+     *
+     * @return string
+     */
+    private function _getColumns()
+    {
+        $columns = [$this->_parseColumns($this->tableName, $this->tableColumns)];
+        foreach ($this->join as $table => $join) {
+            if (!empty($join['columns'])) {
+                $columns[] = $this->_parseColumns($table, $join['columns']);
+            }
+        }
+
+        return implode(', ', $columns);
+    }
+
+    /**
+     * Returns a string with table and joins to the query.
+     *
+     * @return string
+     */
+    private function _getFrom()
+    {
+        $from = ' FROM '.$this->tableName;
+        foreach ($this->join as $table => $join) {
+            $from .= ' '.$join['type'].' JOIN '.$table.' ON '.$join['on'];
+        }
+
+        return $from;
     }
 
     /**
@@ -92,156 +170,104 @@ class Model extends DB implements \Iterator
      */
     private function _queryEmbbed($embbed)
     {
-        if (is_int($embbed) && $embbed > 0 && count($this->embeddedObj) && count($this->rows) > 0) {
-            foreach ($this->embeddedObj as $obj => $attr) {
-                if (isset($attr['model'])) {
-                    $attr['attr_name'] = (isset($attr['attr_name']) ? $attr['attr_name'] : $obj);
-                }
-                // Back compatibility to fix a bug
-                if (!isset($attr['column'])) {
-                    $attr['column'] = $attr['fk'];
-                }
-                if (!isset($attr['found_by'])) {
-                    $attr['found_by'] = $attr['pk'];
-                }
-                if (!isset($attr['type'])) {
-                    $attr['type'] = isset($attr['attr_type']) ? $attr['attr_type'] : 'list';
-                }
-
-                $keys = [];
-                foreach ($this->rows as $idx => $row) {
-                    $this->rows[$idx][$attr['attr_name']] = [];
-                    if (!in_array($row[$attr['column']], $keys)) {
-                        $keys[] = $row[$attr['column']];
-                    }
-                }
-
-                // Filter
-                if (isset($attr['filter']) && is_array($attr['filter'])) {
-                    $efilter = array_merge(
-                        [
-                            $attr['found_by'] => ['in' => $keys],
-                        ],
-                        $attr['filter']
-                    );
-                } else {
-                    $efilter = [
-                        $attr['found_by'] => ['in' => $keys],
-                    ];
-                }
-                // Order
-                if (isset($attr['order'])) {
-                    $order = $attr['order'];
-                } else {
-                    $order = [];
-                }
-                // Offset
-                if (isset($attr['offset'])) {
-                    $offset = $attr['offset'];
-                } else {
-                    $offset = null;
-                }
-                // Limit
-                if (isset($attr['limit'])) {
-                    $limit = $attr['limit'];
-                } else {
-                    $limit = null;
-                }
-
-                if (isset($attr['model'])) {
-                    $embObj = new $attr['model']();
-                } else {
-                    $embObj = new $obj();
-                }
-                if (isset($attr['columns']) && is_array($attr['columns'])) {
-                    $embObj->setColumns($attr['columns']);
-                }
-                if (isset($attr['group_by']) && is_array($attr['group_by'])) {
-                    $embObj->groupBy($attr['group_by']);
-                }
-                if (isset($attr['embedded_obj'])) {
-                    $embObj->setEmbeddedObj($attr['embedded_obj']);
-                }
-                $embObj->query($efilter, $order, $offset, $limit, $embbed - 1);
-                while ($er = $embObj->next()) {
-                    foreach ($this->rows as $idx => $row) {
-                        if ($er[$attr['found_by']] == $row[$attr['column']]) {
-                            if ($attr['type'] == 'list') {
-                                $this->rows[$idx][$attr['attr_name']][] = $er;
-                            } else {
-                                $this->rows[$idx][$attr['attr_name']] = $er;
-                            }
-                        }
-                    }
-                }
-                unset($embObj);
-                reset($this->rows);
-            }
-        }
-    }
-
-    /**
-     *  \brief Build a JOIN string with received array.
-     *
-     *  Monta os JOINs caso um array seja fornecido.
-     *
-     *  Cada item do array de JOINs deve ser um array, cujo índice representa o nome da tabela e contendo
-     *  as seguintes chaves em seu interior: 'columns', 'join' e 'on'.
-     *
-     *  Cada chave do sub-array representa o seguinte:
-     *      'join' determina o tipo de JOIN. Exemplos: 'INNER', 'LEFT OUTER'.
-     *      'columns' define lista de campos, separada por vírgulas, a serem acrescidos ao SELECT.
-     *          Recomenda-se preceder cada coluna com o nome da tabela para evitar ambiguidade.
-     *      'on' é a cláusula ON para junção das tabelas.
-     *
-     *  Example of parameter $embbed as array to be used as JOIN:
-     *
-     *  [
-     *      'table_name' => [
-     *          'join'    => 'INNER',
-     *          'on'      => 'table_name.id = fk_id',
-     *          'columns' => 'table_name.column1 AS table_name_column1, table_name.column2',
-     *      ],
-     *  ]
-     *
-     *  or:
-     *
-     *  [
-     *      [
-     *          'join'    => 'INNER',
-     *          'table'   => 'table_name',
-     *          'on'      => 'table_name.id = fk_id',
-     *          'columns' => 'table_name.column1 AS table_name_column1, table_name.column2',
-     *      ],
-     *  ]
-     */
-    private function _queryJoin($join, &$columns, &$from)
-    {
-        if (!is_array($join)) {
+        if (!is_int($embbed) || $embbed == 0 || !count($this->embeddedObj) || !count($this->rows)) {
             return;
         }
 
-        foreach ($join as $table => $meta) {
-            if (!empty($meta['columns'])) {
-                $columns .= ', '.$meta['columns'];
-            } elseif (!empty($meta['fields'])) {
-                $columns .= ', '.$meta['fields'];
-            }
-            if (!isset($meta['join'])) {
-                if (!isset($meta['type'])) {
-                    $meta['join'] = 'INNER';
-                } else {
-                    $meta['join'] = $meta['type'];
+        $where = new Where();
+
+        foreach ($this->embeddedObj as $obj => $attr) {
+            $modelName = isset($attr['model']) ? $attr['model'] : $obj;
+            $attrName = isset($attr['attr_name']) ? $attr['attr_name'] : $obj;
+            $foundBy = isset($attr['found_by']) ? $attr['found_by'] : $attr['pk'];
+            $relCol = isset($attr['column']) ? $attr['column'] : $attr['fk'];
+            $resType = isset($attr['type']) ? $attr['type'] : (isset($attr['attr_type']) ? $attr['attr_type'] : 'list');
+
+            // The array of values to search
+            $keys = [];
+            foreach ($this->rows as $idx => $row) {
+                $this->rows[$idx][$attrName] = [];
+
+                if (!in_array($row[$relCol], $keys)) {
+                    $keys[] = $row[$relCol];
                 }
             }
-            $from .= ' '.$meta['join'].' JOIN '.(isset($meta['table']) ? $meta['table'] : $table).' ON '.$meta['on'];
+
+            // Filter
+            $where->clear();
+            $where->condition($foundBy, $keys, Where::OP_IN);
+            if (isset($attr['filter']) && is_array($attr['filter'])) {
+                $where->filter($attr['filter']);
+            }
+
+            // Order
+            $order = isset($attr['order']) ? $attr['order'] : [];
+            // Offset
+            $offset = isset($attr['offset']) ? $attr['offset'] : null;
+            // Limit
+            $limit = isset($attr['limit']) ? $attr['limit'] : null;
+
+            $embObj = new $modelName();
+            if (isset($attr['columns']) && is_array($attr['columns'])) {
+                $embObj->setColumns($attr['columns']);
+            }
+            if (isset($attr['group_by']) && is_array($attr['group_by'])) {
+                $embObj->groupBy($attr['group_by']);
+            }
+            if (isset($attr['embedded_obj'])) {
+                $embObj->setEmbeddedObj($attr['embedded_obj']);
+            }
+
+            $embObj->query($where, $order, $offset, $limit, $embbed - 1);
+            while ($er = $embObj->next()) {
+                foreach ($this->rows as $idx => $row) {
+                    if ($er[$foundBy] == $row[$relCol]) {
+                        if ($resType == 'list') {
+                            $this->rows[$idx][$attrName][] = $er;
+                        } else {
+                            $this->rows[$idx][$attrName] = $er;
+                        }
+                    }
+                }
+            }
+            unset($embObj);
+            reset($this->rows);
         }
     }
 
     /**
-     *  \brief Verifica se a chave primária está definida.
+     * Returns a string with column names separated by comma.
      *
-     *  \return Retorna TRUE se todas as colunas da chave primária estão definiadas e FALSE em caso contrário.
+     * @param array|string $columns   an array or a comma separeted string with the columns names.
+     * @param string       $tableName the name of the table.
+     *
+     * @return string
+     */
+    private function _parseColumns($tableName, $columns)
+    {
+        if (!is_array($columns)) {
+            $columns = explode(',', $columns);
+        }
+
+        $line = '';
+        foreach ($columns as $column) {
+            $line .= ((!strpos($column, '.') && !strpos($column, '(')) ? $tableName.'.'.$column : $column).', ';
+        }
+
+        return trim($line, ', ');
+
+        // Old code preserved to future reference. Must be removed before end version.
+        // if (is_array($this->tableColumns)) {
+        //     return $this->tableName.'.'.implode(', '.$this->tableName.'.', $this->tableColumns);
+        // }
+
+        // return (!strpos($this->tableColumns, '.') && !strpos($this->tableColumns, '(')) ? $this->tableName.'.'.$this->tableColumns : $this->tableColumns;
+    }
+
+    /**
+     * Checks whether the primary key is set.
+     *
+     * @return bool true if all columns of the primary key are set or false otherwise.
      */
     protected function isPrimaryKeyDefined()
     {
@@ -260,11 +286,11 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     *  Returns the data validation rules configuration.
+     * Returns the data validation rules configuration.
      *
-     *  @note Este método deve ser extendido na classe herdeira
+     * Extends this method to defines the validation rules.
      *
-     *  @return array
+     * @return array
      */
     protected function validationRules()
     {
@@ -272,11 +298,11 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     *  Returns the customized error messages to the validation rules.
+     * Returns the customized error messages to the validation rules.
      *
-     *  @note Este método deve ser extendido na classe herdeira
+     * Extends the method to defines customizes error messages.
      *
-     *  @return array
+     * @return array
      */
     protected function validationErrorMessages()
     {
@@ -284,12 +310,12 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     *  A trigger which will be called by delete method on Model object before do the exclusion.
+     * A trigger which will be called by delete method on Model object before do the exclusion.
      *
-     *  This method exists to be optionally extended in the child class
-     *  if any treatment needs to be done prior to the deletion of a registry.
+     * This method exists to be optionally extended in the child class
+     * if any treatment needs to be done prior to the deletion of a registry.
      *
-     *  @return bool True if all is ok or false if has an error.
+     * @return bool True if all is ok or false if has an error.
      */
     protected function triggerBeforeDelete()
     {
@@ -297,12 +323,12 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     *  A trigger which will be called by save method on Model object before insert data.
+     * A trigger which will be called by save method on Model object before insert data.
      *
-     *  This method exists to be optionally extended in the child class
-     *  if any treatment needs to be done prior to the insertion of a registry.
+     * This method exists to be optionally extended in the child class
+     * if any treatment needs to be done prior to the insertion of a registry.
      *
-     *  @return bool True if all is ok or false if has an error.
+     * @return bool True if all is ok or false if has an error.
      */
     protected function triggerBeforeInsert()
     {
@@ -310,12 +336,12 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     *  A trigger which will be called by save method on Model object before update data.
+     * A trigger which will be called by save method on Model object before update data.
      *
-     *  This method exists to be optionally extended in the child class
-     *  if any treatment needs to be done prior to the update of a registry.
+     * This method exists to be optionally extended in the child class
+     * if any treatment needs to be done prior to the update of a registry.
      *
-     *  @return bool True if all is ok or false if has an error.
+     * @return bool True if all is ok or false if has an error.
      */
     protected function triggerBeforeUpdate()
     {
@@ -323,12 +349,12 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     *  A trigger which will be called by delete method on Model object after the exclusion done.
+     * A trigger which will be called by delete method on Model object after the exclusion done.
      *
-     *  This method exists to be optionally extended in the child class
-     *  if any treatment needs to be done after the exclusion of the registry.
+     * This method exists to be optionally extended in the child class
+     * if any treatment needs to be done after the exclusion of the registry.
      *
-     *  @return void
+     * @return void
      */
     protected function triggerAfterDelete()
     {
@@ -336,12 +362,12 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     *  A trigger which will be called by save method on Model object after insert data.
+     * A trigger which will be called by save method on Model object after insert data.
      *
-     *  This method exists to be optionally extended in the child class
-     *  if any treatment needs to be done after the insertion of a registry.
+     * This method exists to be optionally extended in the child class
+     * if any treatment needs to be done after the insertion of a registry.
      *
-     *  @return void
+     * @return void
      */
     protected function triggerAfterInsert()
     {
@@ -349,12 +375,12 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     *  A trigger which will be called by save method on Model object after update data.
+     * A trigger which will be called by save method on Model object after update data.
      *
-     *  This method exists to be optionally extended in the child class
-     *  if any treatment needs to be done after the update of a registry.
+     * This method exists to be optionally extended in the child class
+     * if any treatment needs to be done after the update of a registry.
      *
-     *  @return void
+     * @return void
      */
     protected function triggerAfterUpdate()
     {
@@ -362,26 +388,27 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     *  \brief Retorna um array com a(s) coluna(s) da chave primária.
+     * Returns an array with the column(s) of the primary key.
+     *
+     * @return array the array with column(s) of the primary key or false.
      */
     public function getPKColumns()
     {
         if (empty($this->primaryKey)) {
             return false;
-        } elseif (is_array($this->primaryKey)) {
-            $tpk = $this->primaryKey;
-        } else {
-            $tpk = explode(',', $this->primaryKey);
         }
 
-        return $tpk;
+        if (is_array($this->primaryKey)) {
+            return $this->primaryKey;
+        }
+
+        return explode(',', $this->primaryKey);
     }
 
     /**
-     * \brief Retorna o container de mensagens de errors que guardará as mensagens de erros
-     *       vindas do teste de validação.
+     * Returns the container of error messages.
      *
-     * \return Springy\Utils\MessageContainer
+     * @return Springy\Utils\MessageContainer
      */
     public function validationErrors()
     {
@@ -389,10 +416,11 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     * \brief Realiza uma validação dos dados populados no objeto, passando-os por testes
-     *        de acordo com  as configurações regras estipulados no método 'validationRules()'.
+     * Performs the validation of the data in the object.
      *
-     * \return bool resultado da validação, true para passou e false para não passou
+     * This method uses rules set in the validationRules() method.
+     *
+     * @return bool true or false according to the validation result.
      */
     public function validate()
     {
@@ -416,7 +444,7 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     * Load the registry.
+     * Loads the record.
      *
      * This method query for received filter and set loaded property to true if one
      * and only one row was found.
@@ -424,7 +452,7 @@ class Model extends DB implements \Iterator
      * @param mixed $filter a Where object or an array with the conditions.
      * @param mixed $embed  the embed count or join array. Default false to no embed or join.
      *
-     * @return True if one and only one row was found or false in other case.
+     * @return bool True if one and only one row was found or false in other case.
      */
     public function load($filter, $embed = false)
     {
@@ -435,7 +463,9 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     *  \brief Retorna um array das colunas alteradas no registro corrente.
+     * Returns an array of the changed columns in the current record.
+     *
+     * @return array
      */
     public function changedColumns()
     {
@@ -447,7 +477,9 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     *  \brief Limpa a relação de colunas alteradas.
+     * Clears the list of changed columns.
+     *
+     * @return void
      */
     public function clearChangedColumns()
     {
@@ -458,7 +490,9 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     *  \brief Informa se o registro foi carregado com dados do banco.
+     * Returns whether the desired record has been loaded.
+     *
+     * @return bool
      */
     public function isLoaded()
     {
@@ -466,8 +500,9 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     *  \brief Fill calculated columns of a row.
-     *  \param $row - number of the row to be processed. If null given, process current row.
+     * Fills calculated columns of a row.
+     *
+     * @param int $row number of the row to be processed. If null given, process current row.
      */
     public function calculeteColumnsRow($row = null)
     {
@@ -490,7 +525,9 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     *  \brief Sets the values of the calculated columns.
+     * Sets the values of the calculated columns.
+     *
+     * @return void
      */
     public function calculateColumns()
     {
@@ -506,7 +543,9 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     *  \brief Mount the array of values to save.
+     * Mount the array with changed values to be saved.
+     *
+     * @return array
      */
     private function _values()
     {
@@ -519,7 +558,9 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     *  \brief Do the INSERT command.
+     * Performs an INSERT command.
+     *
+     * @return bool true if any record was inserted.
      */
     private function _insert()
     {
@@ -558,9 +599,16 @@ class Model extends DB implements \Iterator
 
         $values = $this->_values();
 
-        $this->execute('INSERT INTO '.$this->tableName.' ('.implode(', ', $this->changedColumns()).($this->insertDateColumn ? ', '.$this->insertDateColumn : '').') VALUES ('.rtrim(str_repeat('?,', count($values)), ',').($this->insertDateColumn ? ', '.$cdtFunc : '').')', $values);
+        $this->execute(
+            'INSERT INTO '.$this->tableName.
+            ' ('.implode(', ', $this->changedColumns()).
+            ($this->insertDateColumn ? ', '.$this->insertDateColumn : '').
+            ') VALUES ('.rtrim(str_repeat('?,', count($values)), ',').
+            ($this->insertDateColumn ? ', '.$cdtFunc : '').')',
+            $values
+        );
 
-        // Load the insertd row
+        // Load the inserted row
         if ($this->affectedRows() == 1) {
             if ($this->lastInsertedId() && !empty($this->primaryKey) && !strpos($this->primaryKey, ',') && !$this->get($this->primaryKey)) {
                 $this->load([$this->primaryKey => $this->lastInsertedId()]);
@@ -583,7 +631,9 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     *  \brief Do the UPDATE command.
+     * Performs an UPDATE command.
+     *
+     * @return bool true if any record was updated.
      */
     private function _update()
     {
@@ -602,7 +652,11 @@ class Model extends DB implements \Iterator
             $where->condition($column, $this->get($column));
         }
 
-        $this->execute('UPDATE '.$this->tableName.' SET '.implode(' = ?,', $this->changedColumns()).' = ?'.$where, array_merge($this->_values(), $where->params()));
+        $this->execute(
+            'UPDATE '.$this->tableName.' SET '.
+            implode(' = ?,', $this->changedColumns()).
+            ' = ?'.$where, array_merge($this->_values(), $where->params())
+        );
 
         // Call after update trigger
         $this->triggerAfterUpdate();
@@ -614,9 +668,9 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     *  \brief Send the changes in current row to the database.
+     * Saves the changes in current row into the database.
      *
-     *  \return Retorna TRUE se o dado foi salvo ou FALSE caso nenhum dado tenha sido alterado.
+     * @return bool true if any record was saved or false otherwise.
      */
     public function save($onlyIfValidationPasses = true)
     {
@@ -783,11 +837,11 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     *  \brief Pega uma coluna ou um registro dos atributos de dados.
+     * Gets a column or a record from the resultset.
      *
-     *  \param (string)$column - Nome da coluna desejada ou null caso queira o array contendo a linha atual
+     * @param string $column the name of the desired column or null to all columns of the current record.
      *
-     *  \return Retorna o conteúdo da coluna passada, um array com as colunas do registro atual ou NULL
+     * @return mixed the valur of the column or an array with all columns data.
      */
     public function get($column = null)
     {
@@ -802,9 +856,12 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     *  \brief Altera o valor de uma coluna.
+     * Sets the value of a column.
      *
-     *  \return Retorna TRUE se alterou o valor da coluna ou FALSE caso a coluna não exista ou não haja registro carregado
+     * @param string $column the name of the column.
+     * @param mixed  $value  the value of the column.
+     *
+     * @return bool true if the value was changed or false if the column does not exists or can not be changed.
      */
     public function set($column, $value = null)
     {
@@ -845,11 +902,11 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     *  \brief Define a relação de colunas para consultas.
+     * Sets the columns list for queries.
      *
-     *  Este método permite alterar a relação padrão de colunas a serem listadas em consultas com o método query
+     * @param array $columns an array with the columns names.
      *
-     *  \params (array)$columns - array contendo a relação de colunas para o comando SELECT
+     * @return void
      */
     public function setColumns(array $columns)
     {
@@ -861,7 +918,7 @@ class Model extends DB implements \Iterator
             $cols[] = $column;
         }
 
-        $this->tableColumns = implode(',', $cols);
+        $this->tableColumns = $cols;
     }
 
     /**
@@ -899,6 +956,64 @@ class Model extends DB implements \Iterator
     }
 
     /**
+     * Sets joins to other tables
+     *
+     * @param array $join an structured array of tables do join.
+     *
+     * Cada item do array de JOINs deve ser um array, cujo índice representa
+     * o nome da tabela e contendo as seguintes chaves em seu interior: 'columns', 'join' e 'on'.
+     *
+     * Cada chave do sub-array representa o seguinte:
+     *     'join' determina o tipo de JOIN. Exemplos: 'INNER', 'LEFT OUTER'.
+     *     'columns' define lista de campos, separada por vírgulas, a serem acrescidos ao SELECT.
+     *          Recomenda-se preceder cada coluna com o nome da tabela para evitar ambiguidade.
+     *     'on' é a cláusula ON para junção das tabelas.
+     *
+     * Example of parameter $embbed as array to be used as JOIN:
+     *
+     * [
+     *     'table_name' => [
+     *         'join'    => 'INNER',
+     *         'on'      => 'table_name.id = fk_id',
+     *         'columns' => 'table_name.column1 AS table_name_column1, table_name.column2',
+     *     ],
+     * ]
+     *
+     * or:
+     *
+     * [
+     *     [
+     *         'join'    => 'INNER',
+     *         'table'   => 'table_name',
+     *         'on'      => 'table_name.id = fk_id',
+     *         'columns' => 'table_name.column1 AS table_name_column1, table_name.column2',
+     *     ],
+     * ]
+     *
+     * @return void
+     */
+    public function setJoin($join)
+    {
+        if (!is_array($join)) {
+            return;
+        }
+
+        $this->join = [];
+
+        foreach ($join as $table => $meta) {
+            if (isset($meta['table'])) {
+                $table = $meta['table'];
+            }
+
+            $this->join[$table] = [
+                'columns' => isset($meta['columns']) ? $meta['columns'] : (isset($meta['fields']) ? $meta['fields'] : ''),
+                'type'    => isset($meta['join']) ? $meta['join'] : (isset($meta['type']) ? $meta['type'] : 'INNER'),
+                'on'      => $meta['on'],
+            ];
+        }
+    }
+
+    /**
      *  \brief Define colunas para agrupamento do resultado.
      *
      *  Este método permite definir a relação de colunas para a cláusula GROUP BY da consulta com o método query
@@ -933,60 +1048,36 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     *  \brief Método de consulta ao banco de dados.
+     * Performs a query.
      *
-     *  \param (array)$filter - array contendo o filtro de registros no formato 'coluna' => valor
-     *  \param (array)$orderby - array contendo o filtro de registros no formato 'coluna' => 'ASC'/'DESC'
-     *  \param (int)$offset - inteiro que define o offset de registros
-     *  \param (int)$limit - inteiro que define o limite de registros a serem retornados
-     *  \param (variant)$embbed - esse parâmetro pode ser um array contendo uma estrutura para montagem
-     *    de cláusulas JOIN para a query ou um inteiro. Se omitido, nada será feito com ele.
-     *    Se receber um valor inteiro, fará com que a pesquisa utilize o atributo $this->embeddedObj
-     *    para alimentar as linhas com os dados dos objetos relacionados até a o nível definido por seu valor.
+     * @param Where $filter  the object Where with the conditions to the query.
+     * @param array $orderby a multidimentional array with column => 'ASC|DESC' pairs.
+     * @param int   $offset  specifies the offset of the first row to return.
+     * @param int   $limit   specifies the maximum number of rows to return.
+     * @param mixed $embbed  can be a structured array to apply a join (see setJoin function),
+     *                       or an integer to determines the penetration leval in
+     *                       embedded object defined by setEmbeddedObj() function.
+     *                       If omited will be ignored.
      *
-     *  \return Retorna TRUE caso tenha efetuado a busca ou FALSE caso não tenha recebido filtros válidos.
-     *  \note Mesmo que o método retorne TRUE, não significa que algum dado tenha sido encontrado.
-     *    Isso representa apenas que a consulta foi efetuado com sucesso. Para saber o resultado da
-     *    consulta, utilize os métodos de recuperação de dados.
+     * @return bool true if the query was executed or false if has no filter and the
+     *              property abortOnEmptyFilter if true.
+     *
+     * Observação: Mesmo que o método retorne TRUE, não significa que algum dado tenha sido encontrado.
+     * Isso representa apenas que a consulta foi efetuado com sucesso. Para saber o resultado da
+     * consulta, utilize os métodos de recuperação de dados.
      */
-    public function query($filter = null, array $orderby = [], $offset = 0, $limit = 0, $embbed = false)
+    public function query($filter = null, array $orderby = [], $offset = 0, $limit = 0, $embbed = null)
     {
-        // Monta o conjunto de colunas da busca
-        if (is_array($this->tableColumns)) {
-            $columns = $this->tableName.'.'.implode(', '.$this->tableName.'.', $this->tableColumns);
-        } else {
-            $columns = (!strpos($this->tableColumns, '.') && !strpos($this->tableColumns, '(')) ? $this->tableName.'.'.$this->tableColumns : $this->tableColumns;
-        }
-
-        $select = 'SELECT '.($this->driverName() == 'mysql' ? 'SQL_CALC_FOUND_ROWS ' : '').$columns;
-        $from = ' FROM '.$this->tableName;
-        unset($columns);
-
-        // Build the conditions (if has)
-        if (is_array($filter)) {
-            // Use filter as array (legacy)
-            $where = new Where();
-            $where->filter($filter);
-        } elseif ($filter instanceof Where) {
-            // Filter is a new Where object
-            $where = clone $filter;
-        } else {
-            $where = clone $this->where;
-        }
-
-        // Abandona caso não hajam filtros
+        $where = $this->_filter($filter);
         if ($this->abortOnEmptyFilter && !$where->count()) {
             return false;
         }
 
-        // Se há uma coluna de exclusão lógica definida, adiciona-a ao conjunto de filtros
-        if ($this->deletedColumn && !$where->get($this->deletedColumn) && !$where->get($this->tableName.'.'.$this->deletedColumn)) {
-            $where->condition($this->tableName.'.'.$this->deletedColumn, 0);
-        }
+        $this->setJoin($embbed);
 
-        $this->_queryJoin($embbed, $select, $from); // Table joins?
+        $select = 'SELECT '.($this->driverName() == 'mysql' ? 'SQL_CALC_FOUND_ROWS ' : '').$this->_getColumns().$this->_getFrom();
 
-        $sql = $select.$from.$where.(!empty($this->groupBy) ? ' GROUP BY '.implode(', ', $this->groupBy) : '');
+        $sql = $select.$where.(count($this->groupBy) ? ' GROUP BY '.$this->_parseColumns($this->tableName, $this->groupBy) : '');
         $params = $where->params();
 
         // Monta a cláusula HAVING de condicionamento
@@ -998,16 +1089,13 @@ class Model extends DB implements \Iterator
             unset($conditions);
         }
 
-        // Monta a ordenação do resultado de busca
-        if (!empty($orderby)) {
-            $order = [];
-            foreach ($orderby as $column => $direction) {
-                $order[] = "$column $direction";
-            }
-
-            if (!empty($order)) {
-                $sql .= ' ORDER BY '.implode(', ', $order);
-            }
+        // Order by
+        $order = [];
+        foreach ($orderby as $column => $direction) {
+            $order[] = $column.' '.strtoupper($direction);
+        }
+        if (count($order)) {
+            $sql .= ' ORDER BY '.implode(', ', $order);
         }
 
         // Monta o limitador de registros
@@ -1023,7 +1111,7 @@ class Model extends DB implements \Iterator
         $this->rows = $this->fetchAll();
         unset($sql);
 
-        // Faz a contagem de registros do filtro apenas se foi definido um limitador de resultador
+        // Faz a contagem de registros do filtro apenas se foi definido um limitador de resultados
         if ($limit > 0) {
             if ($this->driverName() == 'mysql') {
                 $this->execute('SELECT FOUND_ROWS() AS found_rows');
@@ -1051,9 +1139,9 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     *  \brief Todos os registros.
+     * Returns all found records.
      *
-     *  \return Retorna um array com todas as linhas do resultset
+     * @return array
      */
     public function all()
     {
@@ -1061,9 +1149,9 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     *  \brief Move o ponteiro para o primeiro registro e retorna o registro.
+     * Moves the pointer to the first record and returns the record.
      *
-     *  \return Retorna o primeiro registro ou FALSE caso não haja registros.
+     * @return array|bool the first record or false if there are no records.
      */
     public function reset()
     {
@@ -1071,9 +1159,9 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     *  \brief Move o ponteiro para o registro anteior e retorna o registro.
+     * Moves the pointer to the previous record and returns the record.
      *
-     *  \return Retorna o registro anterior ou FALSE caso não haja mais registros.
+     * @return array|bool the previous record or false if there are no more records.
      */
     public function prev()
     {
@@ -1081,9 +1169,9 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     *  \brief Retorna o registro corrente e move o ponteiro para o próximo registro.
+     * Returns the current record and moves the pointer to the next record.
      *
-     *  \return Retorna o próximo registro da fila ou FALSE caso não haja mais registros.
+     * @return array|bool the next row record or false if there are no more records.
      */
     public function next()
     {
@@ -1095,9 +1183,9 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     *  \brief Move o ponteiro para o último registro e retorna o registro.
+     * Moves the pointer to the last record and returns the record.
      *
-     *  \return Retorna o último registro ou FALSE caso não haja registros.
+     * @return array|bool the last record or false if there are no records.
      */
     public function end()
     {
@@ -1105,9 +1193,9 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     *  \brief Retorna todos os dados de uma determinada coluna.
+     * Returns all data in a given column.
      *
-     *  \return Retorna um array de valores de uma determinada coluna do resultset.
+     * @return array an array of values from a given resultset column.
      */
     public function getAllColumn($column)
     {
@@ -1115,46 +1203,27 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     *  \brief Quantidade de linhas encontradas para uma determinada condição.
+     * Performs a row count for a given condition.
      *
-     *  \return Retorna a quantidade de registros encontrados para uma determinada condição
+     * @return int
      */
     public function count($filter = null, $embbed = false)
     {
-        $select = 'SELECT COUNT(0) AS rowscount';
-        $from = ' FROM '.$this->tableName;
+        $where = $this->_filter($filter);
 
-        // Monta o conjunto de filtros personalizado da classe herdeira
-        if (is_array($filter)) {
-            $where = new Where();
-            $where->filter($filter);
-        } elseif ($filter instanceof Where) {
-            // Filter is a new Where object
-            $where = clone $filter;
-        } else {
-            $where = clone $this->where;
-        }
-
-        // Se há uma coluna de exclusão lógica definida, adiciona-a ao conjunto de filtros
-        if ($this->deletedColumn && !$where->get($this->deletedColumn) && !$where->get($this->tableName.'.'.$this->deletedColumn)) {
-            $where->condition($this->tableName.'.'.$this->deletedColumn, 0);
-        }
-
-        $this->_queryJoin($embbed, $select, $from); // Table joins?
-
-        $sql = $select.$from.$where;
-
-        // Executa o comando de contagem
-        $this->execute($sql, $where->params());
+        $this->execute(
+            'SELECT COUNT(0) AS rowscount'.$this->_getFrom().$where,
+            $where->params()
+        );
         $row = $this->fetchNext();
 
         return (int) $row['rowscount'];
     }
 
     /**
-     *  \brief Quantidade de linhas do resultset.
+     * Returns the number of lines of the resultset.
      *
-     *  \return Retorna a quantidade de registros contidos no resultset da última consulta
+     * @return int
      */
     public function rows()
     {
@@ -1162,9 +1231,9 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     *  \brief Dá o número de linhas encotnradas no banco de dados.
+     * Returns the number of records found by the last query performed.
      *
-     *  \return Retorna a quantidade de registros encntrados no banco de dados para a última busca efetuada.
+     * @return int
      */
     public function foundRows()
     {
@@ -1172,9 +1241,13 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     *  \brief Alias de get(), para retornar columns como se fossem propriedades
-     *  \param variant $name
-     *  \return variant.
+     * Magic method to get value from columns as if they were properties.
+     *
+     * This method will use the get() method.
+     *
+     * @param string $name the name of the column.
+     *
+     * @return mixed
      */
     public function __get($name)
     {
@@ -1182,9 +1255,12 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     *  \brief Alias de set(), para setar columns como se fossem propriedades
-     *  \param string $name
-     *  \param variant $value.
+     * Magic method to set value in columns as if they were properties..
+     *
+     * This method will use the set() method.
+     *
+     * @param string $name  the column name.
+     * @param mixed  $value the value.
      */
     public function __set($name, $value)
     {
@@ -1192,7 +1268,9 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     *  \brief Retorna o registro atual.
+     * Gets the current record.
+     *
+     * @return array
      */
     public function current()
     {
@@ -1200,7 +1278,9 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     *  \brief Retorna os nomes das colunas.
+     * Gets the names of the columns.
+     *
+     * @return array
      */
     public function key()
     {
@@ -1208,8 +1288,9 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     *  \brief Alias para reset
-     *  \see reset.
+     * An alias for reset.
+     *
+     * @see reset
      */
     public function rewind()
     {
@@ -1217,7 +1298,9 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     *  \brief Verifica se o registro atual existe.
+     * Checks whether the current record exists.
+     *
+     * @return bool
      */
     public function valid()
     {

@@ -2,14 +2,12 @@
 /**
  * Cookie treatment class.
  *
- * @package   Springy
- *
  * @copyright 2007-2018 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   1.3.1.8
+ * @version   1.3.1.9
  */
 
 namespace Springy;

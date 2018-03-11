@@ -1,13 +1,16 @@
 <?php
-/** \file
- *  Springy.
+/**
+ * Class driver for Twig template engine.
  *
- *  \brief      Driver class using the Twig template engine.
- *  \copyright  ₢ 2014-2016 Fernando Val
- *  \author     Fernando Val - fernando.val@gmail.com
- *  \see        http://twig.sensiolabs.org/
- *  \version    0.16.1.15
- *  \ingroup    framework
+ * This class implements Twig template engine inside Springy\Template.
+ *
+ * @see       https://twig.symfony.com/
+ *
+ * @copyright 2014-2018 Fernando Val
+ * @author    Fernando Val <fernando.val@gmail.com>
+ * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
+ *
+ * @version   0.16.2.16
  */
 
 namespace Springy\Template;
@@ -18,31 +21,38 @@ use Springy\Kernel;
 use Springy\URI;
 
 /**
- *  \brief Classe driver de tratamento de templates utilizando Twig como mecanismo.
+ * Class driver for Twig template engine.
  *
- *  \note Esta classe é um driver para a classe Springy\Template e utiliza internamente a classe Twig.
- *        Não utilize a classe Twig diretamente.
- *        Não utilize esta classe diretamente em sua aplicação.
- *        Instancie a classe Template em sua aplicação.
+ * This class is a driver for Springy\Template class and uses the
+ * Twig template engine.
  */
 class TwigDriver implements TemplateDriverInterface
 {
     const TPL_NAME_SUFIX = '.twig.html';
 
+    /// Internal template object
     private $tplObj = null;
+    /// Environment options
     private $envOptions = [];
-
+    /// Template path
     private $templatePath = null;
+    /// Template name
     private $templateName = null;
-
+    /// Template cache identifier
     private $templateCacheId = null;
+    /// Template compile identifier
     private $templateCompileId = null;
-
+    /// Template variables
     private $templateVars = [];
+    /// Template functions
     private $templateFuncs = [];
 
     /**
-     *  \brief Inicializa a classe de template.
+     * Constructor.
+     *
+     * Initializes the Twig instance.
+     *
+     * @param string|array $tpl
      */
     public function __construct($tpl = null)
     {
@@ -57,11 +67,12 @@ class TwigDriver implements TemplateDriverInterface
             'optimizations'    => Configuration::get('template', 'optimizations'),
         ];
 
-        $this->__twigInstance(Configuration::get('template', 'template_path'));
+        $this->__twigInstance([
+            Configuration::get('template', 'template_path'),
+            Configuration::get('template', 'default_template_path'),
+        ]);
 
-        if ($tpl) {
-            $this->setTemplate($tpl);
-        }
+        $this->setTemplate($tpl);
 
         // Iniciliza as variáveis com URLs padrão de template
         if (Configuration::get('uri', 'common_urls')) {
@@ -100,20 +111,25 @@ class TwigDriver implements TemplateDriverInterface
     }
 
     /**
-     *  \brief Cria a instância da classe Twig.
+     * Creates the Twig class instance.
+     *
+     * @param string|array $templatePath
+     *
+     * @return void
      */
     private function __twigInstance($templatePath)
     {
         if (isset($this->tplObj)) {
             unset($this->tplObj);
         }
+
         $this->templatePath = $templatePath;
         $loader = new \Twig_Loader_Filesystem($templatePath);
         $this->tplObj = new \Twig_Environment($loader, $this->envOptions);
     }
 
     /**
-     *  \brief Destrói o objeto.
+     * Destructor.
      */
     public function __destruct()
     {
@@ -121,15 +137,31 @@ class TwigDriver implements TemplateDriverInterface
     }
 
     /**
-     *  \brief Add a directory to the list of directories where templates are stored.
+     * Adds an alternate path to the templates folder.
+     *
+     * @param mixed $path path in the file system.
+     *
+     * @return void
      */
     public function addTemplateDir($path)
     {
         $this->tplObj->getLoader()->addPath($path);
+
+        if (!is_array($path)) {
+            $this->templatePath[] = $path;
+
+            return;
+        }
+
+        $this->templatePath = array_merge($this->templatePath, $path);
     }
 
     /**
-     *  \brief Define o local dos arquivos de template.
+     * Sets the path to the template folder.
+     *
+     * @param mixed $path path in the file system.
+     *
+     * @return void
      */
     public function setTemplateDir($path)
     {
@@ -137,10 +169,11 @@ class TwigDriver implements TemplateDriverInterface
     }
 
     /**
-     *  \brief Define o local dos arquivos de template compilados.
-     *  \note No caso do Twig, não tem função, pois o Twig não tem um diretório diferenciado
-     *        para arquivos compilados. Apenas o diretório de chache é utilizado.
-     *  \see setCacheDir.
+     * Defines the compiled template folder path.
+     *
+     * @param mixed $path path in the file system.
+     *
+     * @return void
      */
     public function setCompileDir($path)
     {
@@ -149,9 +182,13 @@ class TwigDriver implements TemplateDriverInterface
     }
 
     /**
-     *  \brief Define o local dos arquivos .conf usados nas tpls (sem função)
-     *  \note Este método não tem uso na Twig, pois o mesmo não dá suporte
-     *        a arquivos de configuração de template.
+     * Defines the folder path of the configuration files for templates.
+     *
+     * This method do nothing. Exists only by an interface requisition.
+     *
+     * @param mixed $path path in the file system.
+     *
+     * @return void
      */
     public function setConfigDir($path)
     {
@@ -159,60 +196,23 @@ class TwigDriver implements TemplateDriverInterface
     }
 
     /**
-     *  \brief Define o local dos arquivos de template cacheados.
+     * Sets the template cache folder path.
+     *
+     * This method do nothing. Exists only by an interface requisition.
+     *
+     * Twig cache dir and compiled dir is the same
+     *
+     * @param mixed $path path in the file system.
+     *
+     * @return void
      */
     public function setCacheDir($path)
-    {
-        // Twig cache dir and compiled dir is the same
-    }
+    {}
 
     /**
-     *  \brief Verifica o template ideal de acordo com a página.
-     */
-    private function setAutoTemplatePaths()
-    {
-        // Se o nome do template não foi informado, define como relativo à controladora atual
-        if ($this->templateName === null) {
-            // Pega o caminho relativo da página atual
-            $relative_path_page = URI::relativePathPage(true);
-            $this->setTemplate($relative_path_page.(empty($relative_path_page) ? '' : DIRECTORY_SEPARATOR).URI::getControllerClass());
-
-            // $this->templateName = URI::getControllerClass();
-
-            // // Monta o caminho do diretório do arquivo de template
-            // $path = Configuration::get('template', 'template_path') . (empty($relative_path_page) ? '' : DIRECTORY_SEPARATOR) . $relative_path_page;
-
-            // // Verifica se existe o diretório e dentro dele um template com o nome da página e
-            // // havendo, usa como caminho relativo adicionao. Se não houver, limpa o caminho relativo.
-            // if (is_dir($path) && file_exists($path . DIRECTORY_SEPARATOR . $this->templateName . self::TPL_NAME_SUFIX)) {
-                // $relative_path = (empty($relative_path_page) ? '' : DIRECTORY_SEPARATOR) . $relative_path_page;
-            // } else {
-                // $relative_path = '';
-            // }
-
-            // // Ajusta os caminhos de template
-            // $this->setTemplateDir( Configuration::get('template', 'template_path') . $relative_path);
-            // $this->setCompileDir( Configuration::get('template', 'compiled_template_path') . $relative_path);
-            // $this->setConfigDir( Configuration::get('template', 'template_config_path'));
-        }
-
-        // Se o arquivo de template não existir, exibe erro 404
-        if ($this->templateExists($this->templateName)) {
-            return true;
-        }
-
-        $this->addTemplateDir(Configuration::get('template', 'default_template_path'));
-        if ($this->templateExists($this->templateName)) {
-            return true;
-        }
-
-        new Errors(404, $this->templateName.self::TPL_NAME_SUFIX);
-    }
-
-    /**
-     *  \brief Verifica se o template está cacheado.
+     * Checks if the template is cached.
      *
-     *  @return bool
+     * @return bool
      */
     public function isCached()
     {
@@ -220,8 +220,15 @@ class TwigDriver implements TemplateDriverInterface
     }
 
     /**
-     *  \brief Define o cacheamento dos templates
-     *  \node Sem função, pois o Twig não permite controle de tempo de vida do cache.
+     * Defines template caching.
+     *
+     * This method do nothing. Exists only by an interface requisition.
+     *
+     * Twig does not support cached templates.
+     *
+     * @param string $value
+     *
+     * @return void
      */
     public function setCaching($value = 'current')
     {
@@ -229,9 +236,15 @@ class TwigDriver implements TemplateDriverInterface
     }
 
     /**
-     *  \brief Define o tempo de vida dos arquivos de cache
-     *  \note Sem função, pois no Twig não dá para controlar o tempo de cache dos
-     *        template compilados.
+     * Sets the template cache lifetime.
+     *
+     * This method do nothing. Exists only by an interface requisition.
+     *
+     * Twig does not support cached templates.
+     *
+     * @param int $seconds
+     *
+     * @return void
      */
     public function setCacheLifetime($seconds)
     {
@@ -239,11 +252,15 @@ class TwigDriver implements TemplateDriverInterface
     }
 
     /**
-     *  \brief Retorna a página montada.
+     * Returns the template output.
+     *
+     * @return string
      */
     public function fetch()
     {
-        $this->setAutoTemplatePaths();
+        if (!$this->templateExists($this->templateName)) {
+            new Errors(404, $this->templateName.self::TPL_NAME_SUFIX);
+        }
 
         // Alimenta as variáveis CONSTANTES
         $vars = [
@@ -282,11 +299,23 @@ class TwigDriver implements TemplateDriverInterface
     }
 
     /**
-     *  \brief Define o arquivos de template
-     *  \param $tpl - String com o nome do template, sem extenção do arquivo.
+     * Sets the template file.
+     *
+     * @param string $tpl name of the template, without file extension
+     *
+     * @return void
      */
     public function setTemplate($tpl)
     {
+        // Se o nome do template não foi informado, define como relativo à controladora atual
+        if ($tpl === null) {
+            // Pega o caminho relativo da página atual
+            $path = URI::relativePathPage(true);
+            $this->setTemplate($path.(empty($path) ? '' : DIRECTORY_SEPARATOR).URI::getControllerClass());
+
+            return;
+        }
+
         $this->templateName = ((is_array($tpl)) ? implode(DIRECTORY_SEPARATOR, $tpl) : $tpl);
 
         $compile = '';
@@ -299,9 +328,11 @@ class TwigDriver implements TemplateDriverInterface
     }
 
     /**
-     *  \brief Define o id do cache
-     *  \note A pesar de implementado, esse método não tem função,
-     *        pois o Twig controla internamente o id de controle do cache.
+     * Sets the cache id.
+     *
+     * @param mixed $cid
+     *
+     * @return void
      */
     public function setCacheId($cid)
     {
@@ -309,10 +340,11 @@ class TwigDriver implements TemplateDriverInterface
     }
 
     /**
-     *  \brief Define o id da compilação
-     *  \note A pesar de implementado, esse método não tem função,
-     *        pois o Twig não dá controle sobre id de compilação dos
-     *        templates.
+     * Sets the compile identifier.
+     *
+     * @param mixed $cid
+     *
+     * @return void
      */
     public function setCompileId($cid)
     {
@@ -320,7 +352,13 @@ class TwigDriver implements TemplateDriverInterface
     }
 
     /**
-     *  \brief Define uma variável do template.
+     * Assigns a variable to the template.
+     *
+     * @param string $var     the name of the variable.
+     * @param mixed  $value   the value of the variable.
+     * @param bool   $nocache (optional) if true, the variable is assigned as nocache variable.
+     *
+     * @return void
      */
     public function assign($var, $value = null, $nocache = false)
     {
@@ -328,13 +366,23 @@ class TwigDriver implements TemplateDriverInterface
             foreach ($var as $name => $value) {
                 $this->assign($name, $value);
             }
-        } else {
-            $this->templateVars[$var] = ['value' => $value, 'nocache' => $nocache];
+
+            return;
         }
+
+        $this->templateVars[$var] = ['value' => $value, 'nocache' => $nocache];
     }
 
     /**
-     *  \brief Método statico que define um pluguin para todas as instancias da Template.
+     * Registers custom functions or methods as template plugins.
+     *
+     * @param mixed        $type        defines the type of the plugin.
+     * @param strin        $name        defines the name of the plugin.
+     * @param string|array $callback    defines the callback.
+     * @param mixed        $cacheable
+     * @param mixed        $cache_attrs
+     *
+     * @return void
      */
     public function registerPlugin($type, $name, $callback, $cacheable = null, $cache_attrs = null)
     {
@@ -342,7 +390,11 @@ class TwigDriver implements TemplateDriverInterface
     }
 
     /**
-     *  \brief Limpa uma variável do template.
+     * Clears the value of an assigned variable.
+     *
+     * @param string $var the name of the variable.
+     *
+     * @return void
      */
     public function clearAssign($var)
     {
@@ -350,30 +402,32 @@ class TwigDriver implements TemplateDriverInterface
     }
 
     /**
-     *  \brief clears the entire template cache.
+     * Clears the entire template cache.
      *
-     *  As an optional parameter, you can supply a minimum age in seconds the cache files must be before they will get cleared.
+     * This method do nothing. Exists only by an interface requisition.
      */
     public function clearAllCache($expire_time)
-    {
-        $this->tplObj->clearCacheFiles();
-    }
+    {}
 
     /**
-     *  \brief Limpa o cache para o template corrente.
+     * Clears the cache of the template.
+     *
+     * This method do nothing. Exists only by an interface requisition.
+     *
+     * @param int $expireTime only compiled templates older than exp_time seconds are cleared.
      */
     public function clearCache($expireTime = null)
-    {
-        $this->tplObj->clearCacheFiles();
-    }
+    {}
 
     /**
-     *  \brief Limpa a versão compilada do template atual.
+     * Clears the compiled version of the template
+     *
+     * This method do nothing. Exists only by an interface requisition.
+     *
+     * @param int $expTime only compiled templates older than exp_time seconds are cleared.
      */
     public function clearCompiled($expTime)
-    {
-        $this->tplObj->clearCacheFiles();
-    }
+    {}
 
     /**
      *  \brief Limpa variável de config definida
@@ -385,7 +439,11 @@ class TwigDriver implements TemplateDriverInterface
     }
 
     /**
-     *  \brief Verifica se um arquivo de template existe.
+     * Checks whether the specified template exists
+     *
+     * @param string $tplName name of the template, without file extension
+     *
+     * @return bool
      */
     public function templateExists($tplName)
     {
@@ -393,11 +451,11 @@ class TwigDriver implements TemplateDriverInterface
     }
 
     /**
-     *  \brief Mascara nome de arquivo estático para evitar cache do navegador.
+     * Mascara nome de arquivo estático para evitar cache do navegador.
      *
-     *  Este método é inserido como função de template para utilização na criação da URI
-     *  de arquivos estáticos de CSS e JavaScript com objetivo de evitar que o cache
-     *  do navegador utilize versões desatualizadas deles.
+     * Este método é inserido como função de template para utilização na criação da URI
+     * de arquivos estáticos de CSS e JavaScript com objetivo de evitar que o cache
+     * do navegador utilize versões desatualizadas deles.
      */
     public function assetFile($file, $host = 'static')
     {

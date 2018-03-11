@@ -1,13 +1,13 @@
 <?php
-/** \file
- *  Springy.
+/**
+ * Container class for text messages.
  *
- *  \brief      Classe container de mensagens de texto.
- *  \copyright  Copyright (c) 2007-2016 Fernando Val
- *  \author     Allan Marques - allan.marques@ymail.com
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.1.2
- *  \ingroup    framework
+ * @copyright 2014-2018 Fernando Val
+ * @author    Allan Marques <allan.marques@ymail.com>
+ * @author    Fernando Val <fernando.val@gmail.com>
+ * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
+ *
+ * @version   0.2.0.3
  */
 
 namespace Springy\Utils;
@@ -15,7 +15,7 @@ namespace Springy\Utils;
 use ArrayAccess;
 
 /**
- *	\brief Classe container de mensagens de texto.
+ * Container class for text messages.
  */
 class MessageContainer implements ArrayAccess
 {
@@ -25,8 +25,9 @@ class MessageContainer implements ArrayAccess
     protected $format = ':msg';
 
     /**
-     *  \brief Construtor da classe.
-     *  \param [in] (array) $messages - Mensagens iniciais.
+     * Constructor.
+     *
+     * @param array $messages
      */
     public function __construct(array $messages = [])
     {
@@ -35,8 +36,9 @@ class MessageContainer implements ArrayAccess
     }
 
     /**
-     *  \brief Há alguma mensagem armazenada no container?
-     *  \return (bool).
+     * Checks if there is any message stored in the container
+     *
+     * @return bool
      */
     public function hasAny()
     {
@@ -44,9 +46,11 @@ class MessageContainer implements ArrayAccess
     }
 
     /**
-     *  \brief Há alguma mensagem armazenada com essa chave de identificação?
-     *  \param [in] (string) $key
-     *  \return (bool).
+     * Checks if any messages are stored with the identification key
+     *
+     * @param string $key
+     *
+     * @return bool
      */
     public function has($key)
     {
@@ -54,10 +58,12 @@ class MessageContainer implements ArrayAccess
     }
 
     /**
-     *  \brief Retorna a primeira mensagem armazenada com essa chave de identificação.
-     *  \param [in] (string) $key - Chave identificadora
-     *  \param [in] (string) $format - Formato do placeholder
-     *  \return (variant).
+     * Gets the first message stored with the key.
+     *
+     * @param string $key    identification key.
+     * @param string $format placeholder format.
+     *
+     * @return mixed
      */
     public function first($key, $format = ':msg')
     {
@@ -69,10 +75,12 @@ class MessageContainer implements ArrayAccess
     }
 
     /**
-     *  \brief Retorna todas as mensagens armazenadas com essa chave de identificação.
-     *  \param [in] (string) $key - Chave identificadora
-     *  \param [in] (string) $format - Formato do placeholder
-     *  \return (array).
+     * Gets all messages stored with the key.
+     *
+     * @param string $key    identification key.
+     * @param string $format placeholder format.
+     *
+     * @return array
      */
     public function get($key, $format = ':msg')
     {
@@ -84,9 +92,11 @@ class MessageContainer implements ArrayAccess
     }
 
     /**
-     *  \brief Retorna todas as mensagens armazenadas.
-     *  \param [in] (string) $format - Formato do placeholder
-     *  \return array.
+     * Gets all stored messages.
+     *
+     * @param string $format placeholder format.
+     *
+     * @return array
      */
     public function all($format = ':msg')
     {
@@ -100,10 +110,12 @@ class MessageContainer implements ArrayAccess
     }
 
     /**
-     *  \brief Adiciona uma mensagem relacionada à chave identificadora.
-     *  \param [in] (string) $key - Chave identificadora
-     *  \param [in] (string) $msg - Mensagem
-     *  \return (\Springy\Utils\MessageContainer).
+     * Adds a message to the identifying key.
+     *
+     * @param string $key identification key.
+     * @param string $msg the message.
+     *
+     * @return Springy\Utils\MessageContainer
      */
     public function add($key, $msg)
     {
@@ -123,18 +135,23 @@ class MessageContainer implements ArrayAccess
     }
 
     /**
-     *  \brief Concatena este container de mensagens com outro.
-     *  \param [in] (\Springy\Utils\MessageContainer $messageContainer).
+     * Concatenates this message container with another.
+     *
+     * @param \Springy\Utils\MessageContainer $messageContainer.
+     *
+     * @return void
      */
-    public function merge(MessageContainer $messageContainer)
+    public function merge(self $messageContainer)
     {
         $this->setMessages($messageContainer->getMessages());
     }
 
     /**
-     *  \brief Seta as mensagens do container.
-     *  \param [in] (rray) $messages
-     *  \return (\Springy\Utils\MessageContainer).
+     * Sets the messages in the container.
+     *
+     * @param array $messages
+     *
+     * @return \Springy\Utils\MessageContainer
      */
     public function setMessages(array $messages)
     {
@@ -146,8 +163,9 @@ class MessageContainer implements ArrayAccess
     }
 
     /**
-     *  \brief Retorna as mensagens do container.
-     *  \return (array).
+     * Gets the messages in the container.
+     *
+     * @return array
      */
     public function getMessages()
     {
@@ -155,8 +173,9 @@ class MessageContainer implements ArrayAccess
     }
 
     /**
-     *  \brief Destroi as mensagens com essa chave de identificação.
-     *  \param [in] (string) $key.
+     * Destroy the messages with this key.
+     *
+     * @param string $key
      */
     public function forget($key)
     {
@@ -164,10 +183,12 @@ class MessageContainer implements ArrayAccess
     }
 
     /**
-     *  \brief Retorna se a mensagem é única para a chave identificadora.
-     *  \param [in] (string) $key - Chave identificadora
-     *  \param [in] (string) $msg - Mensagem
-     *  \return (boolean).
+     * Returns whether the message is unique to the identifying key.
+     *
+     * @param string $key identification key.
+     * @param string $msg the message
+     *
+     * @return bool
      */
     protected function unique($key, $msg)
     {
@@ -175,11 +196,13 @@ class MessageContainer implements ArrayAccess
     }
 
     /**
-     *  \brief Compila a mensagem substituindo os placeholders pelas mensagens em si.
-     *  \param [in] (string) $key - Chave identificadora
-     *  \param [in] (string) $msg - Mensagem
-     *  \param [in] (variant) $format - Formato com o placeholder
-     *  \return (array).
+     * Compiles the message by replacing the placeholders with the messages themselves.
+     *
+     * @param string $key    identification key.
+     * @param string $msg    the message.
+     * @param mixed  $format placeholder format.
+     *
+     * @return array
      */
     protected function formatMsg($key, $msg, $format = null)
     {
@@ -194,9 +217,11 @@ class MessageContainer implements ArrayAccess
     }
 
     /**
-     *  \brief Retorna o formato com o placeholder.
-     *  \param [in] (string) $format
-     *  \return (string).
+     * Gets the format with the placeholder.
+     *
+     * @param string $format
+     *
+     * @return string
      */
     protected function format($format = null)
     {
@@ -208,9 +233,11 @@ class MessageContainer implements ArrayAccess
     }
 
     /**
-     *  \brief mesmo que 'has()'.
-     *  \param [in] (variant) $offset
-     *  \return (variant).
+     * An alias for 'has()'.
+     *
+     * @see has
+     *
+     * @deprecated 0.3
      */
     public function offsetExists($offset)
     {
@@ -218,9 +245,11 @@ class MessageContainer implements ArrayAccess
     }
 
     /**
-     *  \brief mesmo que 'get()'.
-     *  \param [in] (variant) $offset
-     *  \return (variant).
+     * An alias for 'get()'.
+     *
+     * @see get
+     *
+     * @deprecated 0.3
      */
     public function offsetGet($offset)
     {
@@ -228,9 +257,11 @@ class MessageContainer implements ArrayAccess
     }
 
     /**
-     *  \brief Mesmo que 'add()'.
-     *  \param [in] (variant) $offset
-     *  \param [in] (variant) $value.
+     * An alias for 'add()'.
+     *
+     * @see add
+     *
+     * @deprecated 0.3
      */
     public function offsetSet($offset, $value)
     {
@@ -238,8 +269,11 @@ class MessageContainer implements ArrayAccess
     }
 
     /**
-     *  \brief Mesmo que 'forget()'.
-     *  \param [in] (variant) $offset.
+     * An alias for 'forget()'.
+     *
+     * @see forget
+     *
+     * @deprecated 0.3
      */
     public function offsetUnset($offset)
     {

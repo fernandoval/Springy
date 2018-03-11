@@ -2,14 +2,12 @@
 /**
  * Framework kernel.
  *
- * @package   Springy
- *
  * @copyright 2007-2018 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version    2.4.0.77
+ * @version    2.4.0.78
  */
 
 namespace Springy;
@@ -607,8 +605,8 @@ class Kernel
     /**
      * A path of the system.
      *
-     * @param string $component - the component constant.
-     * @param string $path - if defined, change the path of the component.
+     * @param string $component the component constant.
+     * @param string $path      if defined, change the path of the component.
      *
      * @return string A string containing the path of the component.
      */
@@ -678,9 +676,9 @@ class Kernel
     /**
      * Calls an error hook function that will be executed just before the framework shows the error message.
      *
-     * @param int|string $errno   the number of the error.
-     * @param string     $msg     the message for the error.
-     * @param int        $errorId the id of the error.
+     * @param int|string $errno          the number of the error.
+     * @param string     $msg            the message for the error.
+     * @param int        $errorId        the id of the error.
      * @param mixed      $additionalInfo
      *
      * @return void
@@ -771,7 +769,7 @@ class Kernel
      * Gets a template variable or all is its name is omitted.
      *
      * @param string $var the name of the variable desired.
-     * If omitted the function will return an array containing all template vars.
+     *                    If omitted the function will return an array containing all template vars.
      *
      * @return mixed.
      */
@@ -791,20 +789,22 @@ class Kernel
     /**
      * Registers a global function used by all templates is system.
      *
-     * @param string $type defines the type of the function.\n
-     *     Valid values for Smarty driver are "function", "block", "compiler" and "modifier".\n
-     *     For Twig driver always use "function".
-     * @param string $name defines the name of the function.
+     * @param string $type    defines the type of the function.\n
+     *                        Valid values for Smarty driver are "function", "block", "compiler" and "modifier".\n
+     *                        For Twig driver always use "function".
+     * @param string $name    defines the name of the function.
      * @param mixed $callback defines the PHP callback.
-     *     For Twig driver it must be a function declaration like this:
-     *         function ($value) { return $value; }\n
-     *     For Smarty driver it can be either:\n
-     *         - A string containing the function name;\n
-     *         - An array of the form array($object, $method) with $object being a reference to an
-     *           object and $method being a string containing the method-name;\n
-     *         - An array of the form array($class, $method) with $class being the
-     *           class name and $method being a method of the class.
-     * @param $cacheable and $cacheAttrs can be omitted in most cases. Used only by Smarty driver.
+     *                        For Twig driver it must be a function declaration like this:\n
+     *                        function ($value) { return $value; }\n
+     *                        For Smarty driver it can be either:\n
+     *                        - A string containing the function name;\n
+     *                        - An array of the form array($object, $method) with $object
+     *                        being a reference to an object and $method being a string containing
+     *                        the method-name;\n
+     *                        - An array of the form array($class, $method) with $class being the
+     *                        class name and $method being a method of the class.
+     *
+     * Params $cacheable and $cacheAttrs can be omitted in most cases. Used only by Smarty driver.
      *
      * @return void
      */

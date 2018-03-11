@@ -4,10 +4,12 @@
 - cmd.php changed to be a *nix command line executable script (must run "chmod ug+x" to works);
 - Added a template property into Controller class;
 - Added option to embed in load method of Model;
+- Adjustment of Validador class to use multibyte string funcion;
 - Bug fix in _Main.php to prevent execution trying of a non public function in controllers;
 - Bug fix in Debug class;
 - Bug fix in Error class to prevent memory overflow;
 - Bug fix in cpf validation funcion of the Strings class;
+- Enhancements in Model;
 - Function types into sample model User corrected;
 - Configuration directory moved to project root;
 - Created the var directory where system writes data during the course of its operation;

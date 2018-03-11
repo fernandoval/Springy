@@ -2,13 +2,11 @@
 /**
  * Class library for string processing.
  *
- * @package   Springy\Utils
- *
  * @copyright 2007-2018 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   0.13.21.22
+ * @version   0.13.21.23
  */
 
 namespace Springy\Utils;
