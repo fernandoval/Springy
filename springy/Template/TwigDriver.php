@@ -10,7 +10,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   0.16.2.17
+ * @version   0.16.2.18
  */
 
 namespace Springy\Template;
@@ -207,7 +207,9 @@ class TwigDriver implements TemplateDriverInterface
      * @return void
      */
     public function setCacheDir($path)
-    {}
+    {
+        // Do nothing
+    }
 
     /**
      * Checks if the template is cached.
@@ -424,7 +426,7 @@ class TwigDriver implements TemplateDriverInterface
     }
 
     /**
-     * Clears the compiled version of the template;
+     * Clears the compiled version of the template.
      *
      * This method do nothing. Exists only by an interface requisition.
      *

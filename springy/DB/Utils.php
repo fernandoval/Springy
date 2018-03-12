@@ -6,7 +6,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   0.2.0.1
+ * @version   0.2.0.2
  */
 
 namespace Springy\DB;
@@ -22,7 +22,7 @@ class Utils
     protected $closeQuote = '';
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $driverName the database driver name.
      */
