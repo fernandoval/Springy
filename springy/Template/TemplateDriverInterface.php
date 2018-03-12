@@ -9,7 +9,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   1.1.0.4
+ * @version   1.1.0.5
  */
 
 namespace Springy\Template;
@@ -175,7 +175,7 @@ interface TemplateDriverInterface
     public function clearCache($expireTime = null);
 
     /**
-     * Clears the compiled version of the template
+     * Clears the compiled version of the template.
      *
      * @param int $expTime only compiled templates older than exp_time seconds are cleared.
      *
@@ -189,7 +189,7 @@ interface TemplateDriverInterface
     public function clearConfig($var);
 
     /**
-     * Checks whether the specified template exists
+     * Checks whether the specified template exists.
      *
      * @param string $tplName name of the template, without file extension
      *

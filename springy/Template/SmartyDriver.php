@@ -10,7 +10,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   1.7.2.15
+ * @version   1.7.2.16
  */
 
 namespace Springy\Template;
@@ -383,7 +383,7 @@ class SmartyDriver implements TemplateDriverInterface
     }
 
     /**
-     * Clears the compiled version of the template
+     * Clears the compiled version of the template.
      *
      * @param int $expTime only compiled templates older than exp_time seconds are cleared.
      *
@@ -403,7 +403,7 @@ class SmartyDriver implements TemplateDriverInterface
     }
 
     /**
-     * Checks whether the specified template exists
+     * Checks whether the specified template exists.
      *
      * @param string $tplName name of the template, without file extension
      *

@@ -7,7 +7,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   0.2.0.3
+ * @version   0.2.0.4
  */
 
 namespace Springy\Utils;
@@ -36,7 +36,7 @@ class MessageContainer implements ArrayAccess
     }
 
     /**
-     * Checks if there is any message stored in the container
+     * Checks if there is any message stored in the container.
      *
      * @return bool
      */
@@ -46,7 +46,7 @@ class MessageContainer implements ArrayAccess
     }
 
     /**
-     * Checks if any messages are stored with the identification key
+     * Checks if any messages are stored with the identification key.
      *
      * @param string $key
      *
@@ -236,7 +236,6 @@ class MessageContainer implements ArrayAccess
      * An alias for 'has()'.
      *
      * @see has
-     *
      * @deprecated 0.3
      */
     public function offsetExists($offset)
@@ -248,7 +247,6 @@ class MessageContainer implements ArrayAccess
      * An alias for 'get()'.
      *
      * @see get
-     *
      * @deprecated 0.3
      */
     public function offsetGet($offset)
@@ -260,7 +258,6 @@ class MessageContainer implements ArrayAccess
      * An alias for 'add()'.
      *
      * @see add
-     *
      * @deprecated 0.3
      */
     public function offsetSet($offset, $value)
@@ -272,7 +269,6 @@ class MessageContainer implements ArrayAccess
      * An alias for 'forget()'.
      *
      * @see forget
-     *
      * @deprecated 0.3
      */
     public function offsetUnset($offset)

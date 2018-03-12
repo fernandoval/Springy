@@ -10,7 +10,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   0.16.2.16
+ * @version   0.16.2.17
  */
 
 namespace Springy\Template;
@@ -407,7 +407,9 @@ class TwigDriver implements TemplateDriverInterface
      * This method do nothing. Exists only by an interface requisition.
      */
     public function clearAllCache($expire_time)
-    {}
+    {
+        // Do nothing
+    }
 
     /**
      * Clears the cache of the template.
@@ -417,17 +419,21 @@ class TwigDriver implements TemplateDriverInterface
      * @param int $expireTime only compiled templates older than exp_time seconds are cleared.
      */
     public function clearCache($expireTime = null)
-    {}
+    {
+        // Do nothing
+    }
 
     /**
-     * Clears the compiled version of the template
+     * Clears the compiled version of the template;
      *
      * This method do nothing. Exists only by an interface requisition.
      *
      * @param int $expTime only compiled templates older than exp_time seconds are cleared.
      */
     public function clearCompiled($expTime)
-    {}
+    {
+        // Do nothing
+    }
 
     /**
      *  \brief Limpa variável de config definida
@@ -439,7 +445,7 @@ class TwigDriver implements TemplateDriverInterface
     }
 
     /**
-     * Checks whether the specified template exists
+     * Checks whether the specified template exists.
      *
      * @param string $tplName name of the template, without file extension
      *

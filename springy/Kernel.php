@@ -7,7 +7,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version    2.4.0.78
+ * @version    2.4.0.79
  */
 
 namespace Springy;
@@ -789,20 +789,20 @@ class Kernel
     /**
      * Registers a global function used by all templates is system.
      *
-     * @param string $type    defines the type of the function.\n
-     *                        Valid values for Smarty driver are "function", "block", "compiler" and "modifier".\n
-     *                        For Twig driver always use "function".
-     * @param string $name    defines the name of the function.
-     * @param mixed $callback defines the PHP callback.
-     *                        For Twig driver it must be a function declaration like this:\n
-     *                        function ($value) { return $value; }\n
-     *                        For Smarty driver it can be either:\n
-     *                        - A string containing the function name;\n
-     *                        - An array of the form array($object, $method) with $object
-     *                        being a reference to an object and $method being a string containing
-     *                        the method-name;\n
-     *                        - An array of the form array($class, $method) with $class being the
-     *                        class name and $method being a method of the class.
+     * @param string $type     defines the type of the function.\n
+     *                         Valid values for Smarty driver are "function", "block", "compiler" and "modifier".\n
+     *                         For Twig driver always use "function".
+     * @param string $name     defines the name of the function.
+     * @param mixed  $callback defines the PHP callback.
+     *                         For Twig driver it must be a function declaration like this:\n
+     *                         function ($value) { return $value; }\n
+     *                         For Smarty driver it can be either:\n
+     *                         - A string containing the function name;\n
+     *                         - An array of the form array($object, $method) with $object
+     *                         being a reference to an object and $method being a string containing
+     *                         the method-name;\n
+     *                         - An array of the form array($class, $method) with $class being the
+     *                         class name and $method being a method of the class.
      *
      * Params $cacheable and $cacheAttrs can be omitted in most cases. Used only by Smarty driver.
      *
