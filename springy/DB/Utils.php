@@ -34,6 +34,7 @@ class Utils
             case 'ibm-db2':
             case 'mysql':
                 $this->openQuote = $this->closeQuote = '`';
+
                 return;
             case 'firebird':
             case 'informix':
@@ -42,11 +43,13 @@ class Utils
             case 'pgsql':
             case 'sqlite':
                 $this->openQuote = $this->closeQuote = '"';
+
                 return;
             case 'mssql':
             case 'sqlsrv':
                 $this->openQuote = '[';
                 $this->closeQuote = ']';
+
                 return;
         }
     }
