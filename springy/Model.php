@@ -9,7 +9,7 @@
  * @author    Allan Marques <allan.marques@ymail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.5.2.52
+ * @version   2.5.3.53
  */
 
 namespace Springy;
@@ -1179,11 +1179,13 @@ class Model extends DB implements \Iterator
      */
     public function next()
     {
-        if ($r = each($this->rows)) {
-            return $r['value'];
+        $row = current($this->rows);
+
+        if ($row !== false) {
+            next($this->rows);
         }
 
-        return false;
+        return $row;
     }
 
     /**
