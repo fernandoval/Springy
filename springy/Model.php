@@ -9,7 +9,7 @@
  * @author    Allan Marques <allan.marques@ymail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.5.1.52
+ * @version   2.5.2.52
  */
 
 namespace Springy;
@@ -956,7 +956,7 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     * Sets joins to other tables.
+     * Sets joins to other tables
      *
      * @param array $join an structured array of tables do join.
      *
@@ -1073,6 +1073,8 @@ class Model extends DB implements \Iterator
             return false;
         }
 
+        // Saves the join array and set new join.
+        $join = $this->join;
         $this->setJoin($embbed);
 
         $select = 'SELECT '.($this->driverName() == 'mysql' ? 'SQL_CALC_FOUND_ROWS ' : '').$this->_getColumns().$this->_getFrom();
@@ -1132,8 +1134,10 @@ class Model extends DB implements \Iterator
         // Set the values of the calculated columns
         $this->calculateColumns();
 
-        // Clear conditions avoid bug
+        // Clears conditions avoid bug
         $this->where->clear();
+        // Restores the saved join
+        $this->join = $join;
 
         return true;
     }
