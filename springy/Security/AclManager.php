@@ -1,13 +1,13 @@
 <?php
-/** \file
- *  Springy.
+/**
+ * ACL (Access Control List) Authorization class for the application.
  *
- *  \brief      Classe para gerenciamento de permissões de identidades autenticadas na aplicação.
- *  \copyright  Copyright (c) 2007-2016 Fernando Val
- *  \author     Allan Marques - allan.marques@ymail.com
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.2.2
- *  \ingroup    framework
+ * @copyright 2014 Fernando Val
+ * @author    Allan Marques <allan.marques@ymail.com>
+ * @author    Fernando Val <fernando.val@gmail.com>
+ * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
+ *
+ * @version   0.3.0.3
  */
 
 namespace Springy\Security;
@@ -16,7 +16,7 @@ use Springy\Kernel;
 use Springy\URI;
 
 /**
- * \brief Classe para gerenciamento de permissões de identidades autenticadas na aplicação.
+ * ACL (Access Control List) Authorization class for the application.
  */
 class AclManager
 {
@@ -28,7 +28,7 @@ class AclManager
     protected $action;
     /// Prefixo dos módulos
     protected $modulePrefix = '';
-    /// Usuário atualmente autenticado no sistema
+    /// Current user object
     protected $user;
     /// Caracter separador utilizado para concatenar o nome da permissão
     protected $separator = '|';
@@ -36,8 +36,9 @@ class AclManager
     protected $defaultModule = 'default';
 
     /**
-     *  \brief Construtor da classe.
-     *  \param [in] (\Springy\Security\AclUserInterface) $user.
+     * Constructor.
+     *
+     * @param AclUserInterface $user
      */
     public function __construct(AclUserInterface $user)
     {
@@ -47,18 +48,32 @@ class AclManager
     }
 
     /**
-     *  \brief Define em qual ação de permissão o usuário se encontra atualmente.
+     * Defines current ACL object.
+     *
+     * @return void
      */
     public function setupCurrentAclObject()
     {
         $this->module = substr(Kernel::controllerNamespace(), strlen($this->modulePrefix)) or $this->defaultModule;
         $this->controller = URI::getControllerClass();
-        $this->action = URI::getSegment(0);
+        // $this->action = URI::getSegment(0);
+
+        $segments = [];
+        $ind = 0;
+        do {
+            $segment = URI::getSegment($ind++);
+            if ($segment !== false) {
+                $segments[] = $segment;
+            }
+        } while ($segment !== false);
+
+        $this->action = implode($this->separator, $segments);
     }
 
     /**
-     *  \brief Retorna o módulo sendo acessado no request atual.
-     *  \return (string).
+     * Gets the current module name.
+     *
+     * @return string
      */
     public function getCurrentModule()
     {
@@ -66,8 +81,9 @@ class AclManager
     }
 
     /**
-     *  \brief Retorna o controller sendo acessado no request atual.
-     *  \return (string).
+     * Gets current controller name.
+     *
+     * @return string
      */
     public function getCurrentController()
     {
@@ -75,8 +91,9 @@ class AclManager
     }
 
     /**
-     *  \brief Retorna a ação sendo acessada no request atual.
-     *  \return (string).
+     * Gets current action string.
+     *
+     * @return string
      */
     public function getCurrentAction()
     {
@@ -84,8 +101,11 @@ class AclManager
     }
 
     /**
-     *  \brief Seta o prefixo dos módulos.
-     *  \param [in] (string) $modulePrefix.
+     * Defines the movule prefix string.
+     *
+     * @param string $modulePrefix
+     *
+     * @return void
      */
     public function setModulePrefix($modulePrefix)
     {
@@ -93,8 +113,9 @@ class AclManager
     }
 
     /**
-     *  \brief Retorna o prefixo dos módulos.
-     *  \return (string).
+     * Gets the module prefix string.
+     *
+     * @return string
      */
     public function getModulePrefix()
     {
@@ -102,8 +123,11 @@ class AclManager
     }
 
     /**
-     *  \brief Seta o separador do nome da permissão.
-     *  \param [in] (string) $separator.
+     * Defines the separator character to build ACL string.
+     *
+     * @param string $separator
+     *
+     * @return string
      */
     public function setSeparator($separator)
     {
@@ -111,8 +135,9 @@ class AclManager
     }
 
     /**
-     *  \brief Retorna o separador do nome da permissão.
-     *  \return (string).
+     * Gets the separator character used to build the ACL string.
+     *
+     * @return string
      */
     public function getSeparator()
     {
@@ -120,8 +145,11 @@ class AclManager
     }
 
     /**
-     *  \brief Seta o nome do módulo padrão.
-     *  \param [in] (string) $module.
+     * Defines the default module name.
+     *
+     * @param string $module
+     *
+     * @return void
      */
     public function setDefaultModule($module)
     {
@@ -129,8 +157,9 @@ class AclManager
     }
 
     /**
-     *  \brief Retorna o nome do módulo padrão.
-     *  \return (string).
+     * Gets the default module name.
+     *
+     * @return string
      */
     public function getDefaultModule()
     {
@@ -138,8 +167,11 @@ class AclManager
     }
 
     /**
-     *  \brief Seta o usuário.
-     *  \param [in] (\Springy\Security\AclUserInterface) $user.
+     * Defines the user object.
+     *
+     * @param AclUserInterface $user
+     *
+     * @return void
      */
     public function setAclUser(AclUserInterface $user)
     {
@@ -147,8 +179,9 @@ class AclManager
     }
 
     /**
-     *  \brief Retorna o usuário.
-     *  \return (\Springy\Security\AclUserInterface).
+     * Gets the user object.
+     *
+     * @return AclUserInterface object
      */
     public function getAclUser()
     {
@@ -156,8 +189,9 @@ class AclManager
     }
 
     /**
-     *  \brief Verifica se o usuário atual tem permissão à acessar o recurso atual.
-     *  \return (boolean).
+     * Checks whether the current user has permission to access current resource.
+     *
+     * @return boolean
      */
     public function isPermitted()
     {
@@ -165,8 +199,9 @@ class AclManager
     }
 
     /**
-     *  \brief Retorna o nome do recurso atual, equivalente à permissão.
-     *  \return (string).
+     * Gets the ACL string.
+     *
+     * @return string
      */
     public function getAclObjectName()
     {
