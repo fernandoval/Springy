@@ -1,46 +1,53 @@
 <?php
-/**	\file
- *	Springy.
+/**
+ * Class library for generate Universally Unique Identifiers (UUID) RFC 4211 compatible.
  *
- *	\brief		Classe de construção de Universally Unique Identifiers (UUID) compatíveis com RFC 4211.
- *  \copyright  Copyright (c) 2007-2016 Fernando Val
- *  \author		Fernando Val - fernando.val@gmail.com
- *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	0.1.2
- *	\ingroup	framework
+ * @copyright 2018 Fernando Val
+ * @author    Fernando Val <fernando.val@gmail.com>
+ * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
+ *
+ * @version	  0.1.3.3
  */
 
 namespace Springy\Utils;
 
 /**
- *  \brief Classe de geração de Universally Unique Identifiers (UUID).
+ * Class library for generate Universally Unique Identifiers (UUID) RFC 4211 compatible.
  *
- *  Esta classe foi construída a partir da classe desenvolvida por Andrew Moore em comentário
- *  na documentação da função uniqid() do PHP.
+ * Esta classe foi construída a partir da classe desenvolvida por Andrew Moore em comentário
+ * na documentação da função uniqid() do PHP.
  *
- *  A classe original pode ser obtida no seguinte endereço:
- *  http://php.net/manual/en/function.uniqid.php
+ * A classe original pode ser obtida no seguinte endereço:
+ * http://php.net/manual/en/function.uniqid.php
  */
 class UUID
 {
+    /**
+     * Returns a random UUID.
+     *
+     * @return string
+     */
     public static function random()
     {
         $hash = uniqid(md5(rand()));
 
-        return sprintf('%08s-%04s-%04x-%04x-%12s',
-            substr($hash, 0, 8),
-            substr($hash, 8, 4),
-            substr($hash, 12, 4),
-            substr($hash, 16, 4),
-            substr($hash, 20, 12)
-        );
+        return substr($hash, 0, 8).'-'.
+            substr($hash, 8, 4).'-'.
+            substr($hash, 12, 4).'-'.
+            substr($hash, 16, 4).'-'.
+            substr($hash, 20, 12);
     }
 
     /**
-     *  \brief Generate a Version 3 UUID.
+     * Generates a Version 3 UUID.
      *
-     *  The V3 require a namespace (another valid UUID) and a value (the name).
-     *  Given the same namespace and name, the output is always the same.
+     * The V3 require a namespace (another valid UUID) and a value (the name).
+     * Given the same namespace and name, the output is always the same.
+     *
+     * @param string $namespace
+     * @param string $name
+     *
+     * @return string|bool The UUID or false if $namespace is not a valid UUID.
      */
     public static function v3($namespace, $name)
     {
@@ -83,9 +90,11 @@ class UUID
     }
 
     /**
-     *  \brief Generate a Version 4 UUID.
+     * Generates a Version 4 UUID.
      *
-     *  The V4 UUIDs are pseudo-random.
+     * The V4 UUIDs are pseudo-random.
+     *
+     * @return string
      */
     public static function v4()
     {
@@ -111,10 +120,15 @@ class UUID
     }
 
     /**
-     *  \brief Generate a Version 5 UUID.
+     * Generates a Version 5 UUID.
      *
-     *  The V5 require a namespace (another valid UUID) and a value (the name).
-     *  Given the same namespace and name, the output is always the same.
+     * The V5 require a namespace (another valid UUID) and a value (the name).
+     * Given the same namespace and name, the output is always the same.
+     *
+     * @param string $namespace
+     * @param string $name
+     *
+     * @return string|bool The UUID or false if $namespace is not a valid UUID.
      */
     public static function v5($namespace, $name)
     {
@@ -157,7 +171,13 @@ class UUID
     }
 
     /**
-     *  \brief Verify if UUID is valid.
+     * Checks whether the UUID is valid.
+     *
+     * The UUID must be inside brakets.
+     *
+     * @param string $uuid
+     *
+     * @return boolean
      */
     public static function isValid($uuid)
     {

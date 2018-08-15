@@ -9,6 +9,7 @@
 - Bug fix in Debug class;
 - Bug fix in Error class to prevent memory overflow;
 - Bug fix in cpf validation funcion of the Strings class;
+- Bug fix in UUID class;
 - Enhancements in Model;
 - Function types into sample model User corrected;
 - Configuration directory moved to project root;
