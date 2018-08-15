@@ -6,7 +6,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version	  0.1.3.3
+ * @version	  0.1.3.4
  */
 
 namespace Springy\Utils;
@@ -177,7 +177,7 @@ class UUID
      *
      * @param string $uuid
      *
-     * @return boolean
+     * @return bool
      */
     public static function isValid($uuid)
     {
