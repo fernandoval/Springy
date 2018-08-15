@@ -9,7 +9,7 @@
  * @author    Allan Marques <allan.marques@ymail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.5.3.53
+ * @version   2.5.3.54
  */
 
 namespace Springy;
@@ -956,7 +956,7 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     * Sets joins to other tables
+     * Sets joins to other tables.
      *
      * @param array $join an structured array of tables do join.
      *

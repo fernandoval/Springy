@@ -7,7 +7,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   0.3.0.3
+ * @version   0.3.0.4
  */
 
 namespace Springy\Security;
@@ -191,7 +191,7 @@ class AclManager
     /**
      * Checks whether the current user has permission to access current resource.
      *
-     * @return boolean
+     * @return bool
      */
     public function isPermitted()
     {
