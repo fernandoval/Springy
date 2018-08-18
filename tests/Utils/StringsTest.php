@@ -1,17 +1,17 @@
 <?php
-/** \file
- *  Springy.
+/**
+ * Test case for Utils\Strings class.
  *
- *  \brief      Test case for Classe com métodos para diversos tipos de tratamento e validação de dados string.
- *  \copyright  Copyright (c) 2007-2016 Fernando Val
- *  \author     Allan Marques - allan.marques@ymail.com
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.3.2
- *  \ingroup    tests
+ * @copyright 2015 Fernando Val
+ * @author    Allan Marques <allan.marques@ymail.com>
+ * @author    Fernando Val <fernando.val@gmail.com>
+ *
+ * @version   1.0.0.3
  */
+use PHPUnit\Framework\TestCase;
 use Springy\Utils\Strings;
 
-class StringsTest extends PHPUnit_Framework_TestCase
+class StringsTest extends TestCase
 {
     public function testEmailGetsValidateSuccessfully()
     {

@@ -1,6 +1,6 @@
 Springy
 
-Copyright (C) 2007-2014 Fernando Val
+Copyright (C) 2007 Fernando Val
 
 
 Migrando para a Versão >= 3.0.x de versões anteriores

@@ -1,17 +1,17 @@
 <?php
-/**	\file
- *	Springy.
+/**
+ * Test case for application dependency container.
  *
- *	\brief      Test case for Classe container de dependências de toda aplicação.
- *  \copyright  Copyright (c) 2007-2015 Fernando Val
- *  \author     Allan Marques - allan.marques@ymail.com
- *	\warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version    0.1.2
- *	\ingroup    tests
+ * @copyright 2015 Fernando Val
+ * @author    Allan Marques <allan.marques@ymail.com>
+ * @author    Fernando Val <fernando.val@gmail.com>
+ *
+ * @version   1.0.0.3
  */
+use PHPUnit\Framework\TestCase;
 use Springy\Core\Application;
 
-class ApplicationTest extends PHPUnit_Framework_TestCase
+class ApplicationTest extends TestCase
 {
     private $app;
 

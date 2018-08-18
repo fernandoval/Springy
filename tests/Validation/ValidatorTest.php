@@ -1,18 +1,17 @@
 <?php
-/** \file
- *  Springy.
+/**
+ * Test case for Validation\Validator class.
  *
- *  \brief      Test case for Validador de dados de input do usuário.
- *  \copyright  Copyright (c) 2007-2015 Fernando Val
- *  \author     Allan Marques - allan.marques@ymail.com
- *  \author     Fernando Val - fernando.val@gmail.com
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.1.1
- *  \ingroup    framework
+ * @copyright 2015 Fernando Val
+ * @author    Allan Marques <allan.marques@ymail.com>
+ * @author    Fernando Val <fernando.val@gmail.com>
+ *
+ * @version   1.0.0.2
  */
+use PHPUnit\Framework\TestCase;
 use Springy\Validation\Validator;
 
-class ValidatorTest extends PHPUnit_Framework_TestCase
+class ValidatorTest extends TestCase
 {
     public function testBasicValidationPassing()
     {

@@ -26,8 +26,8 @@ class MyController_Controller extends Controller
 {
     public function _default()
     {
-        $tpl = $this->_template();
-        $tpl->display();
+        $this->_template();
+        $this->template->display();
     }
 }
 ```

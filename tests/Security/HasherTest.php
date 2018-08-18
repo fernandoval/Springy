@@ -1,18 +1,17 @@
 <?php
-/** \file
- *  Springy.
+/**
+ * Test case for Security\BCryptHasher class.
  *
- *  \brief      Test case for Classe pa geração de hashes via BCrypt.
- *  \copyright  Copyright (c) 2007-2015 Fernando Val
- *  \author     Allan Marques - allan.marques@ymail.com
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.1.1
- *  \note       Esta biblioteca utiliza como dependência a classe password_compat de Anthony Ferrara.
- *  \ingroup    tests
+ * @copyright 2015 Fernando Val
+ * @author    Allan Marques <allan.marques@ymail.com>
+ * @author    Fernando Val <fernando.val@gmail.com>
+ *
+ * @version   1.0.0.2
  */
+use PHPUnit\Framework\TestCase;
 use Springy\Security\BCryptHasher as Hasher;
 
-class HasherTest extends PHPUnit_Framework_TestCase
+class HasherTest extends TestCase
 {
     public $hasher;
 

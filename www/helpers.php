@@ -1,38 +1,35 @@
 <?php
-/** \file
+/** @file
  *  Springy.
  *
- *  \brief      Helper file - Functions and constants.
- *  \copyright  (c) 2007-2016 Fernando Val
- *  \author     Allan Marques - allan.marques@ymail.com
- *  \author     Fernando Val - fernando.val@gmail.com
- *  \version    3.2.0.8
- *  \ingroup    framework
+ *  @brief      Helper file - Functions and constants.
+ *
+ *  @copyright  (c) 2007-2018 Fernando Val
+ *  @author     Allan Marques - allan.marques@ymail.com
+ *  @author     Fernando Val - fernando.val@gmail.com
+ *
+ *  @version    4.0.0.11
+ *  @ingroup    framework
  */
 
 /*
- *  para deixar o desenvolvedor mais feliz e produtivo
+ *  Let's make the developer happier and more productive.
  */
 
-/**------------------------------------------------------------
- *  Constants
- *-------------------------------------------------------------*/
+/// Definig the constantes
 if (!defined('DS')) {
     define('DS', DIRECTORY_SEPARATOR);
 }
 
-/**------------------------------------------------------------
- *  Functions
- *-------------------------------------------------------------*/
-
 /**
- *  \brief Get shared container application instance.
+ *  @brief Get shared container application instance.
  *
- *  Retorna a instância compartilhada do container da aplicação
- *  ou um serviço registrado com o nome passado por parâmetro. *
+ *  Returns the shared instance of the application container
+ *  or a registered service with the name passed by parameter.
  *
- *  \param string $service Nome chave do serviço (opcional)
- *  \return Springy\Core\Application
+ *  @param string $service Name of the service (optional).
+ *
+ *  @return class Springy\Core\Application
  */
 function app($service = null)
 {
@@ -44,9 +41,11 @@ function app($service = null)
 }
 
 /**
- *  \brief An alias for Springy\Configuration::get() method
- *  \param string $key
- *  \return mixed.
+ *  @brief An alias for Springy\Configuration::get() method.
+ *
+ *  @param string $key the name of the configuration key in dotted notation.
+ *
+ *  @return mixed the value of the key.
  */
 function config_get($key)
 {
@@ -54,9 +53,10 @@ function config_get($key)
 }
 
 /**
- *  \brief An alias for Springy\Configuration::set() method
- *  \param string $key
- *  \param mixed $val.
+ *  @brief An alias for Springy\Configuration::set() method.
+ *
+ *  @param string $key the name of the configuration key in dotted notation.
+ *  @param string $val the new value of the configuration key.
  */
 function config_set($key, $val)
 {
@@ -64,9 +64,11 @@ function config_set($key, $val)
 }
 
 /**
- *  \brief Global SYSTEM variable wrapper
- *  \param string $key
- *  \return mixed.
+ *  @brief Global SYSTEM variable wrapper.
+ *
+ *  @param string $key.
+ *
+ *  @return mixed.
  */
 function sysconf($key)
 {
@@ -74,11 +76,14 @@ function sysconf($key)
 }
 
 /**
- *  \brief An alias for Springy\Core\Debug::add() method
- *  \param string $txt
- *  \param string $name
- *  \param boolean $highlight
- *  \param boolean $revert.
+ *  @brief An alias for Springy\Core\Debug::add() method.
+ *
+ *  @param string $txt the text to be printed in debug.
+ *  @param string $name a name to the debut information.
+ *  @param bool $highlight a flag to set if information will be highlighted.
+ *  @param bool $revert.
+ *
+ *  @return void
  */
 function debug($txt, $name = '', $highlight = true, $revert = true)
 {
@@ -86,9 +91,12 @@ function debug($txt, $name = '', $highlight = true, $revert = true)
 }
 
 /**
- *  \brief A var_dump and die help functin
- *  \param mixed $var
- *  \param boolean $die.
+ *  @brief A var_dump and die help function.
+ *
+ *  @param mixed $var the variable or value to be sent to standard output.
+ *  @param bool $die a boolen flag to determine if system die after print the value of $var.
+ *
+ *  @return void
  */
 function dd($var, $die = true)
 {
@@ -102,10 +110,15 @@ function dd($var, $die = true)
 }
 
 /**
- *  \brief Minify a CSS or JS file.
+ *  @brief Minify a CSS or JS file.
  *
- *  \note Is recommend the use of the Minify class by Matthias Mullie.
+ *  @note Is recommend the use of the Minify class by Matthias Mullie.
  *      https://github.com/matthiasmullie/minify
+ *
+ *  @param string $name the source file name.
+ *  @param string $destiny the destination file name.
+ *
+ *  @return void
  */
 function minify($source, $destiny)
 {
@@ -156,7 +169,11 @@ function minify($source, $destiny)
 }
 
 /**
- *  \brief Return the object (WTF?).
+ *  @brief Return the object (WTF?).
+ *
+ *  @param mixed $object the object.
+ *
+ *  @return mixed Return the $object.
  */
 function with($object)
 {
@@ -164,7 +181,11 @@ function with($object)
 }
 
 /**
- *	\brief Framework autoload function.
+ *  @brief Framework autoload function.
+ *
+ *  @param string $class the class name.
+ *
+ *  @return void
  */
 function springyAutoload($class)
 {
@@ -178,8 +199,8 @@ function springyAutoload($class)
         $file = $aclass[0];
     }
 
-    if (file_exists(sysconf('LIBRARY_PATH').DIRECTORY_SEPARATOR.$file.'.php')) {
-        require_once sysconf('LIBRARY_PATH').DIRECTORY_SEPARATOR.$file.'.php';
+    if (file_exists(sysconf('SPRINGY_PATH').DIRECTORY_SEPARATOR.$file.'.php')) {
+        require_once sysconf('SPRINGY_PATH').DIRECTORY_SEPARATOR.$file.'.php';
     } else {
         // procura na user_classes
 
@@ -228,7 +249,11 @@ function springyAutoload($class)
 }
 
 /**
- *	\brief Exception error handler.
+ *  @brief Exception error handler.
+ *
+ *  @param Error $error the error object.
+ *
+ *  @return void
  */
 function springyExceptionHandler($error)
 {
@@ -237,7 +262,7 @@ function springyExceptionHandler($error)
 }
 
 /**
- *	\brief Error handler.
+ *  @brief Error handler.
  */
 function springyErrorHandler($errno, $errstr, $errfile, $errline, $errContext)
 {
@@ -246,7 +271,7 @@ function springyErrorHandler($errno, $errstr, $errfile, $errline, $errContext)
 }
 
 /**
- *  \brief Framework Exception class.
+ *  @brief Framework Exception class.
  */
 class SpringyException extends Exception
 {
@@ -272,3 +297,14 @@ class SpringyException extends Exception
         return $this->context;
     }
 }
+
+// Kill system with internal error 500 if can not set autoload funcion
+if (!spl_autoload_register('springyAutoload')) {
+    header('Content-type: text/html; charset=UTF-8', true, 500);
+    die('Internal System Error on Startup');
+}
+
+// Define error handlers
+error_reporting(E_ALL);
+set_exception_handler('springyExceptionHandler');
+set_error_handler('springyErrorHandler');
