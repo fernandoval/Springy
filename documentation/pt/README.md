@@ -43,6 +43,20 @@ Se você não usa o [Apache HTTP Server](http://httpd.apache.org/) ou seu servid
 
 ### Configuração
 
+O script *sysconf.php* é o arquivo de configuração geral do sistema. Nele estão entradas de definição como nome e versão do sistema, ambiente, árvore de diretórios da aplicação, charset e timezone. Mais detalhes [aqui](/documentation/pt/sysconf.md).
+
+As demais configurações da aplicação deverão estar no diretório e sub-diretórios definidos pela entrada `'CONFIG_PATH'`.
+
+The `Configuration` library class search for files with `".conf.php"` sufix inside environment subdirectories. If a configuration file with same target name and sufix `".default.conf.php"` exists inside configuration folder, it will be loaded before the environment configuration.
+
+All *.conf.php must define an array variable named `$conf` with key pair.
+
+You can overwrite key pairs configuration for specific hosts by defining the array `$over_conf` where the first key is the host and is value is an array with key pairs to be overwriten.
+
+The Springy Framework uses some pre-defined configuration files like **db**, **mail**, **soap**, **system**, **template** and **uri**.
+
+All other configuration files are used only by your application.
+
 ## Models
 
 ## Views
