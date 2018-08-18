@@ -7,7 +7,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   1.3.1.9
+ * @version   1.3.2.10
  */
 
 namespace Springy;
@@ -43,41 +43,38 @@ class Cookie
 
         // Check for key array
         if (is_array($key)) {
-            // Grab key/value pair
-            list($k, $v) = each($key);
-
             // Set string representation
-            $key = $k.'['.$v.']';
+            $cooKey = key($key);
+            $cooVal = value($key);
+            $cookie = $cooKey.'['.$cooVal.']';
 
-            // Set expiration time to -1hr (will cause browser deletion)
-            setcookie($key, false, time() - 3600);
-
+            // Set expiration time to -1 day (will cause browser deletion)
+            setcookie($cookie, false, time() - 86400);
             // Unset the cookie
-            unset($_COOKIE[$k][$v]);
+            unset($_COOKIE[$cooKey][$cooVal]);
 
             return;
         }
 
         // Check for cookie array
         if (is_array($_COOKIE[$key])) {
-            foreach ($_COOKIE[$key] as $k => $v) {
+            foreach ($_COOKIE[$key] as $cooKey => $cooVal) {
                 // Set string representation
-                $cookie = $key.'['.$k.']';
+                $cookie = $key.'['.$cooKey.']';
 
-                // Set expiration time to -1hr (will cause browser deletion)
-                setcookie($cookie, false, time() - 3600);
-
-                // Unset the cookie
-                unset($_COOKIE[$key][$k]);
+                // Set expiration time to -1 day (will cause browser deletion)
+                setcookie($cookie, false, time() - 86400);
             }
+
+            // Unset the cookie
+            unset($_COOKIE[$key]);
 
             return;
         }
 
         // Unset single cookie
-        // Set expiration time to -1hr (will cause browser deletion)
-        setcookie($key, false, time() - 3600);
-
+        // Set expiration time to -1 day (will cause browser deletion)
+        setcookie($key, false, time() - 86400);
         // Unset key
         unset($_COOKIE[$key]);
     }
@@ -108,10 +105,11 @@ class Cookie
         // Check for array
         if (is_array($key)) {
             // Grab key/value pair
-            list($k, $v) = each($key);
+            $cooKey = key($key);
+            $cooVal = current($key);
 
             // Check for key/value pair and return
-            if (isset($_COOKIE[$k][$v])) {
+            if (isset($_COOKIE[$cooKey][$cooVal])) {
                 return true;
             }
         }
@@ -139,11 +137,12 @@ class Cookie
         // Check for array
         if (is_array($key)) {
             // Grab key/value pair
-            list($k, $v) = each($key);
+            $cooKey = key($key);
+            $cooVal = current($key);
 
             // Check for key/value pair and return
-            if (isset($_COOKIE[$k][$v])) {
-                return $_COOKIE[$k][$v];
+            if (isset($_COOKIE[$cooKey][$cooVal])) {
+                return $_COOKIE[$cooKey][$cooVal];
             }
         }
         // Return single key if it's set
@@ -202,10 +201,10 @@ class Cookie
             // If $key is in array format, change it to string representation
             if (is_array($key)) {
                 // Grab key/value pair
-                list($k, $v) = each($key);
-
+                $cooKey = key($key);
+                $cooVal = current($key);
                 // Set string representation
-                $key = $k.'['.$v.']';
+                $key = $cooKey.'['.$cooVal.']';
             }
 
             return $key;

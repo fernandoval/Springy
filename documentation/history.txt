@@ -1,6 +1,10 @@
 Springy framework update history
 
 ------------------------------------------------------------------------------------ --- -- -
+under development
+    - Removed each() function from Cookie class;
+    - Removed support to PHP 5.6 or older.
+
 4.0.0
     - cmd.php changed to be a *nix command line executable script (must run "chmod ug+x" to works);
     - Added a template property into Controller class;

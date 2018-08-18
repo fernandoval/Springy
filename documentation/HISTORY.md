@@ -1,6 +1,8 @@
 # Springy framework update history
 
 ## development branch
+- Removed each() function from Cookie class;
+- Removed support to PHP 5.6 or older.
 
 ## Version 4
 ### 4.0.0
