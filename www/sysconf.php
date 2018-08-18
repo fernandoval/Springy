@@ -81,7 +81,7 @@ $GLOBALS['SYSTEM'] = [
     // Web server doc root directory
     'ROOT_PATH'      => realpath(dirname(__FILE__)),
     // Project root directory
-    'PROJECT_PATH'  => realpath(dirname(__FILE__).DIRECTORY_SEPARATOR.'..'),
+    'PROJECT_PATH'   => realpath(dirname(__FILE__).DIRECTORY_SEPARATOR.'..'),
     // Springy library directory
     'SPRINGY_PATH'   => realpath(dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'springy'),
     // Configuration directory

@@ -78,7 +78,7 @@
 /// Entradas para todos os ambientes
 $conf = [
     // Mail to notify system errors (used by framework)
-    'errors_go_to'    => 'youremail@yourdomain.com',
+    'errors_go_to'    => '',
 
     // System Admin (used by framework)
     'system_adm_mail' => 'noreply@yourdomain.com',

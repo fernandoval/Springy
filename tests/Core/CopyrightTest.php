@@ -1,16 +1,16 @@
 <?php
-/**	\file
- *	Springy.
+/**
+ * Test case for the class Springy\Copyright.
  *
- *	\brief      Test case for the class Springy\Copyright.
- *  \copyright  (c) 2016 Fernando Val.
- *  \author     Fernando Val - fernando.val@gmail.com
- *	\version    0.1.0.2
- *	\ingroup    tests
+ * @copyright 2016 Fernando Val
+ * @author    Fernando Val <fernando.val@gmail.com>
+ *
+ * @version    1.0.0.3
  */
+use PHPUnit\Framework\TestCase;
 use Springy\Core\Copyright;
 
-class CopyrightTest extends PHPUnit_Framework_TestCase
+class CopyrightTest extends TestCase
 {
     public function testPrintCopyright()
     {

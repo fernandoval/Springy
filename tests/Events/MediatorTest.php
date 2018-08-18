@@ -1,18 +1,18 @@
 <?php
-/** \file
- *  Springy.
+/**
+ * Test case for Events\Mediator class.
  *
- *  \brief      Test case for Classe de intermediadora de administração de eventos.
- *  \copyright  Copyright (c) 2007-2015 Fernando Val
- *  \author     Allan Marques - allan.marques@ymail.com
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.2.4
- *  \ingroup    tests
+ * @copyright 2015 Fernando Val
+ * @author    Allan Marques <allan.marques@ymail.com>
+ * @author    Fernando Val <fernando.val@gmail.com>
+ *
+ * @version   1.0.0.5
  */
+use PHPUnit\Framework\TestCase;
 use Springy\Container\DIContainer;
 use Springy\Events\Mediator;
 
-class MediatorTest extends PHPUnit_Framework_TestCase
+class MediatorTest extends TestCase
 {
     protected $mediator;
     protected $container;
@@ -239,12 +239,7 @@ class MediatorTest extends PHPUnit_Framework_TestCase
 
     public function testThatMediatorCanAcceptSubscriberClassesAsHandlers()
     {
-        if (PHPUnit_Runner_Version::id() >= '5.4') {
-            $mockHandler = $this->createMock('MockHandler', ['subscribes']);
-        } else {
-            $mockHandler = $this->getMock('MockHandler', ['subscribes']);
-        }
-
+        $mockHandler = $this->createMock('MockHandler', ['subscribes']);
         $mockHandler->expects($this->once())
                     ->method('subscribes')
                     ->with($this->mediator);

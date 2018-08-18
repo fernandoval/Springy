@@ -1,14 +1,11 @@
 <?php
-/**	@file
- *  Springy.
+/**
+ * Autoload initialization script for PHPUnit.
  *
- *  @brief     Autoload initialization script for PHPUnit.
+ * @copyright 2015 Fernando Val
+ * @author    Fernando Val <fernando.val@gmail.com>
  *
- *  @copyright Copyright (c) 2007-2018 Fernando Val
- *  @author    Fernando Val - fernando.val@gmail.com
- *
- *  @version   0.3.0.2
- *  @ingroup   tests
+ * @version   1.0.0.3
  */
 
 // Edit the two lines above and set the relative path to sysconf.php e helpers.php scripts
@@ -25,3 +22,10 @@ if (!spl_autoload_register('springyAutoload')) {
 if (file_exists(sysconf('VENDOR_PATH').DIRECTORY_SEPARATOR.'autoload.php')) {
     require sysconf('VENDOR_PATH').DIRECTORY_SEPARATOR.'autoload.php';
 }
+
+// set_exception_handler('springyExceptionHandler');
+restore_exception_handler();
+// set_error_handler('springyErrorHandler');
+restore_error_handler();
+
+// Springy\Kernel::initiate($GLOBALS['SYSTEM'], $springyStartTime);

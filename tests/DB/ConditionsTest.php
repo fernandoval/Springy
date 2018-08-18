@@ -1,16 +1,16 @@
 <?php
-/** \file
- *  Springy.
+/**
+ * Test case for DB\Conditions class.
  *
- *  \brief      Test case for DB\Conditions class.
- *  \copyright  Copyright ₢ 2016 Fernando Val.
- *  \author     Fernando Val - fernando.val@gmail.com
- *  \version    0.1
- *  \ingroup    tests
+ * @copyright 2016 Fernando Val
+ * @author    Fernando Val <fernando.val@gmail.com>
+ *
+ * @version   1.0.0.2
  */
+use PHPUnit\Framework\TestCase;
 use Springy\DB\Conditions;
 
-class ConditionsTest extends PHPUnit_Framework_TestCase
+class ConditionsTest extends TestCase
 {
     protected $conditions;
 

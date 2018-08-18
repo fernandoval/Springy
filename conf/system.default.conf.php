@@ -88,7 +88,7 @@
 
 /// Configurações para todos os ambientes
 $conf = [
-    'debug'              => false,
+    'debug'              => true,
     'ignore_deprecated'  => false,
     'rewrite_url'        => true,
     'cache'              => false,

@@ -1,16 +1,16 @@
 <?php
-/**	\file
- *	Springy.
+/**
+ * Test case for the class Springy\Debug.
  *
- *	\brief      Test case for the class Springy\Debug.
- *  \copyright  (c) 2016 Fernando Val.
- *  \author     Fernando Val - fernando.val@gmail.com
- *	\version    0.1.0.1
- *	\ingroup    tests
+ * @copyright 2016 Fernando Val
+ * @author    Fernando Val <fernando.val@gmail.com>
+ *
+ * @version   1.0.0.2
  */
+use PHPUnit\Framework\TestCase;
 use Springy\Core\Debug;
 
-class DebugTest extends PHPUnit_Framework_TestCase
+class DebugTest extends TestCase
 {
     public function testAddAndGet()
     {
