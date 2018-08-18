@@ -1,12 +1,11 @@
 <?php
-/** \file
- *  Springy.
+/**
+ * Framework copyright class.
  *
- *  \brief      Framework copyright class.
- *  \copyright  (c) 2007-2016 Fernando Val
- *  \author     Fernando Val - fernando.val@gmail.com
- *  \version    1.0.1.3
- *  \ingroup    framework
+ * @copyright 2016 Fernando Val
+ * @author    Fernando Val <fernando.val@gmail.com>
+ *
+ * @version   1.0.2.4
  */
 
 namespace Springy\Core;
@@ -14,12 +13,14 @@ namespace Springy\Core;
 use Springy\Kernel;
 
 /**
- *  \brief Framework copyright class.
+ * Framework copyright class.
  */
 class Copyright
 {
     /**
-     *  \brief Constructor method.
+     * Constructor method.
+     *
+     * @param boolean $print
      */
     public function __construct($print = true)
     {
@@ -29,14 +30,19 @@ class Copyright
     }
 
     /**
-     *  \brief Get the file information and return an array of it.
+     * Get the file information and return an array of it.
+     *
+     * @param string $file
+     * @param string $nameSpace
+     *
+     * @return array
      */
-    private function _getFileInfo($file, $nameSpace)
+    private function getFileInfo($file, $nameSpace)
     {
         $ver = ['b' => '', 'v' => '', 'n' => ''];
         $far = file($file);
 
-        while (list(, $lst) = each($far)) {
+        foreach ($far as $lst) {
             if (preg_match('/\*(\s*)[\\\\|@]brief[\s|\t]{1,}(.*)((\r)*(\n))$/', $lst, $arr)) {
                 $ver['b'] = trim($arr[2]);
             } elseif (preg_match('/\*([\s|\t]*)\\\\version[\s|\t]{1,}(.*)((\r)*(\n))$/', $lst, $arr)) {
@@ -51,9 +57,14 @@ class Copyright
     }
 
     /**
-     *  \brief Get the list of classes in a directory.
+     * Get the list of classes in a directory.
+     *
+     * @param string $dir
+     * @param string $nameSpace
+     *
+     * @return array
      */
-    private function _list_classes($dir, $nameSpace)
+    private function listClasses($dir, $nameSpace)
     {
         if (!$rdir = opendir($dir)) {
             return [];
@@ -62,12 +73,12 @@ class Copyright
         $fver = [];
         while (($file = readdir($rdir)) !== false) {
             if (filetype($dir.$file) == 'file' && substr($file, -4) == '.php') {
-                $ver = $this->_getFileInfo($dir.$file, $nameSpace);
+                $ver = $this->getFileInfo($dir.$file, $nameSpace);
                 if ($ver['n'] && $ver['v']) {
                     $fver[$ver['n']] = $ver;
                 }
             } elseif (!in_array($file, ['.', '..']) && filetype($dir.$file) == 'dir') {
-                $fver = array_merge($fver, $this->_list_classes($dir.$file.DS, $nameSpace.'\\'.$file));
+                $fver = array_merge($fver, $this->listClasses($dir.$file.DS, $nameSpace.'\\'.$file));
             }
         }
         ksort($fver);
@@ -76,7 +87,7 @@ class Copyright
     }
 
     /**
-     *  \brief Print the framework copyright page.
+     * Prints the framework copyright page.
      */
     public function printCopyright()
     {
@@ -116,7 +127,7 @@ class Copyright
 
         echo '<p><strong>List of the library classes:</strong></p><table align="center">';
         $dir = rtrim(dirname(__FILE__), DS).DS.'..'.DS;
-        foreach ($this->_list_classes($dir, 'Springy') as $info) {
+        foreach ($this->listClasses($dir, 'Springy') as $info) {
             echo '<tr><td>'.str_replace('\\', '<span class="slash">\\</span>', str_replace('Springy\\', '<span class="fw">Springy</span>\\', str_replace('class ', '<span class="class">class</span> ', str_replace('interface ', '<span class="class">interface</span> ', $info['n'])))).'</td><td class="version">'.$info['v'].($info['b'] ? '</td><td class="description">'.$info['b'] : '').'</td></tr>';
         }
         echo '</table>';
