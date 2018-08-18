@@ -20,7 +20,7 @@ class Copyright
     /**
      * Constructor method.
      *
-     * @param boolean $print
+     * @param bool $print
      */
     public function __construct($print = true)
     {
