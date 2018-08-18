@@ -2,9 +2,9 @@
 /** @mainpage
  *  ## Springy.
  *
- *  @version 3.7.0
+ *  @version 4.0.0
  *
- *  @copyright  Copyright (c) 2007-2018 Fernando Val
+ *  @copyright  Copyright (c) 2007 Fernando Val
  *  @author     Fernando Val  - fernando.val@gmail.com
  *  @author     Lucas Cardozo - lucas.cardozo@gmail.com
  *  @author     Allan Marques - allan.marques@ymail.com

@@ -1,6 +1,9 @@
 # Springy framework update history
 
 ## development branch
+
+## Version 4
+### 4.0.0
 - cmd.php changed to be a *nix command line executable script (must run "chmod ug+x" to works);
 - Added a template property into Controller class;
 - Added option to embed in load method of Model;

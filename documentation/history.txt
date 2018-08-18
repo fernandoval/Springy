@@ -1,7 +1,7 @@
 Springy framework update history
 
 ------------------------------------------------------------------------------------ --- -- -
-dev
+4.0.0
     - cmd.php changed to be a *nix command line executable script (must run "chmod ug+x" to works);
     - Added a template property into Controller class;
     - Added option to embed in load method of Model;
@@ -25,7 +25,6 @@ dev
     - Migrator class moved to library directory;
     - Migration scripts directory moved to project root;
     - Starter script simplified.
-
 
 3.6.3
     - Added a method to remove a column from the conditions in DB\Condition class;

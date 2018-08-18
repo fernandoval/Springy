@@ -6,7 +6,7 @@ A micro framework for smart PHP developers.
 Developer team:
 ---------------
 
-* 2007-2017 - Fernando Val
+* 2007 - Fernando Val
 
 ### Documentação ###
 
@@ -70,7 +70,7 @@ A pré-controladora _global:
 Antes de construir a controladora e fazer a chamada de seus métodos, o framework verifica a existência do script _global.php, no diretório de controladoras. Caso esse arquivo exista, será carregado e seu método construtor executado. Este script serve como um hook de inicialização que sempre é executado antes de qualquer controladora ser carregada.
 
 Caso alguma controladora necessite que a pré-controladora _global não seja carregada, acrescente o método estático púbico de nome _ignore_global, à mesma. Esse método não será executado, mas sua existência orientará o framework a não executar a _global.
- 
+
 
 A controladora e seus métodos:
 ------------------------------

@@ -2,12 +2,12 @@
 /**
  * Framework kernel.
  *
- * @copyright 2007-2018 Fernando Val
+ * @copyright 2007 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version    2.4.0.79
+ * @version    2.4.0.80
  */
 
 namespace Springy;
@@ -20,7 +20,7 @@ namespace Springy;
 class Kernel
 {
     /// Versão do framework
-    const VERSION = '3.7.0';
+    const VERSION = '4.0.0';
 
     /// Path constants
     const PATH_PROJECT = 'PROJ';
