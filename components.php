@@ -1,6 +1,6 @@
 <?php
 /**
- * Post Install/Update Script for Composer
+ * Post Install/Update Script for Composer.
  *
  * @copyright 2015-2018 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
