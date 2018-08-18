@@ -1,29 +1,24 @@
 <?php
-/** \file
- *  Springy.
+/**
+ * Post Install/Update Script for Composer
  *
- *  Post Install/Update Script for Composer
+ * @copyright 2015-2018 Fernando Val
+ * @author    Fernando Val <fernando.val@gmail.com>
  *
- *  \copyright Copyright (c) 2015-2016 Fernando Val
+ * @version   3.2.1.13
  *
- *  \brief    Components - a post-install script for Composer
- *  \version  3.2.0.12
- *  \author   Fernando Val - fernando.val@gmail.com
+ * This script is executed by Composer after the install/update process.
  *
- *  This script is executed by Composer after the install/update process.
+ * The composer.json file is loaded and the "extra" section is used to it's configuration.
  *
- *  The composer.json file is loaded and the "extra" section is used to it's configuration.
+ * If the script find a "post-install" section inside the "extra" section, it do a copy of files
+ * downloaded by Composer to the "target" defined for every "vendor/package" listed.
  *
- *  If the script find a "post-install" section inside the "extra" section, it do a copy of files
- *  downloaded by Composer to the "target" defined for every "vendor/package" listed.
+ * If there is no "files" defined for every "vendor/package", their bower.json file is used by
+ * this script to decide which files will be copied.
  *
- *  If there is no "files" defined for every "vendor/package", their bower.json file is used by
- *  this script to decide which files will be copied.
- *
- *  \note To minify CSS and JS files, is recommended the use of the Minify class by Matthias Mullie.
- *      https://github.com/matthiasmullie/minify
- *
- *  \ingroup framework
+ * NOTE: To minify CSS and JS files, is recommended the use of the Minify class by Matthias Mullie.
+ * https://github.com/matthiasmullie/minify
  */
 define('DS', DIRECTORY_SEPARATOR);
 
@@ -220,7 +215,13 @@ foreach ($composer['extra']['post-install'] as $component => $data) {
         continue;
     }
 
-    copy_r($path.DS.$files, $destination.DS.$files, $minify, $components[$component]);
+    $dstFile = $files;
+    if ($noSubdirs) {
+        $dstFile = explode('/', $files);
+        $dstFile = array_pop($dstFile);
+    }
+
+    copy_r($path.DS.$files, $destination.DS.$dstFile, $minify, $components[$component]);
 }
 
 // Write the lock file
@@ -231,7 +232,14 @@ if (!file_put_contents(LOCK_FILE, serialize($components))) {
 }
 
 /**
- *  \brief Recursive Copy Function.
+ * Recursive Copy Function.
+ *
+ * @param string $path
+ * @param string $dest
+ * @param bool   $minify
+ * @param array  $cFiles
+ *
+ * @return void
  */
 function copy_r($path, $dest, $minify, &$cFiles)
 {
@@ -296,7 +304,12 @@ function copy_r($path, $dest, $minify, &$cFiles)
 }
 
 /**
- *  \brief Minify the file if turned on.
+ * Minify the file if turned on.
+ *
+ * @param string $buffer
+ * @param string $minify
+ *
+ * @return mixed
  */
 function minify($buffer, $minify)
 {
@@ -348,7 +361,13 @@ function minify($buffer, $minify)
 }
 
 /**
- *  \brief Copy file minifyint if necessary.
+ * Copy file minifyint if necessary.
+ *
+ * @param string $source
+ * @param string $destiny
+ * @param string $minify
+ *
+ * @return bool
  */
 function realCopy($source, $destiny, $minify = 'auto')
 {
