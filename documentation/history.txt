@@ -24,7 +24,8 @@ Springy framework update history
     - Moved autoload and error handlers initiations to helper script;
     - Migrator class moved to library directory;
     - Migration scripts directory moved to project root;
-    - Starter script simplified.
+    - Starter script simplified;
+    - Removed support to HHVM.
 
 3.6.3
     - Added a method to remove a column from the conditions in DB\Condition class;

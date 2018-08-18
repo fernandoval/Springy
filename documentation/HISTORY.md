@@ -26,7 +26,8 @@
 - Moved autoload and error handlers initiations to helper script;
 - Migrator class moved to library directory;
 - Migration scripts directory moved to project root;
-- Starter script simplified.
+- Starter script simplified;
+- Removed support to HHVM.
 
 ## Version 3
 ### 3.6.3
