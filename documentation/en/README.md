@@ -48,15 +48,19 @@ The script *sysconf.php* is the general system configuration. Some configuration
 
 All configuration stays in files inside the folder defined by `'CONFIG_PATH'` in the *sysconf.php*. Default: /conf folder.
 
-A classe `Configuration` irá buscar por arquivos contendo o sufixo `".conf.php"`, dentro dos sub-diretórios do ambiente em que o sistema estiver sendo executado. Além disso, o arquivo de mesmo nome e sufixo `".default.conf.php"` também será carregado previamente, caso exista na raíz do diretório de configurações, independete do ambiente, como sendo entradas de configuração padrão para todos os ambientes. As entradas padrão serão sobrescritas por entradas específicas do ambiente.
+#### Configuration files
 
-Os arquivos de configuração devem definir a variável de nome `$conf` como um array contendo um conjunto chave-valor.
+The `Configuration` library class search for files with `".conf.php"` sufix inside environment subdirectories. If a configuration file with same target name and sufix `".default.conf.php"` exists inside configuration folder, it will be loaded before the environment configuration.
 
-É possível sobrescrever as configurações para determinados hosts de sua aplicação, utilizando a variável `$over_conf`, que é um array contendo no primeiro nível de índices o nome do host para o qual se deseja sobrescrever determinada(s) entrada(s) de configuração, que por sua vez, receberá um array contendo cada entrada de configuração a ser sobrescrita.
+All *.conf.php must define an array variable named `$conf` with key pair.
 
-Os arquivos pré-distribuídos com o framework são de uso interno das classes e não podem ser renomeados ou omitidos.
+You can overwrite key pairs configuration for specific hosts by defining the array `$over_conf` where the first key is the host and is value is an array with key pairs to be overwriten.
 
-Seu sistema poderá possuir arquivos de configuração específicos, bastando obedecer o formato e a estrutura de nomes e diretórios.
+The Springy Framework uses some pre-defined configuration files like **db**, **mail**, **soap**, **system**, **template** and **uri**.
+
+All other configuration files are used only by your application.
+
+- **[system](/documentation/en/system-conf.md)**
 
 ## Models
 

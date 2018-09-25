@@ -12,6 +12,7 @@ $GLOBALS['SYSTEM'] = [
     'SYSTEM_VERSION'    => [1, 0, 0],
     'PROJECT_CODE_NAME' => '',
     'CHARSET'           => 'UTF-8',
+    'TIMEZONE'          => 'America/Sao_Paulo',
 
     'ACTIVE_ENVIRONMENT'   => '',
     'ENVIRONMENT_VARIABLE' => 'SPRINGY_ENVIRONMENT',
@@ -40,8 +41,6 @@ $GLOBALS['SYSTEM'] = [
     'MIGRATION_PATH' => realpath(dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'migration'),
     /// Vendor directory
     'VENDOR_PATH'    => realpath(dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'vendor'),
-
-    'TIMEZONE' => 'America/Sao_Paulo',
 ];
 
 /// Diretório das controladoras

@@ -1,8 +1,11 @@
 <?php
-/** \file
- *  \brief      General system configutations.
- *  \copyright  Copyright (c) 2007-2016 Fernando Val
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido.
+/**
+ * General system configutations.
+ *
+ * Production environment.
+ *
+ * @copyright 2007 Fernando Val
+ * @author    Fernando Val <fernando.val@gmail.com>
  */
 
 /**

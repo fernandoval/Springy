@@ -1,6 +1,7 @@
 # Springy framework update history
 
 ## development branch
+- Removed following configuration entries: system.cache, system.css_path, system.js_path, system.controller_path;
 - Removed each() function from Cookie class;
 - Removed support to PHP 5.6 or older.
 
