@@ -2,6 +2,7 @@
 
 ## development branch
 - Implementing when conditional for embedded objects;
+- SendGrid driver updated to support SendGrid SDK v6;
 - Components script rebuilt;
 - Removed following configuration entries: system.cache, system.css_path, system.js_path, system.controller_path;
 - Removed each() function from Cookie class;
