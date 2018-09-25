@@ -9,7 +9,7 @@
  * @author    Allan Marques <allan.marques@ymail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.6.0.55
+ * @version   2.6.0.56
  */
 
 namespace Springy;
@@ -158,7 +158,7 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     * When condition for embedded object
+     * When condition for embedded object.
      *
      * @param array $row
      * @param array $attr
