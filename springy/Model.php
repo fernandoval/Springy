@@ -4,12 +4,12 @@
  *
  * Extends this class used to create Model classes to access relational database tables.
  *
- * @copyright 2014-2018 Fernando Val
+ * @copyright 2014 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
  * @author    Allan Marques <allan.marques@ymail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.5.3.54
+ * @version   2.6.0.55
  */
 
 namespace Springy;
@@ -158,15 +158,77 @@ class Model extends DB implements \Iterator
     }
 
     /**
-     *  \brief Embbed rows of other tables in each row.
-     *  \see setEmbeddedObj().
+     * When condition for embedded object
      *
-     *  Se o parâmetro $embbed for um inteiro maior que zero e o atributo embeddedObj estiver definido,
-     *  o relacionamento definido pelo atributo será explorado até o enézimo nível definido por $embbed
+     * @param array $row
+     * @param array $attr
+     * @return bool
+     */
+    private function _conditionalWhen($row, $attr)
+    {
+        if (!isset($attr['when']) || !is_array($attr['when'])) {
+            return true;
+        }
+
+        $results = [];
+        foreach ($attr['when'] as $condition) {
+            if (count($condition) < 3) {
+                $results[] = false;
+
+                continue;
+            }
+
+            $left = $condition[0];
+            if (is_string($left) && isset($row[$left])) {
+                $left = $row[$left];
+            }
+
+            $right = $condition[2];
+            if (is_string($right) && isset($row[$right])) {
+                $right = $row[$right];
+            }
+
+            switch ($condition[1]) {
+                case '=':
+                    $results[] = ($left == $right);
+                    break;
+                case '>':
+                    $results[] = ($left > $right);
+                    break;
+                case '<':
+                    $results[] = ($left < $right);
+                    break;
+                case '!=':
+                    $results[] = ($left != $right);
+                    break;
+                case 'in':
+                case 'IN':
+                    if (is_array($right)) {
+                        $results[] = in_array($left, $right);
+                    }
+                    break;
+            }
+        }
+
+        $results = array_unique($results);
+
+        return count($results) ? current($results) : false;
+    }
+
+    /**
+     * Embbeds rows of other tables in each row.
      *
-     *  \note ATENÇÃO: é recomendado cuidado com o valor de $embbed para evitar loops muito grandes ou estouro
-     *      de memória, pois os objetos podem relacionar-se cruzadamente causando relacionamento reverso
-     *      infinito.
+     * @see setEmbeddedObj().
+     *
+     * Se o parâmetro $embbed for um inteiro maior que zero e o atributo embeddedObj estiver definido,
+     * o relacionamento definido pelo atributo será explorado até o enézimo nível definido por $embbed
+     *
+     * ATENÇÃO: é recomendado cuidado com o valor de $embbed para evitar loops muito grandes ou estouro
+     * de memória, pois os objetos podem relacionar-se cruzadamente causando relacionamento reverso
+     * infinito.
+     *
+     * @param int|array $embbed
+     * @return void
      */
     private function _queryEmbbed($embbed)
     {
@@ -188,9 +250,16 @@ class Model extends DB implements \Iterator
             foreach ($this->rows as $idx => $row) {
                 $this->rows[$idx][$attrName] = [];
 
+                if (!$this->_conditionalWhen($row, $attr)) {
+                    continue;
+                }
+
                 if (!in_array($row[$relCol], $keys)) {
                     $keys[] = $row[$relCol];
                 }
+            }
+            if (!count($keys)) {
+                return;
             }
 
             // Filter
