@@ -9,7 +9,7 @@
  * @author    Allan Marques <allan.marques@ymail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.6.0.56
+ * @version   2.6.0.57
  */
 
 namespace Springy;
@@ -162,6 +162,7 @@ class Model extends DB implements \Iterator
      *
      * @param array $row
      * @param array $attr
+     *
      * @return bool
      */
     private function _conditionalWhen($row, $attr)
@@ -228,6 +229,7 @@ class Model extends DB implements \Iterator
      * infinito.
      *
      * @param int|array $embbed
+     *
      * @return void
      */
     private function _queryEmbbed($embbed)
