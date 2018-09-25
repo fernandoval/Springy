@@ -30,11 +30,6 @@
  *    - \c create_table - Informa ao sistema se a tabela de erros deve ser criada, caso não exista.
  *  	Em caso afirmativo o sistema utlizará o script SQL armazenado no arquivo system_errors_create_table.sql que
  *  	deverá estar no diretório da biblioteca do sistema.
- *
- *
- */
-
-/**
  */
 $conf = [
     'debug'              => true,
