@@ -6,7 +6,8 @@
 - Components script rebuilt;
 - Removed following configuration entries: system.cache, system.css_path, system.js_path, system.controller_path;
 - Removed each() function from Cookie class;
-- Removed support to PHP 5.6 or older.
+- Removed support to PHP 5.6 or older;
+- Bug fix in Srints::cnpj method.
 
 ## Version 4
 ### 4.0.0
