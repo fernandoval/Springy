@@ -9,7 +9,7 @@
  * @author    Allan Marques <allan.marques@ymail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.6.0.57
+ * @version   2.6.1.58
  */
 
 namespace Springy;
@@ -261,7 +261,7 @@ class Model extends DB implements \Iterator
                 }
             }
             if (!count($keys)) {
-                return;
+                continue;
             }
 
             // Filter
