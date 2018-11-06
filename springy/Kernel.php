@@ -7,7 +7,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version    2.4.0.80
+ * @version    2.4.1.81
  */
 
 namespace Springy;
@@ -367,7 +367,7 @@ class Kernel
         // Verify the credential
         if (!isset($_SERVER['PHP_AUTH_USER']) || !isset($_SERVER['PHP_AUTH_PW']) || $_SERVER['PHP_AUTH_USER'] != $auth['user'] || $_SERVER['PHP_AUTH_PW'] != $auth['pass']) {
             header('WWW-Authenticate: Basic realm="'.utf8_decode('What r u doing here?').'"');
-            new Springy\Errors(401, 'Unauthorized');
+            new Errors(401, 'Unauthorized');
         }
 
         Cookie::set('__sys_bug_auth__', true);
