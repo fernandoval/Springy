@@ -15,6 +15,7 @@ Os arquivos **system.default.conf.php** na pasta /conf e **system.conf.php** nas
 - **'bug_authentication'** - Habilita autenticação HTTP para acesso à página de log de erros do sistema. Esse parâmetro de configuração espera um array vazio ou no seguinte formato: ['user' => 'usuario', 'pass' => 'senha']
 - **'assets_source_path'** - Caminho da pasta de fontes dos arquivos complementares do website (assets).
 - **'assets_path'** - Caminho das pasta dos minificados dos arquivos complementares (acessível via web).
+- **'maintenance'** - Coloca o sistema em modo de manutenção e todas as requisições serão respondidas com erro HTTP 503.
 
 ## Modo desenvolvedor
 

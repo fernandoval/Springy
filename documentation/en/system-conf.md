@@ -17,3 +17,4 @@ Like other configuration files of the framework you can add configuration entrie
 - **'bug_authentication'** - Turns on the HTTP simple authentication to system errors log. Must by an array in following format: `['user' => 'username', 'pass' => 'password']`. Leave it empty to turns off simple HTTP autentication access to error log system.
 - **'assets_source_path'** - Folder path for source of the asset files.
 - **'assets_path'** - Folder path for minified asset files.
+- **'maintenance'** - Puts the system under maintenance mode and all requests will reply with a HTTP 503 error.

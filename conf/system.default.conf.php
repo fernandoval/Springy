@@ -7,7 +7,6 @@
  */
 
 /**
- *  - \c maintenance - Define se está em manutenção
  *  - \c admin_maintenance - Define se o ADMIN está em manutenção
  *  - \c 'session' - Session configurations
  *    - \c 'type' - Session type. Possible values:
