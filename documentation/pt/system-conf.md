@@ -16,6 +16,24 @@ Os arquivos **system.default.conf.php** na pasta /conf e **system.conf.php** nas
 - **'assets_source_path'** - Caminho da pasta de fontes dos arquivos complementares do website (assets).
 - **'assets_path'** - Caminho das pasta dos minificados dos arquivos complementares (acessível via web).
 - **'maintenance'** - Coloca o sistema em modo de manutenção e todas as requisições serão respondidas com erro HTTP 503.
+- **'session'** - Configurações de Sessão.
+
+### Configuração de sessão
+
+A entrada `'session'` é um array contendo outras entradas que configuram o sistema de sessão do framework.
+
+- **'type'** - String contendo [tipo de mecanismo de armazenamente da sessão](#tipos-de-controle-de-sessao). Os valores possíveis são `'file'`, `'memcached'` e `'database'`.
+- **'name'** - O nome do cookie de sessão.
+- **'domain'** - O domínio principal do cookie de sessão.
+- **'expires'** - O tempo de validade da sessão em minutos.
+
+## Tipos de controle de sessão
+
+O framework dá nativamente suporte aos seguintes tipos de controle de sessão de usuário:
+
+- **'file'** - Armazenamento em arquivo. Esse é o formato padrão suportado pelo PHP.
+- **'memcached'** - Armazenamento em serviço Memcache. Requer um servidor Memcache externo ou o serviço MemcacheD rodando no computador.
+- **'database'** - Armazenamento em tabela de banco de dados relacional. Recomenda-se usar tabelas do tipo memória. Se seu SGBD não tem suporte a esse tipo de tabela, desaconselha-se seu uso.
 
 ## Modo desenvolvedor
 
@@ -27,7 +45,7 @@ Por exemplo, suponhamos que as entradas de configurção definam da seguinte for
 
 ```php
 [
-    // outras entradas de configuração
+    // ... outras entradas de configuração
     'developer_user' => 'silvio',
     'developer_pass' => 'santos',
 ];
@@ -51,7 +69,7 @@ Para exemplificar, consideremos que as entradas de configuração contenham os s
 
 ```php
 [
-    // outras entradas de configuração
+    // ... outras entradas de configuração
     'developer_user' => 'silvio',
     'developer_pass' => 'santos',
     'dba_user'       => 'vemaih',

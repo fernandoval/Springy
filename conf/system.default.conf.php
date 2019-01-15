@@ -7,15 +7,7 @@
  */
 
 /**
- *  - \c admin_maintenance - Define se o ADMIN está em manutenção
  *  - \c 'session' - Session configurations
- *    - \c 'type' - Session type. Possible values:
- *      'file' = Standard session storage;
- *      'memcached' = Session stored using MemcacheD service;
- *      'database' = Session stored in a database table (very slow);
- *    - \c 'name' - The name of the session cookie;
- *    - \c 'domain' - The session master domain cookie;
- *    - \c 'expires' - Session expiration time in minutes;
  *    - \c 'memcached' - MemcacheD service configuration;
  *      - \c 'address' - The MemcacheD server address;
  *      - \c 'port' - The MemcacheD server port;
