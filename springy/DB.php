@@ -1,14 +1,14 @@
 <?php
-/** \file
- *  Springy.
+/**
+ * Relational database access class.
  *
- *  \brief      Script da classe de acesso a banco de dados.
- *  \copyright  ₢ 2007-2016 Fernando Val
- *  \author     Fernando Val - fernando.val@gmail.com
- *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
- *  \author     Allan Marques - allan.marques@ymail.com
- *  \version    1.8.1.32
- *  \ingroup    framework
+ * @copyright 2007 Fernando Val
+ * @author    Fernando Val <fernando.val@gmail.com>
+ * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
+ * @author    Allan Marques <allan.marques@ymail.com>
+ * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
+ *
+ * @version   1.9.0.33
  */
 
 namespace Springy;
@@ -16,11 +16,7 @@ namespace Springy;
 use Springy\Core\Debug;
 
 /**
- *  \brief Classe para acesso a banco de dados.
- *
- *  Esta classe é dinâmica, porém alguns de seus controles são estáticos.
- *
- *	\note Esta classe usa a PHP Data Object (PDO) para acesso a banco de dados.
+ * Relational database access class.
  */
 class DB
 {
@@ -54,14 +50,10 @@ class DB
     private static $conErrors = [];
 
     /**
-     *  \brief Método construtor da classe.
+     * Constructor.
      *
-     *  Cria uma instância da classe a inicializa a conexão com o banco de dados
-     *
-     *  \param $database chave de configuração do banco de dados.
-     *    Default = 'default'
-     *  \param $cache_expires tempo em segundo de cacheamento de consultas.
-     *    Default = null (sem cache)
+     * @param string   $database     DB configuration key.
+     * @param int|null $cacheExpires cached query expiration time in seconds.
      */
     public function __construct($database = 'default', $cacheExpires = null)
     {
@@ -71,25 +63,23 @@ class DB
     }
 
     /**
-     *  \brief Método destrutor da classe.
-     *
-     *  Fecha todos os cursores, consultas em aberto com banco de dados e desinstancia a classe
+     * Destruction method.
      */
     public function __destruct()
     {
-        if (!is_null($this->resSQL)) {
-            $this->resSQL->closeCursor();
-            $this->resSQL = null;
+        if ($this->resSQL === null) {
+            return;
         }
+
+        $this->resSQL->closeCursor();
+        $this->resSQL = null;
     }
 
     /**
-     *  \brief Conecta ao banco de dados.
+     * Connects to the DBMS.
      *
-     *  @param $database chave de configuração do banco de dados.
-     *    Default = 'default'
-     *
-     *  @return Retorna o conector do banco de dados
+     * @param string $database DB configuration key.
+     * @return PDO|bool
      */
     public function connect($database)
     {
@@ -99,7 +89,7 @@ class DB
 
         // Verifica se a instância já está definida e conectada
         if (isset(self::$conectionIds[$database])) {
-            return self::$conectionIds[$database]['con'];
+            return self::$conectionIds[$database]['PDO'];
         }
 
         // Lê as configurações de acesso ao banco de dados
@@ -112,7 +102,7 @@ class DB
 
         $pdoConf = [];
         if ($conf['database_type'] == 'mysql') {
-            $pdoConf[\PDO::MYSQL_ATTR_INIT_COMMAND] = 'SET NAMES \'UTF8\'';
+            $pdoConf[\PDO::MYSQL_ATTR_INIT_COMMAND] = 'SET NAMES \''.($conf['charset'] ?? 'UTF8').'\'';
         }
 
         if ($conf['persistent']) {
@@ -120,47 +110,57 @@ class DB
         }
 
         /*
-         *  A variável abaixo é setada pois caso a conexão com o banco falhe, o callback de erro será chamado e a variável já estará setada.
-         *  Caso a conexão seja feita com sucesso, a variavel é removida.
+         * A variável abaixo é setada pois caso a conexão com o banco falhe, o callback de erro será chamado e a variável já estará setada.
+         * Caso a conexão seja feita com sucesso, a variavel é removida.
          */
         self::$conErrors[$database] = true;
 
         if (!$conf['host_name'] || !$conf['database']) {
-            $this->reportError('HostName / DataBase not defined.');
+            $this->reportError('Hostname / Database not defined.');
         }
 
-        //	a instância de conexão é estática, para nao criar uma nova a cada nova instãncia da classe
-        try {
-            self::$conectionIds[$database] = [
-                'con' => new \PDO(
-                    $conf['database_type'].':host='.$conf['host_name'].';dbname='.$conf['database'],
-                    $conf['user_name'],
-                    $conf['password'],
-                    $pdoConf
-                ),
-                'dbName' => $database,
-            ];
-            unset($pdoConf, self::$conErrors[$database]);
-        } catch (\PDOException $error) {
-            $callers = debug_backtrace();
-            if (!isset($callers[1]) || $callers[1]['class'] != 'Springy\Errors' || $callers[1]['function'] != 'sendReport') {
-                $errors = new Errors();
-                $errors->handler((int) $error->getCode(), $error->getMessage(), $error->getFile(), $error->getLine(), null);
+        $retries = $conf['retries'] ?? 3;
+        $sleep = $conf['sleep'] ?? 1;
+        do {
+            try {
+                // a instância de conexão é estática, para nao criar uma nova a cada nova instãncia da classe
+                self::$conectionIds[$database] = [
+                    'PDO' => new \PDO(
+                        $conf['database_type'].':host='.$conf['host_name'].';dbname='.$conf['database'],
+                        $conf['user_name'],
+                        $conf['password'],
+                        $pdoConf
+                    ),
+                    'dbName' => $database,
+                ];
+                unset(self::$conErrors[$database]);
+            } catch (\PDOException $error) {
+                if ($retries) {
+                    $retries -= 1;
+                    sleep($sleep);
+
+                    continue;
+                }
+
+                $callers = debug_backtrace();
+                if (!isset($callers[1]) || $callers[1]['class'] != 'Springy\Errors' || $callers[1]['function'] != 'sendReport') {
+                    $errors = new Errors();
+                    $errors->handler((int) $error->getCode(), $error->getMessage(), $error->getFile(), $error->getLine(), null);
+                }
             }
-        }
+        } while (!isset(self::$conectionIds[$database]));
 
-        return self::$conectionIds[$database]['con'];
+        unset($pdoConf);
+
+        return self::$conectionIds[$database]['PDO'];
     }
 
     /**
-     *	\brief Método privado de controle de round robin de conexão.
+     * Round robin database connection.
      *
-     *	Define o próximo servidor do pool de SGBDs.
-     *
-     *	@param $database chave de configuração do banco de dados.
-     *	@param $dbconf entradas de configuração do banco de dados.
-     *
-     *	@return Retorna o conector do banco de dados.
+     * @param string $database DB configuration key.
+     * @param array  $dbconf   Database configutation.
+     * @return PDO|bool
      */
     private function _round_robin($database, $dbconf)
     {
@@ -199,52 +199,45 @@ class DB
 
         // Tenta conectar ao banco e retorna o resultado
         self::$conectionIds[$database] = [
-            'con'    => $this->connect($dbconf['host_name'][$actual]),
+            'PDO'    => $this->connect($dbconf['host_name'][$actual]),
             'dbName' => $dbconf['host_name'][$actual],
         ];
 
-        return self::$conectionIds[$database]['con'];
+        return self::$conectionIds[$database]['PDO'];
     }
 
     /**
-     *	\brief Método para verificar se a conexão com o banco foi feita.
+     * Returns connection status.
      *
-     *	@param $database chave de configuração do banco de dados.
-     *		Default = 'default'
+     * @param string $database DB configuration key.
+     * @return bool
      */
     public static function connected($database = 'default')
     {
-        return !isset(self::$conErrors[$database]) && isset(self::$conectionIds[$database]) && self::$conectionIds[$database]['con'];
+        return !isset(self::$conErrors[$database]) && isset(self::$conectionIds[$database]) && self::$conectionIds[$database]['PDO'];
     }
 
     /**
-     *  \brief DEPRECATED - Use connected
-     *  \deprecated
-     *  \see connected.
-     */
-    public static function hasConnection()
-    {
-        throw new \Exception('Deprecated method');
-        // return self::connected($database);
-    }
-
-    /**
-     *	\brief Fecha a conexão com o banco de dados.
+     * Closes database connection.
+     *
+     * @return void
      */
     public function disconnect()
     {
         if (static::connected($this->database)) {
             ///	a instância de conexão é estática, para não criar uma nova a cada nova instância da classe
-            unset(self::$conectionIds[$this->database]['con']);
+            unset(self::$conectionIds[$this->database]['PDO']);
             $this->dataConnect = false;
         }
+
         unset(self::$conectionIds[$this->database]);
     }
 
     /**
-     *  \brief The status of error report.
-     *  \param $status - if defined set the report of errors on (true) or off (false).
-     *  \return (bool) the current status.
+     * Returns the status error repor.
+     *
+     * @param bool $status if defined set the report of errors on (true) or off (false).
+     * @return bool
      */
     public function errorReportStatus($status = null)
     {
@@ -256,89 +249,97 @@ class DB
     }
 
     /**
-     *  \brief Desabilita o report de erros.
-     *  \deprecated
-     *  \see errorReportStatus.
-     *  \return (bool) the current status.
+     * Disables the error report.
+     *
+     * @deprecated 1.9.0.33
+     *
+     * @return void
      */
     public function disableReportError()
     {
-        return $this->errorReportStatus(false);
+        throw new \Exception('Deprecated method');
     }
 
     /**
-     *  \brief Habilita o report de erros.
-     *  \deprecated
-     *  \see errorReportStatus.
-     *  \return (bool) the current status.
+     * Enables the error report.
+     *
+     * @deprecated 1.9.0.33
+     *
+     * @return void
      */
     public function enableReportError()
     {
-        return $this->errorReportStatus(true);
+        throw new \Exception('Deprecated method');
     }
 
     /**
-     *	\brief Send the error occurrency to the Webmaster.
+     * Sends the error occurrency to the webmaster.
+     *
+     * @param string $msg
+     * @param PDOException $exception
+     * @return void
      */
     private function reportError($msg, \PDOException $exception = null)
     {
         if (!$this->reportError) {
             return;
         }
+
         // Read the database access configurations
         $conf = Configuration::get('db', $this->database);
 
+        $sqlError = 'Still this connection was not executed some instruction SQL using.';
         if (isset($this->lastQuery)) {
             if (PHP_SAPI === 'cli' || defined('STDIN')) {
                 $sqlError = htmlentities((is_object($this->lastQuery) ? $this->lastQuery->__toString() : $this->lastQuery))."\n".'Parametros: '.Debug::print_rc($this->lastValues);
             } else {
                 $sqlError = '<pre>'.htmlentities((is_object($this->lastQuery) ? $this->lastQuery->__toString() : $this->lastQuery)).'</pre><br /> Parametros:<br />'.Debug::print_rc($this->lastValues);
             }
-        } else {
-            $sqlError = 'Still this connection was not executed some instruction SQL using.';
         }
 
+        $errorInfo = [0, 0, 'Unknown error'];
         if ($this->resSQL) {
             $errorInfo = $this->resSQL->errorInfo();
         } elseif ($this->dataConnect) {
             $errorInfo = $this->dataConnect->errorInfo();
-        } else {
-            $errorInfo = [0, 0, 'Erro desconhecido'];
         }
 
+        $htmlError = '<tr>'
+            .'  <td style="background-color:#66C; color:#FFF; font-weight:bold; padding-left:10px; padding:3px 2px" colspan="2">DBMS informations</td>'
+            .'</tr>'
+            .'<tr>'
+            .'  <td valign="top"><label style="font-weight:bold">Host:</label></td>'
+            .'  <td>'.$conf['host_name'].'</td>'
+            .'</tr>'
+            .'<tr style="background:#efefef">'
+            .'  <td valign="top"><label style="font-weight:bold">User:</label></td>'
+            .'  <td><span style="background:#efefef">'.($conf['user_name'] ?? 'not set').'</span></td>'
+            .'</tr>'
+            .'<tr>'
+            .'  <td valign="top"><label style="font-weight:bold">Password:</label></td>'
+            .'  <td>'.($conf['password'] ?? 'not set').'</td>'
+            .'</tr>'
+            .'<tr>'
+            .'  <td valign="top"><label style="font-weight:bold">DB:</label></td>'
+            .'  <td><span style="background:#efefef">'.($conf['database'] ?? 'not set').'</span></td>'
+            .'</tr>';
         if (PHP_SAPI === 'cli' || defined('STDIN')) {
-            $htmlError = 'Dados do banco'."\n"
-                       .'Host: '.$conf['host_name']."\n"
-                       .'Login: '.(isset($conf['user_name']) ? $conf['user_name'] : 'não informado')."\n"
-                       .'Senha: '.(isset($conf['password']) ? $conf['password'] : 'não informado')."\n"
-                       .'DB: '.(isset($conf['database']) ? $conf['database'] : 'não informado')."\n";
-        } else {
-            $htmlError = '<tr>'
-                       .'  <td style="background-color:#66C; color:#FFF; font-weight:bold; padding-left:10px; padding:3px 2px" colspan="2">Dados do banco</td>'
-                       .'</tr>'
-                       .'<tr>'
-                       .'  <td valign="top"><label style="font-weight:bold">Host:</label></td>'
-                       .'  <td>'.$conf['host_name'].'</td>'
-                       .'</tr>'
-                       .'<tr style="background:#efefef">'
-                       .'  <td valign="top"><label style="font-weight:bold">User:</label></td>'
-                       .'  <td><span style="background:#efefef">'.(isset($conf['user_name']) ? $conf['user_name'] : 'não informado').'</span></td>'
-                       .'</tr>'
-                       .'<tr>'
-                       .'  <td valign="top"><label style="font-weight:bold">Pass:</label></td>'
-                       .'  <td>'.(isset($conf['password']) ? $conf['password'] : 'não informado').'</td>'
-                       .'</tr>'
-                       .'<tr>'
-                       .'  <td valign="top"><label style="font-weight:bold">DB:</label></td>'
-                       .'  <td><span style="background:#efefef">'.(isset($conf['database']) ? $conf['database'] : 'não informado').'</span></td>'
-                       .'</tr>';
+            $htmlError = 'DBMS informations'."\n"
+                .'Host: '.$conf['host_name']."\n"
+                .'Login: '.($conf['user_name'] ?? 'not set')."\n"
+                .'Senha: '.($conf['password'] ?? 'not set')."\n"
+                .'DB: '.($conf['database'] ?? 'not set')."\n";
         }
         unset($sqlError);
 
         // Send the report of error and kill the application
         $errors = new Errors();
         $errors->sendReport(
-            '<span style="color:#FF0000">'.$msg.'</span> - '.'('.$errorInfo[1].') '.$errorInfo[2].($exception ? '<br />'.$exception->getMessage() : '').'<br /><pre>'.$this->lastQuery.'</pre><br />Valores: '.Debug::print_rc($this->lastValues),
+            '<span style="color:#FF0000">'.$msg.'</span> - '.
+            '('.$errorInfo[1].') '.$errorInfo[2].
+            ($exception ? '<br />'.$exception->getMessage() : '').
+            '<br /><pre>'.$this->lastQuery.'</pre><br />Values: '.
+            Debug::print_rc($this->lastValues),
             500,
             hash('crc32', $msg.$errorInfo[1].$this->lastQuery), // error id
             $htmlError
@@ -346,7 +347,10 @@ class DB
     }
 
     /**
-     *	\brief Alterna o estado de debug de banco de dados.
+     * Sets the database debug state.
+     *
+     * @param bool $debug
+     * @return void
      */
     public static function debug($debug)
     {
@@ -354,9 +358,10 @@ class DB
     }
 
     /**
-     *	\brief Inicializa uma transação.
+     * Begins a DB transaction.
      *
-     *	Como as transações podem utilzar varias classes e métodos, a transação será "estatica"
+     * @param string $database DB configuration key.
+     * @return void
      */
     public static function beginTransaction($database = 'default')
     {
@@ -364,9 +369,10 @@ class DB
     }
 
     /**
-     *	\brief Cancela as alterações e termina a transação.
+     * Rolls back a DB transaction.
      *
-     *	Como as transações podem utilzar varias classes e métodos, a transação será "estatica"
+     * @param string $database DB configuration key.
+     * @return void
      */
     public static function rollBack($database = 'default')
     {
@@ -374,9 +380,10 @@ class DB
     }
 
     /**
-     *	\brief Confirma as alterações e termina a transação.
+     * Commits a DB transaction.
      *
-     *	Como as transações podem utilzar varias classes e métodos, a transação será "estatica"
+     * @param string $database DB configuration key.
+     * @return void
      */
     public static function commit($database = 'default')
     {
@@ -384,59 +391,55 @@ class DB
     }
 
     /**
-     *	\brief Cancela todas as transações ativas.
+     * Rolls back all active transactions.
      *
-     *	Em caso de erro no php, executa um all roll back.
-     *
-     *	Como as transações podem utilzar varias classes e métodos, a transação será "estatica"
+     * @return void
      */
     public static function rollBackAll()
     {
         foreach (self::$conectionIds as $database) {
-            if ($database['con']->inTransaction()) {
-                $database['con']->rollBack();
+            if ($database['PDO']->inTransaction()) {
+                $database['PDO']->rollBack();
             }
         }
     }
 
     /**
-     *  \brief DEPRECATED - Use rollBackAll()
-     *  \deprecated
-     *  \see rollBackAll.
+     * Rolls back all transactions.
+     *
+     * @deprecated 1.9.0.33
+     *
+     * @return void
      */
     public static function transactionAllRollBack()
     {
-        self::rollBackAll();
+        throw new \Exception('Deprecated method');
     }
 
     /**
-     *  Executa uma consulta no banco de dados.
+     * Executes a query.
      *
-     *  \param $sql String contendo comando SQL a ser executado
-     *  \param $where_v array contendo parâmetros para execução do comando
-     *  \param $cache_expires tempo em segundos para cacheamento da consulta.
-     *    Default = null (sem cache)
+     * @param string   $sql
+     * @param array    $prepareParams
+     * @param int|null $cacheLifeTime cache expiration time (in seconds) for SELECT queries or null for no cached query.
+     * @return bool
      */
-    public function execute($sql, array $where_v = [], $cache_expires = null)
+    public function execute($sql, array $prepareParams = [], $cacheLifeTime = null)
     {
         $this->sqlErrorCode = null;
         $this->sqlErrorInfo = null;
         self::$sqlNum++;
 
         // Verifica se está sendo usado o recurso de contagem de linhas encontrados da última consulta do MySQL e cria um comando único
-        if ((is_int($this->cacheExpires) || is_int($cache_expires)) && strtoupper(substr(ltrim($sql), 0, 19)) == 'SELECT FOUND_ROWS()' && strtoupper(substr(ltrim($this->lastQuery), 0, 7)) == 'SELECT ') {
+        if ((is_int($this->cacheExpires) || is_int($cacheLifeTime))
+            && strtoupper(substr(ltrim($sql), 0, 19)) == 'SELECT FOUND_ROWS()'
+            && strtoupper(substr(ltrim($this->lastQuery), 0, 7)) == 'SELECT ') {
             $this->lastQuery = $sql.'; /* '.md5(implode('//', array_merge([$this->lastQuery], $this->lastValues))).' */';
         } else {
             $this->lastQuery = $sql;
         }
 
-        if (($sql instanceof DBSelect) || ($sql instanceof DBInsert) || ($sql instanceof DBUpdate) || ($sql instanceof DBDelete)) {
-            $this->lastValues = $sql->getAllValues();
-        } else {
-            $this->lastValues = $where_v;
-            $where_v = [];
-        }
-
+        $this->lastValues = $prepareParams;
         $sql = null;
 
         // Recupera a configuração de cache
@@ -448,7 +451,7 @@ class DB
             $cacheKey = md5(implode('//', array_merge([$this->lastQuery], $this->lastValues)));
             $this->resSQL = null;
             // O comando é um SELECT e é para guardar em cache?
-            if ((is_int($this->cacheExpires) || is_int($cache_expires)) && strtoupper(substr(ltrim($this->lastQuery), 0, 7)) == 'SELECT ') {
+            if ((is_int($this->cacheExpires) || is_int($cacheLifeTime)) && strtoupper(substr(ltrim($this->lastQuery), 0, 7)) == 'SELECT ') {
                 try {
                     $mc = new \Memcached();
                     $mc->addServer($dbcache['server_addr'], $dbcache['server_port']);
@@ -512,12 +515,12 @@ class DB
             // Configuração de cache está ligada?
             if (is_array($dbcache) && isset($dbcache['type']) && $dbcache['type'] == 'memcached') {
                 // O comando é um SELECT e é para guardar em cache?
-                if ((is_int($this->cacheExpires) || is_int($cache_expires)) && strtoupper(substr(ltrim($this->lastQuery), 0, 7)) == 'SELECT ') {
+                if ((is_int($this->cacheExpires) || is_int($cacheLifeTime)) && strtoupper(substr(ltrim($this->lastQuery), 0, 7)) == 'SELECT ') {
                     try {
                         $mc = new \Memcached();
                         $mc->addServer($dbcache['server_addr'], $dbcache['server_port']);
-                        $this->cacheStatement = $this->get_all();
-                        $mc->set('cacheDB_'.$cacheKey, $this->cacheStatement, min(is_int($cache_expires) ? $cache_expires : 86400, is_int($this->cacheExpires) ? $this->cacheExpires : 86400));
+                        $this->cacheStatement = $this->fetchAll();
+                        $mc->set('cacheDB_'.$cacheKey, $this->cacheStatement, min(is_int($cacheLifeTime) ? $cacheLifeTime : 86400, is_int($this->cacheExpires) ? $this->cacheExpires : 86400));
                         unset($mc);
                         $this->resSQL->closeCursor();
                         $this->resSQL = null;
@@ -532,9 +535,12 @@ class DB
             $conf = Configuration::get('db', self::$conectionIds[$this->database]['dbName']);
 
             debug(
-                '<pre>'.$this->lastQuery.'</pre><br />Valores: '.Debug::print_rc($this->lastValues).'<br />'.
+                '<pre>'.$this->lastQuery.'</pre><br />Values: '.
+                Debug::print_rc($this->lastValues).'<br />'.
                 'Affected Rows: '.$this->affectedRows().'<br />'.
-                'DB: '.(isset($conf['database']) ? $conf['database'] : 'não informado'), 'SQL #'.self::$sqlNum, false
+                'DB: '.($conf['database'] ?? 'not set'),
+                'SQL #'.self::$sqlNum,
+                false
             );
         }
 
@@ -542,7 +548,9 @@ class DB
     }
 
     /**
-     *	\brief Retorna o último comando executado.
+     * Returns the last executed query.
+     *
+     * @return string
      */
     public function lastQuery()
     {
@@ -550,7 +558,9 @@ class DB
     }
 
     /**
-     *  \brief Retorna uma string com o código do último erro ocorrido com a instância do banco.
+     * Returns the last error code occurred.
+     *
+     * @return string
      */
     public function errorCode()
     {
@@ -558,7 +568,9 @@ class DB
     }
 
     /**
-     *  \brief Retorna um array com informações do último erro ocorrido com a instãncia do banco.
+     * Returns the last error information array.
+     *
+     * @return array
      */
     public function errorInfo()
     {
@@ -566,8 +578,9 @@ class DB
     }
 
     /**
-     *  \brief Retorna uma string com o código do erro ocorrido com o último \c execute
-     *  \see execute.
+     * Returns the string with error code occurred on last execute method call.
+     *
+     * @return string
      */
     public function statmentErrorCode()
     {
@@ -575,8 +588,9 @@ class DB
     }
 
     /**
-     *  \brief Retorna um array com informações do erro ocorrido com o último \c execute
-     *  \see execute.
+     * Returns the array with information about error occurred on last execute method call.
+     *
+     * @return array
      */
     public function statmentErrorInfo()
     {
@@ -584,19 +598,23 @@ class DB
     }
 
     /**
-     *	\brief Pega o nome do driver do banco.
+     * Returns the database driver name of the current connection.
      *
-     *	\return Retorna uma string contendo o nome do driver do banco de dados atual
+     * @return string
      */
     public function driverName()
     {
+        if ($this->dataConnect === false) {
+            return '';
+        }
+
         return $this->dataConnect->getAttribute(\PDO::ATTR_DRIVER_NAME);
     }
 
     /**
-     *  \brief Pega algumas informações a respeito da versão do servidor.
+     * Returns the DBMS version informations.
      *
-     *  \return Retorna um valor inteiro com a versão do servidor
+     * @return int
      */
     public function serverVersion()
     {
@@ -604,143 +622,156 @@ class DB
     }
 
     /**
-     *	\brief Retorna o valor do campo autoincremento do último INSERT.
+     * Returns the value of the auto increment columns in last INSERT.
+     *
+     * @param string|null $indice
+     * @return int
      */
-    public function lastInsertedId($indice = '')
+    public function lastInsertedId($indice = null)
     {
-        return $this->dataConnect->lastInsertId(((!$indice && $this->lastQuery instanceof DBInsert) ? $this->lastQuery->getTable().'_id_seq' : $indice));
+        return $this->dataConnect->lastInsertId($indice);
     }
 
     /**
-     *	\brief Retorna o número de linhas afetadas no último comando.
+     * Returns the amount of affected rows of the last query.
+     *
+     * @return int
      */
     public function affectedRows()
     {
-        return $this->resSQL->rowCount();
-    }
-
-    /**
-     *  \brief DEPRECATED - Use affectedRows()
-     *  \deprecated
-     *  \see affectedRows.
-     */
-    public function num_rows()
-    {
-        if (is_null($this->cacheStatement)) {
-            return $this->affected_rows();
+        if ($this->cacheStatement === null) {
+            return $this->resSQL->rowCount();
         }
 
         return count($this->cacheStatement);
     }
 
     /**
-     *	\brief Retorna todas as linhas do resultado de uma consulta.
+     * @deprecated 1.9.0.33
+     *
+     * @return void
+     */
+    public function num_rows()
+    {
+        throw new \Exception('Deprecated method');
+    }
+
+    /**
+     * Returns all rows of the resultset.
+     *
+     * @param int $resultType
+     * @return array|bool
      */
     public function fetchAll($resultType = \PDO::FETCH_ASSOC)
     {
-        if (is_null($this->cacheStatement)) {
-            if ($this->resSQL) {
-                return $this->resSQL->fetchAll($resultType);
-            }
-        } else {
+        if ($this->cacheStatement !== null) {
             return $this->cacheStatement;
+        } elseif ($this->resSQL) {
+            return $this->resSQL->fetchAll($resultType);
         }
 
         return false;
     }
 
     /**
-     *  \brief DEPRECATED - Use fetch_all
-     *  \deprecated
-     *  \see fetch_all.
+     * @deprecated 1.9.0.33
+     *
+     * @param int $resultType
+     * @return void
      */
     public function get_all($resultType = \PDO::FETCH_ASSOC)
     {
-        return $this->fetchAll($resultType);
+        throw new \Exception('Deprecated method');
     }
 
     /**
-     *	\brief Retorna o primeiro resultado do cursor de uma consulta.
+     * Returns the first row of the resultset.
+     *
+     * @param int $resultType
+     * @return array|bool
      */
     public function fetchFirst($resultType = \PDO::FETCH_ASSOC)
     {
-        if (is_null($this->cacheStatement)) {
-            if ($this->resSQL) {
-                return $this->resSQL->fetch($resultType, \PDO::FETCH_ORI_FIRST);
-            }
-        } else {
+        if ($this->cacheStatement !== null) {
             return reset($this->cacheStatement);
+        } elseif ($this->resSQL) {
+            return $this->resSQL->fetch($resultType, \PDO::FETCH_ORI_FIRST);
         }
 
         return false;
     }
 
     /**
-     *	\brief Retorna o resultado anterior do cursor de uma consulta.
+     * Returns the previous row of the resultset.
+     *
+     * @param int $resultType
+     * @return array|bool
      */
     public function fetchPrev($resultType = \PDO::FETCH_ASSOC)
     {
-        if (is_null($this->cacheStatement)) {
-            if ($this->resSQL) {
-                return $this->resSQL->fetch($resultType, \PDO::FETCH_ORI_PRIOR);
-            }
-        } else {
+        if ($this->cacheStatement !== null) {
             return prev($this->cacheStatement);
+        } elseif ($this->resSQL) {
+            return $this->resSQL->fetch($resultType, \PDO::FETCH_ORI_PRIOR);
         }
 
         return false;
     }
 
     /**
-     *	\brief Retorna o próximo resultado de uma consulta.
+     * Returns the next row of the resultset.
+     *
+     * @param int $resultType
+     * @return array|bool
      */
     public function fetchNext($resultType = \PDO::FETCH_ASSOC)
     {
-        if (is_null($this->cacheStatement)) {
-            if ($this->resSQL) {
-                return $this->resSQL->fetch($resultType);
-            }
-        } else {
-            if ($r = each($this->cacheStatement)) {
-                return $r['value'];
-            }
+        if ($this->cacheStatement !== null) {
+            $current = current($this->cacheStatement);
+            next($this->cacheStatement);
+
+            return $current;
+        } elseif ($this->resSQL) {
+            return $this->resSQL->fetch($resultType);
         }
 
         return false;
     }
 
     /**
-     *	\brief Retorna o último resultado do cursor de uma consulta.
+     * Returns the last row of the resultset.
+     *
+     * @param int $resultType
+     * @return array|bool
      */
     public function fetchLast($resultType = \PDO::FETCH_ASSOC)
     {
-        if (is_null($this->cacheStatement)) {
-            if ($this->resSQL) {
-                return $this->resSQL->fetch($resultType, \PDO::FETCH_ORI_LAST);
-            }
-        } else {
+        if ($this->cacheStatement !== null) {
             return end($this->cacheStatement);
+        } elseif ($this->resSQL) {
+            return $this->resSQL->fetch($resultType, \PDO::FETCH_ORI_LAST);
         }
 
         return false;
     }
 
     /**
-     *	\brief Retorna o valor de uma coluna do último registro pego por fetch_next.
+     * Returns the value of a column.
+     *
+     * @param int $var
+     * @return mixed
      */
     public function getColumn($var = 0)
     {
-        if (is_null($this->cacheStatement)) {
-            if ($this->resSQL && is_numeric($var)) {
-                return $this->resSQL->fetchColumn($var);
-            }
-        } else {
-            if ($r = each($this->cacheStatement)) {
-                return $r['value'][$var];
-            }
+        if ($this->cacheStatement !== null) {
+            $current = current($this->cacheStatement);
+
+            return $current[$var];
+        } elseif ($this->resSQL && is_numeric($var)) {
+            return $this->resSQL->fetchColumn($var);
         }
 
-        $this->reportError($var.' is not defined in select (remember, it\'s a case sensitive) or $data is empty.');
+        $this->reportError($var.' is not defined in select or data is empty.');
 
         return false;
     }

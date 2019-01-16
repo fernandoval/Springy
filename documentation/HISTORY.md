@@ -1,12 +1,15 @@
 # Springy framework update history
 
 ## development branch
-- Implementing when conditional for embedded objects;
+- Implemented retries in connection fails for DB;
+- Implemented when conditional for embedded objects;
 - SendGrid driver updated to support SendGrid SDK v6;
 - Components script rebuilt;
+- DB class updated to PHP 7.2 compatibility;
+- Cookie class updated to PHP 7.2 compatibility;
 - Removed following configuration entries: system.cache, system.css_path, system.js_path, system.controller_path;
-- Removed each() function from Cookie class;
 - Removed support to PHP 5.6 or older;
+- DB methods deprecated: disableReportError, enableReportError, transactionAllRollBack, num_rows, get_all, disableReportError, enableReportError;
 - Bug fix in Srints::cnpj method;
 - Bug fix in _system_bug_ magic endpoint.
 
