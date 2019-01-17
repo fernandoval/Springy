@@ -79,6 +79,7 @@ class DB
      * Connects to the DBMS.
      *
      * @param string $database DB configuration key.
+     *
      * @return PDO|bool
      */
     public function connect($database)
@@ -160,6 +161,7 @@ class DB
      *
      * @param string $database DB configuration key.
      * @param array  $dbconf   Database configutation.
+     *
      * @return PDO|bool
      */
     private function _round_robin($database, $dbconf)
@@ -210,6 +212,7 @@ class DB
      * Returns connection status.
      *
      * @param string $database DB configuration key.
+     *
      * @return bool
      */
     public static function connected($database = 'default')
@@ -237,6 +240,7 @@ class DB
      * Returns the status error repor.
      *
      * @param bool $status if defined set the report of errors on (true) or off (false).
+     *
      * @return bool
      */
     public function errorReportStatus($status = null)
@@ -275,8 +279,9 @@ class DB
     /**
      * Sends the error occurrency to the webmaster.
      *
-     * @param string $msg
+     * @param string       $msg
      * @param PDOException $exception
+     *
      * @return void
      */
     private function reportError($msg, \PDOException $exception = null)
@@ -350,6 +355,7 @@ class DB
      * Sets the database debug state.
      *
      * @param bool $debug
+     *
      * @return void
      */
     public static function debug($debug)
@@ -361,6 +367,7 @@ class DB
      * Begins a DB transaction.
      *
      * @param string $database DB configuration key.
+     *
      * @return void
      */
     public static function beginTransaction($database = 'default')
@@ -372,6 +379,7 @@ class DB
      * Rolls back a DB transaction.
      *
      * @param string $database DB configuration key.
+     *
      * @return void
      */
     public static function rollBack($database = 'default')
@@ -383,6 +391,7 @@ class DB
      * Commits a DB transaction.
      *
      * @param string $database DB configuration key.
+     *
      * @return void
      */
     public static function commit($database = 'default')
@@ -422,6 +431,7 @@ class DB
      * @param string   $sql
      * @param array    $prepareParams
      * @param int|null $cacheLifeTime cache expiration time (in seconds) for SELECT queries or null for no cached query.
+     *
      * @return bool
      */
     public function execute($sql, array $prepareParams = [], $cacheLifeTime = null)
@@ -625,6 +635,7 @@ class DB
      * Returns the value of the auto increment columns in last INSERT.
      *
      * @param string|null $indice
+     *
      * @return int
      */
     public function lastInsertedId($indice = null)
@@ -660,6 +671,7 @@ class DB
      * Returns all rows of the resultset.
      *
      * @param int $resultType
+     *
      * @return array|bool
      */
     public function fetchAll($resultType = \PDO::FETCH_ASSOC)
@@ -677,6 +689,7 @@ class DB
      * @deprecated 1.9.0.33
      *
      * @param int $resultType
+     *
      * @return void
      */
     public function get_all($resultType = \PDO::FETCH_ASSOC)
@@ -688,6 +701,7 @@ class DB
      * Returns the first row of the resultset.
      *
      * @param int $resultType
+     *
      * @return array|bool
      */
     public function fetchFirst($resultType = \PDO::FETCH_ASSOC)
@@ -705,6 +719,7 @@ class DB
      * Returns the previous row of the resultset.
      *
      * @param int $resultType
+     *
      * @return array|bool
      */
     public function fetchPrev($resultType = \PDO::FETCH_ASSOC)
@@ -722,6 +737,7 @@ class DB
      * Returns the next row of the resultset.
      *
      * @param int $resultType
+     *
      * @return array|bool
      */
     public function fetchNext($resultType = \PDO::FETCH_ASSOC)
@@ -742,6 +758,7 @@ class DB
      * Returns the last row of the resultset.
      *
      * @param int $resultType
+     *
      * @return array|bool
      */
     public function fetchLast($resultType = \PDO::FETCH_ASSOC)
@@ -759,6 +776,7 @@ class DB
      * Returns the value of a column.
      *
      * @param int $var
+     *
      * @return mixed
      */
     public function getColumn($var = 0)
@@ -777,12 +795,12 @@ class DB
     }
 
     /**
-     *	\brief Converte uma data do formato brasileiro para o formato universal.
+     * Converts a brazilian date string to ISO DBMS format.
      *
-     *	@param $datetime String contendo a data e hora no formato brasileiro (d/m/Y H:n:s)
-     *	@param $flgtime Interruptor de concatenação da hora após a data
+     * @param string $datetime Date and time in brazilian format (d/m/Y H:i:s)
+     * @param bool   $flgtime
      *
-     *	@return Retorna a data no formato universal (Y-m-d) concatenada da hora no formato universal (H:n:s), se o $flgtime for TRUE.
+     * @return string
      */
     public static function castDateBrToDb($datetime, $flgtime = false)
     {
@@ -792,13 +810,13 @@ class DB
     }
 
     /**
-     *	\brief Converte uma data do formato universal para o formato brasileiro 24h.
+     * Converts an ISO DB date string to brazilian format.
      *
-     *	@param $datetime String contendo a data e hora no formato universal (Y-m-d H:n:s)
-     *	@param $flgtime Interruptor de concatenação da hora após a data
-     *	@param $seconds Interruptor de concatenação dos segundos após a data
+     * @param string $datetime
+     * @param bool   $flgtime
+     * @param bool   $sec
      *
-     *	@return Retorna a data no formato brasileiro (d/m/Y) concatenada da hora no formato brasileiro 24h (H:n:s), se o $flgtime for TRUE.
+     * @return string
      */
     public static function castDateDbToBr($datetime, $flgtime = false, $sec = false)
     {
@@ -812,11 +830,11 @@ class DB
     }
 
     /**
-     *  \brief Converte em UNIX timestamp o valor data + hora no formato universal.
+     * Converts a date string in ISO format to UNIX timestamp.
      *
-     *  \param (string)$dateTime - data hora no format Y-m-d H:i:s
+     * @param string $dateTime
      *
-     *  \return Retorna o valor UNIX timestamp
+     * @return int
      */
     public static function makeDbDateTime($dateTime)
     {
@@ -828,21 +846,19 @@ class DB
     }
 
     /**
-     *  \brief DEPRECATED - Use makeDbDateTime()
-     *  \deprecated
-     *  \see makeDbDateTime.
+     * @deprecated 1.9.0.33
      */
     public static function dateToTime($dateTime)
     {
-        return self::makeDbDateTime($dateTime);
+        throw new \Exception('Deprecated method');
     }
 
     /**
-     *  \brief Converte um valor datetime do banco em string de data brasileira.
+     * Converts a date string in DBMS ISO format to a long date string in brazilian portuguese.
      *
-     *  \note Verificar real necessidade de manutenção desse método
-     *  \param (string)$dataTimeStamp - data hora no format Y-m-d H:i:s
-     *  \return Retorna uma string no formato '<dia> de <nome_do_mes>'.
+     * @param string $dataTimeStamp
+     *
+     * @return string
      */
     public static function longBrazilianDate($dataTimeStamp)
     {
@@ -854,12 +870,10 @@ class DB
     }
 
     /**
-     *  \brief DEPRECATED - Use londBrazilianDate()
-     *  \deprecated
-     *  \see londBrazilianDate.
+     * @deprecated 1.9.0.33
      */
     public static function dateToStr($dataTimeStamp)
     {
-        return self::longBrazilianDate($dataTimeStamp);
+        throw new \Exception('Deprecated method');
     }
 }
