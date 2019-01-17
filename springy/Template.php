@@ -317,7 +317,7 @@ class Template
     /**
      * Returns the internal template object.
      *
-     * @return Object|null
+     * @return object|null
      */
     public function templateObject()
     {
