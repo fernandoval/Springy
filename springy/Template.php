@@ -62,6 +62,7 @@ class Template
      * Sets the path to the template folder.
      *
      * @param string $path path in the file system.
+     *
      * @return void
      */
     public function setTemplateDir($path)
@@ -73,6 +74,7 @@ class Template
      * Defines the compiled template folder path.
      *
      * @param string $path path in the file system.
+     *
      * @return void
      */
     public function setCompileDir($path)
@@ -84,6 +86,7 @@ class Template
      * Defines the folder path of the configuration files for templates.
      *
      * @param string $path path in the file system.
+     *
      * @return void
      */
     public function setConfigDir($path)
@@ -95,6 +98,7 @@ class Template
      * Sets the template cache folder path.
      *
      * @param string $path path in the file system.
+     *
      * @return void
      */
     public function setCacheDir($path)
@@ -124,6 +128,7 @@ class Template
      * Defines template caching.
      *
      * @param string $value
+     *
      * @return void
      */
     public function setCaching($value = 'current')
@@ -135,6 +140,7 @@ class Template
      * Sets the template cache lifetime.
      *
      * @param int $seconds
+     *
      * @return void
      */
     public function setCacheLifetime($seconds)
@@ -166,6 +172,7 @@ class Template
      * Sets the template file.
      *
      * @param string $tpl name of the template, without file extension.
+     *
      * @return void
      */
     public function setTemplate($tpl)
@@ -177,6 +184,7 @@ class Template
      * Sets the cache id.
      *
      * @param string $id
+     *
      * @return void
      */
     public function setCacheId($id)
@@ -188,6 +196,7 @@ class Template
      * Sets the compile identifier.
      *
      * @param string $id
+     *
      * @return void
      */
     public function setCompileId($id)
@@ -201,6 +210,7 @@ class Template
      * @param string $var     the name of the variable.
      * @param mixed  $value   the value of the variable.
      * @param bool   $nocache (optional) if true, the variable is assigned as nocache variable.
+     *
      * @return void
      */
     public function assign($var, $value = null, $nocache = false)
@@ -216,6 +226,7 @@ class Template
      * @param string|array $callback    defines the callback.
      * @param mixed        $cacheable
      * @param mixed        $cache_attrs
+     *
      * @return void
      */
     public function registerPlugin($type, $name, $callback, $cacheable = null, $cache_attrs = null)
@@ -227,6 +238,7 @@ class Template
      * Clears the value of an assigned variable.
      *
      * @param string $var the name of the variable.
+     *
      * @return void
      */
     public function clearAssign($var)
@@ -240,6 +252,7 @@ class Template
      * As an optional parameter, you can supply a minimum age in seconds the cache files must be before they will get cleared.
      *
      * @param int $expire_time
+     *
      * @return void
      */
     public function clearAllCache($expire_time)
@@ -251,6 +264,7 @@ class Template
      * Clears the cache of the template.
      *
      * @param int $expireTime only compiled templates older than exp_time seconds are cleared.
+     *
      * @return void
      */
     public function clearCache($expireTime = null)
@@ -262,6 +276,7 @@ class Template
      * Clears the compiled version of the template.
      *
      * @param int $expTime only compiled templates older than exp_time seconds are cleared.
+     *
      * @return void
      */
     public function clearCompiled($expTime)
@@ -273,6 +288,7 @@ class Template
      * Clears a configuration template variable.
      *
      * @param string $var
+     *
      * @return void
      */
     public function clearConfig($var)
@@ -284,6 +300,7 @@ class Template
      * Checks whether the specified template exists.
      *
      * @param string $tplName name of the template, without file extension.
+     *
      * @return bool
      */
     public function templateExists($tplName)

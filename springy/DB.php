@@ -98,7 +98,7 @@ class DB
 
         // Verifica se o servidor é um pool (round robin)
         if ($conf['database_type'] == 'pool' && is_array($conf['host_name'])) {
-            return $this->_round_robin($database, $conf);
+            return $this->roundRobinConnect($database, $conf);
         }
 
         $pdoConf = [];
@@ -164,7 +164,7 @@ class DB
      *
      * @return PDO|bool
      */
-    private function _round_robin($database, $dbconf)
+    private function roundRobinConnect($database, $dbconf)
     {
         // Lê as configurações de controle de round robin
         $roundRobin = Configuration::get('db', 'round_robin');
