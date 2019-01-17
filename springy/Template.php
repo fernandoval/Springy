@@ -1,21 +1,21 @@
 <?php
-/**	\file
- *	Springy.
+/**
+ * Template handler class.
  *
- *	\brief		Template handler class.
- *  \copyright	₢ 2007-2016 Fernando Val
- *  \author		Fernando Val - fernando.val@gmail.com
- *  \author		Lucas Cardozo - lucas.cardozo@gmail.com
- *	\version	4.1.1.12
- *	\ingroup	framework
+ * @copyright 2007 Fernando Val
+ * @author    Fernando Val <fernando.val@gmail.com>
+ * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
+ * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
+ *
+ * @version   4.2.0.13
  */
 
 namespace Springy;
 
 /**
- *  \brief Classe de tratamento de templates.
+ * Template handler class.
  *
- *  \note Esta classe utiliza os drivers de template conforme definido no arquivo de configuração.
+ * This class uses template drivers as defined in configuration.
  */
 class Template
 {
@@ -25,7 +25,9 @@ class Template
     private $tplObj = null;
 
     /**
-     *	\brief Inicializa a classe de template.
+     * Constructor method.
+     *
+     * @param array|string|null $tpl the template name or path
      */
     public function __construct($tpl = null)
     {
@@ -49,7 +51,7 @@ class Template
     }
 
     /**
-     *  \brief Destrói o objeto.
+     * Destruction method.
      */
     public function __destruct()
     {
@@ -57,7 +59,10 @@ class Template
     }
 
     /**
-     *	\brief Define o local dos arquivos de template.
+     * Sets the path to the template folder.
+     *
+     * @param string $path path in the file system.
+     * @return void
      */
     public function setTemplateDir($path)
     {
@@ -65,7 +70,10 @@ class Template
     }
 
     /**
-     *	\brief Define o local dos arquivos de template compilados.
+     * Defines the compiled template folder path.
+     *
+     * @param string $path path in the file system.
+     * @return void
      */
     public function setCompileDir($path)
     {
@@ -73,7 +81,10 @@ class Template
     }
 
     /**
-     *	\brief Define o local dos arquivos .conf usados nas tpls.
+     * Defines the folder path of the configuration files for templates.
+     *
+     * @param string $path path in the file system.
+     * @return void
      */
     public function setConfigDir($path)
     {
@@ -81,7 +92,10 @@ class Template
     }
 
     /**
-     *	\brief Define o local dos arquivos de template cacheados.
+     * Sets the template cache folder path.
+     *
+     * @param string $path path in the file system.
+     * @return void
      */
     public function setCacheDir($path)
     {
@@ -89,7 +103,7 @@ class Template
     }
 
     /**
-     *	\brief Verifica o template ideal de acordo com a página.
+     * Verifica o template ideal de acordo com a página.
      */
     private function setAutoTemplatePaths()
     {
@@ -97,7 +111,7 @@ class Template
     }
 
     /**
-     *	\brief Verifica se o template está cacheado.
+     * Checks if the template is cached.
      *
      * @return bool
      */
@@ -107,22 +121,31 @@ class Template
     }
 
     /**
-     *	\brief Define o cacheamento dos templates.
+     * Defines template caching.
      *
-     * @
+     * @param string $value
+     * @return void
      */
     public function setCaching($value = 'current')
     {
         return $this->tplObj->setCaching($value);
     }
 
+    /**
+     * Sets the template cache lifetime.
+     *
+     * @param int $seconds
+     * @return void
+     */
     public function setCacheLifetime($seconds)
     {
         $this->tplObj->setCacheLifetime($seconds);
     }
 
     /**
-     *	\brief Retorna a página montada.
+     * Returns the template output.
+     *
+     * @return string
      */
     public function fetch()
     {
@@ -130,9 +153,9 @@ class Template
     }
 
     /**
-     *	\brief Faz a saída da página montada.
+     * Sent the parsed template to default output device.
      *
-     * @return string
+     * @return void
      */
     public function display()
     {
@@ -140,9 +163,10 @@ class Template
     }
 
     /**
-     *	\brief Define o arquivos de template.
+     * Sets the template file.
      *
-     * @param string $tpl Nome do template, sem extenção do arquivo
+     * @param string $tpl name of the template, without file extension.
+     * @return void
      */
     public function setTemplate($tpl)
     {
@@ -150,7 +174,10 @@ class Template
     }
 
     /**
-     *	\brief Define o id do cache.
+     * Sets the cache id.
+     *
+     * @param string $id
+     * @return void
      */
     public function setCacheId($id)
     {
@@ -158,7 +185,10 @@ class Template
     }
 
     /**
-     *	\brief Define o id da compilação.
+     * Sets the compile identifier.
+     *
+     * @param string $id
+     * @return void
      */
     public function setCompileId($id)
     {
@@ -166,7 +196,12 @@ class Template
     }
 
     /**
-     *	\brief Define uma variável do template.
+     * Assigns a variable to the template.
+     *
+     * @param string $var     the name of the variable.
+     * @param mixed  $value   the value of the variable.
+     * @param bool   $nocache (optional) if true, the variable is assigned as nocache variable.
+     * @return void
      */
     public function assign($var, $value = null, $nocache = false)
     {
@@ -174,7 +209,14 @@ class Template
     }
 
     /**
-     *	\brief Método statico que define um pluguin para todas as instancias da Template.
+     * Registers custom functions or methods as template plugins.
+     *
+     * @param mixed        $type        defines the type of the plugin.
+     * @param strin        $name        defines the name of the plugin.
+     * @param string|array $callback    defines the callback.
+     * @param mixed        $cacheable
+     * @param mixed        $cache_attrs
+     * @return void
      */
     public function registerPlugin($type, $name, $callback, $cacheable = null, $cache_attrs = null)
     {
@@ -182,7 +224,10 @@ class Template
     }
 
     /**
-     *	\brief Limpa uma variável do template.
+     * Clears the value of an assigned variable.
+     *
+     * @param string $var the name of the variable.
+     * @return void
      */
     public function clearAssign($var)
     {
@@ -190,9 +235,12 @@ class Template
     }
 
     /**
-     *	\brief clears the entire template cache.
+     * Clears the entire template cache.
      *
-     *	As an optional parameter, you can supply a minimum age in seconds the cache files must be before they will get cleared.
+     * As an optional parameter, you can supply a minimum age in seconds the cache files must be before they will get cleared.
+     *
+     * @param int $expire_time
+     * @return void
      */
     public function clearAllCache($expire_time)
     {
@@ -200,7 +248,10 @@ class Template
     }
 
     /**
-     *	\brief Limpa o cache para o template corrente.
+     * Clears the cache of the template.
+     *
+     * @param int $expireTime only compiled templates older than exp_time seconds are cleared.
+     * @return void
      */
     public function clearCache($expireTime = null)
     {
@@ -208,7 +259,10 @@ class Template
     }
 
     /**
-     *	\brief Limpa a versão compilada do template atual.
+     * Clears the compiled version of the template.
+     *
+     * @param int $expTime only compiled templates older than exp_time seconds are cleared.
+     * @return void
      */
     public function clearCompiled($expTime)
     {
@@ -216,7 +270,10 @@ class Template
     }
 
     /**
-     *	\brief Limpa variável de config definida.
+     * Clears a configuration template variable.
+     *
+     * @param string $var
+     * @return void
      */
     public function clearConfig($var)
     {
@@ -224,7 +281,10 @@ class Template
     }
 
     /**
-     *	\brief Verifica se um arquivo de template existe.
+     * Checks whether the specified template exists.
+     *
+     * @param string $tplName name of the template, without file extension.
+     * @return bool
      */
     public function templateExists($tplName)
     {
@@ -235,5 +295,15 @@ class Template
         $this->tplObj->addTemplateDir(Configuration::get('template', 'default_template_path'));
 
         return $this->tplObj->templateExists($tplName);
+    }
+
+    /**
+     * Returns the internal template object.
+     *
+     * @return Object|null
+     */
+    public function templateObject()
+    {
+        return $this->tplObj;
     }
 }

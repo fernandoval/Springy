@@ -1,6 +1,7 @@
 # Springy framework update history
 
 ## development branch
+- New method templateObject in Template;
 - Implemented retries in connection fails for DB;
 - Implemented when conditional for embedded objects;
 - SendGrid driver updated to support SendGrid SDK v6;
@@ -11,7 +12,8 @@
 - Removed support to PHP 5.6 or older;
 - DB methods deprecated: disableReportError, enableReportError, transactionAllRollBack, num_rows, get_all, disableReportError, enableReportError;
 - Bug fix in Srints::cnpj method;
-- Bug fix in _system_bug_ magic endpoint.
+- Bug fix in _system_bug_ magic endpoint;
+- Bug fix in Debug.
 
 ## Version 4
 ### 4.0.0
