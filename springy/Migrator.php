@@ -1,18 +1,19 @@
 <?php
-/** @file
- *  Springy.
+/**
+ * Database migration manager.
  *
- *  @brief     Database migration structure class.
+ * @copyright 2015 Fernando Val
+ * @author    Fernando Val <fernando.val@gmail.com>
+ * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- *  @copyright Copyright (c) 2007-2018 Fernando Val
- *  @author    Fernando Val - fernando.val@gmail.com
- *
- *  @version   0.4.0.8
- *  @ingroup   framework
+ * @version   0.4.0.9
  */
 
 namespace Springy;
 
+/**
+ * Database migration manager.
+ */
 class Migrator extends DB
 {
     const VERSION = '0.4.0.8';
@@ -39,19 +40,19 @@ class Migrator extends DB
     private $mustByApplied = [];
 
     /**
-     *  @brief Initiate the class.
+     * Constructor.
      */
     public function __construct()
     {
         $this->revPath = Kernel::path(Kernel::PATH_MIGRATION).DS;
 
-        $this->disableReportError();
+        $this->errorReportStatus(false);
 
         parent::__construct();
     }
 
     /**
-     *  @brief Run the migrator.
+     * Runs the migrator.
      */
     public function run()
     {
@@ -98,7 +99,7 @@ class Migrator extends DB
     }
 
     /**
-     *  @brief Checks the existence of the control table.
+     * Checks the existence of the control table.
      */
     private function checkControlTable()
     {
@@ -121,7 +122,7 @@ class Migrator extends DB
     }
 
     /**
-     *  @brief Checks the current release of the database.
+     * Checks the current release of the database.
      */
     private function checkCurrentRevision()
     {
@@ -171,7 +172,13 @@ class Migrator extends DB
     }
 
     /**
-     *  @brief Set migration file as applied.
+     * Sets migration file as applied.
+     *
+     * @param int    $revision
+     * @param string $file
+     * @param string $result
+     *
+     * @return void
      */
     private function setMigrationApplied($revision, $file, $result)
     {
@@ -182,7 +189,9 @@ class Migrator extends DB
     }
 
     /**
-     *  @brief Get arguments passed to the program.
+     * Loads arguments passed to the program.
+     *
+     * @return void
      */
     private function getArguments()
     {
@@ -207,7 +216,13 @@ class Migrator extends DB
     }
 
     /**
-     *  @brief Verify if two or more incompatible arguments was passed.
+     * Verifies if two or more incompatible arguments was passed.
+     *
+     * @param array $arguments
+     * @param array $list
+     * @param bool  $isExclusive
+     *
+     * @return void
      */
     private function validateArgument($arguments, $list, $isExclusive = false)
     {
@@ -239,7 +254,7 @@ class Migrator extends DB
     }
 
     /**
-     *  @brief Show help instructions.
+     * Shows help instructions.
      */
     private function showHelp()
     {
@@ -260,7 +275,7 @@ class Migrator extends DB
     }
 
     /**
-     *  @brief Show current status.
+     * Shows current status.
      */
     private function showCurrentStatus()
     {
@@ -275,7 +290,7 @@ class Migrator extends DB
     }
 
     /**
-     *  @brief Execute migrations.
+     * Executes migrations.
      */
     private function migrate()
     {
@@ -342,7 +357,7 @@ class Migrator extends DB
     }
 
     /**
-     *  @brief Execute migrations.
+     * Reverts migrations.
      */
     private function revert()
     {
@@ -425,7 +440,9 @@ class Migrator extends DB
     }
 
     /**
-     *  @brief Get all revision directories.
+     * Gets all revision directories.
+     *
+     * @return array
      */
     private function getRevisions()
     {
@@ -443,7 +460,12 @@ class Migrator extends DB
     }
 
     /**
-     *  @brief Get script files from revision directory.
+     * Gets script files from revision directory.
+     *
+     * @param int $revision
+     * @param int $direction
+     *
+     * @return array
      */
     private function getRevisionFiles($revision, $direction)
     {
@@ -470,7 +492,12 @@ class Migrator extends DB
     }
 
     /**
-     *  @brief Get the path of revisions' scripts.
+     * Gets the path of revisions' scripts.
+     *
+     * @param int $revision
+     * @param int $direction
+     *
+     * @return string
      */
     private function getScriptsPath($revision, $direction)
     {
@@ -478,7 +505,11 @@ class Migrator extends DB
     }
 
     /**
-     *  @brief Get name of the scripts' subdirectory.
+     * Gets name of the scripts' subdirectory.
+     *
+     * @param int $direction
+     *
+     * @return string
      */
     private function getScriptsSubdir($direction)
     {
@@ -492,7 +523,11 @@ class Migrator extends DB
     }
 
     /**
-     *  @brief Run a revision file.
+     * Runs a revision file.
+     *
+     * @param string $file
+     *
+     * @return bool
      */
     private function runFile($file)
     {
@@ -526,7 +561,13 @@ class Migrator extends DB
     }
 
     /**
-     *  @brief Print a message to output device.
+     * Prints a message to output device.
+     *
+     * @param array|string $message
+     * @param integer      $type
+     * @param bool         $lineBreak
+     *
+     * @return void
      */
     private function output($message, $type = 0, $lineBreak = true)
     {
@@ -563,13 +604,24 @@ class Migrator extends DB
     }
 
     /**
-     *  @brief Set a sistem error message.
+     * Sets a sistem error message.
+     *
+     * @param string $error
+     *
+     * @return void
      */
     private function setError($error)
     {
         $this->error = $error;
     }
 
+    /**
+     * Aborts the execution of the script.
+     *
+     * @param bool|string $message
+     *
+     * @return void
+     */
     private function systemAbort($message = false)
     {
         if ($message) {
