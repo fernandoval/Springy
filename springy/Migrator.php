@@ -564,7 +564,7 @@ class Migrator extends DB
      * Prints a message to output device.
      *
      * @param array|string $message
-     * @param integer      $type
+     * @param int          $type
      * @param bool         $lineBreak
      *
      * @return void
