@@ -1,7 +1,7 @@
 Springy framework update history
 
 ------------------------------------------------------------------------------------ --- -- -
-under development
+4.1.0
     - New method templateObject in Template;
     - Implemented retries in connection fails for DB;
     - Implemented when conditional for embedded objects;
