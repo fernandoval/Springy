@@ -8,12 +8,33 @@
 - Components script rebuilt;
 - DB class updated to PHP 7.2 compatibility;
 - Cookie class updated to PHP 7.2 compatibility;
-- Removed following configuration entries: system.cache, system.css_path, system.js_path, system.controller_path;
+- Removed following configuration entries:
+  + system.cache,
+  + system.css_path,
+  + system.js_path,
+  + system.controller_path;
 - Removed support to PHP 5.6 or older;
-- DB methods deprecated: disableReportError, enableReportError, transactionAllRollBack, num_rows, get_all, disableReportError, enableReportError, dateToTime, dateToStr;
+- DB methods deprecated:
+  + disableReportError,
+  + enableReportError,
+  + transactionAllRollBack,
+  + num_rows,
+  + get_all,
+  + disableReportError,
+  + enableReportError,
+  + dateToTime,
+  + dateToStr;
 - Bug fix in Srints::cnpj method;
 - Bug fix in _system_bug_ magic endpoint;
-- Bug fix in Debug.
+- Bug fix in Debug;
+- Deprecated classes:
+  + DBDelete,
+  + DBExpression,
+  + DBFiltro,
+  + DBInsert,
+  + DBSelect,
+  + DBUpdate,
+  + DBWhere.
 
 ## Version 4
 ### 4.0.0
