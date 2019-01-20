@@ -1,16 +1,19 @@
 <?php
 /**
- * Test case for application dependency container.
+ * Test case for Springy\Core\Application class.
  *
  * @copyright 2015 Fernando Val
  * @author    Allan Marques <allan.marques@ymail.com>
  * @author    Fernando Val <fernando.val@gmail.com>
  *
- * @version   1.0.0.3
+ * @version   1.0.0.4
  */
 use PHPUnit\Framework\TestCase;
 use Springy\Core\Application;
 
+/**
+ * Test case for Springy\Core\Application class.
+ */
 class ApplicationTest extends TestCase
 {
     private $app;

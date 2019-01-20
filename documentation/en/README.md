@@ -44,6 +44,24 @@ If you do not use the [Apache HTTP Server](http://httpd.apache.org/) or your web
 
 ### Configuration
 
+The script *sysconf.php* is the general system configuration. Some configuration like application name and version, environment, application tree, charset and timezone. Reed [this](/documentation/en/sysconf.md) for mor details.
+
+All configuration stays in files inside the folder defined by `'CONFIG_PATH'` in the *sysconf.php*. Default: /conf folder.
+
+#### Configuration files
+
+The `Configuration` library class search for files with `".conf.php"` sufix inside environment subdirectories. If a configuration file with same target name and sufix `".default.conf.php"` exists inside configuration folder, it will be loaded before the environment configuration.
+
+All *.conf.php must define an array variable named `$conf` with key pair.
+
+You can overwrite key pairs configuration for specific hosts by defining the array `$over_conf` where the first key is the host and is value is an array with key pairs to be overwriten.
+
+The Springy Framework uses some pre-defined configuration files like **db**, **mail**, **soap**, **system**, **template** and **uri**.
+
+All other configuration files are used only by your application.
+
+- **[system](/documentation/en/system-conf.md)**
+
 ## Models
 
 Model is part of [MVC](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) architecture of the framework. They are objects representing business data, rules and logic.

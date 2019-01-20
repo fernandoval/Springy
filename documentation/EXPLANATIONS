@@ -37,16 +37,16 @@ A seguir será explicada a função de cada um dos diretórios do framework e, p
 
 Lista padrão de diretórios do framework:
 
-* "www" : é o diretório onde está o inicializador e o sysconf.php. Em alguns ambientes essa pasta tem nomes como httpdocs ou public_html;
-* "system" : é onde estão os subdiretórios do arquivos do framework e da aplicação. Pos questões de seguramça, recomenda-se que este diretório esteja * fora da árvore navegável da aplicação, se seu servidor web permitir o acesso a arquivos fora da árvore do www. Neste caso é necessário ajustar o caminho no arquivo sysconf.php;
-* "library" : diretório onde estão armazenados as classes e bibliotecas do framework;
-* "classes" : diretório onde são armazenadas as classes proprietárias;
+* "app" : é onde estão os subdiretórios da aplicação. Pos questões de seguramça, recomenda-se que este diretório esteja * fora da árvore navegável da aplicação, se seu servidor web permitir o acesso a arquivos fora da árvore do www. Neste caso é necessário ajustar o caminho no arquivo sysconf.php;
+* "app/classes" : diretório onde são armazenadas as classes proprietárias;
+* "app/controllers" : diretório onde as controladoras são armazenados (pode conter subdiretórios);
+* "app/templates" : diretório onde são asmazenados os templates (pode conter subdiretórios);
 * "conf" : diretório onde são armazenados os scripts de configuração do sistema;
-* "controllers" : diretório onde as controladoras são armazenados (pode conter subdiretórios);
-* "other" : diretório onde estão armazenados as classes e bibliotecas de terceiros;
-* "templates" : diretório onde são asmazenados os templates (pode conter subdiretórios);
-* "tpl_comp" : diretório onde são asmazenados os templates compilados (o PHP deve ter direito de escrita dentro dele);
-* "tpl_cache" : diretório onde a classe de templates irá salvar as páginas cacheadas (o PHP deve ter direito de escrita dentro dele).
+* "springy" : diretório onde estão armazenados as classes e bibliotecas do framework;
+* "var/cache" : diretório onde a classe de templates irá salvar as páginas cacheadas (o PHP deve ter direito de escrita dentro dele).
+* "var/compiled" : diretório onde são asmazenados os templates compilados (o PHP deve ter direito de escrita dentro dele);
+* "vendor" : diretório onde estão armazenados as classes e bibliotecas de terceiros;
+* "www" : é o diretório onde está o inicializador e o sysconf.php. Em alguns ambientes essa pasta tem nomes como httpdocs ou public_html;
 
 
 Como o sistema elege um script de controle (controladora):

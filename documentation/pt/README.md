@@ -43,6 +43,24 @@ Se você não usa o [Apache HTTP Server](http://httpd.apache.org/) ou seu servid
 
 ### Configuração
 
+O script *sysconf.php* é o arquivo de configuração geral do sistema. Nele estão entradas de definição como nome e versão do sistema, ambiente, árvore de diretórios da aplicação, charset e timezone. Mais detalhes [aqui](/documentation/pt/sysconf.md).
+
+As demais configurações da aplicação deverão estar no diretório e sub-diretórios definidos pela entrada `'CONFIG_PATH'`.
+
+#### Arquivos de configuração
+
+A classe `Configuration` irá buscar por arquivos contendo o sufixo `".conf.php"`, dentro dos sub-diretórios do ambiente em que o sistema estiver sendo executado. Além disso, o arquivo de mesmo nome e sufixo `".default.conf.php"` também será carregado previamente, caso exista na raíz do diretório de configurações, independete do ambiente, como sendo entradas de configuração padrão para todos os ambientes. As entradas padrão serão sobrescritas por entradas específicas do ambiente.
+
+Os arquivos de configuração devem definir a variável de nome `$conf` como um array contendo um conjunto chave-valor.
+
+É possível sobrescrever as configurações para determinados hosts de sua aplicação, utilizando a variável `$over_conf`, que é um array contendo no primeiro nível de índices o nome do host para o qual se deseja sobrescrever determinada(s) entrada(s) de configuração, que por sua vez, receberá um array contendo cada entrada de configuração a ser sobrescrita.
+
+Os arquivos pré-distribuídos com o framework são de uso interno das classes e não podem ser renomeados ou omitidos.
+
+Seu sistema poderá possuir arquivos de configuração específicos, bastando obedecer o formato e a estrutura de nomes e diretórios.
+
+- **[system](/documentation/pt/system-conf.md)**
+
 ## Models
 
 ## Views

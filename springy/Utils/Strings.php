@@ -2,11 +2,11 @@
 /**
  * Class library for string processing.
  *
- * @copyright 2007-2018 Fernando Val
+ * @copyright 2007 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   0.13.21.23
+ * @version   0.13.22.24
  */
 
 namespace Springy\Utils;
@@ -407,13 +407,13 @@ class Strings
         if (empty($cnpj) || strlen($cnpj) != 14 || !is_numeric($cnpj) || self::checkIsFake($cnpj, 14)) {
             return false;
         }
-        $sum = '';
+        $sum = 0;
         $rev_cnpj = strrev(substr($cnpj, 0, 12));
         for ($i = 0; $i <= 11; $i++) {
             $i == 0 ? $multiplier = 2 : $multiplier;
             $i == 8 ? $multiplier = 2 : $multiplier;
             $multiply = ($rev_cnpj[$i] * $multiplier);
-            $sum = $sum + $multiply;
+            $sum += $multiply;
             $multiplier++;
         }
 
@@ -428,12 +428,12 @@ class Strings
         $rev_cnpj = strrev($sub_cnpj.$dv1);
 
         unset($sum);
-        $sum = '';
+        $sum = 0;
         for ($i = 0; $i <= 12; $i++) {
             $i == 0 ? $multiplier = 2 : $multiplier;
             $i == 8 ? $multiplier = 2 : $multiplier;
             $multiply = ($rev_cnpj[$i] * $multiplier);
-            $sum = $sum + $multiply;
+            $sum += $multiply;
             $multiplier++;
         }
 

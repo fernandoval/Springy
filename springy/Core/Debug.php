@@ -7,7 +7,7 @@
  *  @copyright  ₢ 2007-2018 Fernando Val
  *  @author     Fernando Val - fernando.val@gmail.com
  *
- *  @version    1.0.2.5
+ *  @version    1.0.2.6
  *  @ingroup    framework
  */
 
@@ -74,7 +74,7 @@ class Debug
             $aDados[] = [
                 'file'    => $value['file'],
                 'line'    => $value['line'],
-                'args'    => isset($value['args']) ? $value['args'] : 'Without arguments',
+                'args'    => isset($value['args']) ? $value['args'] : [],
                 'content' => trim(preg_replace('/^(&nbsp;)+/', '', $linhas[$value['line'] - 1])),
             ];
         }

@@ -11,6 +11,9 @@
 use PHPUnit\Framework\TestCase;
 use Springy\Container\DIContainer;
 
+/**
+ * Test case for container class for dependecy injection.
+ */
 class DIContainerTest extends TestCase
 {
     private $data;
