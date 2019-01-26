@@ -1,5 +1,8 @@
 # Springy framework update history
 
+## Under development
+- Fixed bug in Kernel::delIgnoredError;
+
 ## Version 4
 ### 4.1.0
 - New method templateObject in Template;
