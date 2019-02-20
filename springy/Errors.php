@@ -1,13 +1,15 @@
 <?php
-/** \file
- *  Springy.
+/**
+ * Error handler class.
  *
- *  \brief      Error handler class.
- *  \copyright  (c) 2007-2016 Fernando Val
- *  \author     Fernando Val - fernando.val@gmail.com
- *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
- *  \version    3.0.4.43
- *  \ingroup    framework
+ * This class is used by framework to error handler and throw it by user class.
+ *
+ * @copyright 2007 Fernando Val
+ * @author    Fernando Val <fernando.val@gmail.com>
+ * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
+ * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
+ *
+ * @version   3.0.5.44
  */
 
 namespace Springy;
@@ -16,17 +18,17 @@ use Springy\Core\Debug;
 use Springy\Utils\Strings;
 
 /**
- *  \brief Error handler class.
- *
- *  This class is used by framework to error handler and throw it by user class.
+ * Error handler class.
  */
 class Errors
 {
     /**
-     *  \brief Constructor method.
-     *  \params $httpStatus is the HTTP status code that will be set to header.
-     *  \params $message is a text to print in error message.
-     *  \warning If $httpStatus is greater or equal 400 the application handler error will be started.
+     * Constructor method.
+     *
+     * Warning! If $httpStatus is greater or equal 400 the application handler error will be started.
+     *
+     * @param int    $httpStatus is the HTTP status code that will be set to header.
+     * @param string $message    is a text to print in error message.
      */
     public function __construct($httpStatus = 200, $message = '')
     {
@@ -37,7 +39,7 @@ class Errors
     }
 
     /**
-     *  \brief Generate the output message error.
+     * Generate the output message error.
      */
     private function generateOutputMessage($errMessage, $errorId, $additionalInfo)
     {
@@ -356,7 +358,7 @@ class Errors
                         'Error on '.Kernel::systemName().
                         ' v'.Kernel::systemVersion().
                         ' ['.Kernel::environment().
-                        '] at '.URI::http_host()
+                        '] at '.URI::httpHost()
                     );
                     $email->body($errorMail);
                     $email->send();

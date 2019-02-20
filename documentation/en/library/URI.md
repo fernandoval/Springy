@@ -49,7 +49,7 @@ The class has no properties you can access directly.
 |**removeParam()**|*public static*|Remove a variable from the array of query string variables.|
 |**setParam()**|*public static*|Set value to a query string parameter.|
 |**buildURL()**|*public static*|Return the string of an URI with the received parameters.|
-|**http_host()**|*public static*|Return the current host with protocol.|
+|**httpHost()**|*public static*|Return the current host with protocol.|
 |**_host()**|*private static*|Return an URL host with protocolo.|
 |**encode_param()**|*private static*|Enconde an array of parameters into a query string.|
 |**redirect()**|*public static*|Set a redirect status header and finish the application.|
@@ -321,15 +321,15 @@ The `$include_ignores_segments` parameter is a boolean value to define if URI wi
     $uri = Springy\URI::buildURL(['search-page'], ['q' => 'query']);
 ```
 
-### http_host()
+### httpHost()
 Return the current host with protocol.
 ```php
-    public static function http_host()
+    public static function httpHost()
 ```
 
 **Sample:**
 ```php
-    $host = Springy\URI::http_host();
+    $host = Springy\URI::httpHost();
 ```
 
 ### redirect()

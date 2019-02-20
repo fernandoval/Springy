@@ -1,23 +1,16 @@
 <?php
-/** \file
- *  Springy.
+/**
+ * Session treatment class.
  *
- *  \brief      Session class system.
+ * @copyright 2007 Fernando Val
+ * @author    Fernando Val <fernando.val@gmail.com>
+ * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- *  \copyright  (c) 2007-2018 Fernando Val
- *  \author     Fernando Val - fernando.val@gmail.com
- *
- *  \version    2.1.1.21
- *  \ingroup    framework
+ * @version   2.1.2.22
  */
 
 namespace Springy;
 
-/**
- *  \brief Session class system.
- *
- *  \warning This is a static class and can not be instantiated by user.
- */
 class Session
 {
     /// Flag de controle de sessão iniciada
@@ -49,7 +42,7 @@ class Session
     const ST_DATABASE = 'database';
 
     /**
-     *  \brief Loads the session configurations.
+     * Loads the session configurations.
      */
     private static function _confLoad()
     {
@@ -95,7 +88,7 @@ class Session
     }
 
     /**
-     *  \brief Start the session ID for MemcacheD or dabasese stored sessions.
+     * Starts the session ID for MemcacheD or dabasese stored sessions.
      */
     private static function _startSessionID()
     {
@@ -109,7 +102,7 @@ class Session
     }
 
     /**
-     *  \brief Start the database stored session.
+     * Starts the database stored session.
      */
     private static function _startDBSession()
     {
@@ -134,12 +127,12 @@ class Session
             self::$data = [];
         }
 
-        register_shutdown_function(['\Springy\Session', '_save_db_session']);
+        register_shutdown_function(['\Springy\Session', '_saveDbSession']);
         self::$started = true;
     }
 
     /**
-     *  \brief Start the Memcached stored session.
+     * Starts the Memcached stored session.
      */
     private static function _startMCSession()
     {
@@ -152,12 +145,12 @@ class Session
             self::$data = [];
         }
 
-        register_shutdown_function(['\Springy\Session', '_save_mc_session']);
+        register_shutdown_function(['\Springy\Session', '_saveMcSession']);
         self::$started = true;
     }
 
     /**
-     *  \brief Starts the session engine.
+     * Starts the session engine.
      */
     public static function start($name = null)
     {
@@ -199,9 +192,9 @@ class Session
     }
 
     /**
-     *  \brief Save the session data in database table.
+     * Saves the session data in database table.
      */
-    public static function _save_db_session()
+    public static function _saveDbSession()
     {
         $value = serialize(self::$data);
         $sql = 'UPDATE `'.self::$dbTable.'` SET `session_value` = ?, `updated_at` = NOW() WHERE `id` = ?';
@@ -210,9 +203,9 @@ class Session
     }
 
     /**
-     *  \brief Save session data in Memcached service.
+     * Saves session data in Memcached service.
      */
-    public static function _save_mc_session()
+    public static function _saveMcSession()
     {
         $memcached = new Memcached();
         $memcached->addServer(self::$mcAddr, self::$mcPort);
@@ -220,7 +213,7 @@ class Session
     }
 
     /**
-     *  \brief Define o id da sessão.
+     * Define o id da sessão.
      */
     public static function setSessionId($sid)
     {
@@ -231,7 +224,7 @@ class Session
     }
 
     /**
-     *  \brief Informa se a variável de sessão está definida.
+     * Informa se a variável de sessão está definida.
      */
     public static function defined($var)
     {
@@ -241,7 +234,7 @@ class Session
     }
 
     /**
-     *  \brief Coloca um valor em variável de sessão.
+     * Coloca um valor em variável de sessão.
      */
     public static function set($var, $value)
     {
@@ -253,33 +246,29 @@ class Session
     }
 
     /**
-     *  \brief Pega o valor de uma variável de sessão.
+     * Pega o valor de uma variável de sessão.
      */
     public static function get($var)
     {
         self::start();
-        if (isset(self::$data[$var])) {
-            return self::$data[$var];
-        }
+
+        return self::$data[$var] ?? null;
     }
 
     /**
-     *  \brief Retorna todos os dados armazenados na sessão.
-     *
-     *  \return retorna \c array() se tiver sucesso ou \c NULL se não houver sessão
+     * Retorna todos os dados armazenados na sessão.
      */
     public static function getAll()
     {
         self::start();
+
         if (!empty(self::$data)) {
             return self::$data;
         }
     }
 
     /**
-     *  \brief Pega o ID da sessão.
-     *
-     *  \return retorna o ID da sessão ativa
+     * Pega o ID da sessão.
      */
     public static function getId()
     {
@@ -289,7 +278,7 @@ class Session
     }
 
     /**
-     *  \brief Remove uma variável de sessão.
+     * Remove uma variável de sessão.
      */
     public static function unregister($var)
     {

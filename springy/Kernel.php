@@ -496,7 +496,7 @@ class Kernel
                     $env = getenv($envar);
                 }
 
-                $env = empty($env) ? URI::http_host() : $env;
+                $env = empty($env) ? URI::httpHost() : $env;
                 if (empty($env)) {
                     $env = 'unknown';
                 }

@@ -2,12 +2,12 @@
 /**
  * Cookie treatment class.
  *
- * @copyright 2007-2018 Fernando Val
+ * @copyright 2007 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   1.3.2.10
+ * @version   1.3.3.11
  */
 
 namespace Springy;
@@ -108,18 +108,10 @@ class Cookie
             $cooKey = key($key);
             $cooVal = current($key);
 
-            // Check for key/value pair and return
-            if (isset($_COOKIE[$cooKey][$cooVal])) {
-                return true;
-            }
-        }
-        // If key exists, return true
-        elseif (isset($_COOKIE[$key])) {
-            return true;
+            return isset($_COOKIE[$cooKey][$cooVal]);
         }
 
-        // Key does not exist
-        return false;
+        return isset($_COOKIE[$key]);
     }
 
     /**
@@ -140,17 +132,10 @@ class Cookie
             $cooKey = key($key);
             $cooVal = current($key);
 
-            // Check for key/value pair and return
-            if (isset($_COOKIE[$cooKey][$cooVal])) {
-                return $_COOKIE[$cooKey][$cooVal];
-            }
-        }
-        // Return single key if it's set
-        elseif (isset($_COOKIE[$key])) {
-            return $_COOKIE[$key];
+            return $_COOKIE[$cooKey][$cooVal] ?? null;
         }
 
-        // Otherwise return null
+        return $_COOKIE[$key] ?? null;
     }
 
     /**

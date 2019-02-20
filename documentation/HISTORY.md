@@ -2,6 +2,8 @@
 
 ## Under development
 - Fixed bug in Kernel::delIgnoredError;
+- PSR fixes in URI class;
+- Method URI::http_host renamed to camel case format URI::httpHost
 
 ## Version 4
 ### 4.1.0
