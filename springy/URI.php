@@ -1,15 +1,13 @@
 <?php
-/** \file
- *  Springy.
+/**
+ * URI handler class.
  *
- *  \brief      URI handler class.
+ * @copyright 2007 Fernando Val
+ * @author    Fernando Val <fernando.val@gmail.com>
+ * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
+ * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- *  \copyright  ₢ 2007-2018 Fernando Val
- *  \author     Fernando Val - fernando.val@gmail.com
- *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
- *
- *  \version    2.2.4.37
- *  \ingroup    framework
+ * @version   2.2.5.38
  */
 
 namespace Springy;
@@ -38,9 +36,11 @@ class URI
     private static $class_controller = null;
 
     /**
-     *  \brief Get the URI string.
+     * Get the URI string.
+     *
+     * @return string
      */
-    private static function _fetch_uri_string()
+    private static function _fetchURItring()
     {
         // There is the old SUPERVAR in $_GET, given by .htaccess?
         if (is_array($_GET) && !empty($_GET['SUPERVAR'])) {
@@ -63,20 +63,22 @@ class URI
     }
 
     /**
-     *  \brief Define the name of the controller class.
+     * Define the name of the controller class.
+     *
+     * @return void
      */
-    private static function _set_class_controller($classname)
+    private static function _setClassController($classname)
     {
         self::$class_controller = $classname;
     }
 
     /**
-     *  \brief Parse the URI and initiate the internal variables.
+     * Parses the URI and initiate the internal variables.
      *
-     *  Translate the URI in segments and query string variables.
-     *  This method is used by the framework starter to determine the controller which is be called.
+     * Translate the URI in segments and query string variables.
+     * This method is used by the framework starter to determine the controller which is be called.
      *
-     *  \return void.
+     * @return void.
      */
     public static function parseURI()
     {
@@ -88,7 +90,7 @@ class URI
             die(md5(microtime()));
         }
 
-        self::$uri_string = self::_fetch_uri_string();
+        self::$uri_string = self::_fetchURItring();
 
         $UriString = trim(self::$uri_string, '/');
 
@@ -168,7 +170,7 @@ class URI
             if (file_exists($file)) {
                 $controller = $file;
                 self::setCurrentPage($segment);
-                self::_set_class_controller(self::currentPage());
+                self::_setClassController(self::currentPage());
                 break;
             } elseif (is_dir($path) && (!self::getSegment($segment + 1, false))) {
                 $file = $path.DIRECTORY_SEPARATOR.'index.page.php';
@@ -176,7 +178,7 @@ class URI
                     $controller = $file;
                     self::addSegment('index');
                     self::setCurrentPage($segment + 1);
-                    self::_set_class_controller(self::currentPage());
+                    self::_setClassController(self::currentPage());
                     break;
                 }
             } elseif (is_dir($path)) {
@@ -197,7 +199,7 @@ class URI
             $controller = $possible_controller;
             self::insertSegment($possible_segment_num, $possible_segment_name);
             self::setCurrentPage($possible_segment_num);
-            self::_set_class_controller(self::currentPage());
+            self::_setClassController(self::currentPage());
         }
 
         // Varre as rotas alternativas de controladoras
@@ -213,7 +215,7 @@ class URI
                             $data['controller'] = $matches[(int) substr($data['controller'], 1)];
                         }
                         $controller = Kernel::path(Kernel::PATH_CONTROLLER).(count(Kernel::controllerRoot()) ? DIRECTORY_SEPARATOR.implode(DIRECTORY_SEPARATOR, Kernel::controllerRoot()) : '').DIRECTORY_SEPARATOR.$data['controller'].'.page.php';
-                        self::_set_class_controller($data['controller']);
+                        self::_setClassController($data['controller']);
                         self::setCurrentPage($data['segment']);
                         break;
                     }
@@ -303,7 +305,9 @@ class URI
     }
 
     /**
-     *  \brief Return the current URI string.
+     * Returns the current URI string.
+     *
+     * @return string
      */
     public static function getURIString()
     {
@@ -397,7 +401,9 @@ class URI
     }
 
     /**
-     *  \brief Return the array of segments.
+     * Returns the array of segments.
+     *
+     * @return array
      */
     public static function getAllSegments()
     {
@@ -544,7 +550,7 @@ class URI
         }*/
 
         // Monta os parâmetros a serem passados por GET
-        self::encode_param($query, '', $param);
+        self::encodeParam($query, '', $param);
 
         return self::_host($host).$url.$param;
     }
@@ -552,7 +558,7 @@ class URI
     /**
      *  \brief Return the current host with protocol.
      */
-    public static function http_host()
+    public static function httpHost()
     {
         return trim(preg_replace('/([^:]+)(:\\d+)?/', '$1'.((isset($GLOBALS['SYSTEM']['CONSIDER_PORT_NUMBER']) && $GLOBALS['SYSTEM']['CONSIDER_PORT_NUMBER']) ? '$2' : ''), isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : ''), ' ..@');
     }
@@ -578,19 +584,19 @@ class URI
     }
 
     /**
-     *  \brief Codifica os parâmetros GET de uma URI.
+     * Codifica os parâmetros GET de uma URI.
      *
-     *  \param[in] $query Array contendo os parâmetros chave => valor
-     *  \param[in] $key Nome da chave para quando query possuir apenas os valores
-     *  \param[out] $param variável de retorno da query string
+     * @param string $query Array contendo os parâmetros chave => valor
+     * @param string $key   Nome da chave para quando query possuir apenas os valores
+     * @param string $param variável de retorno da query string
      *
-     *  \return Void
+     * @return void
      */
-    private static function encode_param($query, $key, &$param)
+    private static function encodeParam($query, $key, &$param)
     {
         foreach ($query as $var => $value) {
             if (is_array($value)) {
-                self::encode_param($value, $var.'['.key($value).']', $param);
+                self::encodeParam($value, $var.'['.key($value).']', $param);
             } else {
                 $param .= (empty($param) ? '?' : '&').($key ? $key : $var).'='.urlencode($value);
             }

@@ -1,19 +1,14 @@
 <?php
-/** @file
- *  Springy.
+/**
+ * Helper file - Functions and constants.
  *
- *  @brief      Helper file - Functions and constants.
+ * @copyright  2014 Fernando Val
+ * @author     Allan Marques <allan.marques@ymail.com>
+ * @author     Fernando Val <fernando.val@gmail.com>
  *
- *  @copyright  (c) 2007-2018 Fernando Val
- *  @author     Allan Marques - allan.marques@ymail.com
- *  @author     Fernando Val - fernando.val@gmail.com
+ * @version    4.0.0.12
  *
- *  @version    4.0.0.11
- *  @ingroup    framework
- */
-
-/*
- *  Let's make the developer happier and more productive.
+ * Let's make the developer happier and more productive.
  */
 
 /// Definig the constantes

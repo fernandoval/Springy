@@ -6,6 +6,16 @@
 
 A micro framework for smart PHP developers.
 
+> **WARNING!**
+>
+> This project will be deprecated soon.
+>
+> The new major release 5 is under development.
+>
+> It will be not compatible with version 4, but comes with several new features and enhancements.
+>
+> You can follow new project at https://github.com/springy-framework
+
 ## What is this
 
 Springy is a micro [MVC](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) framework for coders who work with the [PHP](http://www.php.net) script language to develop web applications.

@@ -7,7 +7,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version    2.4.1.82
+ * @version    2.4.2.83
  */
 
 namespace Springy;
@@ -496,7 +496,7 @@ class Kernel
                     $env = getenv($envar);
                 }
 
-                $env = empty($env) ? URI::http_host() : $env;
+                $env = empty($env) ? URI::httpHost() : $env;
                 if (empty($env)) {
                     $env = 'unknown';
                 }
@@ -658,8 +658,9 @@ class Kernel
             return;
         }
 
-        if (isset(self::$ignoredErrors[$error])) {
-            unset(self::$ignoredErrors[$error]);
+        if (in_array($error, self::$ignoredErrors)) {
+            $key = array_search($error, self::$ignoredErrors);
+            unset(self::$ignoredErrors[$key]);
         }
     }
 
