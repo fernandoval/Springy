@@ -1,11 +1,12 @@
 # Springy framework update history
 
-## Under development
+## Version 4
+
+## 4.2.0
 - Fixed bug in Kernel::delIgnoredError;
 - PSR fixes in URI class;
 - Method URI::http_host renamed to camel case format URI::httpHost
 
-## Version 4
 ### 4.1.0
 - New method templateObject in Template;
 - Implemented retries in connection fails for DB;
