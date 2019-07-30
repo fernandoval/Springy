@@ -7,13 +7,12 @@
  *
  * @see       https://github.com/sendgrid/sendgrid-php
  *
- * @version    3.2.0.8
+ * @version    3.2.0.9
  */
 
 namespace Springy\Mail;
 
 use Springy\Configuration;
-use Springy\Errors;
 
 /**
  * Driver class for use with SendGrid v7 class for integration with SendGrid API v3.
