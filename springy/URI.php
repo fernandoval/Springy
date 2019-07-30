@@ -7,7 +7,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.2.5.38
+ * @version   2.2.6.39
  */
 
 namespace Springy;
@@ -16,9 +16,9 @@ use Springy\Utils\Strings_ANSI;
 use Springy\Utils\Strings_UTF8;
 
 /**
- *  \brief Classe para tratamento de URI.
+ * Classe para tratamento de URI.
  *
- *  Esta classe é estática e invocada automaticamente pelo framework.
+ * Esta classe é estática e invocada automaticamente pelo framework.
  */
 class URI
 {
@@ -295,9 +295,9 @@ class URI
     }
 
     /**
-     *  \brief Return the name of the controller class.
+     * Returns the name of the controller class.
      *
-     *  \return A string with tha name of the controller class.
+     * @return string
      */
     public static function getControllerClass()
     {
@@ -315,7 +315,9 @@ class URI
     }
 
     /**
-     *  \brief Return the content of the segment which represent the current page.
+     * Returns the content of the segment which represent the current page.
+     *
+     * @return string
      */
     public static function currentPage()
     {
@@ -323,7 +325,9 @@ class URI
     }
 
     /**
-     *  \brief Return a string with the relative path to the current page.
+     * Returns a string with the relative path to the current page.
+     *
+     * @return string
      */
     public static function relativePathPage($consider_controller_root = false)
     {
@@ -336,7 +340,9 @@ class URI
     }
 
     /**
-     *  \brief Return a string with the path URL the current page (without the protocol).
+     * Returns a string with the path URL the current page (without the protocol).
+     *
+     * @return string
      */
     public static function currentPageURI()
     {
@@ -344,15 +350,16 @@ class URI
     }
 
     /**
-     *  \brief Define the segment of the current page.
+     * Defines the segment of the current page.
      *
-     *  \param[in] $segment_num integer with the number of the segment to fix as current page
-     *  \return \c true if exists a $segment_num relative to the current page in the array of segments or \c false if does not exists.
+     * @param int $segment integer with the number of the segment to fix as current page.
+     *
+     * @return bool true if exists a $segment relative to the current page in the array of segments or false if does not exists.
      */
-    public static function setCurrentPage($segment_num)
+    public static function setCurrentPage($segment)
     {
-        if (self::getSegment($segment_num, false)) {
-            self::$segment_page = $segment_num;
+        if (self::getSegment($segment, false)) {
+            self::$segment_page = $segment;
 
             return true;
         }
@@ -361,40 +368,42 @@ class URI
     }
 
     /**
-     *  \brief Get any segment of the URI.
+     * Gets any segment of the URI.
      *
-     *  \param[in] $segment_num is an integer with the number of the segment desired.
-     *  \param[in] $relative_to_page is a boolean value to determine if the desired segment is relative to the
-     *      current page (default = true) or the begin (false) of the array of segments.
-     *  \param[in] $consider_controller_root is a boolean value to determine if the number of segments of the
-     *      root path of contollers must be decremented (true) or not (false = default).
-     *  \return the value of the segment or \c false if it does not exists.
+     * @param int  $segment  is an integer with the number of the segment desired.
+     * @param bool $rel2Page is a boolean value to determine if the desired segment is relative to the
+     *                       current page (default = true) or the begin (false) of the array of segments.
+     * @param bool $decRoot  is a boolean value to determine if the number of segments of the
+     *                       root path of contollers must be decremented (true) or not (false = default).
+     *
+     * @return mixed the value of the segment or false if it does not exists.
      */
-    public static function getSegment($segment_num, $relative_to_page = true, $consider_controller_root = false)
+    public static function getSegment($segment, $rel2Page = true, $decRoot = false)
     {
-        if ($relative_to_page) {
-            $segment_num += (1 + self::$segment_page);
+        if ($rel2Page) {
+            $segment += (1 + self::$segment_page);
         }
-        if ($consider_controller_root) {
-            $segment_num -= count(Kernel::controllerRoot());
+        if ($decRoot) {
+            $segment -= count(Kernel::controllerRoot());
         }
-        if (array_key_exists($segment_num, self::$segments)) {
-            return self::$segments[$segment_num];
+        if (array_key_exists($segment, self::$segments)) {
+            return self::$segments[$segment];
         }
 
         return false;
     }
 
     /**
-     *  \brief Get any ignored segment of the URI.
+     * Gets any ignored segment of the URI.
      *
-     *  \param[in] $segment_num is an \c integer with the number of the segment desired.
-     *  \return the value of the segment or \c false if it does not exists.
+     * @param int $segment
+     *
+     * @return mixed the value of the segment or false if it does not exists.
      */
-    public static function getIgnoredSegment($segment_num)
+    public static function getIgnoredSegment($segment)
     {
-        if (array_key_exists($segment_num, self::$ignored_segments)) {
-            return self::$ignored_segments[$segment_num];
+        if (array_key_exists($segment, self::$ignored_segments)) {
+            return self::$ignored_segments[$segment];
         }
 
         return false;
@@ -411,7 +420,9 @@ class URI
     }
 
     /**
-     *  \brief Return the array of ignored segments.
+     * Returns the array of ignored segments.
+     *
+     * @return array
      */
     public static function getAllIgnoredSegments()
     {
@@ -419,9 +430,9 @@ class URI
     }
 
     /**
-     *  \brief Add a segment to the end of segments array.
+     * Adds a segment to the end of segments array.
      *
-     *  \param[in] $segment is an string with segment to be added to the end of the array of segments.
+     * @param string $segment is an string with segment to be added to the end of the array of segments.
      */
     public static function addSegment($segment)
     {
@@ -435,10 +446,12 @@ class URI
     }
 
     /**
-     *  \brief Insert a segment in any position of the segments array.
+     * Inserts a segment in any position of the segments array.
      *
-     *  \param[in] (int) $position integer with the position where the segment must be inserted.
-     *  \param[in] (string) $segment string with segment to be inserted.
+     * @param int    $position integer with the position where the segment must be inserted.
+     * @param string $segment  string with segment to be inserted.
+     *
+     * @return bool
      */
     public static function insertSegment($position, $segment)
     {
@@ -452,10 +465,11 @@ class URI
     }
 
     /**
-     *  \brief Return the value of a query string variable.
+     * Returns the value of a query string variable.
      *
-     *  \param[i] $var is the name of the query string variable desired.
-     *  \return the value of the variable or \c false if it does not exists.
+     * @param string $var is the name of the query string variable desired.
+     *
+     * @return mixed the value of the variable or false if it does not exists.
      */
     public static function _GET($var)
     {
@@ -476,7 +490,7 @@ class URI
     }
 
     /**
-     *  \brief Return the array of query string variables.
+     * Returns the array of query string variables.
      */
     public static function getParams()
     {
@@ -484,7 +498,7 @@ class URI
     }
 
     /**
-     *  \brief Return the request method string.
+     * Returns the request method string.
      */
     public static function requestMethod()
     {
@@ -492,9 +506,9 @@ class URI
     }
 
     /**
-     *  \brief Remove a variable from the array of query string variables.
+     * Removes a variable from the array of query string variables.
      *
-     *  \param[in] $var is the name of the query string variable to be deleted.
+     * @param string $var the name of the query string variable to be deleted.
      */
     public static function removeParam($var)
     {
@@ -502,10 +516,10 @@ class URI
     }
 
     /**
-     *  \brief Set value to a query string parameter.
+     * Sets value to a query string parameter.
      *
-     *  \param[in] $var is the name of the query string variable
-     *  \param[in] $value is the value to be assigned to the variable.
+     * @param string $var   the name of the query string variable.
+     * @param mixed  $value the value to be assigned to the variable.
      */
     public static function setParam($var, $value)
     {
@@ -513,19 +527,21 @@ class URI
     }
 
     /**
-     *  \brief Return the string of an URI with the received parameters.
+     * Returns the string of an URI with the received parameters.
      *
-     *  \param[in] $segments is an \c array with the segments of the URL.
-     *  \param[in] $query is an \c array with the query string variables.
-     *  \param[in] $forceRewrite is a \c boolean value to define if URI will be writed in
-     *      URL redirection form (user frendly - SEF) forced or the value of configuration will be used to it.
-     *  \param[in] $include_ignores_segments is a \c boolean value to define if URI will receive the ignored segments as prefix (default = \c true).
+     * @param array  $segments       the segments of the URL.
+     * @param array  $query          the query string variables.
+     * @param bool   $forceRewrite   define if URI will be writed in
+     *                               URL redirection form (user frendly - SEF)
+     *                               forced or the value of configuration will be used to it.
+     * @param string $host           the configuration host name.
+     * @param bool   $addIgnoredSgms define if URI will receive the ignored segments as prefix (default = true).
      *
      *  \return an URI.
      */
-    public static function buildURL($segments = [], $query = [], $forceRewrite = false, $host = 'dynamic', $include_ignores_segments = true)
+    public static function buildURL($segments = [], $query = [], $forceRewrite = false, $host = 'dynamic', $addIgnoredSgms = true)
     {
-        if ($include_ignores_segments) {
+        if ($addIgnoredSgms) {
             $segments = array_merge(self::$ignored_segments, is_array($segments) ? $segments : [$segments]);
         }
 
@@ -560,7 +576,7 @@ class URI
      */
     public static function httpHost()
     {
-        return trim(preg_replace('/([^:]+)(:\\d+)?/', '$1'.((isset($GLOBALS['SYSTEM']['CONSIDER_PORT_NUMBER']) && $GLOBALS['SYSTEM']['CONSIDER_PORT_NUMBER']) ? '$2' : ''), isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : ''), ' ..@');
+        return trim(preg_replace('/([^:]+)(:\\d+)?/', '$1'.((sysconf('CONSIDER_PORT_NUMBER') !== null && sysconf('CONSIDER_PORT_NUMBER')) ? '$2' : ''), isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : ''), ' ..@');
     }
 
     /**
@@ -604,13 +620,12 @@ class URI
     }
 
     /**
-     *  \brief Set a redirect status header and finish the application.
+     * Sets a redirect status header and finish the application.
      *
-     *  This method sends the status header with a URI redirection to the user browser and finish the application execution.
+     * This method sends the status header with a URI redirection to the user browser and finish the application execution.
      *
-     *  \param[in] $url is a string with the URI.
-     *  \param[in] $header is an integer value with the redirection code (default = 302).\n
-     *      (302 = permanente, 301 = temporário).
+     * @param string $url    the URI.
+     * @param int    $header the redirection code (default = 302).
      */
     public static function redirect($url, $header = 302)
     {
@@ -632,14 +647,14 @@ class URI
     }
 
     /**
-     *  \brief Generate a slug, removing the accented and special characters from a string and convert spaces into minus symbol.
+     * Generates a slug, removing the accented and special characters from a string and convert spaces into minus symbol.
      *
-     *  \param[in] $txt is a \c string with the text to be converted to slug format.
-     *  \paran[in] $space is a \c string with the character used as word separator. (default = '-')
-     *  \param[in] $accept is a \c string with other characters to be added to regular expression of accpted characters is slug.
-     *  \param[in] $lowercase is a \c boolean value that determine if the slug will be returned as lowercase string or as is.
+     * @param string $txt       the text to be converted to slug format.
+     * @param string $space     the character used as word separator (default = '-').
+     * @param string $accept    other characters to be added to regular expression of accpted characters is slug.
+     * @param bool   $lowercase determine if the slug will be returned as lowercase string or as is.
      *
-     *  \return the slug string.
+     * @return string
      */
     public static function makeSlug($txt, $space = '-', $accept = '', $lowercase = true)
     {
