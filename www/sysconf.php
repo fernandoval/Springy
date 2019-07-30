@@ -5,7 +5,7 @@
  * @copyright 2007 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
  *
- * @version   3.4.1.20
+ * @version   3.4.2.21
  */
 $GLOBALS['SYSTEM'] = [
     'SYSTEM_NAME'       => 'Your system name',
@@ -24,23 +24,23 @@ $GLOBALS['SYSTEM'] = [
     ],
 
     // Web server doc root directory
-    'ROOT_PATH'      => realpath(dirname(__FILE__)),
+    'ROOT_PATH'      => realpath(__DIR__),
     // Project root directory
-    'PROJECT_PATH'   => realpath(dirname(__FILE__).DIRECTORY_SEPARATOR.'..'),
+    'PROJECT_PATH'   => realpath(__DIR__.DIRECTORY_SEPARATOR.'..'),
     // Springy library directory
-    'SPRINGY_PATH'   => realpath(dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'springy'),
+    'SPRINGY_PATH'   => realpath(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'springy'),
     // Configuration directory
-    'CONFIG_PATH'    => realpath(dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'conf'),
+    'CONFIG_PATH'    => realpath(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'conf'),
     // Application directory
-    'APP_PATH'       => realpath(dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'app'),
+    'APP_PATH'       => realpath(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'app'),
     'CONTROLER_PATH' => '',
     'CLASS_PATH'     => '',
     // Directory where the system writes data during the course of its operation
-    'VAR_PATH'       => realpath(dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'var'),
+    'VAR_PATH'       => realpath(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'var'),
     // Directory for the subdirectories with migration scripts
-    'MIGRATION_PATH' => realpath(dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'migration'),
+    'MIGRATION_PATH' => realpath(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'migration'),
     /// Vendor directory
-    'VENDOR_PATH'    => realpath(dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'vendor'),
+    'VENDOR_PATH'    => realpath(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'vendor'),
 ];
 
 /// Diretório das controladoras

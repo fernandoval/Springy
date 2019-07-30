@@ -2,6 +2,10 @@
 
 ## Version 4
 
+## 4.2.1
+- Fixed SendGrid SDK version;
+- Other enhancements and adjustments.
+
 ## 4.2.0
 - Fixed bug in Kernel::delIgnoredError;
 - PSR fixes in URI class;

@@ -6,14 +6,13 @@
  *  \copyright  ₢ 2007-2016 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *  \see        http://swiftmailer.org/
- *  \version    2.1.0.6
+ *  \version    2.1.0.7
  *  \ingroup    framework
  */
 
 namespace Springy\Mail;
 
 use Springy\Configuration;
-use Springy\Errors;
 use Springy\Kernel;
 
 /**
