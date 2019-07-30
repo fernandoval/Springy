@@ -6,7 +6,7 @@
  * @author     Allan Marques <allan.marques@ymail.com>
  * @author     Fernando Val <fernando.val@gmail.com>
  *
- * @version    4.0.0.12
+ * @version    4.0.0.13
  *
  * Let's make the developer happier and more productive.
  */
@@ -67,7 +67,7 @@ function config_set($key, $val)
  */
 function sysconf($key)
 {
-    return $GLOBALS['SYSTEM'][$key];
+    return $GLOBALS['SYSTEM'][$key] ?? null;
 }
 
 /**

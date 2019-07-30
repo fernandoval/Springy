@@ -1,31 +1,11 @@
 <?php
-/** @file
- *  Springy.
+/**
+ * Springy web launcher script.
  *
- *  @brief      System initialization script.
+ * @copyright 2007 Fernando Val
+ * @author    Fernando Val <fernando.val@gmail.com>
  *
- *  @copyright  ₢ 2007-2018 Fernando Val
- *  @author     Fernando Val - fernando.val@gmail.com
- *
- *  @version    5.0.0.33
- *
- *  @defgroup framework Framework library
- *  @{
- *  @}
- *  @defgroup config Configurations
- *  @{
- *  @}
- *  @defgroup controllers Application controllers
- *  @{
- *  @}
- *  @defgroup app_classes Application classes and models
- *  @{
- *  @}
- *  @defgroup templates Template files
- *  @{
- *  @}
- *
- *  @ingroup framework
+ * @version    5.0.1.34
  */
 $springyStartTime = microtime(true); // Memoriza a hora do início do processamento
 
@@ -41,8 +21,8 @@ require 'sysconf.php';
 require 'helpers.php';
 
 // Load Composer autoload
-if (file_exists($GLOBALS['SYSTEM']['VENDOR_PATH'].DIRECTORY_SEPARATOR.'autoload.php')) {
-    require $GLOBALS['SYSTEM']['VENDOR_PATH'].DIRECTORY_SEPARATOR.'autoload.php';
+if (file_exists(sysconf('VENDOR_PATH').DS.'autoload.php')) {
+    require sysconf('VENDOR_PATH').DS.'autoload.php';
 }
 
 // System start

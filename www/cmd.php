@@ -1,13 +1,12 @@
 #!/usr/bin/php
 <?php
-/** \file
- *  Springy.
+/**
+ * Command line launcher.
  *
- *	\brief      Script de execução via shell para crontab
- *  \copyright  ₢ 2007-2016 Fernando Val
- *  \author     Fernando Val - fernando.val@gmail.com
- *  \version    2.0.0.10
- *  \ingroup    framework
+ * @copyright 2007 Fernando Val
+ * @author    Fernando Val <fernando.val@gmail.com>
+ *
+ * @version 2.0.1.11
  */
 if (!file_exists('sysconf.php')) {
     echo 'Internal System Error on Startup.',"\n";
@@ -26,7 +25,7 @@ if (!defined('STDIN') || empty($argc)) {
 if ($argc < 2) {
     require 'sysconf.php';
 
-    echo $GLOBALS['SYSTEM']['SYSTEM_NAME'].' v'.$GLOBALS['SYSTEM']['SYSTEM_VERSION']."\n";
+    echo sysconf('SYSTEM_NAME').' v'.sysconf('SYSTEM_VERSION')."\n";
     echo "\n";
     echo 'ERROR: Controller command missing.',"\n";
     echo "\n";
