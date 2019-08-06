@@ -83,7 +83,6 @@
  *
  *  \see uricfg
  */
-/**@{*/
 
 /// Configurações para todos os ambientes
 $conf = [
@@ -111,5 +110,3 @@ $conf = [
     'ignored_segments' => 0,
     'assets_dir' => 'assets',
 ];
-
-/**@}*/
