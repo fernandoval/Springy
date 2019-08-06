@@ -140,13 +140,19 @@ class Debug
         if (!defined('STDIN') && Configuration::get('system', 'debug') == true && !Configuration::get('system', 'sys_ajax')) {
             $size = memory_get_peak_usage(true);
             $unit = ['b', 'KB', 'MB', 'GB', 'TB', 'PB'];
-            $memoria = round($size / pow(1024, ($idx = floor(log($size, 1024)))), 2).' '.$unit[$idx];
+            $mem = round($size / pow(1024, ($idx = floor(log($size, 1024)))), 2).' '.$unit[$idx];
             unset($unit, $size);
 
-            self::add('Runtime execution time: '.Kernel::runTime().' seconds'."\n".'Maximum memory consumption: '.$memoria, '', true, false);
-            unset($memoria);
+            self::add(
+                'Runtime execution time: '.
+                Kernel::runTime().
+                ' seconds'."\n".
+                'Maximum memory consumption: '.$mem,
+                '', true, false
+            );
+            unset($mem);
 
-            $conteudo = ob_get_contents();
+            $content = ob_get_contents();
             ob_clean();
 
             $debugTemplate = dirname(realpath(__FILE__)).DIRECTORY_SEPARATOR.'debug_template.html';
@@ -154,13 +160,16 @@ class Debug
                 $htmlDebug = preg_replace(['/<!-- DEBUG CONTENT \(.+\) -->/mu', '~<!--.*?-->~s', '!/\*.*?\*/!s', "/\n\s+/", "/\n(\s*\n)+/", "!\n//.*?\n!s", "/\n\}(.+?)\n/", "/\}\s+/", "/,\n/", "/>\n/", "/\{\s*?\n/", "/\}\n/", "/;\n/"], [self::get(), '', '', "\n", "\n", "\n", "}\\1\n", '}', ', ', '>', '{', '} ', ';'], $htmlDebug);
             }
 
-            if (preg_match('/<\/body>/', $conteudo)) {
-                echo preg_replace('/<\/body>/', $htmlDebug.'</body>', $conteudo);
+            if (preg_match('/<\/body>/', $content)) {
+                echo preg_replace('/<\/body>/', $htmlDebug.'</body>', $content);
 
                 return;
             }
 
-            echo preg_replace('/^(.*?)$/', '<script type="text/javascript" src="'.URI::buildURL([Configuration::get('uri', 'js_dir')], [], true, 'static').'/jquery.js"></script>'.$htmlDebug.'\\1', $conteudo);
+            echo preg_replace(
+                '/^(.*?)$/', '<script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js"></script>'.
+                $htmlDebug.'\\1', $content
+            );
         }
     }
 

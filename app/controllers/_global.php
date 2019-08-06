@@ -1,12 +1,11 @@
 <?php
-/** \file
- *  \brief Startup global and hook controller.
+/**
+ * Startup global and hook controller.
  *
- *  This controller is always constructed by the framework befor the application controller.
+ * This controller is always constructed by the framework befor the application controller.
  *
- *  \copyright  ₢ 2007-2016 Fernando Val.
- *  \author     Fernando Val - fernando.val@gmail.com
- *  \ingroup    controllers
+ * @copyright 2007 Fernando Val.
+ * @author    Fernando Val <fernando.val@gmail.com>
  */
 use Springy\Configuration;
 use Springy\Kernel;
@@ -26,10 +25,10 @@ class Global_Controller
     }
 
     /**
-     *  \brief Initiate all application dependecies.
+     * Initiates all application dependecies.
      *
-     *  This method starts all application dependencies, used by some framework libraries and you application.
-     *  You can change its content, but try no remove our code.
+     * This method starts all application dependencies, used by some framework libraries and you application.
+     * You can change its content, but try no remove our code.
      */
     private function bindDefaultDependencies()
     {
@@ -68,10 +67,10 @@ class Global_Controller
     }
 
     /**
-     *  \brief Initialize all default global template variables.
+     * Initializes all default global template variables.
      *
-     *  This method set values to all template variables used by default for any system template.
-     *  You can change it how you want.
+     * This method set values to all template variables used by default for any system template.
+     * You can change it how you want.
      */
     private function bindDefaultTemplateVars()
     {
@@ -79,7 +78,6 @@ class Global_Controller
         Kernel::assignTemplateVar('HTTPS', isset($_SERVER['HTTPS']));
 
         // Inicializa as URLs estáticas
-        Kernel::assignTemplateVar('urlJS', URI::buildURL([Configuration::get('uri', 'js_dir')], [], true, 'static'));
         Kernel::assignTemplateVar('urlCSS', URI::buildURL([Configuration::get('uri', 'css_dir')], [], true, 'static'));
         Kernel::assignTemplateVar('urlIMG', URI::buildURL([Configuration::get('uri', 'images_dir')], [], true, 'static'));
         Kernel::assignTemplateVar('urlSWF', URI::buildURL([Configuration::get('uri', 'swf_dir')], [], true, 'static'));
@@ -100,18 +98,23 @@ class Global_Controller
 }
 
 /**
- *  \brief Only a simple template function.
+ * Sample for a simple template function.
  *
- *  This is a sample of how to create a template function form Smarty.
+ * This is a sample of how to create a template function form Smarty.
+ *
+ * @param array  $params
+ * @param Object $smarty
+ *
+ * @return string
  */
 function sampleTemplateFunction($params, $smarty)
 {
     // $params is an assay of parameters passed to the function.
     // $smarty is the Smarty object.
-    foreach ($params as $var => $value) {
-        // $var is the variable name
-        // $value is the variable value
-    }
+    // foreach ($params as $var => $value) {
+    //     $var is the variable name
+    //     $value is it value
+    // }
 
     return 'ok';
 }
