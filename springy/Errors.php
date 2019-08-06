@@ -9,7 +9,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   3.0.6.47
+ * @version   3.0.6.48
  */
 
 namespace Springy;
@@ -485,8 +485,6 @@ class Errors
                 }
                 if (isset($tpl) && $tpl->templateExists($tplName)) {
                     $tpl->setTemplate($tplName);
-
-                    $tpl->assign('urlCSS', URI::buildURL([Configuration::get('uri', 'css_dir')], [], isset($_SERVER['HTTPS']), 'static'));
 
                     $tpl->assign('errorDebug', (Configuration::get('system', 'debug') ? $msg : ''));
 

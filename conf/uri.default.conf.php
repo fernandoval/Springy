@@ -102,16 +102,14 @@ $conf = [
     // URLs comuns do site
     'common_urls'                     => [
         'urlAssets' => [['assets'], [], false, 'static', true],
-        'urlCSS'    => [['assets', 'css'], [], false, 'static', true],
         'urlHome'   => [[]],
         'urlLogin'  => [['login'], [], false, 'secure', true],
         'urlLogout' => [['logout'], [], false, 'secure', true],
     ],
-    'redirect_last_slash'             => true,
-    'force_slash_on_index'            => true,
-    'ignored_segments'                => 0,
-    'assets_dir'                      => 'assets',
-    'css_dir'                         => 'css',
+    'redirect_last_slash' => true,
+    'force_slash_on_index' => true,
+    'ignored_segments' => 0,
+    'assets_dir' => 'assets',
 ];
 
 /**@}*/

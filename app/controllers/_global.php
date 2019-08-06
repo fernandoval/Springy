@@ -77,9 +77,6 @@ class Global_Controller
         // Informa para o template se o site está com SSL
         Kernel::assignTemplateVar('HTTPS', isset($_SERVER['HTTPS']));
 
-        // Inicializa as URLs estáticas
-        Kernel::assignTemplateVar('urlCSS', URI::buildURL([Configuration::get('uri', 'css_dir')], [], true, 'static'));
-
         // Sample how to define a template function
         Kernel::registerTemplateFunction('function', 'sampleFunction', 'sampleTemplateFunction');
 

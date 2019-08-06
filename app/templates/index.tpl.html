@@ -6,17 +6,15 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-		
+
 		<title>{$SYSTEM_NAME} ({$SYSTEM_VERSION})</title>
-		
+
 		<!-- Bootstrap -->
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
-		
+
 		{* Essa é uma boa forma de carregar arquivos estáticos como JS e CSS. Usando esse plugin de template, os arquivos serão recarregados quando você escrever novas versões deles *}
 		{* <script type="stylesheet" src="{assetFile file='css/admin.css'}"></script> *}
-		{* Esse formato também é eficiente, mas seus arquivos serão cacheados pelo navegador do usuário e você terá problema quando publicar uma nova versão deles *}
-		{* <script type="text/javascript" src="{$urlCSS}/tinymce_style.js"></script> *}
-		
+
 		<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
 		<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 		<!--[if lt IE 9]>
@@ -26,7 +24,7 @@
 	</head>
 	<body>
 		<h1>{$SYSTEM_NAME} ({$SYSTEM_VERSION})</h1>
-		
+
 		<div class="container text-center">
 			<p><strong>Congratulations!</strong></p>
 			<p></p>
@@ -34,7 +32,7 @@
 			<p>Your system is running at address <a href="{$urlCurrentURL}">{$urlCurrentURL}</a></p>
 			<p>Currente date: {$date}</p>
 		</div>
-	
+
 		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 		<!-- Latest compiled and minified JavaScript -->
