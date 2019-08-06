@@ -7,7 +7,6 @@
  * @copyright 2007 Fernando Val.
  * @author    Fernando Val <fernando.val@gmail.com>
  */
-use Springy\Configuration;
 use Springy\Kernel;
 use Springy\URI;
 
