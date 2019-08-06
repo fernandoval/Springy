@@ -113,7 +113,6 @@ $conf = [
     'assets_dir'                      => 'assets',
     'css_dir'                         => 'css',
     'images_dir'                      => 'images',
-    'swf_dir'                         => 'swf',
 ];
 
 /**@}*/

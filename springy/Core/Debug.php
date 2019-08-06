@@ -1,26 +1,20 @@
 <?php
-/** @file
- *  Springy.
+/**
+ * Framework debug.
  *
- *  @brief      Framework debug class.
+ * @copyright 2007 Fernando Val
+ * @author    Fernando Val <fernando.val@gmail.com>
  *
- *  @copyright  ₢ 2007-2018 Fernando Val
- *  @author     Fernando Val - fernando.val@gmail.com
- *
- *  @version    1.0.2.6
- *  @ingroup    framework
+ * @version    1.0.3.8
  */
 
 namespace Springy\Core;
 
 use Springy\Configuration;
 use Springy\Kernel;
-use Springy\URI;
 
 /**
- *  @brief Framework debug class.
- *
- *  @warning This is a static class and can not be instantiated by user.
+ * Framework debug class.
  */
 class Debug
 {

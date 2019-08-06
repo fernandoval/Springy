@@ -80,7 +80,6 @@ class Global_Controller
         // Inicializa as URLs estáticas
         Kernel::assignTemplateVar('urlCSS', URI::buildURL([Configuration::get('uri', 'css_dir')], [], true, 'static'));
         Kernel::assignTemplateVar('urlIMG', URI::buildURL([Configuration::get('uri', 'images_dir')], [], true, 'static'));
-        Kernel::assignTemplateVar('urlSWF', URI::buildURL([Configuration::get('uri', 'swf_dir')], [], true, 'static'));
 
         // Sample how to define a template function
         Kernel::registerTemplateFunction('function', 'sampleFunction', 'sampleTemplateFunction');
@@ -103,7 +102,7 @@ class Global_Controller
  * This is a sample of how to create a template function form Smarty.
  *
  * @param array  $params
- * @param Object $smarty
+ * @param object $smarty
  *
  * @return string
  */
