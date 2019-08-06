@@ -9,7 +9,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   3.0.5.44
+ * @version   3.0.6.48
  */
 
 namespace Springy;
@@ -485,11 +485,6 @@ class Errors
                 }
                 if (isset($tpl) && $tpl->templateExists($tplName)) {
                     $tpl->setTemplate($tplName);
-
-                    $tpl->assign('urlJS', URI::buildURL([Configuration::get('uri', 'js_dir')], [], isset($_SERVER['HTTPS']), 'static'));
-                    $tpl->assign('urlCSS', URI::buildURL([Configuration::get('uri', 'css_dir')], [], isset($_SERVER['HTTPS']), 'static'));
-                    $tpl->assign('urlIMG', URI::buildURL([Configuration::get('uri', 'images_dir')], [], isset($_SERVER['HTTPS']), 'static'));
-                    $tpl->assign('urlSWF', URI::buildURL([Configuration::get('uri', 'swf_dir')], [], isset($_SERVER['HTTPS']), 'static'));
 
                     $tpl->assign('errorDebug', (Configuration::get('system', 'debug') ? $msg : ''));
 

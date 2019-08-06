@@ -7,7 +7,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version    2.4.3.84
+ * @version    2.4.3.85
  */
 
 namespace Springy;
@@ -20,7 +20,7 @@ namespace Springy;
 class Kernel
 {
     /// Versão do framework
-    const VERSION = '4.2.1';
+    const VERSION = '4.2.2';
 
     /// Path constants
     const PATH_PROJECT = 'PROJ';

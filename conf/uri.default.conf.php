@@ -83,7 +83,6 @@
  *
  *  \see uricfg
  */
-/**@{*/
 
 /// Configurações para todos os ambientes
 $conf = [
@@ -102,20 +101,12 @@ $conf = [
     // URLs comuns do site
     'common_urls'                     => [
         'urlAssets' => [['assets'], [], false, 'static', true],
-        'urlCSS'    => [['assets', 'css'], [], false, 'static', true],
-        'urlJS'     => [['assets', 'js'], [], false, 'static', true],
         'urlHome'   => [[]],
         'urlLogin'  => [['login'], [], false, 'secure', true],
         'urlLogout' => [['logout'], [], false, 'secure', true],
     ],
-    'redirect_last_slash'             => true,
-    'force_slash_on_index'            => true,
-    'ignored_segments'                => 0,
-    'assets_dir'                      => 'assets',
-    'js_dir'                          => 'js',
-    'css_dir'                         => 'css',
-    'images_dir'                      => 'images',
-    'swf_dir'                         => 'swf',
+    'redirect_last_slash' => true,
+    'force_slash_on_index' => true,
+    'ignored_segments' => 0,
+    'assets_dir' => 'assets',
 ];
-
-/**@}*/
