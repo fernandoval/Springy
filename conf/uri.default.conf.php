@@ -112,7 +112,6 @@ $conf = [
     'ignored_segments'                => 0,
     'assets_dir'                      => 'assets',
     'css_dir'                         => 'css',
-    'images_dir'                      => 'images',
 ];
 
 /**@}*/
