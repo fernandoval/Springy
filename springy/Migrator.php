@@ -307,7 +307,7 @@ class Migrator extends DB
         }
 
         $this->output('');
-        $this->output(self::CS_INFORMATION.'Starting migration proccess.');
+        $this->output(self::CS_INFORMATION.'Starting migration process.');
 
         if (empty($this->mustByApplied)) {
             $this->showCurrentStatus();
@@ -385,7 +385,7 @@ class Migrator extends DB
         }
 
         $this->output('');
-        $this->output(self::CS_INFORMATION.'Starting rollback proccess until revision #'.self::CS_WARNING.$target);
+        $this->output(self::CS_INFORMATION.'Starting rollback process until revision #'.self::CS_WARNING.$target);
 
         foreach ($revisions as $revision) {
             // Hit target?
