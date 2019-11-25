@@ -62,21 +62,21 @@ class MediatorTest extends TestCase
         $dataToChange = [];
 
         for ($i = 0; $i < 5; $i++) {
-            $dataToChange[$i] = 'not-changed'.$i;
+            $dataToChange[$i] = 'not-changed' . $i;
 
             $this->mediator->on('global.event', function () use (&$dataToChange, $i) {
-                $dataToChange[$i] = 'has-changed'.$i;
+                $dataToChange[$i] = 'has-changed' . $i;
             });
         }
 
         for ($i = 0; $i < 5; $i++) {
-            $this->assertEquals('not-changed'.$i, $dataToChange[$i]);
+            $this->assertEquals('not-changed' . $i, $dataToChange[$i]);
         }
 
         $this->mediator->fire('global.event');
 
         for ($i = 0; $i < 5; $i++) {
-            $this->assertEquals('has-changed'.$i, $dataToChange[$i]);
+            $this->assertEquals('has-changed' . $i, $dataToChange[$i]);
         }
     }
 
@@ -112,7 +112,7 @@ class MediatorTest extends TestCase
         $toChange = '';
 
         $this->mediator->on('event', function ($arg1, $arg2) use (&$toChange) {
-            $toChange = $arg1.$arg2;
+            $toChange = $arg1 . $arg2;
         });
 
         $this->mediator->fire('event', ['has-', 'changed']);

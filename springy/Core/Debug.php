@@ -84,18 +84,18 @@ class Debug
                 }
 
                 $line = sprintf('[%05d]', $backtrace['line']);
-                $result .= '<li style="margin-bottom: 5px; '.($htmlLI + 1 < count($aDados) ? 'border-bottom:1px dotted #000; padding-bottom:5px' : '').'"><span><b>'.$line.'</b>&nbsp;<b>'.$backtrace['file'].'</b></span><br />'.$backtrace['content'];
+                $result .= '<li style="margin-bottom: 5px; ' . ($htmlLI + 1 < count($aDados) ? 'border-bottom:1px dotted #000; padding-bottom:5px' : '') . '"><span><b>' . $line . '</b>&nbsp;<b>' . $backtrace['file'] . '</b></span><br />' . $backtrace['content'];
 
                 if (count($backtrace['args'])) {
-                    $aid = 'args_'.mt_rand().str_replace('.', '', current(explode(' ', microtime())));
-                    $result .= '<br /><a href="javascript:;" onClick="var obj=$(\'#'.$aid.'\').toggle()" style="color:#06c; margin:3px 0">arguments passed to function</a>'.(is_array($backtrace['args']) ? '<div id="'.$aid.'" style="display:none">'.self::print_rc($backtrace['args']).'</div>' : $backtrace['args']);
+                    $aid = 'args_' . mt_rand() . str_replace('.', '', current(explode(' ', microtime())));
+                    $result .= '<br /><a href="javascript:;" onClick="var obj=$(\'#' . $aid . '\').toggle()" style="color:#06c; margin:3px 0">arguments passed to function</a>' . (is_array($backtrace['args']) ? '<div id="' . $aid . '" style="display:none">' . self::print_rc($backtrace['args']) . '</div>' : $backtrace['args']);
                 }
                 $result .= '      </li>';
                 $htmlLI++;
             }
         }
 
-        return $result.'</ul>';
+        return $result . '</ul>';
     }
 
     /**
@@ -107,17 +107,17 @@ class Debug
     {
         $return = [];
         foreach (self::$debug as $debug) {
-            $did = 'debug_'.mt_rand().str_replace('.', '', current(explode(' ', microtime())));
+            $did = 'debug_' . mt_rand() . str_replace('.', '', current(explode(' ', microtime())));
 
             $unit = ['b', 'KB', 'MB', 'GB', 'TB', 'PB'];
-            $memoria = round($debug[0] / pow(1024, ($idx = floor(log($debug[0], 1024)))), 2).' '.$unit[$idx];
+            $memoria = round($debug[0] / pow(1024, ($idx = floor(log($debug[0], 1024)))), 2) . ' ' . $unit[$idx];
 
-            $return[] = '<div class="Spring-Debug-Info">'.
-                        '<p>'.($debug[1] ? $debug[1].' - ' : '').'Allocated Memory: '.$memoria.'</p>'.
-                        '<div> '.($debug[2] ? self::print_rc($debug[3]) : $debug[3]).'</div>'.
-                        '<div>'.
-                        '<div class="Spring-Debug-Backtrace-Button"><a href="javascript:;" onclick="var obj=$(\'#'.$did.'\').toggle()">open debug backtrace</a></div>'.
-                        '<div class="Spring-Debug-Backtrace-Data" id="'.$did.'" style="display:none" class="Spring-Debug-Backtrace">'.self::backtrace($debug[4]).'</div></div>'.
+            $return[] = '<div class="Spring-Debug-Info">' .
+                        '<p>' . ($debug[1] ? $debug[1] . ' - ' : '') . 'Allocated Memory: ' . $memoria . '</p>' .
+                        '<div> ' . ($debug[2] ? self::print_rc($debug[3]) : $debug[3]) . '</div>' .
+                        '<div>' .
+                        '<div class="Spring-Debug-Backtrace-Button"><a href="javascript:;" onclick="var obj=$(\'#' . $did . '\').toggle()">open debug backtrace</a></div>' .
+                        '<div class="Spring-Debug-Backtrace-Data" id="' . $did . '" style="display:none" class="Spring-Debug-Backtrace">' . self::backtrace($debug[4]) . '</div></div>' .
                         '</div>';
         }
 
@@ -134,14 +134,14 @@ class Debug
         if (!defined('STDIN') && Configuration::get('system', 'debug') == true && !Configuration::get('system', 'sys_ajax')) {
             $size = memory_get_peak_usage(true);
             $unit = ['b', 'KB', 'MB', 'GB', 'TB', 'PB'];
-            $mem = round($size / pow(1024, ($idx = floor(log($size, 1024)))), 2).' '.$unit[$idx];
+            $mem = round($size / pow(1024, ($idx = floor(log($size, 1024)))), 2) . ' ' . $unit[$idx];
             unset($unit, $size);
 
             self::add(
-                'Runtime execution time: '.
-                Kernel::runTime().
-                ' seconds'."\n".
-                'Maximum memory consumption: '.$mem,
+                'Runtime execution time: ' .
+                Kernel::runTime() .
+                ' seconds' . "\n" .
+                'Maximum memory consumption: ' . $mem,
                 '', true, false
             );
             unset($mem);
@@ -149,20 +149,20 @@ class Debug
             $content = ob_get_contents();
             ob_clean();
 
-            $debugTemplate = dirname(realpath(__FILE__)).DIRECTORY_SEPARATOR.'debug_template.html';
+            $debugTemplate = dirname(realpath(__FILE__)) . DIRECTORY_SEPARATOR . 'debug_template.html';
             if (file_exists($debugTemplate) && $htmlDebug = file_get_contents($debugTemplate)) {
                 $htmlDebug = preg_replace(['/<!-- DEBUG CONTENT \(.+\) -->/mu', '~<!--.*?-->~s', '!/\*.*?\*/!s', "/\n\s+/", "/\n(\s*\n)+/", "!\n//.*?\n!s", "/\n\}(.+?)\n/", "/\}\s+/", "/,\n/", "/>\n/", "/\{\s*?\n/", "/\}\n/", "/;\n/"], [self::get(), '', '', "\n", "\n", "\n", "}\\1\n", '}', ', ', '>', '{', '} ', ';'], $htmlDebug);
             }
 
             if (preg_match('/<\/body>/', $content)) {
-                echo preg_replace('/<\/body>/', $htmlDebug.'</body>', $content);
+                echo preg_replace('/<\/body>/', $htmlDebug . '</body>', $content);
 
                 return;
             }
 
             echo preg_replace(
-                '/^(.*?)$/', '<script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js"></script>'.
-                $htmlDebug.'\\1', $content
+                '/^(.*?)$/', '<script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js"></script>' .
+                $htmlDebug . '\\1', $content
             );
         }
     }
@@ -178,12 +178,12 @@ class Debug
     {
         if (is_object($par)) {
             if (method_exists($par, '__toString')) {
-                return str_replace('&lt;?php&nbsp;', '', str_replace('&nbsp;?&gt;', '', highlight_string('<?php '.var_export($par->__toString(), true), true)));
+                return str_replace('&lt;?php&nbsp;', '', str_replace('&nbsp;?&gt;', '', highlight_string('<?php ' . var_export($par->__toString(), true), true)));
             }
 
-            return (PHP_SAPI === 'cli' || defined('STDIN')) ? print_r($par, true) : '<pre>'.print_r($par, true).'</pre>';
+            return (PHP_SAPI === 'cli' || defined('STDIN')) ? print_r($par, true) : '<pre>' . print_r($par, true) . '</pre>';
         }
 
-        return str_replace('&lt;?php&nbsp;', '', str_replace('&nbsp;?&gt;', '', highlight_string('<?php '.print_r($par, true), true)));
+        return str_replace('&lt;?php&nbsp;', '', str_replace('&nbsp;?&gt;', '', highlight_string('<?php ' . print_r($par, true), true)));
     }
 }

@@ -218,7 +218,7 @@ class TwigDriver implements TemplateDriverInterface
      */
     public function isCached()
     {
-        return file_exists($this->tplObj->getCacheFilename($this->templateName.self::TPL_NAME_SUFIX));
+        return file_exists($this->tplObj->getCacheFilename($this->templateName . self::TPL_NAME_SUFIX));
     }
 
     /**
@@ -261,7 +261,7 @@ class TwigDriver implements TemplateDriverInterface
     public function fetch()
     {
         if (!$this->templateExists($this->templateName)) {
-            new Errors(404, $this->templateName.self::TPL_NAME_SUFIX);
+            new Errors(404, $this->templateName . self::TPL_NAME_SUFIX);
         }
 
         // Alimenta as variáveis CONSTANTES
@@ -297,7 +297,7 @@ class TwigDriver implements TemplateDriverInterface
             $this->tplObj->addFunction(new \Twig_SimpleFunction($func[1], $func[2]));
         }
 
-        return $this->tplObj->render($this->templateName.self::TPL_NAME_SUFIX, $vars);
+        return $this->tplObj->render($this->templateName . self::TPL_NAME_SUFIX, $vars);
     }
 
     /**
@@ -313,7 +313,7 @@ class TwigDriver implements TemplateDriverInterface
         if ($tpl === null) {
             // Pega o caminho relativo da página atual
             $path = URI::relativePathPage(true);
-            $this->setTemplate($path.(empty($path) ? '' : DIRECTORY_SEPARATOR).URI::getControllerClass());
+            $this->setTemplate($path . (empty($path) ? '' : DIRECTORY_SEPARATOR) . URI::getControllerClass());
 
             return;
         }
@@ -326,7 +326,7 @@ class TwigDriver implements TemplateDriverInterface
             $compile = substr($compile, 0, strrpos('/', $compile));
         }
 
-        $this->setCompileDir(Configuration::get('template', 'compiled_template_path').$compile);
+        $this->setCompileDir(Configuration::get('template', 'compiled_template_path') . $compile);
     }
 
     /**
@@ -455,7 +455,7 @@ class TwigDriver implements TemplateDriverInterface
      */
     public function templateExists($tplName)
     {
-        return $this->tplObj->getLoader()->exists($tplName.self::TPL_NAME_SUFIX);
+        return $this->tplObj->getLoader()->exists($tplName . self::TPL_NAME_SUFIX);
     }
 
     /**
@@ -467,9 +467,9 @@ class TwigDriver implements TemplateDriverInterface
      */
     public function assetFile($file, $host = 'static')
     {
-        $srcPath = Configuration::get('system', 'assets_source_path').DIRECTORY_SEPARATOR.$file;
-        $filePath = Configuration::get('system', 'assets_path').DIRECTORY_SEPARATOR.$file;
-        $fileURI = Configuration::get('uri', 'assets_dir').'/'.$file;
+        $srcPath = Configuration::get('system', 'assets_source_path') . DIRECTORY_SEPARATOR . $file;
+        $filePath = Configuration::get('system', 'assets_path') . DIRECTORY_SEPARATOR . $file;
+        $fileURI = Configuration::get('uri', 'assets_dir') . '/' . $file;
         $get = [];
 
         if (file_exists($srcPath) && (!file_exists($filePath) || filemtime($filePath) < filemtime($srcPath))) {

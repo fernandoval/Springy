@@ -30,13 +30,13 @@ class DBSelect extends DBExpression
 
         switch ($func) {
             case self::COUNT:
-                $col = 'COUNT('.$nome.')';
+                $col = 'COUNT(' . $nome . ')';
             break;
             case self::SUM:
-                $col = 'SUM('.$nome.')';
+                $col = 'SUM(' . $nome . ')';
             break;
             case self::DISTINCT:
-                $col = 'DISTINCT('.$nome.')';
+                $col = 'DISTINCT(' . $nome . ')';
             break;
             case self::CONCAT:
                 if (is_array($nome)) {
@@ -44,7 +44,7 @@ class DBSelect extends DBExpression
                 }
             break;
             case self::ROUND:
-                $col = 'ROUND(CAST('.$nome.' AS NUMERIC), '.$params[0].')';
+                $col = 'ROUND(CAST(' . $nome . ' AS NUMERIC), ' . $params[0] . ')';
             break;
             case self::LOWER:
                 $col = sprintf(self::LOWER, $nome);
@@ -53,23 +53,23 @@ class DBSelect extends DBExpression
                 $case = '';
 
                 foreach ($nome as $key => $arrValue) {
-                    $case .= "\n".'        '; // os espações correspondem ao \t (no caso são 2x)
+                    $case .= "\n" . '        '; // os espações correspondem ao \t (no caso são 2x)
 
                     if ($arrValue[1] == DBExpression::C_ELSE) {
-                        $case .= 'ELSE '.$arrValue[3].' ';
+                        $case .= 'ELSE ' . $arrValue[3] . ' ';
                     } elseif (isset($arrValue[3])) {
                         if ($arrValue[2]) {
                             $this->addValues([$arrValue[2]]);
-                            $case .= ($case ? 'WHEN ' : '').$arrValue[0].' '.$arrValue[1].' ? THEN '.$arrValue[3];
+                            $case .= ($case ? 'WHEN ' : '') . $arrValue[0] . ' ' . $arrValue[1] . ' ? THEN ' . $arrValue[3];
                         } else {
-                            $case .= ($case ? 'WHEN ' : '').$arrValue[0].' '.$arrValue[1].' THEN '.$arrValue[3];
+                            $case .= ($case ? 'WHEN ' : '') . $arrValue[0] . ' ' . $arrValue[1] . ' THEN ' . $arrValue[3];
                         }
                     } else {
-                        $case .= 'WHEN '.$arrValue[0].' THEN '.$arrValue[1];
+                        $case .= 'WHEN ' . $arrValue[0] . ' THEN ' . $arrValue[1];
                     }
                 }
 
-                $col = '(CASE '.$case."\n".'    END)';
+                $col = '(CASE ' . $case . "\n" . '    END)';
             break;
             default:
                 $col = (is_array($nome) ? implode(', ', $nome) : $nome);
@@ -82,12 +82,12 @@ class DBSelect extends DBExpression
             $col = implode(' || ', $nome);
         }*/
 
-        $this->colunas[] = $col.($as ? ' AS '.$as : '');
+        $this->colunas[] = $col . ($as ? ' AS ' . $as : '');
     }
 
     public function setFrom($from, $as = '')
     {
-        $this->from = (($from instanceof self) ? '('.$from.') '.$as : $from.' '.$as);
+        $this->from = (($from instanceof self) ? '(' . $from . ') ' . $as : $from . ' ' . $as);
         if ($from instanceof self && $from->getAllValues()) {
             $this->addValues($from->getAllValues());
         }
@@ -95,7 +95,7 @@ class DBSelect extends DBExpression
 
     public function innerJoin($tabela, DBWhere $where, $as = '')
     {
-        $this->inner .= '    INNER JOIN '.($tabela instanceof self ? '('."\n".'        '.$tabela.'    ) '.$as : $tabela).' ON '.$where."\n";
+        $this->inner .= '    INNER JOIN ' . ($tabela instanceof self ? '(' . "\n" . '        ' . $tabela . '    ) ' . $as : $tabela) . ' ON ' . $where . "\n";
 
         if ($tabela instanceof self && $tabela->getAllValues()) {
             $this->addValues($tabela->getAllValues());
@@ -110,7 +110,7 @@ class DBSelect extends DBExpression
 
     public function leftJoin($tabela, DBWhere $where, $as = '')
     {
-        $this->inner .= '    LEFT OUTER JOIN '.($tabela instanceof self ? '('."\n".'        '.$tabela.'    ) '.$as : $tabela).' ON '.$where."\n";
+        $this->inner .= '    LEFT OUTER JOIN ' . ($tabela instanceof self ? '(' . "\n" . '        ' . $tabela . '    ) ' . $as : $tabela) . ' ON ' . $where . "\n";
 
         if ($tabela instanceof self && $tabela->getAllValues()) {
             $this->addValues($tabela->getAllValues());
@@ -175,23 +175,23 @@ class DBSelect extends DBExpression
 
     public function __toString()
     {
-        $sql = 'SELECT'."\n";
-        $sql .= '    '.implode(','."\n".'    ', $this->colunas)."\n";
-        $sql .= 'FROM '.$this->from."\n";
+        $sql = 'SELECT' . "\n";
+        $sql .= '    ' . implode(',' . "\n" . '    ', $this->colunas) . "\n";
+        $sql .= 'FROM ' . $this->from . "\n";
 
         $sql .= ($this->inner ? $this->inner : '');
 
-        $sql .= (strlen($this->conds) ? 'WHERE '.$this->conds."\n" : '');
+        $sql .= (strlen($this->conds) ? 'WHERE ' . $this->conds . "\n" : '');
 
-        $sql .= ($this->group ? 'GROUP BY '.implode(', ', $this->group)."\n" : '');
+        $sql .= ($this->group ? 'GROUP BY ' . implode(', ', $this->group) . "\n" : '');
 
-        $sql .= ($this->having ? 'HAVING '.$this->having."\n" : '');
+        $sql .= ($this->having ? 'HAVING ' . $this->having . "\n" : '');
 
-        $sql .= ($this->order ? 'ORDER BY '.implode(', ', $this->order)."\n" : '');
+        $sql .= ($this->order ? 'ORDER BY ' . implode(', ', $this->order) . "\n" : '');
 
-        $sql .= ($this->limit ? 'LIMIT '.$this->limit."\n" : '');
+        $sql .= ($this->limit ? 'LIMIT ' . $this->limit . "\n" : '');
 
-        $sql .= ($this->offset ? 'OFFSET '.$this->offset : '');
+        $sql .= ($this->offset ? 'OFFSET ' . $this->offset : '');
 
         return $sql;
     }

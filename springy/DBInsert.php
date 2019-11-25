@@ -35,10 +35,10 @@ class DBInsert
 
     public function __toString()
     {
-        return 'INSERT INTO '.$this->tabela.'('."\n"
-             .'    '.implode(', '."\n    ", $this->columns)."\n"
-             .') VALUES ('
-             .'    '.implode(', '."\n    ", array_fill(0, count($this->columns), '?'))."\n"
-             .')';
+        return 'INSERT INTO ' . $this->tabela . '(' . "\n"
+             . '    ' . implode(', ' . "\n    ", $this->columns) . "\n"
+             . ') VALUES ('
+             . '    ' . implode(', ' . "\n    ", array_fill(0, count($this->columns), '?')) . "\n"
+             . ')';
     }
 }

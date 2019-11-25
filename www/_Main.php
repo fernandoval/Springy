@@ -21,8 +21,8 @@ require 'sysconf.php';
 require 'helpers.php';
 
 // Load Composer autoload
-if (file_exists(sysconf('VENDOR_PATH').DS.'autoload.php')) {
-    require sysconf('VENDOR_PATH').DS.'autoload.php';
+if (file_exists(sysconf('VENDOR_PATH') . DS . 'autoload.php')) {
+    require sysconf('VENDOR_PATH') . DS . 'autoload.php';
 }
 
 // System start

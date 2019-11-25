@@ -92,7 +92,7 @@ class Kernel
 
         // Controller class exists?
         if (!class_exists(self::$controllerName)) {
-            new Errors(404, 'No '.self::$controllerName.' on '.self::$controllerFile);
+            new Errors(404, 'No ' . self::$controllerName . ' on ' . self::$controllerFile);
         }
 
         /// The controller
@@ -122,7 +122,7 @@ class Kernel
         }
 
         /// Global pre-controller file path name
-        $globalPath = self::path(self::PATH_CONTROLLER).DIRECTORY_SEPARATOR.'_global.php';
+        $globalPath = self::path(self::PATH_CONTROLLER) . DIRECTORY_SEPARATOR . '_global.php';
 
         // The global pre-controller exists?
         if (!file_exists($globalPath)) {
@@ -145,7 +145,7 @@ class Kernel
     private static function _callHookController()
     {
         /// The hook controller file name
-        $defaultFile = dirname(self::$controllerFile).DIRECTORY_SEPARATOR.'_default.php';
+        $defaultFile = dirname(self::$controllerFile) . DIRECTORY_SEPARATOR . '_default.php';
 
         // Hook controller exists?
         if (!file_exists($defaultFile)) {
@@ -279,7 +279,7 @@ class Kernel
         require_once self::$controllerFile;
 
         // Define o nome da classe controladora
-        self::$controllerName = str_replace('-', '_', URI::getControllerClass()).'_Controller';
+        self::$controllerName = str_replace('-', '_', URI::getControllerClass()) . '_Controller';
 
         // Bypass the global pre-controller?
         if (defined('BYPASS_CONTROLLERS') || method_exists(self::$controllerName, '_ignore_global')) {
@@ -326,7 +326,7 @@ class Kernel
             return;
         }
 
-        header('WWW-Authenticate: Basic realm="'.utf8_decode('What are you doing here?').'"');
+        header('WWW-Authenticate: Basic realm="' . utf8_decode('What are you doing here?') . '"');
         header('HTTP/1.0 401 Unauthorized');
         die('Unauthorized!');
     }
@@ -343,7 +343,7 @@ class Kernel
         }
 
         // Send Cache-Control header
-        header('Cache-Control: '.Configuration::get('system', 'cache-control'), true);
+        header('Cache-Control: ' . Configuration::get('system', 'cache-control'), true);
     }
 
     /**
@@ -366,7 +366,7 @@ class Kernel
 
         // Verify the credential
         if (!isset($_SERVER['PHP_AUTH_USER']) || !isset($_SERVER['PHP_AUTH_PW']) || $_SERVER['PHP_AUTH_USER'] != $auth['user'] || $_SERVER['PHP_AUTH_PW'] != $auth['pass']) {
-            header('WWW-Authenticate: Basic realm="'.utf8_decode('What r u doing here?').'"');
+            header('WWW-Authenticate: Basic realm="' . utf8_decode('What r u doing here?') . '"');
             new Errors(401, 'Unauthorized');
         }
 
@@ -441,14 +441,14 @@ class Kernel
         // Define the application paths
         self::path(self::PATH_WEB_ROOT, $sysconf['ROOT_PATH']);
         self::path(self::PATH_LIBRARY, isset($sysconf['SPRINGY_PATH']) ? $sysconf['SPRINGY_PATH'] : realpath(dirname(__FILE__)));
-        self::path(self::PATH_PROJECT, isset($sysconf['PROJECT_PATH']) ? $sysconf['PROJECT_PATH'] : realpath(self::path(self::PATH_LIBRARY).DIRECTORY_SEPARATOR.'..'));
-        self::path(self::PATH_CONF, isset($sysconf['CONFIG_PATH']) ? $sysconf['CONFIG_PATH'] : realpath(self::path(self::PATH_PROJECT).DIRECTORY_SEPARATOR.'conf'));
-        self::path(self::PATH_VAR, isset($sysconf['VAR_PATH']) ? $sysconf['VAR_PATH'] : realpath(self::path(self::PATH_PROJECT).DIRECTORY_SEPARATOR.'var'));
-        self::path(self::PATH_APPLICATION, isset($sysconf['APP_PATH']) ? $sysconf['APP_PATH'] : realpath(self::path(self::PATH_PROJECT).DIRECTORY_SEPARATOR.'app'));
-        self::path(self::PATH_CONTROLLER, isset($sysconf['CONTROLER_PATH']) ? $sysconf['CONTROLER_PATH'] : realpath(self::path(self::PATH_APPLICATION).DIRECTORY_SEPARATOR.'controllers'));
-        self::path(self::PATH_CLASSES, isset($sysconf['CLASS_PATH']) ? $sysconf['CLASS_PATH'] : realpath(self::path(self::PATH_APPLICATION).DIRECTORY_SEPARATOR.'classes'));
-        self::path(self::PATH_MIGRATION, isset($sysconf['MIGRATION_PATH']) ? $sysconf['MIGRATION_PATH'] : realpath(self::path(self::PATH_PROJECT).DIRECTORY_SEPARATOR.'migration'));
-        self::path(self::PATH_VENDOR, isset($sysconf['VENDOR_PATH']) ? $sysconf['VENDOR_PATH'] : realpath(self::path(self::PATH_PROJECT).DIRECTORY_SEPARATOR.'vendor'));
+        self::path(self::PATH_PROJECT, isset($sysconf['PROJECT_PATH']) ? $sysconf['PROJECT_PATH'] : realpath(self::path(self::PATH_LIBRARY) . DIRECTORY_SEPARATOR . '..'));
+        self::path(self::PATH_CONF, isset($sysconf['CONFIG_PATH']) ? $sysconf['CONFIG_PATH'] : realpath(self::path(self::PATH_PROJECT) . DIRECTORY_SEPARATOR . 'conf'));
+        self::path(self::PATH_VAR, isset($sysconf['VAR_PATH']) ? $sysconf['VAR_PATH'] : realpath(self::path(self::PATH_PROJECT) . DIRECTORY_SEPARATOR . 'var'));
+        self::path(self::PATH_APPLICATION, isset($sysconf['APP_PATH']) ? $sysconf['APP_PATH'] : realpath(self::path(self::PATH_PROJECT) . DIRECTORY_SEPARATOR . 'app'));
+        self::path(self::PATH_CONTROLLER, isset($sysconf['CONTROLER_PATH']) ? $sysconf['CONTROLER_PATH'] : realpath(self::path(self::PATH_APPLICATION) . DIRECTORY_SEPARATOR . 'controllers'));
+        self::path(self::PATH_CLASSES, isset($sysconf['CLASS_PATH']) ? $sysconf['CLASS_PATH'] : realpath(self::path(self::PATH_APPLICATION) . DIRECTORY_SEPARATOR . 'classes'));
+        self::path(self::PATH_MIGRATION, isset($sysconf['MIGRATION_PATH']) ? $sysconf['MIGRATION_PATH'] : realpath(self::path(self::PATH_PROJECT) . DIRECTORY_SEPARATOR . 'migration'));
+        self::path(self::PATH_VENDOR, isset($sysconf['VENDOR_PATH']) ? $sysconf['VENDOR_PATH'] : realpath(self::path(self::PATH_PROJECT) . DIRECTORY_SEPARATOR . 'vendor'));
 
         // Pre start check list of application
         self::_httpAuthNeeded();
@@ -504,7 +504,7 @@ class Kernel
                 // Verify if has an alias for host
                 if (is_array($alias) && count($alias)) {
                     foreach ($alias as $host => $as) {
-                        if (preg_match('/^'.$host.'$/', $env)) {
+                        if (preg_match('/^' . $host . '$/', $env)) {
                             $env = $as;
                             break;
                         }
@@ -593,7 +593,7 @@ class Kernel
             self::$charset = $charset;
             ini_set('default_charset', $charset);
             // Send the content-type and charset header
-            header('Content-Type: text/html; charset='.$charset, true);
+            header('Content-Type: text/html; charset=' . $charset, true);
             if (phpversion() < '5.6') {
                 ini_set('mbstring.internal_encoding', $charset);
             }
@@ -692,7 +692,7 @@ class Kernel
             $hook = self::$errorHooks['default'];
         } elseif (isset(self::$errorHooks['all'])) {
             $hook = self::$errorHooks['all'];
-        } elseif (!$hook = Configuration::get('system', 'system_error.hook.'.$errno)) {
+        } elseif (!$hook = Configuration::get('system', 'system_error.hook.' . $errno)) {
             $hook = Configuration::get('system', 'system_error.hook.default');
         }
 

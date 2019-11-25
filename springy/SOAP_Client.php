@@ -115,7 +115,7 @@ class SOAP_Client
             $result = $this->client->__soapCall($operation, $params, $options, $input_headers, $output_headers);
         } catch (\SoapFault $exception) {
             Kernel::delIgnoredError([0, E_WARNING]);
-            $result = $this->error = $exception->faultcode.' - '.$exception->faultstring;
+            $result = $this->error = $exception->faultcode . ' - ' . $exception->faultstring;
 
             return false;
         }

@@ -61,7 +61,7 @@ class BasicHasher implements HasherInterface
      */
     public function generateHash($senha, $times = null)
     {
-        $md5 = md5(strtolower(self::SALT.$senha));
+        $md5 = md5(strtolower(self::SALT . $senha));
 
         return base64_encode($md5 ^ md5($senha));
     }

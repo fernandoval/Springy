@@ -114,15 +114,15 @@ class Session
         if ($exp == 0) {
             $exp = 86400;
         }
-        $db->execute('DELETE FROM '.self::$dbTable.' WHERE `updated_at` <= ?', [date('Y-m-d H:i:s', time() - ($exp * 60))]);
+        $db->execute('DELETE FROM ' . self::$dbTable . ' WHERE `updated_at` <= ?', [date('Y-m-d H:i:s', time() - ($exp * 60))]);
 
         // Load from database
-        $db->execute('SELECT `session_value` FROM '.self::$dbTable.' WHERE id = ?', [self::$sid]);
+        $db->execute('SELECT `session_value` FROM ' . self::$dbTable . ' WHERE id = ?', [self::$sid]);
         if ($db->affectedRows()) {
             $res = $db->fetchNext();
             self::$data = unserialize($res['session_value']);
         } else {
-            $sql = 'INSERT INTO '.self::$dbTable.'(`id`, `session_value`, `updated_at`) VALUES (?, NULL, NOW())';
+            $sql = 'INSERT INTO ' . self::$dbTable . '(`id`, `session_value`, `updated_at`) VALUES (?, NULL, NOW())';
             $db->execute($sql, [self::$sid]);
             self::$data = [];
         }
@@ -141,7 +141,7 @@ class Session
         $memcached = new Memcached();
         $memcached->addServer(self::$mcAddr, self::$mcPort);
 
-        if (!(self::$data = $memcached->get('session_'.self::$sid))) {
+        if (!(self::$data = $memcached->get('session_' . self::$sid))) {
             self::$data = [];
         }
 
@@ -197,7 +197,7 @@ class Session
     public static function _saveDbSession()
     {
         $value = serialize(self::$data);
-        $sql = 'UPDATE `'.self::$dbTable.'` SET `session_value` = ?, `updated_at` = NOW() WHERE `id` = ?';
+        $sql = 'UPDATE `' . self::$dbTable . '` SET `session_value` = ?, `updated_at` = NOW() WHERE `id` = ?';
         $db = new DB();
         $db->execute($sql, [$value, self::$sid]);
     }
@@ -209,7 +209,7 @@ class Session
     {
         $memcached = new Memcached();
         $memcached->addServer(self::$mcAddr, self::$mcPort);
-        $memcached->set('session_'.self::$sid, self::$data, self::$expires * 60);
+        $memcached->set('session_' . self::$sid, self::$data, self::$expires * 60);
     }
 
     /**

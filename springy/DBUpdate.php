@@ -36,7 +36,7 @@ class DBUpdate
 
     public function setFrom(DBSelect $from, $apelido = 'x')
     {
-        $this->from = '('.$from.') '.$apelido;
+        $this->from = '(' . $from . ') ' . $apelido;
         $this->addValues($from->getAllValues());
     }
 
@@ -54,9 +54,9 @@ class DBUpdate
 
     public function __toString()
     {
-        return 'UPDATE '.$this->tabela.' SET'."\n"
-             .'    '.implode(' = ?, '."\n    ", $this->columns).' = ?'."\n"
-             .($this->from ? 'FROM '.$this->from."\n" : '')
-             .($this->conds ? 'WHERE '.$this->conds : '-- sem conds');
+        return 'UPDATE ' . $this->tabela . ' SET' . "\n"
+             . '    ' . implode(' = ?, ' . "\n    ", $this->columns) . ' = ?' . "\n"
+             . ($this->from ? 'FROM ' . $this->from . "\n" : '')
+             . ($this->conds ? 'WHERE ' . $this->conds : '-- sem conds');
     }
 }

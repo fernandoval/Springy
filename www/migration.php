@@ -9,12 +9,12 @@
  *  \version   0.4.0.4
  *  \ingroup   framework
  */
-if (!file_exists(__DIR__.'/sysconf.php')) {
+if (!file_exists(__DIR__ . '/sysconf.php')) {
     echo 'Internal System Error on Startup.',"\n";
     echo 'Required file "sysconf.php" missing.',"\n";
     exit(999);
 }
-if (!file_exists(__DIR__.'/_Main.php')) {
+if (!file_exists(__DIR__ . '/_Main.php')) {
     echo 'Internal System Error on Startup.',"\n";
     echo 'Required file "_Main.php" missing.',"\n";
     exit(999);

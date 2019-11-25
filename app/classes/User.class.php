@@ -125,7 +125,7 @@ class User extends Model implements IdentityInterface, AclUserInterface
     public function getPermissionFor($aclObjectName)
     {
         foreach ($this->permissions as $permission) {
-            if (preg_match('/'.$permission.'/', Springy\URI::requestMethod().'|'.$aclObjectName)) {
+            if (preg_match('/' . $permission . '/', Springy\URI::requestMethod() . '|' . $aclObjectName)) {
                 return true;
             }
         }

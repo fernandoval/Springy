@@ -31,10 +31,10 @@ class UUID
     {
         $hash = uniqid(md5(rand()));
 
-        return substr($hash, 0, 8).'-'.
-            substr($hash, 8, 4).'-'.
-            substr($hash, 12, 4).'-'.
-            substr($hash, 16, 4).'-'.
+        return substr($hash, 0, 8) . '-' .
+            substr($hash, 8, 4) . '-' .
+            substr($hash, 12, 4) . '-' .
+            substr($hash, 16, 4) . '-' .
             substr($hash, 20, 12);
     }
 
@@ -62,11 +62,11 @@ class UUID
 
         // Convert Namespace UUID to bits
         for ($i = 0; $i < strlen($nhex); $i += 2) {
-            $nstr .= chr(hexdec($nhex[$i].$nhex[$i + 1]));
+            $nstr .= chr(hexdec($nhex[$i] . $nhex[$i + 1]));
         }
 
         // Calculate hash value
-        $hash = md5($nstr.$name);
+        $hash = md5($nstr . $name);
 
         return sprintf('%08s-%04s-%04x-%04x-%12s',
             // 32 bits for "time_low"
@@ -143,11 +143,11 @@ class UUID
 
         // Convert Namespace UUID to bits
         for ($i = 0; $i < strlen($nhex); $i += 2) {
-            $nstr .= chr(hexdec($nhex[$i].$nhex[$i + 1]));
+            $nstr .= chr(hexdec($nhex[$i] . $nhex[$i + 1]));
         }
 
         // Calculate hash value
-        $hash = sha1($nstr.$name);
+        $hash = sha1($nstr . $name);
 
         return sprintf('%08s-%04s-%04x-%04x-%12s',
             // 32 bits for "time_low"
