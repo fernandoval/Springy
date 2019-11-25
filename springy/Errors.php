@@ -9,7 +9,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   3.0.6.48
+ * @version   3.0.7.49
  */
 
 namespace Springy;
@@ -39,6 +39,45 @@ class Errors
     }
 
     /**
+     * Error message for cli execution.
+     *
+     * @param string $errorId
+     * @param string $errMessage
+     *
+     * @return string
+     */
+    private function cliErrMsg($errorId, $errMessage): string
+    {
+        $ln = "\n";
+
+        $error = 'Error ID: '.$errorId.$ln.
+            'Description: '.$errMessage.$ln.
+            'Run time: '.Kernel::runTime().' seconds'.$ln.
+            'Date: '.date('Y-m-d').$ln.
+            'Time: '.date('G:i:s').$ln.
+            'Request: '.(isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : 'undefined').$ln.$ln;
+
+        $btrace = array_reverse(debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT));
+
+        foreach ($btrace as $index => $trace) {
+            $error .= str_pad('#' . $index . ': ', 8, ' ', STR_PAD_LEFT);
+
+            switch ($trace['type'] ?? '') {
+                case '->':
+                case '::':
+                    $error .= $trace['class'] . $trace['type'] . $trace['function'] . '()';
+                    break;
+                default:
+                    $error .= $trace['function'] . '()';
+            }
+
+            $error .= ' at ' . $trace['file'] . ': ' . $trace['line'] . $ln;
+        }
+
+        return $error;
+    }
+
+    /**
      * Generate the output message error.
      */
     private function generateOutputMessage($errMessage, $errorId, $additionalInfo)
@@ -49,12 +88,13 @@ class Errors
         }
 
         if (PHP_SAPI === 'cli' || defined('STDIN')) {
-            return 'Error ID: '.$errorId."\n".
-                'Description: '.$errMessage."\n".
-                'Run time: '.Kernel::runTime().' seconds'."\n".
-                'Date: '.date('Y-m-d')."\n".
-                'Time: '.date('G:i:s')."\n".
-                'Request: '.(isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : 'undefined')."\n";
+            return $this->cliErrMsg($errorId, $errMessage);
+            // return 'Error ID: '.$errorId."\n".
+            //     'Description: '.$errMessage."\n".
+            //     'Run time: '.Kernel::runTime().' seconds'."\n".
+            //     'Date: '.date('Y-m-d')."\n".
+            //     'Time: '.date('G:i:s')."\n".
+            //     'Request: '.(isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : 'undefined')."\n";
         }
 
         // Mount error output information
@@ -178,19 +218,33 @@ class Errors
     }
 
     /**
-     *  \brief Encerra o processamento e dá saída na página de erro HTML.
-     *  \warning This method is deprecated and will be removed soon.
-     *  \deprecated This method is deprecated and will be removed soon.
+     * Ends the application with an error.
+     *
+     * @param mixed  $errorType
+     * @param string $msg
+     *
+     * @return void
+     *
+     * @deprecated 4.3
      */
     public static function displayError($errorType, $msg = '')
     {
-        $error = new self($errorType, $msg);
+        new self($errorType, $msg);
     }
 
     /**
-     *  \brief Old errorHandler method to back compatibility.
-     *  \warning This method is deprecated and will be removed soon.
-     *  \deprecated This method is deprecated and will be removed soon.
+     * Throws the error handler.
+     *
+     * @param int|string  $errno
+     * @param string      $errstr
+     * @param string      $errfile
+     * @param int         $errline
+     * @param string|null $errcontext
+     * @param int         $errorType
+     *
+     * @return void
+     *
+     * @deprecated 4.3
      */
     public static function errorHandler($errno, $errstr, $errfile, $errline, $errcontext = null, $errorType = 500)
     {
@@ -199,7 +253,16 @@ class Errors
     }
 
     /**
-     *  \brief Trata um erro ocorrido no sistema e encerra seu funcionamento.
+     * Handlers the error.
+     *
+     * @param int|string  $errno
+     * @param string      $errstr
+     * @param string      $errfile
+     * @param int         $errline
+     * @param string|null $errcontext
+     * @param int         $errorType
+     *
+     * @return void
      */
     public function handler($errno, $errstr, $errfile, $errline, $errcontext = null, $errorType = 500)
     {
@@ -286,7 +349,14 @@ class Errors
     }
 
     /**
-     *  \brief Monta a mensagem de erro com dados de backtrace, se aplicável.
+     * Sends the error to the webmaster.
+     *
+     * @param string     $msg
+     * @param int|string $errorType
+     * @param string     $errorId
+     * @param string     $additionalInfo
+     *
+     * @return void
      */
     public function sendReport($msg, $errorType, $errorId, $additionalInfo = '')
     {
@@ -373,7 +443,11 @@ class Errors
     }
 
     /**
-     *  \brief Marga um bug como resolvido.
+     * Deletes an error from error log table.
+     *
+     * @param string $errorId
+     *
+     * @return void
      */
     public function bugSolved($errorId)
     {
@@ -393,7 +467,9 @@ class Errors
     }
 
     /**
-     *  \brief Lista os bugs registrados.
+     * Prints the error log content.
+     *
+     * @return void
      */
     public function bugList()
     {
@@ -460,7 +536,12 @@ class Errors
     }
 
     /**
-     *  \brief Imprime a mensagem de erro.
+     * Prints the error message and quits the application.
+     *
+     * @param int|string $errorType
+     * @param string     $msg
+     *
+     * @return void
      */
     private function printHtml($errorType, $msg)
     {
@@ -534,11 +615,14 @@ class Errors
     }
 
     /**
-     *  /brief Preenche o template de erro com as variáveis
-     *  /param $tpl - HTML carregado do template
-     *  /param $errorId - ID do erro
-     *  /param $additionalInfo - Informação adicional
-     *  /return Retorna o HTML.
+     * Puts error details into the template message.
+     *
+     * @param string $tpl
+     * @param string $errorId
+     * @param string $msg
+     * @param string $additionalInfo
+     *
+     * @return string
      */
     private function parseTemplate($tpl, $errorId, $msg, $additionalInfo)
     {
