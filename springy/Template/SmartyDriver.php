@@ -182,7 +182,7 @@ class SmartyDriver implements TemplateDriverInterface
      */
     public function isCached()
     {
-        return $this->tplObj->isCached($this->templateName.self::TPL_NAME_SUFIX, $this->templateCacheId, $this->templateCompileId);
+        return $this->tplObj->isCached($this->templateName . self::TPL_NAME_SUFIX, $this->templateCacheId, $this->templateCompileId);
     }
 
     /**
@@ -217,7 +217,7 @@ class SmartyDriver implements TemplateDriverInterface
     public function fetch()
     {
         if (!$this->templateExists($this->templateName)) {
-            new Errors(404, $this->templateName.self::TPL_NAME_SUFIX);
+            new Errors(404, $this->templateName . self::TPL_NAME_SUFIX);
         }
 
         // Alimenta as variáveis CONSTANTES
@@ -256,7 +256,7 @@ class SmartyDriver implements TemplateDriverInterface
         //     $this->tplObj->display_debug( $this->tplObj );
         // }
 
-        return $this->tplObj->fetch($this->templateName.self::TPL_NAME_SUFIX, $this->templateCacheId, $this->templateCompileId);
+        return $this->tplObj->fetch($this->templateName . self::TPL_NAME_SUFIX, $this->templateCacheId, $this->templateCompileId);
     }
 
     /**
@@ -272,7 +272,7 @@ class SmartyDriver implements TemplateDriverInterface
         if ($tpl === null) {
             // Pega o caminho relativo da página atual
             $path = URI::relativePathPage(true);
-            $this->setTemplate($path.(empty($path) ? '' : DIRECTORY_SEPARATOR).URI::getControllerClass());
+            $this->setTemplate($path . (empty($path) ? '' : DIRECTORY_SEPARATOR) . URI::getControllerClass());
 
             return;
         }
@@ -285,7 +285,7 @@ class SmartyDriver implements TemplateDriverInterface
             $compile = substr($compile, 0, strrpos(DIRECTORY_SEPARATOR, $compile));
         }
 
-        $this->setCompileDir(Configuration::get('template', 'compiled_template_path').$compile);
+        $this->setCompileDir(Configuration::get('template', 'compiled_template_path') . $compile);
     }
 
     /**
@@ -379,7 +379,7 @@ class SmartyDriver implements TemplateDriverInterface
      */
     public function clearCache($expireTime = null)
     {
-        $this->tplObj->clearCache($this->templateName.self::TPL_NAME_SUFIX, $this->templateCacheId, $this->templateCompileId, $expireTime);
+        $this->tplObj->clearCache($this->templateName . self::TPL_NAME_SUFIX, $this->templateCacheId, $this->templateCompileId, $expireTime);
     }
 
     /**
@@ -391,7 +391,7 @@ class SmartyDriver implements TemplateDriverInterface
      */
     public function clearCompiled($expTime)
     {
-        $this->tplObj->clearCompiledTemplate($this->templateName.self::TPL_NAME_SUFIX, $this->templateCompileId, $expTime);
+        $this->tplObj->clearCompiledTemplate($this->templateName . self::TPL_NAME_SUFIX, $this->templateCompileId, $expTime);
     }
 
     /**
@@ -411,7 +411,7 @@ class SmartyDriver implements TemplateDriverInterface
      */
     public function templateExists($tplName)
     {
-        return $this->tplObj->templateExists($tplName.self::TPL_NAME_SUFIX);
+        return $this->tplObj->templateExists($tplName . self::TPL_NAME_SUFIX);
     }
 
     /**
@@ -427,9 +427,9 @@ class SmartyDriver implements TemplateDriverInterface
             return '#';
         }
 
-        $srcPath = Configuration::get('system', 'assets_source_path').DIRECTORY_SEPARATOR.$params['file'];
-        $filePath = Configuration::get('system', 'assets_path').DIRECTORY_SEPARATOR.$params['file'];
-        $fileURI = Configuration::get('uri', 'assets_dir').'/'.$params['file'];
+        $srcPath = Configuration::get('system', 'assets_source_path') . DIRECTORY_SEPARATOR . $params['file'];
+        $filePath = Configuration::get('system', 'assets_path') . DIRECTORY_SEPARATOR . $params['file'];
+        $fileURI = Configuration::get('uri', 'assets_dir') . '/' . $params['file'];
         $get = [];
 
         if (file_exists($srcPath) && (!file_exists($filePath) || filemtime($filePath) < filemtime($srcPath))) {

@@ -48,7 +48,7 @@ class Copyright
             } elseif (preg_match('/\*([\s|\t]*)\\\\version[\s|\t]{1,}(.*)((\r)*(\n))$/', $lst, $arr)) {
                 $ver['v'] = trim($arr[2]);
             } elseif (preg_match('/^(class|interface)[\s|\t]{1,}([a-zA-Z0-9_]+)(\s*)(extends)*(\s*)([a-zA-Z0-9_]*)(\s*)(\\{*)/', $lst, $arr)) {
-                $ver['n'] = $arr[1].' '.$nameSpace.'\\'.trim($arr[2]);
+                $ver['n'] = $arr[1] . ' ' . $nameSpace . '\\' . trim($arr[2]);
                 break;
             }
         }
@@ -72,13 +72,13 @@ class Copyright
 
         $fver = [];
         while (($file = readdir($rdir)) !== false) {
-            if (filetype($dir.$file) == 'file' && substr($file, -4) == '.php') {
-                $ver = $this->getFileInfo($dir.$file, $nameSpace);
+            if (filetype($dir . $file) == 'file' && substr($file, -4) == '.php') {
+                $ver = $this->getFileInfo($dir . $file, $nameSpace);
                 if ($ver['n'] && $ver['v']) {
                     $fver[$ver['n']] = $ver;
                 }
-            } elseif (!in_array($file, ['.', '..']) && filetype($dir.$file) == 'dir') {
-                $fver = array_merge($fver, $this->listClasses($dir.$file.DS, $nameSpace.'\\'.$file));
+            } elseif (!in_array($file, ['.', '..']) && filetype($dir . $file) == 'dir') {
+                $fver = array_merge($fver, $this->listClasses($dir . $file . DS, $nameSpace . '\\' . $file));
             }
         }
         ksort($fver);
@@ -95,7 +95,7 @@ class Copyright
             ob_clean();
         }
 
-        echo '<!DOCTYPE html>'."\n";
+        echo '<!DOCTYPE html>' . "\n";
         echo '<html>';
         echo '<head>';
         echo '<title>Springy</title>';
@@ -119,16 +119,16 @@ class Copyright
         echo '</head>';
         echo '<body>';
         echo '<h1 class="logo"><a href="https://github.com/fernandoval/Springy"><img src="data:image/png;base64,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" title=""> <span>Springy</span></a></h1>';
-        echo '<p>Release <span class="version">'.Kernel::VERSION.'</span></strong>.<br /></p>';
+        echo '<p>Release <span class="version">' . Kernel::VERSION . '</span></strong>.<br /></p>';
 
         echo '<p>A micro framework for smart <a href="http://php.net">PHP</a> developers.</p>';
 
         echo '<p class="description">KISS is our philosophy. KISS is good. KISS is a principle. So write codes with KISS in your mind and <a href="https://en.wikipedia.org/wiki/KISS_principle">keep it simple, silly</a>.</p>';
 
         echo '<p><strong>List of the library classes:</strong></p><table align="center">';
-        $dir = rtrim(dirname(__FILE__), DS).DS.'..'.DS;
+        $dir = rtrim(dirname(__FILE__), DS) . DS . '..' . DS;
         foreach ($this->listClasses($dir, 'Springy') as $info) {
-            echo '<tr><td>'.str_replace('\\', '<span class="slash">\\</span>', str_replace('Springy\\', '<span class="fw">Springy</span>\\', str_replace('class ', '<span class="class">class</span> ', str_replace('interface ', '<span class="class">interface</span> ', $info['n'])))).'</td><td class="version">'.$info['v'].($info['b'] ? '</td><td class="description">'.$info['b'] : '').'</td></tr>';
+            echo '<tr><td>' . str_replace('\\', '<span class="slash">\\</span>', str_replace('Springy\\', '<span class="fw">Springy</span>\\', str_replace('class ', '<span class="class">class</span> ', str_replace('interface ', '<span class="class">interface</span> ', $info['n'])))) . '</td><td class="version">' . $info['v'] . ($info['b'] ? '</td><td class="description">' . $info['b'] : '') . '</td></tr>';
         }
         echo '</table>';
 

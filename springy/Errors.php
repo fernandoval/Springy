@@ -50,12 +50,12 @@ class Errors
     {
         $ln = "\n";
 
-        $error = 'Error ID: '.$errorId.$ln.
-            'Description: '.$errMessage.$ln.
-            'Run time: '.Kernel::runTime().' seconds'.$ln.
-            'Date: '.date('Y-m-d').$ln.
-            'Time: '.date('G:i:s').$ln.
-            'Request: '.(isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : 'undefined').$ln.$ln;
+        $error = 'Error ID: ' . $errorId . $ln .
+            'Description: ' . $errMessage . $ln .
+            'Run time: ' . Kernel::runTime() . ' seconds' . $ln .
+            'Date: ' . date('Y-m-d') . $ln .
+            'Time: ' . date('G:i:s') . $ln .
+            'Request: ' . (isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : 'undefined') . $ln . $ln;
 
         $btrace = array_reverse(debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT));
 
@@ -84,7 +84,7 @@ class Errors
     {
         $getParams = [];
         foreach (URI::getParams() as $var => $value) {
-            $getParams[] = $var.'='.(is_array($value) ? json_encode($value) : $value);
+            $getParams[] = $var . '=' . (is_array($value) ? json_encode($value) : $value);
         }
 
         if (PHP_SAPI === 'cli' || defined('STDIN')) {
@@ -104,116 +104,116 @@ class Errors
             $uname = $_SERVER['HOST_NAME'];
         }
 
-        $errorTemplate = dirname(realpath(__FILE__)).DIRECTORY_SEPARATOR.'error_template.html';
+        $errorTemplate = dirname(realpath(__FILE__)) . DIRECTORY_SEPARATOR . 'error_template.html';
         if (file_exists($errorTemplate) && $out = file_get_contents($errorTemplate)) {
             return $this->parseTemplate($out, $errorId, $errMessage, $additionalInfo);
         }
 
-        return '<table class="table table-bordered" width="100%" border="0" cellspacing="0" cellpadding="0">'.
-            '  <tr>'.
-            '    <td style="background-color:#66C; color:#FFF; font-weight:bold; padding-left:10px; padding:3px 2px">Error Description</td>'.
-            '  </tr>'.
-            '  <tr>'.
-            '    <td style="padding:3px 2px">'.$errMessage.'</td>'.
-            '  </tr>'.
-            '  <tr>'.
-            '    <td style="padding:3px 2px"><strong>Error ID:</strong> '.$errorId.' (<a href="'.URI::buildURL(['_system_bug_solved_', $errorId]).'">was solved</a>)</td>'.
-            '  </tr>'.
+        return '<table class="table table-bordered" width="100%" border="0" cellspacing="0" cellpadding="0">' .
+            '  <tr>' .
+            '    <td style="background-color:#66C; color:#FFF; font-weight:bold; padding-left:10px; padding:3px 2px">Error Description</td>' .
+            '  </tr>' .
+            '  <tr>' .
+            '    <td style="padding:3px 2px">' . $errMessage . '</td>' .
+            '  </tr>' .
+            '  <tr>' .
+            '    <td style="padding:3px 2px"><strong>Error ID:</strong> ' . $errorId . ' (<a href="' . URI::buildURL(['_system_bug_solved_', $errorId]) . '">was solved</a>)</td>' .
+            '  </tr>' .
              // . '  <tr style="color:#000; display:none" class="bugList">'
              // . '    <td style="padding:3px 2px"><strong>Número de ocorrências:</strong> [n_ocorrencias] | <strong>Última ocorrência:</strong> [ultima_ocorrencia] (<a href="javascript:;">mais informações</a>)</td>'
              // . '  </tr>'
-            '  <tr class="hideMoreInfo">'.
-            '    <td colspan="2">'.
-            '      <table width="100%" border="0" cellspacing="0" cellpadding="0" style="font-family:Arial, Helvetica, sans-serif; font-size:12px">'.
-            '        <tr>'.
-            '          <td colspan="2" style="background-color:#66C; color:#FFF; font-weight:bold; padding-left:10px; padding:3px 2px">Debug Information</td>'.
-            '        </tr>'.
-            '        <tr style="background:#efefef">'.
-            '          <td style="padding:3px 2px"><label style="font-weight:bold">Execution time:</label></td>'.
-            '          <td style="padding:3px 2px">'.Kernel::runTime().' seconds</td>'.
-            '        </tr>'.
-            '        <tr>'.
-            '          <td style="padding:3px 2px"><label style="font-weight:bold">System:</label></td>'.
-            '          <td style="padding:3px 2px">'.$uname.'</td>'.
-            '        </tr>'.
-            '        <tr style="background:#efefef">'.
-            '          <td style="padding:3px 2px"><label style="font-weight:bold">HTTPS:</label></td>'.
-            '          <td style="padding:3px 2px">'.(ini_get('safe_mode') ? 'Yes' : 'No').'</td>'.
-            '        </tr>'.
-            '        <tr>'.
-            '          <td style="padding:3px 2px"><label style="font-weight:bold">Date:</label></td>'.
-            '          <td style="padding:3px 2px">'.date('Y-m-d').'</td>'.
-            '        </tr>'.
-            '        <tr style="background:#efefef">'.
-            '          <td style="padding:3px 2px"><label style="font-weight:bold">Time:</label></td>'.
-            '          <td style="padding:3px 2px">'.date('G:i:s').'</td>'.
-            '        </tr>'.
-            '        <tr>'.
-            '          <td style="padding:3px 2px"><label style="font-weight:bold">Request:</label></td>'.
-            '          <td style="padding:3px 2px">'.$_SERVER['REQUEST_URI'].'</td>'.
-            '        </tr>'.
-            '        <tr style="background:#efefef">'.
-            '          <td style="padding:3px 2px"><label style="font-weight:bold">Request Method:</label></td>'.
-            '          <td style="padding:3px 2px">'.$_SERVER['REQUEST_METHOD'].'</td>'.
-            '        </tr>'.
-            '        <tr>'.
-            '          <td style="padding:3px 2px"><label style="font-weight:bold">Server Protocol:</label></td>'.
-            '          <td style="padding:3px 2px">'.$_SERVER['SERVER_PROTOCOL'].'</td>'.
-            '        </tr>'.
-            '        <tr style="background:#efefef">'.
-            '          <td style="padding:3px 2px"><label style="font-weight:bold">URL:</label></td>'.
-            '          <td style="padding:3px 2px">'.URI::getURIString().'?'.implode('&', $getParams).'</td>'.
-            '        </tr>'.
-            '        <tr>'.
-            '          <td valign="top" style="padding:3px 2px"><label style="font-weight:bold">Debug:</label></td>'.
-            '          <td style="padding:3px 2px"><table width="100%"><tr><td style="font-family:Arial, Helvetica, sans-serif; font-size:12px; padding:3px 2px">'.Debug::get().'</td></tr></table></td>'.
-            '        </tr>'.
-            '        <tr style="background:#efefef">'.
-            '          <td valign="top" style="padding:3px 2px"><label style="font-weight:bold">Info:</label></td>'.
-            '          <td style="padding:3px 2px"><table width="100%"><tr><td style="padding:3px 2px">'.Debug::backtrace().'</td></tr></table></td>'.
-            '        </tr>'.
-            '        <tr>'.
-            '          <td colspan="2" style="background-color:#66C; color:#FFF; font-weight:bold; padding-left:10px; padding:3px 2px">Client Information</td>'.
-            '        </tr>'.
-            '        <tr>'.
-            '          <td style="padding:3px 2px"><label style="font-weight:bold">HTTP Referer:</label></td>'.
-            '          <td style="padding:3px 2px">'.(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '').'</td>'.
-            '        </tr>'.
-            '        <tr style="background:#efefef">'.
-            '          <td style="padding:3px 2px"><label style="font-weight:bold">Client IP:</label></td>'.
-            '          <td style="padding:3px 2px">'.Strings::getRealRemoteAddr().'</td>'.
-            '        </tr>'.
-            '        <tr style="background:#efefef">'.
-            '          <td style="padding:3px 2px"><label style="font-weight:bold">Reverse:</label></td>'.
-            '          <td style="padding:3px 2px">'.(Strings::getRealRemoteAddr() ? gethostbyaddr(Strings::getRealRemoteAddr()) : 'no IP').'</td>'.
-            '        </tr>'.
-            '        <tr>'.
-            '          <td style="padding:3px 2px"><label style="font-weight:bold">User Agent:</label></td>'.
-            '          <td style="padding:3px 2px">'.(isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '').'</td>'.
-            '        </tr>'.
-            $additionalInfo.
-            '        <tr>'.
-            '          <td colspan="2" style="background-color:#66C; color:#FFF; font-weight:bold; padding-left:10px; padding:3px 2px">PHP vars</td>'.
-            '        </tr>'.
-            '        <tr>'.
-            '          <td valign="top" style="padding:3px 2px"><label style="font-weight:bold">_POST</label></td>'.
-            '          <td style="padding:3px 2px">'.Debug::print_rc($_POST).'</td>'.
-            '        </tr>'.
-            '        <tr>'.
-            '          <td valign="top" style="padding:3px 2px"><label style="font-weight:bold">_GET</label></td>'.
-            '          <td style="padding:3px 2px">'.Debug::print_rc($_GET).'</td>'.
-            '        </tr>'.
-            '        <tr>'.
-            '          <td valign="top" style="padding:3px 2px"><label style="font-weight:bold">_COOKIE</label></td>'.
-            '          <td style="padding:3px 2px">'.Debug::print_rc($_COOKIE).'</td>'.
-            '        </tr>'.
-            '        <tr>'.
-            '          <td valign="top" style="padding:3px 2px"><label style="font-weight:bold">_SESSION</label></td>'.
-            '          <td style="padding:3px 2px">'.Debug::print_rc(Session::getAll()).'</td>'.
-            '        </tr>'.
-            '      </table>'.
-            '    </td>'.
-            '  </tr>'.
+            '  <tr class="hideMoreInfo">' .
+            '    <td colspan="2">' .
+            '      <table width="100%" border="0" cellspacing="0" cellpadding="0" style="font-family:Arial, Helvetica, sans-serif; font-size:12px">' .
+            '        <tr>' .
+            '          <td colspan="2" style="background-color:#66C; color:#FFF; font-weight:bold; padding-left:10px; padding:3px 2px">Debug Information</td>' .
+            '        </tr>' .
+            '        <tr style="background:#efefef">' .
+            '          <td style="padding:3px 2px"><label style="font-weight:bold">Execution time:</label></td>' .
+            '          <td style="padding:3px 2px">' . Kernel::runTime() . ' seconds</td>' .
+            '        </tr>' .
+            '        <tr>' .
+            '          <td style="padding:3px 2px"><label style="font-weight:bold">System:</label></td>' .
+            '          <td style="padding:3px 2px">' . $uname . '</td>' .
+            '        </tr>' .
+            '        <tr style="background:#efefef">' .
+            '          <td style="padding:3px 2px"><label style="font-weight:bold">HTTPS:</label></td>' .
+            '          <td style="padding:3px 2px">' . (ini_get('safe_mode') ? 'Yes' : 'No') . '</td>' .
+            '        </tr>' .
+            '        <tr>' .
+            '          <td style="padding:3px 2px"><label style="font-weight:bold">Date:</label></td>' .
+            '          <td style="padding:3px 2px">' . date('Y-m-d') . '</td>' .
+            '        </tr>' .
+            '        <tr style="background:#efefef">' .
+            '          <td style="padding:3px 2px"><label style="font-weight:bold">Time:</label></td>' .
+            '          <td style="padding:3px 2px">' . date('G:i:s') . '</td>' .
+            '        </tr>' .
+            '        <tr>' .
+            '          <td style="padding:3px 2px"><label style="font-weight:bold">Request:</label></td>' .
+            '          <td style="padding:3px 2px">' . $_SERVER['REQUEST_URI'] . '</td>' .
+            '        </tr>' .
+            '        <tr style="background:#efefef">' .
+            '          <td style="padding:3px 2px"><label style="font-weight:bold">Request Method:</label></td>' .
+            '          <td style="padding:3px 2px">' . $_SERVER['REQUEST_METHOD'] . '</td>' .
+            '        </tr>' .
+            '        <tr>' .
+            '          <td style="padding:3px 2px"><label style="font-weight:bold">Server Protocol:</label></td>' .
+            '          <td style="padding:3px 2px">' . $_SERVER['SERVER_PROTOCOL'] . '</td>' .
+            '        </tr>' .
+            '        <tr style="background:#efefef">' .
+            '          <td style="padding:3px 2px"><label style="font-weight:bold">URL:</label></td>' .
+            '          <td style="padding:3px 2px">' . URI::getURIString() . '?' . implode('&', $getParams) . '</td>' .
+            '        </tr>' .
+            '        <tr>' .
+            '          <td valign="top" style="padding:3px 2px"><label style="font-weight:bold">Debug:</label></td>' .
+            '          <td style="padding:3px 2px"><table width="100%"><tr><td style="font-family:Arial, Helvetica, sans-serif; font-size:12px; padding:3px 2px">' . Debug::get() . '</td></tr></table></td>' .
+            '        </tr>' .
+            '        <tr style="background:#efefef">' .
+            '          <td valign="top" style="padding:3px 2px"><label style="font-weight:bold">Info:</label></td>' .
+            '          <td style="padding:3px 2px"><table width="100%"><tr><td style="padding:3px 2px">' . Debug::backtrace() . '</td></tr></table></td>' .
+            '        </tr>' .
+            '        <tr>' .
+            '          <td colspan="2" style="background-color:#66C; color:#FFF; font-weight:bold; padding-left:10px; padding:3px 2px">Client Information</td>' .
+            '        </tr>' .
+            '        <tr>' .
+            '          <td style="padding:3px 2px"><label style="font-weight:bold">HTTP Referer:</label></td>' .
+            '          <td style="padding:3px 2px">' . (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '') . '</td>' .
+            '        </tr>' .
+            '        <tr style="background:#efefef">' .
+            '          <td style="padding:3px 2px"><label style="font-weight:bold">Client IP:</label></td>' .
+            '          <td style="padding:3px 2px">' . Strings::getRealRemoteAddr() . '</td>' .
+            '        </tr>' .
+            '        <tr style="background:#efefef">' .
+            '          <td style="padding:3px 2px"><label style="font-weight:bold">Reverse:</label></td>' .
+            '          <td style="padding:3px 2px">' . (Strings::getRealRemoteAddr() ? gethostbyaddr(Strings::getRealRemoteAddr()) : 'no IP') . '</td>' .
+            '        </tr>' .
+            '        <tr>' .
+            '          <td style="padding:3px 2px"><label style="font-weight:bold">User Agent:</label></td>' .
+            '          <td style="padding:3px 2px">' . (isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '') . '</td>' .
+            '        </tr>' .
+            $additionalInfo .
+            '        <tr>' .
+            '          <td colspan="2" style="background-color:#66C; color:#FFF; font-weight:bold; padding-left:10px; padding:3px 2px">PHP vars</td>' .
+            '        </tr>' .
+            '        <tr>' .
+            '          <td valign="top" style="padding:3px 2px"><label style="font-weight:bold">_POST</label></td>' .
+            '          <td style="padding:3px 2px">' . Debug::print_rc($_POST) . '</td>' .
+            '        </tr>' .
+            '        <tr>' .
+            '          <td valign="top" style="padding:3px 2px"><label style="font-weight:bold">_GET</label></td>' .
+            '          <td style="padding:3px 2px">' . Debug::print_rc($_GET) . '</td>' .
+            '        </tr>' .
+            '        <tr>' .
+            '          <td valign="top" style="padding:3px 2px"><label style="font-weight:bold">_COOKIE</label></td>' .
+            '          <td style="padding:3px 2px">' . Debug::print_rc($_COOKIE) . '</td>' .
+            '        </tr>' .
+            '        <tr>' .
+            '          <td valign="top" style="padding:3px 2px"><label style="font-weight:bold">_SESSION</label></td>' .
+            '          <td style="padding:3px 2px">' . Debug::print_rc(Session::getAll()) . '</td>' .
+            '        </tr>' .
+            '      </table>' .
+            '    </td>' .
+            '  </tr>' .
             '</table>';
     }
 
@@ -337,14 +337,14 @@ class Errors
                 $printError = 'Fatal Error';
             break;
             default:
-                $printError = 'Unknown Error ('.$errno.')';
+                $printError = 'Unknown Error (' . $errno . ')';
             break;
         }
 
         $this->sendReport(
-            (PHP_SAPI === 'cli' || defined('STDIN')) ? $printError.' - '.$errstr.' in '.$errfile.' on line '.$errline : '<span style="color:#FF0000">'.$printError.'</span>: <em>'.$errstr.'</em> in <strong>'.$errfile.'</strong> on line <strong>'.$errline.'</strong>',
+            (PHP_SAPI === 'cli' || defined('STDIN')) ? $printError . ' - ' . $errstr . ' in ' . $errfile . ' on line ' . $errline : '<span style="color:#FF0000">' . $printError . '</span>: <em>' . $errstr . '</em> in <strong>' . $errfile . '</strong> on line <strong>' . $errline . '</strong>',
             $errorType,
-            hash('crc32', $errno.$errfile.$errline) /// error id
+            hash('crc32', $errno . $errfile . $errline) /// error id
         );
     }
 
@@ -390,9 +390,9 @@ class Errors
                 if (DB::connected()) {
                     $res = false;
                     $dbc->errorReportStatus(false);
-                    if (!$dbc->execute('SELECT id FROM '.$table.' WHERE error_code = ?', [$errorId])) {
+                    if (!$dbc->execute('SELECT id FROM ' . $table . ' WHERE error_code = ?', [$errorId])) {
                         if ($dbc->statmentErrorCode()) {
-                            if (Configuration::get('system', 'system_error.create_table') && $sql = file_get_contents(dirname(__FILE__).DIRECTORY_SEPARATOR.'system_errors_create_table.sql')) {
+                            if (Configuration::get('system', 'system_error.create_table') && $sql = file_get_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'system_errors_create_table.sql')) {
                                 $dbc->execute(str_replace('%table_name%', $table, $sql));
                             }
                         }
@@ -402,9 +402,9 @@ class Errors
 
                     if ($res) {
                         $repeated = true;
-                        $dbc->execute('UPDATE '.$table.' SET occurrences = occurrences + 1 WHERE error_code = ?', [$errorId]);
+                        $dbc->execute('UPDATE ' . $table . ' SET occurrences = occurrences + 1 WHERE error_code = ?', [$errorId]);
                     } else {
-                        $dbc->execute('INSERT INTO '.$table.' (error_code, description, details, occurrences) VALUES (?, ?, ?, 1)', [$errorId, $msg, $out]);
+                        $dbc->execute('INSERT INTO ' . $table . ' (error_code, description, details, occurrences) VALUES (?, ?, ?, 1)', [$errorId, $msg, $out]);
                     }
                 }
                 unset($dbc, $table, $conn);
@@ -413,7 +413,7 @@ class Errors
             // Send mail message to the system administrator
             if (Configuration::get('mail', 'errors_go_to')) {
                 if (!isset($repeated)) {
-                    $errorTemplate = dirname(realpath(__FILE__)).DIRECTORY_SEPARATOR.'error_mail_template.html';
+                    $errorTemplate = dirname(realpath(__FILE__)) . DIRECTORY_SEPARATOR . 'error_mail_template.html';
                     if (file_exists($errorTemplate) && $errorMail = file_get_contents($errorTemplate)) {
                         $errorMail = $this->parseTemplate($errorMail, $errorId, $msg, $additionalInfo);
                     } else {
@@ -423,12 +423,12 @@ class Errors
 
                     $email = new Mail();
                     $email->to(Configuration::get('mail', 'errors_go_to'), 'System Admin');
-                    $email->from(Configuration::get('mail', 'system_adm_mail'), Kernel::systemName().' - System Error Report');
+                    $email->from(Configuration::get('mail', 'system_adm_mail'), Kernel::systemName() . ' - System Error Report');
                     $email->subject(
-                        'Error on '.Kernel::systemName().
-                        ' v'.Kernel::systemVersion().
-                        ' ['.Kernel::environment().
-                        '] at '.URI::httpHost()
+                        'Error on ' . Kernel::systemName() .
+                        ' v' . Kernel::systemVersion() .
+                        ' [' . Kernel::environment() .
+                        '] at ' . URI::httpHost()
                     );
                     $email->body($errorMail);
                     $email->send();
@@ -460,10 +460,10 @@ class Errors
 
         $db = new DB($conn);
         if (DB::connected()) {
-            $db->execute('DELETE FROM '.$table.' WHERE error_code = ?', [$errorId]);
+            $db->execute('DELETE FROM ' . $table . ' WHERE error_code = ?', [$errorId]);
         }
         unset($db);
-        echo 'ID <strong>'.URI::getSegment(1, false).'</strong> deleted from error log.';
+        echo 'ID <strong>' . URI::getSegment(1, false) . '</strong> deleted from error log.';
     }
 
     /**
@@ -484,9 +484,9 @@ class Errors
         $order_column = URI::getParam('orderBy') ?: 'last_time';
         $order_type = URI::getParam('sort') ?: 'DESC';
         $dbc->execute(
-            'SELECT id, error_code, description, occurrences, last_time, details'.
-            '  FROM '.$table.
-            ' ORDER BY '.$order_column.' '.$order_type
+            'SELECT id, error_code, description, occurrences, last_time, details' .
+            '  FROM ' . $table .
+            ' ORDER BY ' . $order_column . ' ' . $order_type
         );
 
         echo
@@ -518,7 +518,7 @@ class Errors
                                 'DELETE',
                             '</a>',
                     '</div>',
-                    '<div id="collapse'.$res['id'].'" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading'.$res['id'].'">',
+                    '<div id="collapse' . $res['id'] . '" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading' . $res['id'] . '">',
                         '<div class="panel-body">';
 
             $res['details'] = preg_replace('/<table([a-zA-Z0-9"=\%:,; \-]*)>/', '<table class="table table-bordered">', $res['details']);
@@ -553,15 +553,15 @@ class Errors
             }
 
             if (PHP_SAPI === 'cli' || defined('STDIN')) {
-                echo $msg."\n";
+                echo $msg . "\n";
             } else {
                 header('Content-type: text/html; charset=UTF-8', true, $errorType);
 
                 if (!is_null(Configuration::get('template', 'template_engine'))) {
-                    $tplName = Configuration::get('template', 'errors.'.$errorType);
+                    $tplName = Configuration::get('template', 'errors.' . $errorType);
                     $tpl = new Template();
                     if (!$tplName) {
-                        $tplName = '_error'.$errorType;
+                        $tplName = '_error' . $errorType;
                     }
                 }
                 if (isset($tpl) && $tpl->templateExists($tplName)) {
@@ -578,7 +578,7 @@ class Errors
                     echo '    <meta http-equiv="X-UA-Compatible" content="IE=edge">';
                     echo '    <meta name="viewport" content="width=device-width, initial-scale=1">';
                     echo '    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">';
-                    echo '    <title>'.Kernel::systemName().' ('.Kernel::systemVersion().')</title>';
+                    echo '    <title>' . Kernel::systemName() . ' (' . Kernel::systemVersion() . ')</title>';
                     echo '    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">';
                     echo '    <!--[if lt IE 9]>';
                     echo '      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>';
@@ -586,10 +586,10 @@ class Errors
                     echo '    <![endif]-->';
                     echo '  </head>';
                     echo '  <body>';
-                    echo '    <h1 class="text-center">Error '.$errorType.'</h1>';
+                    echo '    <h1 class="text-center">Error ' . $errorType . '</h1>';
                     if (Configuration::get('system', 'debug')) {
                         echo '    <div class="container">';
-                        echo '      '.$msg;
+                        echo '      ' . $msg;
                         echo '    </div>';
                     }
                     echo '    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>';
@@ -628,7 +628,7 @@ class Errors
     {
         $getParams = [];
         foreach (URI::getParams() as $var => $value) {
-            $getParams[] = $var.'='.(is_array($value) ? json_encode($value) : $value);
+            $getParams[] = $var . '=' . (is_array($value) ? json_encode($value) : $value);
         }
 
         try {
@@ -647,7 +647,7 @@ class Errors
         $tpl = preg_replace('/<!-- REQUEST_METHOD -->/', isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : 'empty', $tpl);
         $tpl = preg_replace('/<!-- SERVER_PROTOCOL -->/', isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'empty', $tpl);
         $tpl = preg_replace('/<!-- HOST -->/', URI::buildURL(), $tpl);
-        $tpl = preg_replace('/<!-- URL -->/', URI::getURIString().'?'.implode('&', $getParams), $tpl);
+        $tpl = preg_replace('/<!-- URL -->/', URI::getURIString() . '?' . implode('&', $getParams), $tpl);
         $tpl = preg_replace('/<!-- KERNEL_DEBUG -->/', Debug::get(), $tpl);
         $tpl = preg_replace('/<!-- BACKTRACE -->/', Debug::backtrace(), $tpl);
         $tpl = preg_replace('/<!-- HTTP_REFERER -->/', isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '', $tpl);

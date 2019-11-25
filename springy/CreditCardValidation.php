@@ -245,14 +245,14 @@ class CreditCardValidation
 
         // Import the language preferences.
 
-        $Path = dirname(__FILE__).DIRECTORY_SEPARATOR.'CreditCardValidation';
+        $Path = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'CreditCardValidation';
 
-        if (!file_exists($Path.DIRECTORY_SEPARATOR.'ccvs_'.$Language.'.inc')) {
+        if (!file_exists($Path . DIRECTORY_SEPARATOR . 'ccvs_' . $Language . '.inc')) {
             $this->CCVSError = "The $Language language file can't be found";
 
             return false;
         }
-        include $Path.DIRECTORY_SEPARATOR.'ccvs_'.$Language.'.inc';
+        include $Path . DIRECTORY_SEPARATOR . 'ccvs_' . $Language . '.inc';
 
         // Catch malformed input.
 
@@ -459,7 +459,7 @@ class CreditCardValidation
                 }
             }
 
-            $this->CCVSExpiration = sprintf('%02d', $Month).substr($Year, -2);
+            $this->CCVSExpiration = sprintf('%02d', $Month) . substr($Year, -2);
         }
 
         return true;

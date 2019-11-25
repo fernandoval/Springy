@@ -72,8 +72,8 @@ class Main
         $this->loadComponentsJson();
 
         // Load the Composer's autoload file
-        if (file_exists($this->vendorDir.DS.'autoload.php')) {
-            require $this->vendorDir.DS.'autoload.php';
+        if (file_exists($this->vendorDir . DS . 'autoload.php')) {
+            require $this->vendorDir . DS . 'autoload.php';
         }
 
         echo CS_GREEN, 'Starting the installation of the extra components', CS_RESET, LF;
@@ -114,11 +114,11 @@ class Main
     private function checkComponentPath($data)
     {
         if (!isset($data['source'])) {
-            $this->fatalError(TAB.'Component source path undefined.');
+            $this->fatalError(TAB . 'Component source path undefined.');
         }
 
         // Component sub directory
-        $path = '.'.DS.implode(DS, explode('/', $data['source']));
+        $path = '.' . DS . implode(DS, explode('/', $data['source']));
 
         // Check component's source path
         if (!is_dir($path)) {
@@ -215,7 +215,7 @@ class Main
             }
 
             if (!$this->realCopy($path, $dest, $minify)) {
-                echo TAB, CS_RED, '[ERROR] Copying (', $filename, ') to (', $dest.DS.basename($filename), ')', CS_RESET, LF;
+                echo TAB, CS_RED, '[ERROR] Copying (', $filename, ') to (', $dest . DS . basename($filename), ')', CS_RESET, LF;
             }
 
             return;
@@ -229,7 +229,7 @@ class Main
                     continue;
                 }
 
-                $this->recursiveCopy($path.DS.$file, $dest.DS.$file, $minify, $component);
+                $this->recursiveCopy($path . DS . $file, $dest . DS . $file, $minify, $component);
             }
 
             return;
@@ -240,7 +240,7 @@ class Main
         $success = false;
         $dest = dirname($dest);
         foreach (glob($path) as $filename) {
-            $success = $this->recursiveCopy($filename, $dest.DS.basename($filename), $minify, $component);
+            $success = $this->recursiveCopy($filename, $dest . DS . basename($filename), $minify, $component);
         }
     }
 
@@ -272,14 +272,14 @@ class Main
             return is_array($data['files']) ? $data['files'] : [$data['files']];
         }
 
-        if (file_exists($path.DS.BOWER_FILE)) {
-            if (!$str = file_get_contents($path.DS.BOWER_FILE)) {
-                $this->fatalError(TAB.'Can\'t open "'.$path.DS.BOWER_FILE.'" file.');
+        if (file_exists($path . DS . BOWER_FILE)) {
+            if (!$str = file_get_contents($path . DS . BOWER_FILE)) {
+                $this->fatalError(TAB . 'Can\'t open "' . $path . DS . BOWER_FILE . '" file.');
             }
 
             $bower = $this->parseJson($str);
             if (!isset($bower['main'])) {
-                echo TAB, CS_RED, 'Main section does not exists in "'.$path.DS.BOWER_FILE.'" file.', CS_RESET, LF;
+                echo TAB, CS_RED, 'Main section does not exists in "' . $path . DS . BOWER_FILE . '" file.', CS_RESET, LF;
 
                 return [];
             }
@@ -306,10 +306,10 @@ class Main
      */
     private function getDestinantion($component, $data)
     {
-        $destination = '.'.DS.implode(DS, explode('/', $data['target']));
+        $destination = '.' . DS . implode(DS, explode('/', $data['target']));
         if (!is_dir($destination)) {
             if (!mkdir($destination, 0755, true)) {
-                $this->fatalError(TAB.'Can\'t create "'.$destination.'" directory.');
+                $this->fatalError(TAB . 'Can\'t create "' . $destination . '" directory.');
             }
         }
 
@@ -393,7 +393,7 @@ class Main
         }
 
         foreach ($composer['extra']['post-install'] as $component => $data) {
-            $data['source'] = $this->vendorDir.DS.$component;
+            $data['source'] = $this->vendorDir . DS . $component;
             $this->components[$component] = $data;
         }
     }
@@ -408,7 +408,7 @@ class Main
         // The control lock file
         if (file_exists(LOCK_FILE)) {
             if (!$components = file_get_contents(LOCK_FILE)) {
-                $this->fatalError('Can\'t open '.LOCK_FILE.' file.');
+                $this->fatalError('Can\'t open ' . LOCK_FILE . ' file.');
             }
 
             $this->installed = unserialize($components);
@@ -538,7 +538,7 @@ class Main
                 $dstFile = array_pop($dstFile);
             }
 
-            $this->recursiveCopy($path.DS.$file, $destination.DS.$dstFile, $minify, $component);
+            $this->recursiveCopy($path . DS . $file, $destination . DS . $dstFile, $minify, $component);
         }
     }
 
@@ -587,7 +587,7 @@ class Main
         // Write the lock file
         echo CS_GREEN, 'Writing lock file', CS_RESET, LF;
         if (!file_put_contents(LOCK_FILE, serialize($this->installed))) {
-            $this->fatalError('Can\'t write '.LOCK_FILE.' file.');
+            $this->fatalError('Can\'t write ' . LOCK_FILE . ' file.');
         }
     }
 }

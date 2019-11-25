@@ -244,7 +244,7 @@ class Strings
 
     public static function numero($numero, $tamanho = '', $minimo = 1, $float = false, $negativo = false)
     {
-        return preg_match('/^'.($negativo ? '[\-]?' : '').'[0-9]{'.$minimo.','.$tamanho.'}'.($float !== false ? '\.[0-9]{1,'.$float.'}' : '').'$/', $numero);
+        return preg_match('/^' . ($negativo ? '[\-]?' : '') . '[0-9]{' . $minimo . ',' . $tamanho . '}' . ($float !== false ? '\.[0-9]{1,' . $float . '}' : '') . '$/', $numero);
     }
 
     /**
@@ -300,7 +300,7 @@ class Strings
      */
     public static function sizeMatch($string, $minSize = 5, $maxSize = 16)
     {
-        return preg_match('/^(.){'.$minSize.','.$maxSize.'}$/', $string);
+        return preg_match('/^(.){' . $minSize . ',' . $maxSize . '}$/', $string);
     }
 
     public static function cep(&$cep)
@@ -313,9 +313,9 @@ class Strings
     public static function telefone(&$ddd, &$telefone)
     {
         $telefone = preg_replace('/[^0-9]/', '', $telefone);
-        $len = strlen($ddd.$telefone);
+        $len = strlen($ddd . $telefone);
 
-        return ($len == 10 || $len == 11) && is_numeric($ddd.$telefone);
+        return ($len == 10 || $len == 11) && is_numeric($ddd . $telefone);
     }
 
     /* *** */
@@ -425,7 +425,7 @@ class Strings
         }
 
         $sub_cnpj = substr($cnpj, 0, 12);
-        $rev_cnpj = strrev($sub_cnpj.$dv1);
+        $rev_cnpj = strrev($sub_cnpj . $dv1);
 
         unset($sum);
         $sum = 0;

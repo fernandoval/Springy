@@ -25,6 +25,6 @@ class Where extends Conditions
     {
         $where = parent::__toString();
 
-        return (!empty($where) ? ' WHERE ' : '').$where;
+        return (!empty($where) ? ' WHERE ' : '') . $where;
     }
 }

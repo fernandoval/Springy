@@ -25,7 +25,7 @@ if (!defined('STDIN') || empty($argc)) {
 if ($argc < 2) {
     require 'sysconf.php';
 
-    echo sysconf('SYSTEM_NAME').' v'.sysconf('SYSTEM_VERSION')."\n";
+    echo sysconf('SYSTEM_NAME') . ' v' . sysconf('SYSTEM_VERSION') . "\n";
     echo "\n";
     echo 'ERROR: Controller command missing.',"\n";
     echo "\n";
@@ -48,7 +48,7 @@ while (++$arg < $argc) {
     if ($argv[$arg] == '--query_string') {
         $arg += 1;
         if (isset($argv[$arg])) {
-            $_SERVER['REQUEST_URI'] .= '?'.$argv[$arg];
+            $_SERVER['REQUEST_URI'] .= '?' . $argv[$arg];
             $_SERVER['QUERY_STRING'] .= $argv[$arg];
 
             foreach (explode('&', $argv[$arg]) as $get) {

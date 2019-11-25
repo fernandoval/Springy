@@ -120,17 +120,17 @@ class Conditions
             case self::OP_NOT_LIKE:
                 $this->parameters[] = $condition['value'];
 
-                return $expression.' '.$condition['column'].' '.$condition['operator'].' ?';
+                return $expression . ' ' . $condition['column'] . ' ' . $condition['operator'] . ' ?';
             case self::OP_IN:
             case self::OP_NOT_IN:
                 $this->parameters = array_merge($this->parameters, $condition['value']);
 
-                return $expression.' '.$condition['column'].($condition['operator'] === self::OP_NOT_IN ? ' NOT' : '').' IN ('.trim(str_repeat('?, ', count($condition['value'])), ', ').')';
+                return $expression . ' ' . $condition['column'] . ($condition['operator'] === self::OP_NOT_IN ? ' NOT' : '') . ' IN (' . trim(str_repeat('?, ', count($condition['value'])), ', ') . ')';
             case self::OP_MATCH:
             case self::OP_MATCH_BOOLEAN_MODE:
                 $this->parameters[] = $condition['value'];
 
-                return $expression.' MATCH ('.$condition['column'].') AGAINST (?'.($condition['operator'] === self::OP_MATCH_BOOLEAN_MODE ? ' IN BOOLEAN MODE' : '').')';
+                return $expression . ' MATCH (' . $condition['column'] . ') AGAINST (?' . ($condition['operator'] === self::OP_MATCH_BOOLEAN_MODE ? ' IN BOOLEAN MODE' : '') . ')';
         }
 
         throw new \Exception('Unknown condition operator.', 500);
@@ -155,12 +155,12 @@ class Conditions
                 $condStr = trim($this->condToString($condition, empty($conditions)));
             } elseif ($condition['type'] == self::EXPR_SUB) {
                 $sub = new self($condition['conditions']);
-                $condStr = (empty($conditions) ? '' : $condition['expression'].' ').'('.$sub->parse().')';
+                $condStr = (empty($conditions) ? '' : $condition['expression'] . ' ') . '(' . $sub->parse() . ')';
                 $this->parameters = array_merge($this->parameters, $sub->params());
                 unset($sub);
             }
 
-            $conditions .= ' '.$condStr;
+            $conditions .= ' ' . $condStr;
         }
 
         return trim($conditions);

@@ -35,10 +35,10 @@ class Mail
                 $mailer = key(Configuration::get('mail', 'mailers'));
             }
         }
-        $cfg = Configuration::get('mail', 'mailers.'.$mailer);
+        $cfg = Configuration::get('mail', 'mailers.' . $mailer);
 
         if ($cfg == null) {
-            throw new \Exception('Mail configuration \'mailers.'.$mailer.'\' undefined');
+            throw new \Exception('Mail configuration \'mailers.' . $mailer . '\' undefined');
         }
         if (!isset($cfg['driver'])) {
             throw new \Exception('Mail configuration \'driver\' undefined');

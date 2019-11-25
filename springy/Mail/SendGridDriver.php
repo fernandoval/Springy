@@ -222,7 +222,7 @@ class SendGridDriver implements MailDriverInterface
             $response = $this->sendgrid->send($this->mailObj);
             $error = $response->body();
         } catch (\Exception $err) {
-            $error = $err->getCode().' - '.$err->getMessage().' at '.$err->getFile().' ('.$err->getLine().')';
+            $error = $err->getCode() . ' - ' . $err->getMessage() . ' at ' . $err->getFile() . ' (' . $err->getLine() . ')';
         }
 
         return $error;

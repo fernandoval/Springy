@@ -19,8 +19,8 @@ if (!spl_autoload_register('springyAutoload')) {
 }
 
 // Load the Composer autoload script
-if (file_exists(sysconf('VENDOR_PATH').DIRECTORY_SEPARATOR.'autoload.php')) {
-    require sysconf('VENDOR_PATH').DIRECTORY_SEPARATOR.'autoload.php';
+if (file_exists(sysconf('VENDOR_PATH') . DIRECTORY_SEPARATOR . 'autoload.php')) {
+    require sysconf('VENDOR_PATH') . DIRECTORY_SEPARATOR . 'autoload.php';
 }
 
 // set_exception_handler('springyExceptionHandler');

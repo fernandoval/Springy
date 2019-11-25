@@ -14,7 +14,7 @@ class DBWhere extends DBExpression
 
     public function add(DBExpression $filtro, $conf = self::COND_AND)
     {
-        $this->where .= (!empty($this->where) ? ' '.$conf.' ' : '').'('.$filtro.')';
+        $this->where .= (!empty($this->where) ? ' ' . $conf . ' ' : '') . '(' . $filtro . ')';
 
         $valores = $filtro->getValue(); // o método pode retornar NULL, sendo assim, po PHP o considera não setado gerando um E_NOTICE
 
