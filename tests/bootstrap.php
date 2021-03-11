@@ -1,11 +1,12 @@
 <?php
+
 /**
  * Autoload initialization script for PHPUnit.
  *
  * @copyright 2015 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
  *
- * @version   1.0.0.3
+ * @version   1.0.4
  */
 
 // Edit the two lines above and set the relative path to sysconf.php e helpers.php scripts
@@ -15,7 +16,7 @@ define('HELPERS', 'www/helpers.php');
 require SYSCONF;
 require HELPERS;
 if (!spl_autoload_register('springyAutoload')) {
-    die('Internal System Error on Startup');
+    exit('Internal System Error on Startup');
 }
 
 // Load the Composer autoload script

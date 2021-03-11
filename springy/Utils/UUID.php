@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class library for generate Universally Unique Identifiers (UUID) RFC 4211 compatible.
  *
@@ -6,7 +7,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version	  0.1.3.4
+ * @version	  0.1.4
  */
 
 namespace Springy\Utils;
@@ -68,7 +69,8 @@ class UUID
         // Calculate hash value
         $hash = md5($nstr . $name);
 
-        return sprintf('%08s-%04s-%04x-%04x-%12s',
+        return sprintf(
+            '%08s-%04s-%04x-%04x-%12s',
             // 32 bits for "time_low"
             substr($hash, 0, 8),
 
@@ -98,7 +100,8 @@ class UUID
      */
     public static function v4()
     {
-        return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+        return sprintf(
+            '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
             // 32 bits for "time_low"
             mt_rand(0, 0xffff), mt_rand(0, 0xffff),
 
@@ -115,7 +118,9 @@ class UUID
             mt_rand(0, 0x3fff) | 0x8000,
 
             // 48 bits for "node"
-            mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
+            mt_rand(0, 0xffff),
+            mt_rand(0, 0xffff),
+            mt_rand(0, 0xffff)
         );
     }
 
@@ -149,7 +154,8 @@ class UUID
         // Calculate hash value
         $hash = sha1($nstr . $name);
 
-        return sprintf('%08s-%04s-%04x-%04x-%12s',
+        return sprintf(
+            '%08s-%04s-%04x-%04x-%12s',
             // 32 bits for "time_low"
             substr($hash, 0, 8),
 
@@ -181,6 +187,9 @@ class UUID
      */
     public static function isValid($uuid)
     {
-        return preg_match('/^\{?[0-9a-f]{8}\-?[0-9a-f]{4}\-?[0-9a-f]{4}\-?[0-9a-f]{4}\-?[0-9a-f]{12}\}?$/i', $uuid) === 1;
+        return preg_match(
+            '/^\{?[0-9a-f]{8}\-?[0-9a-f]{4}\-?[0-9a-f]{4}\-?[0-9a-f]{4}\-?[0-9a-f]{12}\}?$/i',
+            $uuid
+        ) === 1;
     }
 }

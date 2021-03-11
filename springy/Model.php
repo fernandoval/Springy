@@ -728,7 +728,8 @@ class Model extends DB implements \Iterator
         $this->execute(
             'UPDATE ' . $this->tableName . ' SET ' .
             implode(' = ?,', $this->changedColumns()) .
-            ' = ?' . $where, array_merge($this->_values(), $where->params())
+            ' = ?' . $where,
+            array_merge($this->_values(), $where->params())
         );
 
         // Call after update trigger

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Helper file - Functions and constants.
  *
@@ -6,7 +7,7 @@
  * @author     Allan Marques <allan.marques@ymail.com>
  * @author     Fernando Val <fernando.val@gmail.com>
  *
- * @version    4.0.0.13
+ * @version    4.0.14
  *
  * Let's make the developer happier and more productive.
  */
@@ -296,7 +297,7 @@ class SpringyException extends Exception
 // Kill system with internal error 500 if can not set autoload funcion
 if (!spl_autoload_register('springyAutoload')) {
     header('Content-type: text/html; charset=UTF-8', true, 500);
-    die('Internal System Error on Startup');
+    exit('Internal System Error on Startup');
 }
 
 // Define error handlers

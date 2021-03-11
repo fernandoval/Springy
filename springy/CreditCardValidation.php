@@ -1,4 +1,5 @@
 <?php
+
 /** \file
  *  Springy.
  *
@@ -7,7 +8,7 @@
  *  \author     Daniel Convissor <danielc@analysisandsolutions.com>
  *  \author     Fernando Val <fernando.val@gmail.com>
  *  \author     Mauricio Bastos <mbastos@gmail.com>
- *  \version    1.1.2
+ *  \version    1.1.2.1
  *  \ingroup    framework
  */
 
@@ -232,9 +233,14 @@ class CreditCardValidation
      *
      * @license    http://www.analysisandsolutions.com/software/license.htm Simple Public License
      */
-    public function validateCreditCard($Number, $Language = 'en', $Accepted = '',
-                                  $RequireExp = 'N', $Month = '', $Year = '')
-    {
+    public function validateCreditCard(
+        $Number,
+        $Language = 'en',
+        $Accepted = '',
+        $RequireExp = 'N',
+        $Month = '',
+        $Year = ''
+    ) {
         $this->CCVSNumber = '';
         $this->CCVSNumberLeft = '';
         $this->CCVSNumberLeft6 = '';

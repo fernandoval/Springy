@@ -1,4 +1,5 @@
 <?php
+
 /**	\file
  *	Springy.
  *
@@ -6,7 +7,7 @@
  *  \copyright	Copyright (c) 2007-2016 Fernando Val
  *  \author		Fernando Val  - fernando.val@gmail.com
  *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	1.6.9
+ *	\version	1.6.10
  *	\ingroup	framework
  */
 
@@ -66,8 +67,7 @@ class Strings_UTF8 extends Strings
         // return $txt;
         return strtr(
             utf8_decode($txt),
-            utf8_decode(
-            'ÀÁÂÃÄÅÇÈÉÊËÌÍÎÏÑÒÓÔÕÖÙÚÛÜÝàáâãäåçèéêëìíîïñòóôõöùúûüýÿ¹²³'),
+            utf8_decode('ÀÁÂÃÄÅÇÈÉÊËÌÍÎÏÑÒÓÔÕÖÙÚÛÜÝàáâãäåçèéêëìíîïñòóôõöùúûüýÿ¹²³'),
             'AAAAAACEEEEIIIINOOOOOUUUUYaaaaaaceeeeiiiinooooouuuuyy123'
         );
     }

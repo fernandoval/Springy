@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class library for string processing.
  *
@@ -6,7 +7,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   0.13.22.24
+ * @version   0.13.25
  */
 
 namespace Springy\Utils;
@@ -409,6 +410,7 @@ class Strings
         }
         $sum = 0;
         $rev_cnpj = strrev(substr($cnpj, 0, 12));
+        $multiplier = 0;
         for ($i = 0; $i <= 11; $i++) {
             $i == 0 ? $multiplier = 2 : $multiplier;
             $i == 8 ? $multiplier = 2 : $multiplier;
@@ -429,6 +431,7 @@ class Strings
 
         unset($sum);
         $sum = 0;
+        $multiplier = 0;
         for ($i = 0; $i <= 12; $i++) {
             $i == 0 ? $multiplier = 2 : $multiplier;
             $i == 8 ? $multiplier = 2 : $multiplier;

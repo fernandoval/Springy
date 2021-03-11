@@ -7,7 +7,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.2.6.39
+ * @version   2.2.7.40
  */
 
 namespace Springy;
@@ -87,7 +87,7 @@ class URI
             header('Expires: 0');
             header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
             header('Cache-Control: private', false);
-            die(md5(microtime()));
+            exit(md5(microtime()));
         }
 
         self::$uri_string = self::_fetchURItring();
@@ -602,7 +602,7 @@ class URI
     /**
      * Codifica os parâmetros GET de uma URI.
      *
-     * @param string $query Array contendo os parâmetros chave => valor
+     * @param array  $query Array contendo os parâmetros chave => valor
      * @param string $key   Nome da chave para quando query possuir apenas os valores
      * @param string $param variável de retorno da query string
      *

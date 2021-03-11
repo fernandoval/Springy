@@ -1,4 +1,5 @@
 <?php
+
 /** \file
  *  Springy.
  *
@@ -7,7 +8,7 @@
  *  \copyright  Copyright (c) 2007-2018 Fernando Val
  *  \author     Fernando Val - fernando.val@gmail.com
  *
- *  \version    2.0.1.14
+ *  \version    2.0.1.15
  *  \ingroup    framework
  */
 
@@ -176,16 +177,21 @@ class WsseAuthHeader extends \SoapHeader
             $this->wss_ns = $ns;
         }
 
-        $auth = new stdClass();
+        $auth = new \stdClass();
         $auth->Username = new \SoapVar($user, \XSD_STRING, null, $this->wss_ns, null, $this->wss_ns);
         $auth->Password = new \SoapVar($pass, \XSD_STRING, null, $this->wss_ns, null, $this->wss_ns);
 
-        $username_token = new stdClass();
+        $username_token = new \stdClass();
         $username_token->UsernameToken = new \SoapVar($auth, \SOAP_ENC_OBJECT, null, $this->wss_ns, 'UsernameToken', $this->wss_ns);
 
         $security_sv = new \SoapVar(
             new \SoapVar($username_token, \SOAP_ENC_OBJECT, null, $this->wss_ns, 'UsernameToken', $this->wss_ns),
-            \SOAP_ENC_OBJECT, null, $this->wss_ns, 'Security', $this->wss_ns);
+            \SOAP_ENC_OBJECT,
+            null,
+            $this->wss_ns,
+            'Security',
+            $this->wss_ns
+        );
         parent::__construct($this->wss_ns, 'Security', $security_sv, true);
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Framework kernel.
  *
@@ -7,7 +8,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version    2.4.3.85
+ * @version    2.4.86
  */
 
 namespace Springy;
@@ -328,7 +329,7 @@ class Kernel
 
         header('WWW-Authenticate: Basic realm="' . utf8_decode('What are you doing here?') . '"');
         header('HTTP/1.0 401 Unauthorized');
-        die('Unauthorized!');
+        exit('Unauthorized!');
     }
 
     /**
@@ -460,7 +461,7 @@ class Kernel
 
         // System is under maintenance mode?
         if (Configuration::get('system', 'maintenance')) {
-            Errors::displayError(503, 'The system is under maintenance');
+            new Errors(503, 'The system is under maintenance');
         }
 
         // Start the application
@@ -837,7 +838,7 @@ class Kernel
             return $array;
         }
 
-        $object = new stdClass();
+        $object = new \stdClass();
         if (count($array) > 0) {
             foreach ($array as $name => $value) {
                 $name = trim($name);

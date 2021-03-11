@@ -1,11 +1,12 @@
 <?php
+
 /**
  * Framework debug.
  *
  * @copyright 2007 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
  *
- * @version    1.0.3.8
+ * @version    1.0.3.9
  */
 
 namespace Springy\Core;
@@ -142,7 +143,9 @@ class Debug
                 Kernel::runTime() .
                 ' seconds' . "\n" .
                 'Maximum memory consumption: ' . $mem,
-                '', true, false
+                '',
+                true,
+                false
             );
             unset($mem);
 
@@ -161,8 +164,10 @@ class Debug
             }
 
             echo preg_replace(
-                '/^(.*?)$/', '<script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js"></script>' .
-                $htmlDebug . '\\1', $content
+                '/^(.*?)$/',
+                '<script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js"></script>' .
+                $htmlDebug . '\\1',
+                $content
             );
         }
     }
