@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Parent class for models.
  *
@@ -9,11 +10,12 @@
  * @author    Allan Marques <allan.marques@ymail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.6.1.58
+ * @version   2.6.1.59
  */
 
 namespace Springy;
 
+use Exception;
 use Springy\DB\Conditions;
 use Springy\DB\Where;
 use Springy\Validation\Validator;
@@ -1148,9 +1150,19 @@ class Model extends DB implements \Iterator
         $join = $this->join;
         $this->setJoin($embbed);
 
-        $select = 'SELECT ' . ($this->driverName() == 'mysql' ? 'SQL_CALC_FOUND_ROWS ' : '') . $this->_getColumns() . $this->_getFrom();
+        $select = 'SELECT ' .
+            (
+                $this->driverName() == 'mysql' && $limit > 0
+                    ? 'SQL_CALC_FOUND_ROWS '
+                    : ''
+            ) . $this->_getColumns() . $this->_getFrom();
 
-        $sql = $select . $where . (count($this->groupBy) ? ' GROUP BY ' . $this->_parseColumns($this->tableName, $this->groupBy) : '');
+        $sql = $select . $where .
+            (
+                count($this->groupBy)
+                    ? ' GROUP BY ' . $this->_parseColumns($this->tableName, $this->groupBy)
+                    : ''
+            );
         $params = $where->params();
 
         // Monta a cláusula HAVING de condicionamento
