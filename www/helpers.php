@@ -101,7 +101,7 @@ function dd($var, $die = true)
     echo '</pre>';
 
     if ($die) {
-        die;
+        exit;
     }
 }
 

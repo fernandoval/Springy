@@ -8,7 +8,6 @@
  *
  * @version    5.0.35
  */
-
 $springyStartTime = microtime(true); // Memoriza a hora do início do processamento
 
 // Kill system with internal error 500 if initial setup file does not exists
