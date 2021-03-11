@@ -56,7 +56,7 @@ class ZipFile
         unset($arr[count($arr) - 1]);
         $file = null;
         foreach ($arr as $v) {
-            $file .= $v.'.';
+            $file .= $v . '.';
         }
         $file .= $suffix;
 
@@ -133,13 +133,13 @@ class ZipFile
         $data = implode(null, $this->datasec);
         $ctrldir = implode(null, $this->ctrl_dir);
 
-        return $data.
-               $ctrldir.
-               $this->eof_ctrl_dir.
-               pack('v', count($this->ctrl_dir)).// total # of entries "on this disk"
-               pack('v', count($this->ctrl_dir)).// total # of entries overall
-               pack('V', strlen($ctrldir)).// size of central dir
-               pack('V', strlen($data)).// offset to start of central dir
+        return $data .
+               $ctrldir .
+               $this->eof_ctrl_dir .
+               pack('v', count($this->ctrl_dir)) . // total # of entries "on this disk"
+               pack('v', count($this->ctrl_dir)) . // total # of entries overall
+               pack('V', strlen($ctrldir)) . // size of central dir
+               pack('V', strlen($data)) . // offset to start of central dir
                "\x00\x00";                             // .zip file comment length
     }
 
@@ -181,15 +181,15 @@ class ZipFile
         }
 
         $name = str_replace('\\', '/', $name);
-        $name = preg_replace('/^('.str_replace('/', '\/', $this->root_path).')?(.*)$/', '\\2', $name);
+        $name = preg_replace('/^(' . str_replace('/', '\/', $this->root_path) . ')?(.*)$/', '\\2', $name);
 
         $dtime = dechex($this->unix2DosTime($time));
-        $hexdtime = '\x'.$dtime[6].$dtime[7]
-                  .'\x'.$dtime[4].$dtime[5]
-                  .'\x'.$dtime[2].$dtime[3]
-                  .'\x'.$dtime[0].$dtime[1];
+        $hexdtime = '\x' . $dtime[6] . $dtime[7]
+                  . '\x' . $dtime[4] . $dtime[5]
+                  . '\x' . $dtime[2] . $dtime[3]
+                  . '\x' . $dtime[0] . $dtime[1];
 
-        eval('$hexdtime = "'.$hexdtime.'";');
+        eval('$hexdtime = "' . $hexdtime . '";');
 
         $fr = "\x50\x4b\x03\x04";
         $fr .= "\x14\x00";            // ver needed to extract
@@ -284,7 +284,7 @@ class ZipFile
         //You need FPDF to use this function!
         //get it at http://www.fpdf.org/
 
-        if (include($this->pathToFPDF)) {
+        if (include $this->pathToFPDF) {
             $pdf = new PDF();
             $pdf->Open();
 
@@ -300,18 +300,18 @@ class ZipFile
         } else {
             $filecontent = implode(null, file($file));
 
-            $content .= '********************************************'."\n";
-            $content .= '*                                          *'."\n";
-            $content .= '*   Couldn\'t find FPDF!                   *'."\n";
-            $content .= '*   Adding this File as plain text file.   *'."\n";
-            $content .= '*                                          *'."\n";
-            $content .= '*   Below this box is the sourcefile.      *'."\n";
-            $content .= '*                                          *'."\n";
-            $content .= '********************************************'."\n";
+            $content .= '********************************************' . "\n";
+            $content .= '*                                          *' . "\n";
+            $content .= '*   Couldn\'t find FPDF!                   *' . "\n";
+            $content .= '*   Adding this File as plain text file.   *' . "\n";
+            $content .= '*                                          *' . "\n";
+            $content .= '*   Below this box is the sourcefile.      *' . "\n";
+            $content .= '*                                          *' . "\n";
+            $content .= '********************************************' . "\n";
 
-            $content .= ' '."\n";
-            $content .= ' '."\n";
-            $content .= ' '."\n";
+            $content .= ' ' . "\n";
+            $content .= ' ' . "\n";
+            $content .= ' ' . "\n";
 
             $content .= $filecontent;
 
@@ -330,7 +330,7 @@ class ZipFile
             $path .= DIRECTORY_SEPARATOR;
         }
 
-        if ($fileh = fopen($path.$this->output_filename, 'wb+')) {
+        if ($fileh = fopen($path . $this->output_filename, 'wb+')) {
             if (fwrite($fileh, $this->zipContent())) {
                 $return = true;
             }
@@ -346,7 +346,7 @@ class ZipFile
     public function download()
     {
         header('Content-Type: application/x-zip');
-        header('Content-Disposition: inline; filename="'.$this->output_filename.'"');
+        header('Content-Disposition: inline; filename="' . $this->output_filename . '"');
         header('Expires: 0');
         header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
         header('Pragma: public');

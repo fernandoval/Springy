@@ -109,7 +109,7 @@ class DeepDir
                 if ($file == '.' || $file == '..') {
                     continue;
                 }
-                $filePath = $this->curDir.'/'.$file;
+                $filePath = $this->curDir . '/' . $file;
                 $fileType = filetype($filePath);
                 if ($fileType == 'dir') {
                     array_push($this->dirFILO, $filePath);
@@ -119,7 +119,7 @@ class DeepDir
             }
             closedir($handle);
         } else {
-            $this->error = 'error open dir "'.$this->curDir.'"';
+            $this->error = 'error open dir "' . $this->curDir . '"';
 
             return false;
         }

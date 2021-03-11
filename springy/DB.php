@@ -103,7 +103,7 @@ class DB
 
         $pdoConf = [];
         if ($conf['database_type'] == 'mysql') {
-            $pdoConf[\PDO::MYSQL_ATTR_INIT_COMMAND] = 'SET NAMES \''.($conf['charset'] ?? 'UTF8').'\'';
+            $pdoConf[\PDO::MYSQL_ATTR_INIT_COMMAND] = 'SET NAMES \'' . ($conf['charset'] ?? 'UTF8') . '\'';
         }
 
         if ($conf['persistent']) {
@@ -127,7 +127,7 @@ class DB
                 // a instância de conexão é estática, para nao criar uma nova a cada nova instãncia da classe
                 self::$conectionIds[$database] = [
                     'PDO' => new \PDO(
-                        $conf['database_type'].':host='.$conf['host_name'].';dbname='.$conf['database'],
+                        $conf['database_type'] . ':host=' . $conf['host_name'] . ';dbname=' . $conf['database'],
                         $conf['user_name'],
                         $conf['password'],
                         $pdoConf
@@ -175,26 +175,26 @@ class DB
             $memCached->addServer($roundRobin['server_addr'], $roundRobin['server_port']);
 
             // Define o próximo servidor do pool
-            if (!($actual = (int) $memCached->get('dbrr_'.$database))) {
+            if (!($actual = (int) $memCached->get('dbrr_' . $database))) {
                 $actual = 0;
             }
             if (++$actual >= count($dbconf['host_name'])) {
                 $actual = 0;
             }
 
-            $memCached->set('dbrr_'.$database, $actual, 0);
+            $memCached->set('dbrr_' . $database, $actual, 0);
         }
         // Efetua controle de round robin em arquivo
         elseif ($roundRobin['type'] == 'file') {
             // Define o próximo servidor do pool
-            if ((!file_exists($roundRobin['server_addr'].DIRECTORY_SEPARATOR.'dbrr_'.$database)) || !($actual = (int) file_get_contents($roundRobin['server_addr'].DIRECTORY_SEPARATOR.'dbrr_'.$database))) {
+            if ((!file_exists($roundRobin['server_addr'] . DIRECTORY_SEPARATOR . 'dbrr_' . $database)) || !($actual = (int) file_get_contents($roundRobin['server_addr'] . DIRECTORY_SEPARATOR . 'dbrr_' . $database))) {
                 $actual = 0;
             }
             if (++$actual >= count($dbconf['host_name'])) {
                 $actual = 0;
             }
 
-            file_put_contents($roundRobin['server_addr'].DIRECTORY_SEPARATOR.'dbrr_'.$database, $actual);
+            file_put_contents($roundRobin['server_addr'] . DIRECTORY_SEPARATOR . 'dbrr_' . $database, $actual);
         } else {
             return false;
         }
@@ -296,9 +296,9 @@ class DB
         $sqlError = 'Still this connection was not executed some instruction SQL using.';
         if (isset($this->lastQuery)) {
             if (PHP_SAPI === 'cli' || defined('STDIN')) {
-                $sqlError = htmlentities((is_object($this->lastQuery) ? $this->lastQuery->__toString() : $this->lastQuery))."\n".'Parametros: '.Debug::print_rc($this->lastValues);
+                $sqlError = htmlentities((is_object($this->lastQuery) ? $this->lastQuery->__toString() : $this->lastQuery)) . "\n" . 'Parametros: ' . Debug::print_rc($this->lastValues);
             } else {
-                $sqlError = '<pre>'.htmlentities((is_object($this->lastQuery) ? $this->lastQuery->__toString() : $this->lastQuery)).'</pre><br /> Parametros:<br />'.Debug::print_rc($this->lastValues);
+                $sqlError = '<pre>' . htmlentities((is_object($this->lastQuery) ? $this->lastQuery->__toString() : $this->lastQuery)) . '</pre><br /> Parametros:<br />' . Debug::print_rc($this->lastValues);
             }
         }
 
@@ -310,43 +310,43 @@ class DB
         }
 
         $htmlError = '<tr>'
-            .'  <td style="background-color:#66C; color:#FFF; font-weight:bold; padding-left:10px; padding:3px 2px" colspan="2">DBMS informations</td>'
-            .'</tr>'
-            .'<tr>'
-            .'  <td valign="top"><label style="font-weight:bold">Host:</label></td>'
-            .'  <td>'.$conf['host_name'].'</td>'
-            .'</tr>'
-            .'<tr style="background:#efefef">'
-            .'  <td valign="top"><label style="font-weight:bold">User:</label></td>'
-            .'  <td><span style="background:#efefef">'.($conf['user_name'] ?? 'not set').'</span></td>'
-            .'</tr>'
-            .'<tr>'
-            .'  <td valign="top"><label style="font-weight:bold">Password:</label></td>'
-            .'  <td>'.($conf['password'] ?? 'not set').'</td>'
-            .'</tr>'
-            .'<tr>'
-            .'  <td valign="top"><label style="font-weight:bold">DB:</label></td>'
-            .'  <td><span style="background:#efefef">'.($conf['database'] ?? 'not set').'</span></td>'
-            .'</tr>';
+            . '  <td style="background-color:#66C; color:#FFF; font-weight:bold; padding-left:10px; padding:3px 2px" colspan="2">DBMS informations</td>'
+            . '</tr>'
+            . '<tr>'
+            . '  <td valign="top"><label style="font-weight:bold">Host:</label></td>'
+            . '  <td>' . $conf['host_name'] . '</td>'
+            . '</tr>'
+            . '<tr style="background:#efefef">'
+            . '  <td valign="top"><label style="font-weight:bold">User:</label></td>'
+            . '  <td><span style="background:#efefef">' . ($conf['user_name'] ?? 'not set') . '</span></td>'
+            . '</tr>'
+            . '<tr>'
+            . '  <td valign="top"><label style="font-weight:bold">Password:</label></td>'
+            . '  <td>' . ($conf['password'] ?? 'not set') . '</td>'
+            . '</tr>'
+            . '<tr>'
+            . '  <td valign="top"><label style="font-weight:bold">DB:</label></td>'
+            . '  <td><span style="background:#efefef">' . ($conf['database'] ?? 'not set') . '</span></td>'
+            . '</tr>';
         if (PHP_SAPI === 'cli' || defined('STDIN')) {
-            $htmlError = 'DBMS informations'."\n"
-                .'Host: '.$conf['host_name']."\n"
-                .'Login: '.($conf['user_name'] ?? 'not set')."\n"
-                .'Senha: '.($conf['password'] ?? 'not set')."\n"
-                .'DB: '.($conf['database'] ?? 'not set')."\n";
+            $htmlError = 'DBMS informations' . "\n"
+                . 'Host: ' . $conf['host_name'] . "\n"
+                . 'Login: ' . ($conf['user_name'] ?? 'not set') . "\n"
+                . 'Senha: ' . ($conf['password'] ?? 'not set') . "\n"
+                . 'DB: ' . ($conf['database'] ?? 'not set') . "\n";
         }
         unset($sqlError);
 
         // Send the report of error and kill the application
         $errors = new Errors();
         $errors->sendReport(
-            '<span style="color:#FF0000">'.$msg.'</span> - '.
-            '('.$errorInfo[1].') '.$errorInfo[2].
-            ($exception ? '<br />'.$exception->getMessage() : '').
-            '<br /><pre>'.$this->lastQuery.'</pre><br />Values: '.
+            '<span style="color:#FF0000">' . $msg . '</span> - ' .
+            '(' . $errorInfo[1] . ') ' . $errorInfo[2] .
+            ($exception ? '<br />' . $exception->getMessage() : '') .
+            '<br /><pre>' . $this->lastQuery . '</pre><br />Values: ' .
             Debug::print_rc($this->lastValues),
             500,
-            hash('crc32', $msg.$errorInfo[1].$this->lastQuery), // error id
+            hash('crc32', $msg . $errorInfo[1] . $this->lastQuery), // error id
             $htmlError
         );
     }
@@ -444,7 +444,7 @@ class DB
         if ((is_int($this->cacheExpires) || is_int($cacheLifeTime))
             && strtoupper(substr(ltrim($sql), 0, 19)) == 'SELECT FOUND_ROWS()'
             && strtoupper(substr(ltrim($this->lastQuery), 0, 7)) == 'SELECT ') {
-            $this->lastQuery = $sql.'; /* '.md5(implode('//', array_merge([$this->lastQuery], $this->lastValues))).' */';
+            $this->lastQuery = $sql . '; /* ' . md5(implode('//', array_merge([$this->lastQuery], $this->lastValues))) . ' */';
         } else {
             $this->lastQuery = $sql;
         }
@@ -465,7 +465,7 @@ class DB
                 try {
                     $mc = new \Memcached();
                     $mc->addServer($dbcache['server_addr'], $dbcache['server_port']);
-                    if ($sql = $mc->get('cacheDB_'.$cacheKey)) {
+                    if ($sql = $mc->get('cacheDB_' . $cacheKey)) {
                         $this->cacheStatement = $sql;
                     }
                     unset($mc);
@@ -507,7 +507,7 @@ class DB
                     if (is_numeric($key)) {
                         $this->resSQL->bindValue(++$numeric, $where, $param);
                     } else {
-                        $this->resSQL->bindValue(':'.$key, $where, $param);
+                        $this->resSQL->bindValue(':' . $key, $where, $param);
                     }
                 }
                 unset($key, $where, $param, $numeric);
@@ -530,12 +530,12 @@ class DB
                         $mc = new \Memcached();
                         $mc->addServer($dbcache['server_addr'], $dbcache['server_port']);
                         $this->cacheStatement = $this->fetchAll();
-                        $mc->set('cacheDB_'.$cacheKey, $this->cacheStatement, min(is_int($cacheLifeTime) ? $cacheLifeTime : 86400, is_int($this->cacheExpires) ? $this->cacheExpires : 86400));
+                        $mc->set('cacheDB_' . $cacheKey, $this->cacheStatement, min(is_int($cacheLifeTime) ? $cacheLifeTime : 86400, is_int($this->cacheExpires) ? $this->cacheExpires : 86400));
                         unset($mc);
                         $this->resSQL->closeCursor();
                         $this->resSQL = null;
                     } catch (Exception $e) {
-                        debug($this->lastQuery, 'Erro: '.$e->getMessage());
+                        debug($this->lastQuery, 'Erro: ' . $e->getMessage());
                     }
                 }
             }
@@ -545,11 +545,11 @@ class DB
             $conf = Configuration::get('db', self::$conectionIds[$this->database]['dbName']);
 
             debug(
-                '<pre>'.$this->lastQuery.'</pre><br />Values: '.
-                Debug::print_rc($this->lastValues).'<br />'.
-                'Affected Rows: '.$this->affectedRows().'<br />'.
-                'DB: '.($conf['database'] ?? 'not set'),
-                'SQL #'.self::$sqlNum,
+                '<pre>' . $this->lastQuery . '</pre><br />Values: ' .
+                Debug::print_rc($this->lastValues) . '<br />' .
+                'Affected Rows: ' . $this->affectedRows() . '<br />' .
+                'DB: ' . ($conf['database'] ?? 'not set'),
+                'SQL #' . self::$sqlNum,
                 false
             );
         }
@@ -789,7 +789,7 @@ class DB
             return $this->resSQL->fetchColumn($var);
         }
 
-        $this->reportError($var.' is not defined in select or data is empty.');
+        $this->reportError($var . ' is not defined in select or data is empty.');
 
         return false;
     }
@@ -866,7 +866,7 @@ class DB
         $mes = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
         $numMes = (int) date('m', $dateTime);
 
-        return date('d', $dateTime).' de '.$mes[--$numMes].' de '.date('Y', $dateTime);
+        return date('d', $dateTime) . ' de ' . $mes[--$numMes] . ' de ' . date('Y', $dateTime);
     }
 
     /**

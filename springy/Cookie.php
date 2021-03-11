@@ -46,7 +46,7 @@ class Cookie
             // Set string representation
             $cooKey = key($key);
             $cooVal = value($key);
-            $cookie = $cooKey.'['.$cooVal.']';
+            $cookie = $cooKey . '[' . $cooVal . ']';
 
             // Set expiration time to -1 day (will cause browser deletion)
             setcookie($cookie, false, time() - 86400);
@@ -60,7 +60,7 @@ class Cookie
         if (is_array($_COOKIE[$key])) {
             foreach ($_COOKIE[$key] as $cooKey => $cooVal) {
                 // Set string representation
-                $cookie = $key.'['.$cooKey.']';
+                $cookie = $key . '[' . $cooKey . ']';
 
                 // Set expiration time to -1 day (will cause browser deletion)
                 setcookie($cookie, false, time() - 86400);
@@ -189,7 +189,7 @@ class Cookie
                 $cooKey = key($key);
                 $cooVal = current($key);
                 // Set string representation
-                $key = $cooKey.'['.$cooVal.']';
+                $key = $cooKey . '[' . $cooVal . ']';
             }
 
             return $key;

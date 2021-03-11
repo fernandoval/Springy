@@ -7,7 +7,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.2.6.39
+ * @version   2.2.7.40
  */
 
 namespace Springy;
@@ -54,7 +54,7 @@ class URI
 
         // Não há QUERY_STRING? Então a variável ORIG_PATH_INFO existe?
         $path = (isset($_SERVER['ORIG_PATH_INFO'])) ? $_SERVER['ORIG_PATH_INFO'] : @getenv('ORIG_PATH_INFO');
-        if (trim($path, '/') != '' && $path != '/'.pathinfo(__FILE__, PATHINFO_BASENAME)) {
+        if (trim($path, '/') != '' && $path != '/' . pathinfo(__FILE__, PATHINFO_BASENAME)) {
             // remove caminho e informações do script, então temos uma boa URI
             return str_replace($_SERVER['SCRIPT_NAME'], '', $path);
         }
@@ -87,7 +87,7 @@ class URI
             header('Expires: 0');
             header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
             header('Cache-Control: private', false);
-            die(md5(microtime()));
+            exit(md5(microtime()));
         }
 
         self::$uri_string = self::_fetchURItring();
@@ -162,18 +162,18 @@ class URI
         $controller = null;
 
         // Procura a controller correta e corrige a página atual se necessário
-        $path = Kernel::path(Kernel::PATH_CONTROLLER).(count(Kernel::controllerRoot()) ? DIRECTORY_SEPARATOR.implode(DIRECTORY_SEPARATOR, Kernel::controllerRoot()) : '');
+        $path = Kernel::path(Kernel::PATH_CONTROLLER) . (count(Kernel::controllerRoot()) ? DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, Kernel::controllerRoot()) : '');
         $segment = 0;
         while (self::getSegment($segment, false)) {
-            $path .= DIRECTORY_SEPARATOR.self::getSegment($segment, false);
-            $file = $path.'.page.php';
+            $path .= DIRECTORY_SEPARATOR . self::getSegment($segment, false);
+            $file = $path . '.page.php';
             if (file_exists($file)) {
                 $controller = $file;
                 self::setCurrentPage($segment);
                 self::_setClassController(self::currentPage());
                 break;
             } elseif (is_dir($path) && (!self::getSegment($segment + 1, false))) {
-                $file = $path.DIRECTORY_SEPARATOR.'index.page.php';
+                $file = $path . DIRECTORY_SEPARATOR . 'index.page.php';
                 if (file_exists($file)) {
                     $controller = $file;
                     self::addSegment('index');
@@ -182,7 +182,7 @@ class URI
                     break;
                 }
             } elseif (is_dir($path)) {
-                $file = $path.DIRECTORY_SEPARATOR.'index.page.php';
+                $file = $path . DIRECTORY_SEPARATOR . 'index.page.php';
                 if (file_exists($file)) {
                     $possible_controller = $file;
                     $possible_segment_name = 'index';
@@ -207,14 +207,14 @@ class URI
             $routes = Configuration::get('uri', 'routes');
             if (is_array($routes)) {
                 foreach ($routes as $key => $data) {
-                    if (preg_match('/^'.$key.'$/', $UriString, $matches)) {
+                    if (preg_match('/^' . $key . '$/', $UriString, $matches)) {
                         if (isset($data['root_controller'])) {
                             Kernel::controllerRoot($data['root_controller']);
                         }
                         if (substr($data['controller'], 0, 1) == '$') {
                             $data['controller'] = $matches[(int) substr($data['controller'], 1)];
                         }
-                        $controller = Kernel::path(Kernel::PATH_CONTROLLER).(count(Kernel::controllerRoot()) ? DIRECTORY_SEPARATOR.implode(DIRECTORY_SEPARATOR, Kernel::controllerRoot()) : '').DIRECTORY_SEPARATOR.$data['controller'].'.page.php';
+                        $controller = Kernel::path(Kernel::PATH_CONTROLLER) . (count(Kernel::controllerRoot()) ? DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, Kernel::controllerRoot()) : '') . DIRECTORY_SEPARATOR . $data['controller'] . '.page.php';
                         self::_setClassController($data['controller']);
                         self::setCurrentPage($data['segment']);
                         break;
@@ -232,7 +232,7 @@ class URI
             $redirects = Configuration::get('uri', 'redirects');
             if (is_array($redirects)) {
                 foreach ($redirects as $key => $data) {
-                    if (preg_match('/^'.$key.'$/', $UriString)) {
+                    if (preg_match('/^' . $key . '$/', $UriString)) {
                         foreach ($data['segments'] as $segment => $value) {
                             if (substr($value, 0, 1) == '$') {
                                 $data['segments'][$segment] = isset(self::$segments[(int) substr($value, 1)]) ? self::$segments[(int) substr($value, 1)] : '';
@@ -258,10 +258,10 @@ class URI
             return;
         }
 
-        $ctrl = trim(str_replace(DIRECTORY_SEPARATOR, '/', (Kernel::controllerRoot() ? implode(DIRECTORY_SEPARATOR, Kernel::controllerRoot()) : '')).'/'.self::getControllerClass(), '/');
+        $ctrl = trim(str_replace(DIRECTORY_SEPARATOR, '/', (Kernel::controllerRoot() ? implode(DIRECTORY_SEPARATOR, Kernel::controllerRoot()) : '')) . '/' . self::getControllerClass(), '/');
 
-        if (isset($pctlr[$ctrl.'/'.self::getSegment(0)])) {
-            $ctrl .= '/'.self::getSegment(0);
+        if (isset($pctlr[$ctrl . '/' . self::getSegment(0)])) {
+            $ctrl .= '/' . self::getSegment(0);
         }
 
         if (!isset($pctlr[$ctrl]) && !isset($pctlr[$ctrl]['command'])) {
@@ -333,7 +333,7 @@ class URI
     {
         $path = (count(Kernel::controllerRoot()) && $consider_controller_root ? implode(DIRECTORY_SEPARATOR, Kernel::controllerRoot()) : '');
         for ($i = 0; $i < self::$segment_page; $i++) {
-            $path .= (empty($path) ? '' : DIRECTORY_SEPARATOR).self::getSegment($i, false);
+            $path .= (empty($path) ? '' : DIRECTORY_SEPARATOR) . self::getSegment($i, false);
         }
 
         return $path;
@@ -346,7 +346,7 @@ class URI
      */
     public static function currentPageURI()
     {
-        return trim(str_replace(DIRECTORY_SEPARATOR, '/', self::relativePathPage()).'/'.self::currentPage(), '/');
+        return trim(str_replace(DIRECTORY_SEPARATOR, '/', self::relativePathPage()) . '/' . self::currentPage(), '/');
     }
 
     /**
@@ -545,7 +545,7 @@ class URI
             $segments = array_merge(self::$ignored_segments, is_array($segments) ? $segments : [$segments]);
         }
 
-        $url = str_replace('//', '/', Configuration::get('uri', 'system_root').'/');
+        $url = str_replace('//', '/', Configuration::get('uri', 'system_root') . '/');
 
         // Se rewrite de URL está desligado e não está sendo forçado, acrescenta ? à URL
         if (Configuration::get('system', 'rewrite_url') === false && $forceRewrite === false) {
@@ -556,7 +556,7 @@ class URI
         $uri = '';
         for ($i = 0; $i < count($segments); $i++) {
             if ($segments[$i] != 'index' && $segments[$i] != '') {
-                $uri .= (empty($uri) ? '' : '/').self::makeSlug($segments[$i], '-', '\.,|~\#', false);
+                $uri .= (empty($uri) ? '' : '/') . self::makeSlug($segments[$i], '-', '\.,|~\#', false);
             }
         }
         $url .= $uri;
@@ -568,7 +568,7 @@ class URI
         // Monta os parâmetros a serem passados por GET
         self::encodeParam($query, '', $param);
 
-        return self::_host($host).$url.$param;
+        return self::_host($host) . $url . $param;
     }
 
     /**
@@ -576,7 +576,7 @@ class URI
      */
     public static function httpHost()
     {
-        return trim(preg_replace('/([^:]+)(:\\d+)?/', '$1'.((sysconf('CONSIDER_PORT_NUMBER') !== null && sysconf('CONSIDER_PORT_NUMBER')) ? '$2' : ''), isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : ''), ' ..@');
+        return trim(preg_replace('/([^:]+)(:\\d+)?/', '$1' . ((sysconf('CONSIDER_PORT_NUMBER') !== null && sysconf('CONSIDER_PORT_NUMBER')) ? '$2' : ''), isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : ''), ' ..@');
     }
 
     /**
@@ -596,13 +596,13 @@ class URI
             }
         }
 
-        return (isset($_SERVER['HTTPS']) ? 'https://' : 'http://').$host;
+        return (isset($_SERVER['HTTPS']) ? 'https://' : 'http://') . $host;
     }
 
     /**
      * Codifica os parâmetros GET de uma URI.
      *
-     * @param string $query Array contendo os parâmetros chave => valor
+     * @param array  $query Array contendo os parâmetros chave => valor
      * @param string $key   Nome da chave para quando query possuir apenas os valores
      * @param string $param variável de retorno da query string
      *
@@ -612,9 +612,9 @@ class URI
     {
         foreach ($query as $var => $value) {
             if (is_array($value)) {
-                self::encodeParam($value, $var.'['.key($value).']', $param);
+                self::encodeParam($value, $var . '[' . key($value) . ']', $param);
             } else {
-                $param .= (empty($param) ? '?' : '&').($key ? $key : $var).'='.urlencode($value);
+                $param .= (empty($param) ? '?' : '&') . ($key ? $key : $var) . '=' . urlencode($value);
             }
         }
     }
@@ -640,9 +640,9 @@ class URI
             ob_clean();
         }
 
-        header('HTTP/1.1 '.$header.(isset($redirs[$header]) ? $redirs[$header] : ''), true);
-        header('Status: '.$header, true);
-        header('Location: '.$url, true, $header);
+        header('HTTP/1.1 ' . $header . (isset($redirs[$header]) ? $redirs[$header] : ''), true);
+        header('Status: ' . $header, true);
+        header('Location: ' . $url, true, $header);
         exit;
     }
 
@@ -673,9 +673,9 @@ class URI
         $txt = mb_ereg_replace('[  ]+', ' ', $txt);
         //$txt = mb_ereg_replace('[--]+', '-', $txt);
         //$txt = mb_ereg_replace('[__]+', '_', $txt);
-        $txt = mb_ereg_replace('[^a-zA-Z0-9 _\-'.$accept.']', '', $txt);
+        $txt = mb_ereg_replace('[^a-zA-Z0-9 _\-' . $accept . ']', '', $txt);
         $txt = mb_ereg_replace('[ ]+', $space, $txt);
-        $txt = preg_replace('/'.$space.$space.'+/', $space, $txt);
+        $txt = preg_replace('/' . $space . $space . '+/', $space, $txt);
 
         return $txt;
     }

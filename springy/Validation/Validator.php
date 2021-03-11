@@ -207,7 +207,7 @@ class Validator
     {
         foreach ($this->explodeRules($rules) as $rule) {
             if (!method_exists($this, $rule['method'])) {
-                throw new \BadMethodCallException('Validation rule "'.$rule['rule'].'" has no equivalent method for validation.');
+                throw new \BadMethodCallException('Validation rule "' . $rule['rule'] . '" has no equivalent method for validation.');
             }
 
             if (!call_user_func([$this, $rule['method']], $field, $rule['params'])) {
@@ -265,7 +265,7 @@ class Validator
      */
     protected function parseMethod($rule)
     {
-        return 'validate'.str_replace(' ', '', ucwords(strtolower(str_replace('_', ' ', $rule))));
+        return 'validate' . str_replace(' ', '', ucwords(strtolower(str_replace('_', ' ', $rule))));
     }
 
     /**

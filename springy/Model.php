@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Parent class for models.
  *
@@ -9,11 +10,12 @@
  * @author    Allan Marques <allan.marques@ymail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.6.1.58
+ * @version   2.6.1.59
  */
 
 namespace Springy;
 
+use Exception;
 use Springy\DB\Conditions;
 use Springy\DB\Where;
 use Springy\Validation\Validator;
@@ -118,8 +120,8 @@ class Model extends DB implements \Iterator
         $where = $this->_fFilter($filter);
 
         if ($this->deletedColumn && !$where->get($this->deletedColumn)
-            && !$where->get($this->tableName.'.'.$this->deletedColumn)) {
-            $where->condition($this->tableName.'.'.$this->deletedColumn, 0);
+            && !$where->get($this->tableName . '.' . $this->deletedColumn)) {
+            $where->condition($this->tableName . '.' . $this->deletedColumn, 0);
         }
 
         return $where;
@@ -149,9 +151,9 @@ class Model extends DB implements \Iterator
      */
     private function _getFrom()
     {
-        $from = ' FROM '.$this->tableName;
+        $from = ' FROM ' . $this->tableName;
         foreach ($this->join as $table => $join) {
-            $from .= ' '.$join['type'].' JOIN '.$table.' ON '.$join['on'];
+            $from .= ' ' . $join['type'] . ' JOIN ' . $table . ' ON ' . $join['on'];
         }
 
         return $from;
@@ -322,7 +324,7 @@ class Model extends DB implements \Iterator
 
         $line = '';
         foreach ($columns as $column) {
-            $line .= ((!strpos($column, '.') && !strpos($column, '(')) ? $tableName.'.'.$column : $column).', ';
+            $line .= ((!strpos($column, '.') && !strpos($column, '(')) ? $tableName . '.' . $column : $column) . ', ';
         }
 
         return trim($line, ', ');
@@ -665,17 +667,17 @@ class Model extends DB implements \Iterator
                 $cdtFunc = 'datetime(\'now\')';
                 break;
             default:
-                $cdtFunc = '\''.date('Y-m-d H:i:s').'\'';
+                $cdtFunc = '\'' . date('Y-m-d H:i:s') . '\'';
         }
 
         $values = $this->_values();
 
         $this->execute(
-            'INSERT INTO '.$this->tableName.
-            ' ('.implode(', ', $this->changedColumns()).
-            ($this->insertDateColumn ? ', '.$this->insertDateColumn : '').
-            ') VALUES ('.rtrim(str_repeat('?,', count($values)), ',').
-            ($this->insertDateColumn ? ', '.$cdtFunc : '').')',
+            'INSERT INTO ' . $this->tableName .
+            ' (' . implode(', ', $this->changedColumns()) .
+            ($this->insertDateColumn ? ', ' . $this->insertDateColumn : '') .
+            ') VALUES (' . rtrim(str_repeat('?,', count($values)), ',') .
+            ($this->insertDateColumn ? ', ' . $cdtFunc : '') . ')',
             $values
         );
 
@@ -724,9 +726,10 @@ class Model extends DB implements \Iterator
         }
 
         $this->execute(
-            'UPDATE '.$this->tableName.' SET '.
-            implode(' = ?,', $this->changedColumns()).
-            ' = ?'.$where, array_merge($this->_values(), $where->params())
+            'UPDATE ' . $this->tableName . ' SET ' .
+            implode(' = ?,', $this->changedColumns()) .
+            ' = ?' . $where,
+            array_merge($this->_values(), $where->params())
         );
 
         // Call after update trigger
@@ -802,10 +805,10 @@ class Model extends DB implements \Iterator
             if (!empty($this->deletedColumn)) {
                 // If table has a deleted column flag, update the rows
                 $where->condition($this->deletedColumn, 0);
-                $this->execute('UPDATE '.$this->tableName.' SET '.$this->deletedColumn.' = 1'.$where, $where->params());
+                $this->execute('UPDATE ' . $this->tableName . ' SET ' . $this->deletedColumn . ' = 1' . $where, $where->params());
             } else {
                 // Otherwise delete the row
-                $this->execute('DELETE FROM '.$this->tableName.$where, $where->params());
+                $this->execute('DELETE FROM ' . $this->tableName . $where, $where->params());
             }
 
             // Clear any conditions
@@ -834,10 +837,10 @@ class Model extends DB implements \Iterator
             if (!empty($this->deletedColumn)) {
                 // If table has a deleted column flag, update the row
                 $where->condition($this->deletedColumn, 0);
-                $this->execute('UPDATE '.$this->tableName.' SET '.$this->deletedColumn.' = 1'.$where, $where->params());
+                $this->execute('UPDATE ' . $this->tableName . ' SET ' . $this->deletedColumn . ' = 1' . $where, $where->params());
             } else {
                 // Otherwise delete the row
-                $this->execute('DELETE FROM '.$this->tableName.$where, $where->params());
+                $this->execute('DELETE FROM ' . $this->tableName . $where, $where->params());
             }
             // Call after delete trigger
             $this->triggerAfterDelete();
@@ -871,12 +874,12 @@ class Model extends DB implements \Iterator
             if (in_array($column, $this->writableColumns)) {
                 if (is_callable($value)) {
                     if (isset($this->hookedColumns[$column]) && method_exists($this, $this->hookedColumns[$column])) {
-                        $data[] = $column.' = '.call_user_func_array([$this, $this->hookedColumns[$column]], [$value()]);
+                        $data[] = $column . ' = ' . call_user_func_array([$this, $this->hookedColumns[$column]], [$value()]);
                     } else {
-                        $data[] = $column.' = '.$value();
+                        $data[] = $column . ' = ' . $value();
                     }
                 } else {
-                    $data[] = $column.' = ?';
+                    $data[] = $column . ' = ?';
                     if (isset($this->hookedColumns[$column]) && method_exists($this, $this->hookedColumns[$column])) {
                         $params[] = call_user_func_array([$this, $this->hookedColumns[$column]], [$value]);
                     } else {
@@ -899,7 +902,7 @@ class Model extends DB implements \Iterator
         if (!empty($this->deletedColumn) && !$where->get($this->deletedColumn)) {
             $where->condition($this->deletedColumn, 0);
         }
-        $this->execute('UPDATE '.$this->tableName.' SET '.implode(', ', $data).$where, array_merge($params, $where->params()));
+        $this->execute('UPDATE ' . $this->tableName . ' SET ' . implode(', ', $data) . $where, array_merge($params, $where->params()));
 
         // Clear conditions avoid bug
         $this->where->clear();
@@ -984,7 +987,7 @@ class Model extends DB implements \Iterator
         $cols = [];
         foreach ($columns as $column) {
             if (!strpos($column, '.') && !strpos($column, '(')) {
-                $column = $this->tableName.'.'.$column;
+                $column = $this->tableName . '.' . $column;
             }
             $cols[] = $column;
         }
@@ -1097,7 +1100,7 @@ class Model extends DB implements \Iterator
         $cols = [];
         foreach ($columns as $column) {
             if (!strpos($column, '.') && !strpos($column, '(')) {
-                $column = $this->tableName.'.'.$column;
+                $column = $this->tableName . '.' . $column;
             }
             $cols[] = $column;
         }
@@ -1148,16 +1151,26 @@ class Model extends DB implements \Iterator
         $join = $this->join;
         $this->setJoin($embbed);
 
-        $select = 'SELECT '.($this->driverName() == 'mysql' ? 'SQL_CALC_FOUND_ROWS ' : '').$this->_getColumns().$this->_getFrom();
+        $select = 'SELECT ' .
+            (
+                $this->driverName() == 'mysql' && $limit > 0
+                    ? 'SQL_CALC_FOUND_ROWS '
+                    : ''
+            ) . $this->_getColumns() . $this->_getFrom();
 
-        $sql = $select.$where.(count($this->groupBy) ? ' GROUP BY '.$this->_parseColumns($this->tableName, $this->groupBy) : '');
+        $sql = $select . $where .
+            (
+                count($this->groupBy)
+                    ? ' GROUP BY ' . $this->_parseColumns($this->tableName, $this->groupBy)
+                    : ''
+            );
         $params = $where->params();
 
         // Monta a cláusula HAVING de condicionamento
         if (!empty($this->having)) {
             $conditions = new Conditions();
             $conditions->filter($this->having);
-            $sql .= ' HAVING '.$conditions;
+            $sql .= ' HAVING ' . $conditions;
             $params = array_merge($params, $conditions->params());
             unset($conditions);
         }
@@ -1165,15 +1178,15 @@ class Model extends DB implements \Iterator
         // Order by
         $order = [];
         foreach ($orderby as $column => $direction) {
-            $order[] = $column.' '.strtoupper($direction);
+            $order[] = $column . ' ' . strtoupper($direction);
         }
         if (count($order)) {
-            $sql .= ' ORDER BY '.implode(', ', $order);
+            $sql .= ' ORDER BY ' . implode(', ', $order);
         }
 
         // Monta o limitador de registros
         if ($limit > 0) {
-            $sql .= ' LIMIT '.$offset.', '.$limit;
+            $sql .= ' LIMIT ' . $offset . ', ' . $limit;
         }
 
         // Limpa as propriedades da classe
@@ -1189,7 +1202,7 @@ class Model extends DB implements \Iterator
             if ($this->driverName() == 'mysql') {
                 $this->execute('SELECT FOUND_ROWS() AS found_rows');
             } else {
-                $sql = 'SELECT COUNT(0) AS found_rows FROM '.$this->tableName.$where;
+                $sql = 'SELECT COUNT(0) AS found_rows FROM ' . $this->tableName . $where;
 
                 $this->execute($sql, $where->params());
             }
@@ -1289,7 +1302,7 @@ class Model extends DB implements \Iterator
         $where = $this->_filter($filter);
 
         $this->execute(
-            'SELECT COUNT(0) AS rowscount'.$this->_getFrom().$where,
+            'SELECT COUNT(0) AS rowscount' . $this->_getFrom() . $where,
             $where->params()
         );
         $row = $this->fetchNext();

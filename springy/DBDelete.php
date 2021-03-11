@@ -35,7 +35,7 @@ class DBDelete
 
     public function __toString()
     {
-        return 'DELETE FROM '.$this->tabela."\n"
-             .($this->conds ? 'WHERE '.$this->conds : '');
+        return 'DELETE FROM ' . $this->tabela . "\n"
+             . ($this->conds ? 'WHERE ' . $this->conds : '');
     }
 }

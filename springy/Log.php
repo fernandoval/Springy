@@ -43,7 +43,7 @@ class Log
         //$message = Strings::removeAccentedChars($message);
 
         /// Monta a linha do evento
-        $evt_message = date('Y-m-d H:i:s').' '.$source_ip.' '.$url.' "'.$message.'"'.($type == 3 ? "\n" : '');
+        $evt_message = date('Y-m-d H:i:s') . ' ' . $source_ip . ' ' . $url . ' "' . $message . '"' . ($type == 3 ? "\n" : '');
 
         error_log($evt_message, $type, $destination);
     }

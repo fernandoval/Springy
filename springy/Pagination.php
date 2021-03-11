@@ -302,18 +302,18 @@ class Pagination
             return;
         }
 
-        $separator = '<li '.($this->SeparatorClass ? 'class="disabled '.$this->SeparatorClass.'"' : '').'><a href="#">'.$this->SeparatorText.'</a></li>';
-        $previous = empty($this->PagesLink['previous']) ? '' : '<li><a href="'.$this->PagesLink['previous'].'" class="'.$this->NavigatorClass.'">'.$this->PreviousText.'</a></li> ';
-        $next = empty($this->PagesLink['next']) ? '' : '<li><a href="'.$this->PagesLink['next'].'" class="'.$this->NavigatorClass.'">'.$this->NextText.'</a></li>';
-        $first = empty($this->PagesLink['first']) ? '' : '<li><a href="'.$this->PagesLink['first'].'" class="'.$this->NavigatorClass.'">1</a></li>';
-        $last = empty($this->PagesLink['last']) ? '' : '<li><a href="'.$this->PagesLink['last'].'" class="'.$this->NavigatorClass.'">'.$this->LastPage.'</a></li>';
+        $separator = '<li ' . ($this->SeparatorClass ? 'class="disabled ' . $this->SeparatorClass . '"' : '') . '><a href="#">' . $this->SeparatorText . '</a></li>';
+        $previous = empty($this->PagesLink['previous']) ? '' : '<li><a href="' . $this->PagesLink['previous'] . '" class="' . $this->NavigatorClass . '">' . $this->PreviousText . '</a></li> ';
+        $next = empty($this->PagesLink['next']) ? '' : '<li><a href="' . $this->PagesLink['next'] . '" class="' . $this->NavigatorClass . '">' . $this->NextText . '</a></li>';
+        $first = empty($this->PagesLink['first']) ? '' : '<li><a href="' . $this->PagesLink['first'] . '" class="' . $this->NavigatorClass . '">1</a></li>';
+        $last = empty($this->PagesLink['last']) ? '' : '<li><a href="' . $this->PagesLink['last'] . '" class="' . $this->NavigatorClass . '">' . $this->LastPage . '</a></li>';
         $middle = '';
 
         foreach ($this->PagesLink['pages'] as $Page => $Link) {
-            $middle .= empty($Link) ? '<li '.($this->CurrentPageClass ? 'class="'.$this->CurrentPageClass.'"' : '').'><a href="#">'.$Page.'</a></li>' : '<li><a href="'.$Link.'" class="'.$this->NavigatorClass.'">'.$Page.'</a></li>';
+            $middle .= empty($Link) ? '<li ' . ($this->CurrentPageClass ? 'class="' . $this->CurrentPageClass . '"' : '') . '><a href="#">' . $Page . '</a></li>' : '<li><a href="' . $Link . '" class="' . $this->NavigatorClass . '">' . $Page . '</a></li>';
         }
 
-        $this->HTML = '<ul class="pagination">'.$previous.$first.(!empty($first) ? $separator : '').$middle.(!empty($last) ? $separator : '').$last.$next.'</ul>';
+        $this->HTML = '<ul class="pagination">' . $previous . $first . (!empty($first) ? $separator : '') . $middle . (!empty($last) ? $separator : '') . $last . $next . '</ul>';
 
         return $this->HTML;
     }

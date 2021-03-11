@@ -44,7 +44,7 @@ class Migrator extends DB
      */
     public function __construct()
     {
-        $this->revPath = Kernel::path(Kernel::PATH_MIGRATION).DS;
+        $this->revPath = Kernel::path(Kernel::PATH_MIGRATION) . DS;
 
         $this->errorReportStatus(false);
 
@@ -59,13 +59,13 @@ class Migrator extends DB
         ob_end_flush();
 
         $this->output('', self::MSG_INFORMATION);
-        $this->output(self::CS_INFORMATION.'Springy'.self::CS_RESET.' v'.Kernel::VERSION, self::MSG_INFORMATION);
+        $this->output(self::CS_INFORMATION . 'Springy' . self::CS_RESET . ' v' . Kernel::VERSION, self::MSG_INFORMATION);
         $this->output('A micro framework for smart developers.', self::MSG_INFORMATION);
         $this->output('', self::MSG_INFORMATION);
-        $this->output('Database Migration Tool v'.self::VERSION, self::MSG_INFORMATION);
+        $this->output('Database Migration Tool v' . self::VERSION, self::MSG_INFORMATION);
         $this->output('--------------------------------', self::MSG_INFORMATION);
         $this->output('', self::MSG_INFORMATION);
-        $this->output('Application: '.Kernel::systemName().' v'.Kernel::systemVersion(), self::MSG_INFORMATION);
+        $this->output('Application: ' . Kernel::systemName() . ' v' . Kernel::systemVersion(), self::MSG_INFORMATION);
         $this->output('', self::MSG_INFORMATION);
 
         // Checks the configuration
@@ -103,22 +103,22 @@ class Migrator extends DB
      */
     private function checkControlTable()
     {
-        if ($this->execute('SELECT migration_at FROM '.$this->controlTable.' WHERE revision_number = 0')) {
+        if ($this->execute('SELECT migration_at FROM ' . $this->controlTable . ' WHERE revision_number = 0')) {
             return true;
         }
 
-        $command = 'CREATE TABLE '.$this->controlTable.'('.
-            '  revision_number INT NOT NULL,'.
-            '  script_file VARCHAR(255) NOT NULL,'.
-            '  migration_at DATETIME NOT NULL,'.
-            '  result_message VARCHAR(255),'.
-            '  PRIMARY KEY (revision_number, script_file)'.
+        $command = 'CREATE TABLE ' . $this->controlTable . '(' .
+            '  revision_number INT NOT NULL,' .
+            '  script_file VARCHAR(255) NOT NULL,' .
+            '  migration_at DATETIME NOT NULL,' .
+            '  result_message VARCHAR(255),' .
+            '  PRIMARY KEY (revision_number, script_file)' .
             ')';
 
         if ($this->execute($command)) {
             return true;
         }
-        $this->systemAbort('Can not create control table ('.$this->statmentErrorCode().' : '.$this->statmentErrorInfo()[2].')');
+        $this->systemAbort('Can not create control table (' . $this->statmentErrorCode() . ' : ' . $this->statmentErrorInfo()[2] . ')');
     }
 
     /**
@@ -128,16 +128,16 @@ class Migrator extends DB
     {
         $animatedChar = '|/-\\';
 
-        $command = 'SELECT migration_at FROM '.$this->controlTable.' WHERE revision_number = ? AND script_file = ?';
+        $command = 'SELECT migration_at FROM ' . $this->controlTable . ' WHERE revision_number = ? AND script_file = ?';
         $revisions = $this->getRevisions();
         $this->output('Loading revisions : *', self::MSG_INFORMATION, false);
         foreach ($revisions as $revision) {
             $files = $this->getRevisionFiles($revision, self::DIR_UP);
             $oldControl = null;
             foreach ($files as $file) {
-                $this->output(chr(8).substr($animatedChar, 0, 1), self::MSG_INFORMATION, false);
+                $this->output(chr(8) . substr($animatedChar, 0, 1), self::MSG_INFORMATION, false);
 
-                $animatedChar = substr($animatedChar, 1).substr($animatedChar, 0, 1);
+                $animatedChar = substr($animatedChar, 1) . substr($animatedChar, 0, 1);
 
                 $this->execute($command, [$revision, $file]);
                 if ($res = $this->fetchNext()) {
@@ -168,7 +168,7 @@ class Migrator extends DB
                 $this->mustByApplied[$revision][] = $file;
             }
         }
-        $this->output(chr(8).self::CS_SUCCESS.'OK', self::MSG_INFORMATION, true);
+        $this->output(chr(8) . self::CS_SUCCESS . 'OK', self::MSG_INFORMATION, true);
     }
 
     /**
@@ -182,9 +182,9 @@ class Migrator extends DB
      */
     private function setMigrationApplied($revision, $file, $result)
     {
-        $command = 'INSERT INTO '.$this->controlTable.' (revision_number, script_file, migration_at, result_message) VALUES (?, ?, ?, ?)';
+        $command = 'INSERT INTO ' . $this->controlTable . ' (revision_number, script_file, migration_at, result_message) VALUES (?, ?, ?, ?)';
         if (!$this->execute($command, [$revision, $file, date('Y-m-d H:n:s'), $result])) {
-            $this->systemAbort('Control error ('.$this->statmentErrorCode().' : '.$this->statmentErrorInfo()[2].')');
+            $this->systemAbort('Control error (' . $this->statmentErrorCode() . ' : ' . $this->statmentErrorInfo()[2] . ')');
         }
     }
 
@@ -281,12 +281,12 @@ class Migrator extends DB
     {
         $this->output('');
         if (empty($this->mustByApplied)) {
-            $this->output(self::CS_INFORMATION.'The database is up to date. No revisions to be applied.');
+            $this->output(self::CS_INFORMATION . 'The database is up to date. No revisions to be applied.');
 
             return;
         }
 
-        $this->output(self::CS_WARNING.count($this->mustByApplied).self::CS_RESET.' revision'.(count($this->mustByApplied) > 1 ? 's' : '').' to be applied');
+        $this->output(self::CS_WARNING . count($this->mustByApplied) . self::CS_RESET . ' revision' . (count($this->mustByApplied) > 1 ? 's' : '') . ' to be applied');
     }
 
     /**
@@ -307,7 +307,7 @@ class Migrator extends DB
         }
 
         $this->output('');
-        $this->output(self::CS_INFORMATION.'Starting migration proccess.');
+        $this->output(self::CS_INFORMATION . 'Starting migration process.');
 
         if (empty($this->mustByApplied)) {
             $this->showCurrentStatus();
@@ -322,20 +322,20 @@ class Migrator extends DB
             }
 
             $this->output('');
-            $this->output('Applying revision #'.self::CS_INFORMATION.$revision);
+            $this->output('Applying revision #' . self::CS_INFORMATION . $revision);
 
             // No files? Oops!
             if (empty($files)) {
-                $this->output('Nothing to do at revision #'.self::INFORMATION.$revision, self::MSG_WARNING);
+                $this->output('Nothing to do at revision #' . self::INFORMATION . $revision, self::MSG_WARNING);
                 continue;
             }
 
             $error = false;
             foreach ($files as $file) {
-                $this->output('  Running script '.self::CS_INFORMATION.$file, self::MSG_INFORMATION, false);
+                $this->output('  Running script ' . self::CS_INFORMATION . $file, self::MSG_INFORMATION, false);
 
-                if (!$this->runFile($this->getScriptsPath($revision, self::DIR_UP).DS.$file)) {
-                    $this->output(self::CS_ERROR.' [ERR]');
+                if (!$this->runFile($this->getScriptsPath($revision, self::DIR_UP) . DS . $file)) {
+                    $this->output(self::CS_ERROR . ' [ERR]');
                     if (is_array($this->error)) {
                         $this->output($this->error[2], self::MSG_ERROR);
                     } else {
@@ -345,14 +345,14 @@ class Migrator extends DB
                     break;
                 }
 
-                $this->output(self::CS_SUCCESS.' [OK]');
-                $this->setMigrationApplied($revision, $file, $this->affectedRows().' affected rows');
+                $this->output(self::CS_SUCCESS . ' [OK]');
+                $this->setMigrationApplied($revision, $file, $this->affectedRows() . ' affected rows');
             }
 
             if ($error) {
                 $this->systemAbort('Revision has errors!');
             }
-            $this->output('  Revision #'.self::CS_INFORMATION.$revision.self::CS_RESET.' sucessfully applied.');
+            $this->output('  Revision #' . self::CS_INFORMATION . $revision . self::CS_RESET . ' sucessfully applied.');
         }
     }
 
@@ -361,9 +361,9 @@ class Migrator extends DB
      */
     private function revert()
     {
-        $command = 'SELECT DISTINCT revision_number FROM '.$this->controlTable.' ORDER BY revision_number DESC';
+        $command = 'SELECT DISTINCT revision_number FROM ' . $this->controlTable . ' ORDER BY revision_number DESC';
         if (!$this->execute($command)) {
-            $this->systemAbort('Can not read control table ('.$this->statmentErrorCode().' : '.$this->statmentErrorInfo()[2].')');
+            $this->systemAbort('Can not read control table (' . $this->statmentErrorCode() . ' : ' . $this->statmentErrorInfo()[2] . ')');
         }
 
         $revisions = $this->fetchAll();
@@ -385,7 +385,7 @@ class Migrator extends DB
         }
 
         $this->output('');
-        $this->output(self::CS_INFORMATION.'Starting rollback proccess until revision #'.self::CS_WARNING.$target);
+        $this->output(self::CS_INFORMATION . 'Starting rollback process until revision #' . self::CS_WARNING . $target);
 
         foreach ($revisions as $revision) {
             // Hit target?
@@ -394,27 +394,27 @@ class Migrator extends DB
             }
 
             $this->output('');
-            $this->output('Applying rollback of revision #'.self::CS_INFORMATION.$revision['revision_number']);
+            $this->output('Applying rollback of revision #' . self::CS_INFORMATION . $revision['revision_number']);
 
-            $command = 'SELECT script_file FROM '.$this->controlTable.' WHERE revision_number = ? ORDER BY script_file DESC';
+            $command = 'SELECT script_file FROM ' . $this->controlTable . ' WHERE revision_number = ? ORDER BY script_file DESC';
             if (!$this->execute($command, [$revision['revision_number']])) {
-                $this->systemAbort('Can not read control table ('.$this->statmentErrorCode().' : '.$this->statmentErrorInfo()[2].')');
+                $this->systemAbort('Can not read control table (' . $this->statmentErrorCode() . ' : ' . $this->statmentErrorInfo()[2] . ')');
             }
 
             $files = $this->fetchAll();
 
             $error = false;
             foreach ($files as $file) {
-                $this->output('  Running rollback script '.self::CS_INFORMATION.$file['script_file'], self::MSG_INFORMATION, false);
-                $script = $this->getScriptsPath($revision['revision_number'], self::DIR_DOWN).DS.$file['script_file'];
+                $this->output('  Running rollback script ' . self::CS_INFORMATION . $file['script_file'], self::MSG_INFORMATION, false);
+                $script = $this->getScriptsPath($revision['revision_number'], self::DIR_DOWN) . DS . $file['script_file'];
                 if (!is_file($script)) {
-                    $file->output(self::CS_ERROR.' [ERR] - rollback script file not found!');
+                    $file->output(self::CS_ERROR . ' [ERR] - rollback script file not found!');
                     $error = true;
                     break;
                 }
 
                 if (!$this->runFile($script)) {
-                    $this->output(self::CS_ERROR.' [ERR]');
+                    $this->output(self::CS_ERROR . ' [ERR]');
                     if (is_array($this->error)) {
                         $this->output($this->error[2], self::MSG_ERROR);
                     } else {
@@ -424,18 +424,18 @@ class Migrator extends DB
                     break;
                 }
 
-                $this->output(self::CS_SUCCESS.' [OK]');
+                $this->output(self::CS_SUCCESS . ' [OK]');
 
-                $command = 'DELETE FROM '.$this->controlTable.' WHERE revision_number = ? AND script_file = ?';
+                $command = 'DELETE FROM ' . $this->controlTable . ' WHERE revision_number = ? AND script_file = ?';
                 if (!$this->execute($command, [$revision['revision_number'], $file['script_file']])) {
-                    $this->systemAbort('Can not delete from control table ('.$this->statmentErrorCode().' : '.$this->statmentErrorInfo()[2].')');
+                    $this->systemAbort('Can not delete from control table (' . $this->statmentErrorCode() . ' : ' . $this->statmentErrorInfo()[2] . ')');
                 }
             }
 
             if ($error) {
                 $this->systemAbort('Rollback fail!');
             }
-            $this->output('  Rollback of revision #'.self::CS_INFORMATION.$revision['revision_number'].self::CS_RESET.' sucessfully applied.');
+            $this->output('  Rollback of revision #' . self::CS_INFORMATION . $revision['revision_number'] . self::CS_RESET . ' sucessfully applied.');
         }
     }
 
@@ -472,7 +472,7 @@ class Migrator extends DB
         $dir = $this->getScriptsPath($revision, $direction);
 
         if (!is_dir($dir)) {
-            $this->systemAbort('Directory with '.($direction == self::DIR_UP ? 'MIGRATE' : 'ROLLBACK').' scripts for revision #'.$revision.' not found.');
+            $this->systemAbort('Directory with ' . ($direction == self::DIR_UP ? 'MIGRATE' : 'ROLLBACK') . ' scripts for revision #' . $revision . ' not found.');
         }
 
         $return = [];
@@ -501,7 +501,7 @@ class Migrator extends DB
      */
     private function getScriptsPath($revision, $direction)
     {
-        return $this->revPath.DS.$revision.DS.$this->getScriptsSubdir($direction);
+        return $this->revPath . DS . $revision . DS . $this->getScriptsSubdir($direction);
     }
 
     /**
@@ -537,7 +537,7 @@ class Migrator extends DB
             case 'sql':
                 $content = file_get_contents($file);
                 if ($content === false) {
-                    $this->setError('Cannot open file '.self::CS_INFORMATION.$file.self::CS_RESET);
+                    $this->setError('Cannot open file ' . self::CS_INFORMATION . $file . self::CS_RESET);
 
                     return false;
                 }
@@ -551,7 +551,7 @@ class Migrator extends DB
 
                     return true;
                 } catch (Exception $e) {
-                    $this->setError('['.self::CS_ERROR.$e->getCode().self::CS_RESET.'] '.$e->getMessage().' in '.self::CS_WARNING.$file.self::CS_RESET);
+                    $this->setError('[' . self::CS_ERROR . $e->getCode() . self::CS_RESET . '] ' . $e->getMessage() . ' in ' . self::CS_WARNING . $file . self::CS_RESET);
                 }
 
                 break;
@@ -584,10 +584,10 @@ class Migrator extends DB
                 $msgTemplate = '%s';
                 break;
             case self::MSG_WARNING:
-                $msgTemplate = self::CS_WARNING.'WARNING:'.self::CS_RESET.' %s';
+                $msgTemplate = self::CS_WARNING . 'WARNING:' . self::CS_RESET . ' %s';
                 break;
             case self::MSG_ERROR:
-                $msgTemplate = self::CS_ERROR.'ERROR:'.self::CS_RESET.' %s';
+                $msgTemplate = self::CS_ERROR . 'ERROR:' . self::CS_RESET . ' %s';
                 break;
             default:
                 $msgTemplate = '%s';

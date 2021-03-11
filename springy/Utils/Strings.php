@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class library for string processing.
  *
@@ -6,7 +7,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   0.13.22.24
+ * @version   0.13.25
  */
 
 namespace Springy\Utils;
@@ -244,7 +245,7 @@ class Strings
 
     public static function numero($numero, $tamanho = '', $minimo = 1, $float = false, $negativo = false)
     {
-        return preg_match('/^'.($negativo ? '[\-]?' : '').'[0-9]{'.$minimo.','.$tamanho.'}'.($float !== false ? '\.[0-9]{1,'.$float.'}' : '').'$/', $numero);
+        return preg_match('/^' . ($negativo ? '[\-]?' : '') . '[0-9]{' . $minimo . ',' . $tamanho . '}' . ($float !== false ? '\.[0-9]{1,' . $float . '}' : '') . '$/', $numero);
     }
 
     /**
@@ -300,7 +301,7 @@ class Strings
      */
     public static function sizeMatch($string, $minSize = 5, $maxSize = 16)
     {
-        return preg_match('/^(.){'.$minSize.','.$maxSize.'}$/', $string);
+        return preg_match('/^(.){' . $minSize . ',' . $maxSize . '}$/', $string);
     }
 
     public static function cep(&$cep)
@@ -313,9 +314,9 @@ class Strings
     public static function telefone(&$ddd, &$telefone)
     {
         $telefone = preg_replace('/[^0-9]/', '', $telefone);
-        $len = strlen($ddd.$telefone);
+        $len = strlen($ddd . $telefone);
 
-        return ($len == 10 || $len == 11) && is_numeric($ddd.$telefone);
+        return ($len == 10 || $len == 11) && is_numeric($ddd . $telefone);
     }
 
     /* *** */
@@ -409,6 +410,7 @@ class Strings
         }
         $sum = 0;
         $rev_cnpj = strrev(substr($cnpj, 0, 12));
+        $multiplier = 0;
         for ($i = 0; $i <= 11; $i++) {
             $i == 0 ? $multiplier = 2 : $multiplier;
             $i == 8 ? $multiplier = 2 : $multiplier;
@@ -425,10 +427,11 @@ class Strings
         }
 
         $sub_cnpj = substr($cnpj, 0, 12);
-        $rev_cnpj = strrev($sub_cnpj.$dv1);
+        $rev_cnpj = strrev($sub_cnpj . $dv1);
 
         unset($sum);
         $sum = 0;
+        $multiplier = 0;
         for ($i = 0; $i <= 12; $i++) {
             $i == 0 ? $multiplier = 2 : $multiplier;
             $i == 8 ? $multiplier = 2 : $multiplier;

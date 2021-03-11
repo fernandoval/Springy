@@ -20,17 +20,17 @@ class DBFiltro extends DBExpression
                     throw new \Exception('$valor precisa ser um array.');
                 }
 
-                $this->cond = $coluna.' '.$operador.'('.implode(', ', array_fill(0, count($valor), '?')).')';
+                $this->cond = $coluna . ' ' . $operador . '(' . implode(', ', array_fill(0, count($valor), '?')) . ')';
             break;
             case parent::ISNULL:
             case parent::ISNOTNULL:
-                $this->cond = $coluna.' '.$operador;
+                $this->cond = $coluna . ' ' . $operador;
             break;
             case parent::LIKE:
-                $this->cond = sprintf(DBExpression::LOWER, $coluna).' '.$operador.' '.sprintf(DBExpression::LOWER, '?');
+                $this->cond = sprintf(DBExpression::LOWER, $coluna) . ' ' . $operador . ' ' . sprintf(DBExpression::LOWER, '?');
             break;
             default:
-                $this->cond = $coluna.' '.$operador.' '.(!$valorColuna ? '?' : $valor);
+                $this->cond = $coluna . ' ' . $operador . ' ' . (!$valorColuna ? '?' : $valor);
             break;
         }
 

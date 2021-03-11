@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Helper file - Functions and constants.
  *
@@ -6,7 +7,7 @@
  * @author     Allan Marques <allan.marques@ymail.com>
  * @author     Fernando Val <fernando.val@gmail.com>
  *
- * @version    4.0.0.13
+ * @version    4.0.14
  *
  * Let's make the developer happier and more productive.
  */
@@ -100,7 +101,7 @@ function dd($var, $die = true)
     echo '</pre>';
 
     if ($die) {
-        die;
+        exit;
     }
 }
 
@@ -194,8 +195,8 @@ function springyAutoload($class)
         $file = $aclass[0];
     }
 
-    if (file_exists(sysconf('SPRINGY_PATH').DIRECTORY_SEPARATOR.$file.'.php')) {
-        require_once sysconf('SPRINGY_PATH').DIRECTORY_SEPARATOR.$file.'.php';
+    if (file_exists(sysconf('SPRINGY_PATH') . DIRECTORY_SEPARATOR . $file . '.php')) {
+        require_once sysconf('SPRINGY_PATH') . DIRECTORY_SEPARATOR . $file . '.php';
     } else {
         // procura na user_classes
 
@@ -207,7 +208,7 @@ function springyAutoload($class)
         $nameSpace = $class = $vars['class'];
 
         if (!empty($vars['subclass'])) {
-            $class .= '-'.substr($vars['subclass'], 1);
+            $class .= '-' . substr($vars['subclass'], 1);
         }
 
         if (isset($vars['type'])) {
@@ -217,15 +218,15 @@ function springyAutoload($class)
         }
 
         // procura a classe nas Libarys
-        if (file_exists(sysconf('CLASS_PATH').DIRECTORY_SEPARATOR.$nameSpace.DIRECTORY_SEPARATOR.$class.'.php')) {
-            require_once sysconf('CLASS_PATH').DIRECTORY_SEPARATOR.$nameSpace.DIRECTORY_SEPARATOR.$class.'.php';
-        } elseif (file_exists(sysconf('CLASS_PATH').DIRECTORY_SEPARATOR.$class.'.php')) {
-            require_once sysconf('CLASS_PATH').DIRECTORY_SEPARATOR.$class.'.php';
+        if (file_exists(sysconf('CLASS_PATH') . DIRECTORY_SEPARATOR . $nameSpace . DIRECTORY_SEPARATOR . $class . '.php')) {
+            require_once sysconf('CLASS_PATH') . DIRECTORY_SEPARATOR . $nameSpace . DIRECTORY_SEPARATOR . $class . '.php';
+        } elseif (file_exists(sysconf('CLASS_PATH') . DIRECTORY_SEPARATOR . $class . '.php')) {
+            require_once sysconf('CLASS_PATH') . DIRECTORY_SEPARATOR . $class . '.php';
         } else {
             $class = $vars['class'];
 
             if (!empty($vars['subclass'])) {
-                $class .= '_'.substr($vars['subclass'], 1);
+                $class .= '_' . substr($vars['subclass'], 1);
             }
 
             if (isset($vars['type'])) {
@@ -234,10 +235,10 @@ function springyAutoload($class)
                 $class .= '.class';
             }
 
-            if (file_exists(sysconf('CLASS_PATH').DIRECTORY_SEPARATOR.$nameSpace.DIRECTORY_SEPARATOR.$class.'.php')) {
-                require_once sysconf('CLASS_PATH').DIRECTORY_SEPARATOR.$nameSpace.DIRECTORY_SEPARATOR.$class.'.php';
-            } elseif (file_exists(sysconf('CLASS_PATH').DIRECTORY_SEPARATOR.$class.'.php')) {
-                require_once sysconf('CLASS_PATH').DIRECTORY_SEPARATOR.$class.'.php';
+            if (file_exists(sysconf('CLASS_PATH') . DIRECTORY_SEPARATOR . $nameSpace . DIRECTORY_SEPARATOR . $class . '.php')) {
+                require_once sysconf('CLASS_PATH') . DIRECTORY_SEPARATOR . $nameSpace . DIRECTORY_SEPARATOR . $class . '.php';
+            } elseif (file_exists(sysconf('CLASS_PATH') . DIRECTORY_SEPARATOR . $class . '.php')) {
+                require_once sysconf('CLASS_PATH') . DIRECTORY_SEPARATOR . $class . '.php';
             }
         }
     }
@@ -296,7 +297,7 @@ class SpringyException extends Exception
 // Kill system with internal error 500 if can not set autoload funcion
 if (!spl_autoload_register('springyAutoload')) {
     header('Content-type: text/html; charset=UTF-8', true, 500);
-    die('Internal System Error on Startup');
+    exit('Internal System Error on Startup');
 }
 
 // Define error handlers

@@ -1,18 +1,19 @@
 <?php
+
 /**
  * Springy web launcher script.
  *
  * @copyright 2007 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
  *
- * @version    5.0.1.34
+ * @version    5.0.35
  */
 $springyStartTime = microtime(true); // Memoriza a hora do início do processamento
 
 // Kill system with internal error 500 if initial setup file does not exists
 if (!file_exists('sysconf.php') || !file_exists('helpers.php')) {
     header('Content-type: text/html; charset=UTF-8', true, 500);
-    die('Internal System Error on Startup');
+    exit('Internal System Error on Startup');
 }
 
 // Load framework configuration
@@ -21,8 +22,8 @@ require 'sysconf.php';
 require 'helpers.php';
 
 // Load Composer autoload
-if (file_exists(sysconf('VENDOR_PATH').DS.'autoload.php')) {
-    require sysconf('VENDOR_PATH').DS.'autoload.php';
+if (file_exists(sysconf('VENDOR_PATH') . DS . 'autoload.php')) {
+    require sysconf('VENDOR_PATH') . DS . 'autoload.php';
 }
 
 // System start

@@ -70,7 +70,7 @@ class Utils
             return $keyword;
         }
 
-        return $this->openQuote.$keyword.$this->closeQuote;
+        return $this->openQuote . $keyword . $this->closeQuote;
     }
 
     private function _experimentalParseKeywords($table, $expression)
@@ -129,16 +129,16 @@ class Utils
             } elseif (strpos('_1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz', $char) !== false) {
                 $buffer .= $char;
             } elseif ($char == '(') {
-                $parsed .= $buffer.$char;
+                $parsed .= $buffer . $char;
                 $buffer = '';
             } elseif ($char == '.') {
-                $parsed .= $this->quote($buffer).$char;
+                $parsed .= $this->quote($buffer) . $char;
                 $prefix = true;
                 $buffer = '';
             // } elseif (preg_match('/^\W$/', $char)) {
             } elseif (strpos('_1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz', $char) !== false) {
                 if ($buffer || !$parsed) {
-                    $parsed .= ($prefix ? '' : $this->quote($table).'.').$this->quote($buffer);
+                    $parsed .= ($prefix ? '' : $this->quote($table) . '.') . $this->quote($buffer);
                     $buffer = '';
                     $prefix = false;
                 }
@@ -147,7 +147,7 @@ class Utils
         }
 
         if ($buffer) {
-            $parsed .= ($prefix ? '' : $this->quote($table).'.').$this->quote($buffer);
+            $parsed .= ($prefix ? '' : $this->quote($table) . '.') . $this->quote($buffer);
         }
 
         return $parsed;
@@ -165,9 +165,9 @@ class Utils
     {
         $expression = trim($expression);
         if ($expression === '*') {
-            return $this->quote($table).'.*';
+            return $this->quote($table) . '.*';
         } elseif (preg_match('/^[\w]+$/', $expression)) {
-            return $this->quote($table).'.'.$this->quote($expression);
+            return $this->quote($table) . '.' . $this->quote($expression);
         }
 
         return $expression;

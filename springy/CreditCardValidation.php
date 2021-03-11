@@ -1,4 +1,5 @@
 <?php
+
 /** \file
  *  Springy.
  *
@@ -7,7 +8,7 @@
  *  \author     Daniel Convissor <danielc@analysisandsolutions.com>
  *  \author     Fernando Val <fernando.val@gmail.com>
  *  \author     Mauricio Bastos <mbastos@gmail.com>
- *  \version    1.1.2
+ *  \version    1.1.2.1
  *  \ingroup    framework
  */
 
@@ -232,9 +233,14 @@ class CreditCardValidation
      *
      * @license    http://www.analysisandsolutions.com/software/license.htm Simple Public License
      */
-    public function validateCreditCard($Number, $Language = 'en', $Accepted = '',
-                                  $RequireExp = 'N', $Month = '', $Year = '')
-    {
+    public function validateCreditCard(
+        $Number,
+        $Language = 'en',
+        $Accepted = '',
+        $RequireExp = 'N',
+        $Month = '',
+        $Year = ''
+    ) {
         $this->CCVSNumber = '';
         $this->CCVSNumberLeft = '';
         $this->CCVSNumberLeft6 = '';
@@ -245,14 +251,14 @@ class CreditCardValidation
 
         // Import the language preferences.
 
-        $Path = dirname(__FILE__).DIRECTORY_SEPARATOR.'CreditCardValidation';
+        $Path = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'CreditCardValidation';
 
-        if (!file_exists($Path.DIRECTORY_SEPARATOR.'ccvs_'.$Language.'.inc')) {
+        if (!file_exists($Path . DIRECTORY_SEPARATOR . 'ccvs_' . $Language . '.inc')) {
             $this->CCVSError = "The $Language language file can't be found";
 
             return false;
         }
-        include $Path.DIRECTORY_SEPARATOR.'ccvs_'.$Language.'.inc';
+        include $Path . DIRECTORY_SEPARATOR . 'ccvs_' . $Language . '.inc';
 
         // Catch malformed input.
 
@@ -459,7 +465,7 @@ class CreditCardValidation
                 }
             }
 
-            $this->CCVSExpiration = sprintf('%02d', $Month).substr($Year, -2);
+            $this->CCVSExpiration = sprintf('%02d', $Month) . substr($Year, -2);
         }
 
         return true;
