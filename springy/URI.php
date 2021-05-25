@@ -250,7 +250,9 @@ class URI
     }
 
     /**
-     *  \brief Validate the segments quantity for the current controller.
+     * Validates the segments quantity for the current controller.
+     *
+     * @return void
      */
     public static function validateURI()
     {
@@ -467,11 +469,27 @@ class URI
     /**
      * Returns the value of a query string variable.
      *
+     * Is an alias for _GET().
+     *
+     * @param string $var is the name of the query string variable desired.
+     *
+     * @return mixed the value of the variable or false if it does not exists.
+     *
+     * @deprecated 4.4.0
+     */
+    public static function _GET($var)
+    {
+        return self::getParam($var);
+    }
+
+    /**
+     * Returns the value of a query string variable.
+     *
      * @param string $var is the name of the query string variable desired.
      *
      * @return mixed the value of the variable or false if it does not exists.
      */
-    public static function _GET($var)
+    public static function getParam($var)
     {
         if (array_key_exists($var, self::$get_params)) {
             return self::$get_params[$var];
@@ -481,16 +499,9 @@ class URI
     }
 
     /**
-     *  \brief get_param é um apelido para _GET
-     *  \see _GET.
-     */
-    public static function getParam($var)
-    {
-        return self::_GET($var);
-    }
-
-    /**
      * Returns the array of query string variables.
+     *
+     * @return array
      */
     public static function getParams()
     {
@@ -499,16 +510,20 @@ class URI
 
     /**
      * Returns the request method string.
+     *
+     * @return string
      */
     public static function requestMethod()
     {
-        return isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : ((PHP_SAPI === 'cli' || defined('STDIN')) ? 'CLI' : '');
+        return $_SERVER['REQUEST_METHOD'] ?? ((PHP_SAPI === 'cli' || defined('STDIN')) ? 'CLI' : '');
     }
 
     /**
      * Removes a variable from the array of query string variables.
      *
      * @param string $var the name of the query string variable to be deleted.
+     *
+     * @return voit
      */
     public static function removeParam($var)
     {
@@ -520,6 +535,8 @@ class URI
      *
      * @param string $var   the name of the query string variable.
      * @param mixed  $value the value to be assigned to the variable.
+     *
+     * @return void
      */
     public static function setParam($var, $value)
     {
@@ -537,7 +554,7 @@ class URI
      * @param string $host           the configuration host name.
      * @param bool   $addIgnoredSgms define if URI will receive the ignored segments as prefix (default = true).
      *
-     *  \return an URI.
+     * @return string
      */
     public static function buildURL($segments = [], $query = [], $forceRewrite = false, $host = 'dynamic', $addIgnoredSgms = true)
     {
@@ -572,19 +589,28 @@ class URI
     }
 
     /**
-     *  \brief Return the current host with protocol.
+     * Returns the current host with protocol.
+     *
+     * @return string
      */
     public static function httpHost()
     {
-        return trim(preg_replace('/([^:]+)(:\\d+)?/', '$1' . ((sysconf('CONSIDER_PORT_NUMBER') !== null && sysconf('CONSIDER_PORT_NUMBER')) ? '$2' : ''), isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : ''), ' ..@');
+        return trim(
+            preg_replace(
+                '/([^:]+)(:\\d+)?/',
+                '$1' . ((sysconf('CONSIDER_PORT_NUMBER') !== null && sysconf('CONSIDER_PORT_NUMBER')) ? '$2' : ''),
+                $_SERVER['HTTP_HOST'] ?? ''
+            ),
+            ' ..@'
+        );
     }
 
     /**
-     *  \brief Retorna o host com protocolo.
+     * Returns the host protocol.
      *
-     *  \param[in] $host String contendo o host com ou sem o protocolo, ou a entrada de configuração do host.
+     * @param string $host the with or without protocol prefix, or the configuration entry for host.
      *
-     *  \return Retorna a string contendo o protocolo e o host
+     * @return string
      */
     private static function _host($host = 'dynamic')
     {
@@ -600,7 +626,7 @@ class URI
     }
 
     /**
-     * Codifica os parâmetros GET de uma URI.
+     * Encondes the query string parameters.
      *
      * @param array  $query Array contendo os parâmetros chave => valor
      * @param string $key   Nome da chave para quando query possuir apenas os valores
@@ -626,6 +652,8 @@ class URI
      *
      * @param string $url    the URI.
      * @param int    $header the redirection code (default = 302).
+     *
+     * @return void
      */
     public static function redirect($url, $header = 302)
     {
@@ -643,6 +671,14 @@ class URI
         header('HTTP/1.1 ' . $header . (isset($redirs[$header]) ? $redirs[$header] : ''), true);
         header('Status: ' . $header, true);
         header('Location: ' . $url, true, $header);
+
+        if (Kernel::isCGIMode()) {
+            $lineFeed = "\n";
+            echo 'Status: ' . $header . $lineFeed;
+            echo 'HTTP/1.1 ' . $header . ($redirs[$header] ?? '') . $lineFeed;
+            echo 'Location: ' . $url . $lineFeed . $lineFeed;
+        }
+
         exit;
     }
 
@@ -681,14 +717,14 @@ class URI
     }
 
     /**
-     *  \brief Return true if is an XML HTTL request (AJAX).
+     * Returns true if is an XML HTTL request (AJAX).
      *
-     *  Verifica se a requisição recebida contém HTTP_X_REQUESTED_WITH no cabeçalho do pacote.
-     *  Test to see if a request contains the HTTP_X_REQUESTED_WITH header.
+     * Verifica se a requisição recebida contém HTTP_X_REQUESTED_WITH no cabeçalho do pacote.
+     * Test to see if a request contains the HTTP_X_REQUESTED_WITH header.
      *
-     *  \return \c true if the request is an AJAX call.
+     * @return bool true if the request is an AJAX call.
      */
-    public static function isAjaxRequest()
+    public static function isAjaxRequest(): bool
     {
         return !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
     }

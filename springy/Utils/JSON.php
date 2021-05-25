@@ -1,13 +1,13 @@
 <?php
-/** \file
- *  Springy.
+/**
+ * JSON treatment and output.
  *
- *  \brief      Classe de construção e tratamento de objetos JSON.
- *  \copyright  Copyright (c) 2007-2016 Fernando Val
- *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
- *  \author     Fernando Val - fernando.val@gmail.com
- *  \version    1.1.0.9
- *  \ingroup    framework
+ * @copyright 2007 Fernando Val
+ * @author    Fernando Val <fernando.val@gmail.com>
+ * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
+ * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
+ *
+ * @version   1.1.1.10
  */
 
 namespace Springy\Utils;
@@ -17,7 +17,7 @@ use Springy\Core\Debug;
 use Springy\Kernel;
 
 /**
- *  \brief Classe de construção e tratamento de objetos JSON.
+ * JSON treatment and output class.
  */
 class JSON
 {
@@ -25,7 +25,10 @@ class JSON
     private $statusCode = 200;
 
     /**
-     *  \brief Constructor method.
+     * Constructor.
+     *
+     * @param array $data
+     * @param int   $status
      */
     public function __construct($data = null, $status = 200)
     {
@@ -39,7 +42,11 @@ class JSON
     }
 
     /**
-     *  \brief Add data to JSON array.
+     * Adds data to JSON array.
+     *
+     * @param string $data
+     *
+     * @return void
      */
     public function add($data)
     {
@@ -47,17 +54,21 @@ class JSON
     }
 
     /**
-     *  \brief Get the array of the JSON.
+     * Gets the array of the JSON.
+     *
+     * @return array
      */
-    public function getData()
+    public function getData(): array
     {
         return $this->data;
     }
 
     /**
-     *  \brief Pega todos os dados do JSON.
-     *  \note This method will be deprecated in future version.
-     *  \deprecated.
+     * Pega todos os dados do JSON.
+     *
+     * This method will be deprecated in future version.
+     *
+     * @deprecated 4.4.0
      */
     public function getDados()
     {
@@ -65,7 +76,11 @@ class JSON
     }
 
     /**
-     *  \brief Change the header status code.
+     * Changes the header status code.
+     *
+     * @param int $status
+     *
+     * @return void
      */
     public function setHeaderStatus($status)
     {
@@ -73,9 +88,11 @@ class JSON
     }
 
     /**
-     *  \brief Parse the array of data in a JSON object.
+     * Parses the array of data in a JSON object string.
+     *
+     * @return string
      */
-    public function fetch()
+    public function fetch(): string
     {
         // Add static default variables to the json data if is not defined dinamicly
         foreach (JSON_Static::getDefaultVars() as $name => $value) {
@@ -88,7 +105,11 @@ class JSON
     }
 
     /**
-     *  \brief Print the JSON to the standard output.
+     * Prints the JSON to the standard output.
+     *
+     * @param bool $andDie
+     *
+     * @return void
      */
     public function output($andDie = true)
     {
@@ -104,6 +125,17 @@ class JSON
         header('Cache-Control: post-check=0, pre-check=0', false);
         header('Pragma: no-cache');
 
+        if (Kernel::isCGIMode()) {
+            $lineFeed = "\n";
+            echo 'Status: ' . $this->statusCode . $lineFeed;
+            echo 'Content-type: application/json; charset=' . Kernel::charset() . $lineFeed;
+            echo 'Expires: Sat, 26 Jul 1997 05:00:00 GMT' . $lineFeed;
+            echo 'Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT' . $lineFeed;
+            echo 'Cache-Control: no-store, no-cache, must-revalidate' . $lineFeed;
+            echo 'Cache-Control: post-check=0, pre-check=0' . $lineFeed;
+            echo 'Pragma: no-cache' . $lineFeed . $lineFeed;
+        }
+
         echo $this->fetch();
 
         if ($andDie) {
@@ -112,9 +144,11 @@ class JSON
     }
 
     /**
-     *  \brief Back compatibility method. Is deprecated. Use the output method.
-     *  \note This method is deprecated and will be removed in future version.
-     *  \deprecated.
+     * Back compatibility method. Is deprecated. Use the output method.
+     *
+     * This method is deprecated and will be removed in future version.
+     *
+     * @deprecated 4.4.0
      */
     public function printJ($andDie = true)
     {
@@ -122,9 +156,11 @@ class JSON
     }
 
     /**
-     *  \brief Converte o objeto JSON para String.
+     * Converts the JSON object to String.
+     *
+     * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->fetch();
     }
