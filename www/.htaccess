@@ -1,18 +1,16 @@
 RewriteEngine On
 
 RewriteCond %{REQUEST_METHOD} ^(head|trace|track) [NC]
-RewriteRule ^(.*)$ - [F,L]
+RewriteRule ^ - [F,L]
 
 # Rewrite para dominio sem URI (ex: www.seusite.com.br/, o que faria cair no index.php)
-RewriteCond %{REQUEST_FILENAME} -d [OR]
-RewriteCond %{REQUEST_URI} =/ [OR]
-RewriteCond %{REQUEST_URI} =/index.php [OR]
-RewriteCond %{REQUEST_URI} =""
-RewriteRule .* /_Main.php [L]
-#RewriteRule .* /_Main.php?SUPERVAR=/&%{QUERY_STRING} [L]
+# RewriteCond %{REQUEST_FILENAME} -d [OR]
+# RewriteCond %{REQUEST_URI} =/ [OR]
+# RewriteCond %{REQUEST_URI} =/index.php [OR]
+# RewriteCond %{REQUEST_URI} =""
+# RewriteRule .* /_Main.php [L]
 
-RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteCond %{REQUEST_URI}	!\.(gif|jpe?g|s?css|js|png|swf|ico|eot|svg|ttf|woff|otf|less|json|pdf|txt|map)$ [NC]
-RewriteRule ^(.*?)$ /_Main.php [L]
-#RewriteRule ^(.*?)$ /_Main.php?SUPERVAR=$1&%{QUERY_STRING} [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+# RewriteCond %{REQUEST_URI}	!\.(gif|jpe?g|s?css|js|png|swf|ico|eot|svg|ttf|woff|otf|less|json|pdf|txt|map)$ [NC]
+RewriteRule ^ _Main.php [L]
