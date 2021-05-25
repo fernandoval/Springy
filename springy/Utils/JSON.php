@@ -127,13 +127,13 @@ class JSON
 
         if (Kernel::isCGIMode()) {
             $lineFeed = "\n";
-            echo 'Status: '.$this->statusCode.$lineFeed;
-            echo 'Content-type: application/json; charset='.Kernel::charset().$lineFeed;
-            echo 'Expires: Sat, 26 Jul 1997 05:00:00 GMT'.$lineFeed;
-            echo 'Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT'.$lineFeed;
-            echo 'Cache-Control: no-store, no-cache, must-revalidate'.$lineFeed;
-            echo 'Cache-Control: post-check=0, pre-check=0'.$lineFeed;
-            echo 'Pragma: no-cache'.$lineFeed.$lineFeed;
+            echo 'Status: ' . $this->statusCode . $lineFeed;
+            echo 'Content-type: application/json; charset=' . Kernel::charset() . $lineFeed;
+            echo 'Expires: Sat, 26 Jul 1997 05:00:00 GMT' . $lineFeed;
+            echo 'Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT' . $lineFeed;
+            echo 'Cache-Control: no-store, no-cache, must-revalidate' . $lineFeed;
+            echo 'Cache-Control: post-check=0, pre-check=0' . $lineFeed;
+            echo 'Pragma: no-cache' . $lineFeed . $lineFeed;
         }
 
         echo $this->fetch();

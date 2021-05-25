@@ -560,7 +560,7 @@ class Errors
             header('Content-type: text/html; charset=UTF-8', true, $errorType);
 
             if (Kernel::isCGIMode()) {
-                echo 'Status: '.$errorType.$lineFeed.$lineFeed;
+                echo 'Status: ' . $errorType . $lineFeed . $lineFeed;
             }
 
             if (PHP_SAPI === 'cli' || defined('STDIN')) {
@@ -594,7 +594,7 @@ class Errors
             echo '    <meta http-equiv="X-UA-Compatible" content="IE=edge">';
             echo '    <meta name="viewport" content="width=device-width, initial-scale=1">';
             echo '    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">';
-            echo '    <title>'.Kernel::systemName().' ('.Kernel::systemVersion().')</title>';
+            echo '    <title>' . Kernel::systemName() . ' (' . Kernel::systemVersion() . ')</title>';
             echo '    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">';
             echo '    <!--[if lt IE 9]>';
             echo '      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>';
@@ -602,10 +602,10 @@ class Errors
             echo '    <![endif]-->';
             echo '  </head>';
             echo '  <body>';
-            echo '    <h1 class="text-center">Error '.$errorType.'</h1>';
+            echo '    <h1 class="text-center">Error ' . $errorType . '</h1>';
             if (Configuration::get('system', 'debug')) {
                 echo '    <div class="container">';
-                echo '      '.$msg;
+                echo '      ' . $msg;
                 echo '    </div>';
             }
             echo '    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>';
