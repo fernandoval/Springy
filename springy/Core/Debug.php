@@ -6,7 +6,7 @@
  * @copyright 2007 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
  *
- * @version    1.0.3.9
+ * @version    1.0.4.9
  */
 
 namespace Springy\Core;
@@ -151,6 +151,7 @@ class Debug
 
             $content = ob_get_contents();
             ob_clean();
+            ob_start();
 
             $debugTemplate = dirname(realpath(__FILE__)) . DIRECTORY_SEPARATOR . 'debug_template.html';
             if (file_exists($debugTemplate) && $htmlDebug = file_get_contents($debugTemplate)) {

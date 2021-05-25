@@ -8,7 +8,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version    2.4.86
+ * @version    2.5.0.86
  */
 
 namespace Springy;
@@ -21,7 +21,7 @@ namespace Springy;
 class Kernel
 {
     /// Versão do framework
-    const VERSION = '4.2.3';
+    const VERSION = '4.3.0';
 
     /// Path constants
     const PATH_PROJECT = 'PROJ';
@@ -65,6 +65,8 @@ class Kernel
     private static $paths = [];
     /// System charset
     private static $charset = 'UTF-8';
+    /// CGI execution mode
+    private static $cgiMode = false;
 
     /// List of ignored errors
     private static $ignoredErrors = [];
@@ -168,7 +170,7 @@ class Kernel
     private static function _callSpecialCommands()
     {
         // Has a controller?
-        if (!is_null(self::$controllerName)) {
+        if (!is_null(self::$controllerName) || self::$cgiMode) {
             return;
         }
 
@@ -418,8 +420,9 @@ class Kernel
     /**
      * Starts system environment.
      */
-    public static function initiate($sysconf, $startime = null)
+    public static function initiate($sysconf, $startime = null, $cgiMode = false)
     {
+        self::$cgiMode = $cgiMode;
         ini_set('date.timezone', $sysconf['TIMEZONE']);
 
         // Define the application properties
@@ -427,12 +430,12 @@ class Kernel
         self::systemName($sysconf['SYSTEM_NAME']);
         self::systemVersion($sysconf['SYSTEM_VERSION']);
         self::projectCodeName(isset($sysconf['PROJECT_CODE_NAME']) ? $sysconf['PROJECT_CODE_NAME'] : '');
-        self::charset($sysconf['CHARSET']);
         self::environment(
             $sysconf['ACTIVE_ENVIRONMENT'],
             isset($sysconf['ENVIRONMENT_ALIAS']) ? $sysconf['ENVIRONMENT_ALIAS'] : [],
             isset($sysconf['ENVIRONMENT_VARIABLE']) ? $sysconf['ENVIRONMENT_VARIABLE'] : ''
         );
+        self::charset($sysconf['CHARSET']);
 
         // Check basic configuration path
         if (!isset($sysconf['ROOT_PATH'])) {
@@ -469,6 +472,16 @@ class Kernel
         self::_callGlobal();
         self::_callController();
         self::_callSpecialCommands();
+    }
+
+    /**
+     * Informs if application is running under CGI mode.
+     *
+     * @return bool
+     */
+    public static function isCGIMode(): bool
+    {
+        return self::$cgiMode;
     }
 
     /**
@@ -595,9 +608,6 @@ class Kernel
             ini_set('default_charset', $charset);
             // Send the content-type and charset header
             header('Content-Type: text/html; charset=' . $charset, true);
-            if (phpversion() < '5.6') {
-                ini_set('mbstring.internal_encoding', $charset);
-            }
         }
 
         return self::$charset;
