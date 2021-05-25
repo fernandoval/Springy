@@ -9,7 +9,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   3.0.7.49
+ * @version   3.0.50
  */
 
 namespace Springy;
@@ -440,6 +440,9 @@ class Errors
         Kernel::callErrorHook($errorType, $msg, $errorId, $additionalInfo);
 
         $this->printHtml($errorType, $out);
+
+        // Terminate application with error status code 1.
+        exit(1);
     }
 
     /**
@@ -545,6 +548,8 @@ class Errors
      */
     private function printHtml($errorType, $msg)
     {
+        $lineFeed = "\n";
+
         // Verifica se a saída do erro não é em ajax ou json
         //if (!Configuration::get('system', 'ajax') || !in_array('Content-type: application/json; charset=' . Kernel::charset(), headers_list())) {
         if (!URI::isAjaxRequest()) {
@@ -552,66 +557,78 @@ class Errors
                 ob_clean();
             }
 
+            header('Content-type: text/html; charset=UTF-8', true, $errorType);
+
+            if (Kernel::isCGIMode()) {
+                echo 'Status: '.$errorType.$lineFeed.$lineFeed;
+            }
+
             if (PHP_SAPI === 'cli' || defined('STDIN')) {
-                echo $msg . "\n";
-            } else {
-                header('Content-type: text/html; charset=UTF-8', true, $errorType);
+                echo $msg . $lineFeed;
 
-                if (!is_null(Configuration::get('template', 'template_engine'))) {
-                    $tplName = Configuration::get('template', 'errors.' . $errorType);
-                    $tpl = new Template();
-                    if (!$tplName) {
-                        $tplName = '_error' . $errorType;
-                    }
-                }
-                if (isset($tpl) && $tpl->templateExists($tplName)) {
-                    $tpl->setTemplate($tplName);
-
-                    $tpl->assign('errorDebug', (Configuration::get('system', 'debug') ? $msg : ''));
-
-                    $tpl->display();
-                } else {
-                    echo '<!DOCTYPE html>';
-                    echo '<html lang="en">';
-                    echo '  <head>';
-                    echo '    <meta charset="utf-8">';
-                    echo '    <meta http-equiv="X-UA-Compatible" content="IE=edge">';
-                    echo '    <meta name="viewport" content="width=device-width, initial-scale=1">';
-                    echo '    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">';
-                    echo '    <title>' . Kernel::systemName() . ' (' . Kernel::systemVersion() . ')</title>';
-                    echo '    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">';
-                    echo '    <!--[if lt IE 9]>';
-                    echo '      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>';
-                    echo '      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>';
-                    echo '    <![endif]-->';
-                    echo '  </head>';
-                    echo '  <body>';
-                    echo '    <h1 class="text-center">Error ' . $errorType . '</h1>';
-                    if (Configuration::get('system', 'debug')) {
-                        echo '    <div class="container">';
-                        echo '      ' . $msg;
-                        echo '    </div>';
-                    }
-                    echo '    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>';
-                    echo '    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>';
-                    echo '  </body>';
-                    echo '</html>';
-                }
-                unset($tpl, $tplName);
+                return;
             }
-        } else {
-            header('Content-type: application/json; charset=utf-8', true, $errorType);
+
+            if (!is_null(Configuration::get('template', 'template_engine'))) {
+                $tplName = Configuration::get('template', 'errors.' . $errorType);
+                $tpl = new Template();
+                if (!$tplName) {
+                    $tplName = '_error' . $errorType;
+                }
+            }
+
+            if (isset($tpl) && $tpl->templateExists($tplName)) {
+                $tpl->setTemplate($tplName);
+
+                $tpl->assign('errorDebug', (Configuration::get('system', 'debug') ? $msg : ''));
+
+                $tpl->display();
+
+                return;
+            }
+
+            echo '<!DOCTYPE html>';
+            echo '<html lang="en">';
+            echo '  <head>';
+            echo '    <meta charset="utf-8">';
+            echo '    <meta http-equiv="X-UA-Compatible" content="IE=edge">';
+            echo '    <meta name="viewport" content="width=device-width, initial-scale=1">';
+            echo '    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">';
+            echo '    <title>'.Kernel::systemName().' ('.Kernel::systemVersion().')</title>';
+            echo '    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">';
+            echo '    <!--[if lt IE 9]>';
+            echo '      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>';
+            echo '      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>';
+            echo '    <![endif]-->';
+            echo '  </head>';
+            echo '  <body>';
+            echo '    <h1 class="text-center">Error '.$errorType.'</h1>';
             if (Configuration::get('system', 'debug')) {
-                if (is_array($msg)) {
-                    echo json_encode($msg);
-                } elseif ($msg != '') {
-                    echo $msg;
-                }
+                echo '    <div class="container">';
+                echo '      '.$msg;
+                echo '    </div>';
             }
+            echo '    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>';
+            echo '    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>';
+            echo '  </body>';
+            echo '</html>';
+
+            return;
         }
 
-        // Terminate application with error status code 1.
-        exit(1);
+        header('Content-type: application/json; charset=utf-8', true, $errorType);
+
+        if (Kernel::isCGIMode()) {
+            echo 'Status: ' . $errorType . $lineFeed . $lineFeed;
+        }
+
+        if (Configuration::get('system', 'debug')) {
+            if (is_array($msg)) {
+                echo json_encode($msg);
+            } elseif ($msg != '') {
+                echo $msg;
+            }
+        }
     }
 
     /**
