@@ -1,6 +1,6 @@
 # Springy
 
-[![Build Status](https://travis-ci.org/fernandoval/Springy.svg?branch=master)](https://travis-ci.org/fernandoval/Springy)
+[![Build Status](https://travis-ci.com/fernandoval/Springy.svg?branch=master)](https://travis-ci.com/fernandoval/Springy)
 [![StyleCI](https://styleci.io/repos/26294247/shield)](https://styleci.io/repos/26294247)
 [![Codacy Badge](https://api.codacy.com/project/badge/grade/6152e69cbc7d433d8a151622e0f6be4b)](https://www.codacy.com/app/fval/Springy)
 
