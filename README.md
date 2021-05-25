@@ -24,7 +24,7 @@ It was created based upon the KISS principle in which the simplicity is the base
 
 ## Requirements
 
-* PHP 7.0+
+* PHP 7.2+
 * [Composer](https://getcomposer.org/) Dependency Manager for PHP
 
 ## Language dependencies
