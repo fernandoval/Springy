@@ -10,7 +10,7 @@
  * @author    Allan Marques <allan.marques@ymail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.6.1.59
+ * @version   2.7.61
  */
 
 namespace Springy;
@@ -53,7 +53,7 @@ class Model extends DB implements \Iterator
     protected $dbNumRows = 0;
     /// Flag de carga do banco de dados. Informa que os dados do objeto foram lidos do banco.
     protected $loaded = false;
-    /// Container de mensagem de erros de validação.
+    /** @var \Springy\Utils\MessageContainer validation errors container */
     protected $validationErrors;
     /// Protege contra carga completa
     protected $abortOnEmptyFilter = true;
@@ -479,9 +479,19 @@ class Model extends DB implements \Iterator
     }
 
     /**
+     * Returns the table name.
+     *
+     * @return string
+     */
+    public function getTableName()
+    {
+        return $this->tableName;
+    }
+
+    /**
      * Returns the container of error messages.
      *
-     * @return Springy\Utils\MessageContainer
+     * @return \Springy\Utils\MessageContainer
      */
     public function validationErrors()
     {
@@ -672,14 +682,28 @@ class Model extends DB implements \Iterator
 
         $values = $this->_values();
 
-        $this->execute(
-            'INSERT INTO ' . $this->tableName .
-            ' (' . implode(', ', $this->changedColumns()) .
-            ($this->insertDateColumn ? ', ' . $this->insertDateColumn : '') .
-            ') VALUES (' . rtrim(str_repeat('?,', count($values)), ',') .
-            ($this->insertDateColumn ? ', ' . $cdtFunc : '') . ')',
-            $values
-        );
+        $command = 'INSERT INTO ' . $this->tableName
+            . ' (' . implode(', ', $this->changedColumns());
+
+        if (
+            $this->insertDateColumn
+            && !in_array($this->insertDateColumn, $this->changedColumns())
+        ) {
+            $command .= ', ' . $this->insertDateColumn;
+        }
+
+        $command .= ') VALUES (' . rtrim(str_repeat('?,', count($values)), ',');
+
+        if (
+            $this->insertDateColumn
+            && !in_array($this->insertDateColumn, $this->changedColumns())
+        ) {
+            $command .= ', ' . $cdtFunc;
+        }
+
+        $command .= ')';
+
+        $this->execute($command, $values);
 
         // Load the inserted row
         if ($this->affectedRows() == 1) {
