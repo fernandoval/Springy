@@ -2,6 +2,11 @@
 
 ## Version 4
 
+## 4.3
+- Implements CGI mode;
+- Breaks compatibility with PHP 7.2 or older;
+- Small adjustments and enhancements.
+
 ## 4.2.2
 - Deprecated css_dir, js_dir, images_dir and swf_dir entries from uri configuration;
 - Removed urlJS, urlCSS, urlIMG e urlSWF template variables.
