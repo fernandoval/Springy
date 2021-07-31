@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Identity authentication manager
+ * Identity authentication manager.
  *
  * @copyright 2014 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>

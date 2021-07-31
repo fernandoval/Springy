@@ -24,7 +24,7 @@ class BCryptHasher implements HasherInterface
     protected $salt;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param int|string $algorithm
      * @param string     $salt

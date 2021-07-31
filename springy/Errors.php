@@ -10,7 +10,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   3.0.51
+ * @version   3.0.52
  */
 
 namespace Springy;
@@ -785,7 +785,7 @@ class Errors
                 "/>\n/",
                 "/\{\s*?\n/",
                 "/\}\n/",
-                "/;\n/"
+                "/;\n/",
             ],
             [
                 '',
@@ -798,7 +798,7 @@ class Errors
                 '>',
                 '{',
                 '} ',
-                ';'
+                ';',
             ],
             $tpl
         );

@@ -28,7 +28,7 @@ class DBAuthDriver implements AuthDriverInterface
     protected $lastValidIdentity;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param HasherInterface   $hasher
      * @param IdentityInterface $identity
