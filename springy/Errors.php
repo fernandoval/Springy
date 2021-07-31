@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Error handler class.
  *
@@ -9,11 +10,12 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   3.0.50
+ * @version   3.0.51
  */
 
 namespace Springy;
 
+use Exception;
 use Springy\Core\Debug;
 use Springy\Utils\Strings;
 
@@ -71,7 +73,10 @@ class Errors
                     $error .= $trace['function'] . '()';
             }
 
-            $error .= ' at ' . $trace['file'] . ': ' . $trace['line'] . $ln;
+            if (array_key_exists('line', $trace)) {
+                $error .= ' at ' . $trace['file'] . ': ' . $trace['line'] . $ln;
+            }
+
         }
 
         return $error;
@@ -246,8 +251,14 @@ class Errors
      *
      * @deprecated 4.3
      */
-    public static function errorHandler($errno, $errstr, $errfile, $errline, $errcontext = null, $errorType = 500)
-    {
+    public static function errorHandler(
+        $errno,
+        $errstr,
+        $errfile,
+        $errline,
+        $errcontext = null,
+        $errorType = 500
+    ) {
         $error = new self();
         $error->handler($errno, $errstr, $errfile, $errline, $errcontext, $errorType);
     }
@@ -342,9 +353,15 @@ class Errors
         }
 
         $this->sendReport(
-            (PHP_SAPI === 'cli' || defined('STDIN')) ? $printError . ' - ' . $errstr . ' in ' . $errfile . ' on line ' . $errline : '<span style="color:#FF0000">' . $printError . '</span>: <em>' . $errstr . '</em> in <strong>' . $errfile . '</strong> on line <strong>' . $errline . '</strong>',
+            (PHP_SAPI === 'cli' || defined('STDIN'))
+                ? $printError . ' - ' . $errstr . ' in ' . $errfile . ' on line ' . $errline
+                : '<span style="color:#FF0000">'
+                    . $printError . '</span>: <em>'
+                    . $errstr . '</em> in <strong>'
+                    . $errfile . '</strong> on line <strong>'
+                    . $errline . '</strong>',
             $errorType,
-            hash('crc32', $errno . $errfile . $errline) /// error id
+            hash('crc32', $errno . $errfile . $errline) // error id
         );
     }
 
@@ -390,9 +407,13 @@ class Errors
                 if (DB::connected()) {
                     $res = false;
                     $dbc->errorReportStatus(false);
+
                     if (!$dbc->execute('SELECT id FROM ' . $table . ' WHERE error_code = ?', [$errorId])) {
                         if ($dbc->statmentErrorCode()) {
-                            if (Configuration::get('system', 'system_error.create_table') && $sql = file_get_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'system_errors_create_table.sql')) {
+                            if (
+                                Configuration::get('system', 'system_error.create_table')
+                                && $sql = file_get_contents(dirname(__FILE__) . DS . 'system_errors_create_table.sql')
+                            ) {
                                 $dbc->execute(str_replace('%table_name%', $table, $sql));
                             }
                         }
@@ -402,9 +423,15 @@ class Errors
 
                     if ($res) {
                         $repeated = true;
-                        $dbc->execute('UPDATE ' . $table . ' SET occurrences = occurrences + 1 WHERE error_code = ?', [$errorId]);
+                        $dbc->execute(
+                            'UPDATE ' . $table . ' SET occurrences = occurrences + 1 WHERE error_code = ?',
+                            [$errorId]
+                        );
                     } else {
-                        $dbc->execute('INSERT INTO ' . $table . ' (error_code, description, details, occurrences) VALUES (?, ?, ?, 1)', [$errorId, $msg, $out]);
+                        $dbc->execute(
+                            'INSERT INTO ' . $table . ' (error_code, description, details, occurrences) VALUES (?, ?, ?, 1)',
+                            [$errorId, $msg, $out]
+                        );
                     }
                 }
                 unset($dbc, $table, $conn);
@@ -413,11 +440,15 @@ class Errors
             // Send mail message to the system administrator
             if (Configuration::get('mail', 'errors_go_to')) {
                 if (!isset($repeated)) {
-                    $errorTemplate = dirname(realpath(__FILE__)) . DIRECTORY_SEPARATOR . 'error_mail_template.html';
+                    $errorTemplate = dirname(realpath(__FILE__)) . DS . 'error_mail_template.html';
                     if (file_exists($errorTemplate) && $errorMail = file_get_contents($errorTemplate)) {
                         $errorMail = $this->parseTemplate($errorMail, $errorId, $msg, $additionalInfo);
                     } else {
-                        $errorMail = preg_replace('/\<a href="javascript\:\;" onClick="var obj=\$\(\#(.*?)\)\.toggle\(\)" style="color:#06c; margin:3px 0"\>arguments passed to function\<\/a\>/', '<span style="font-weight:bold; color:#06c; margin:3px 0">Functions arguments:</span>', $out);
+                        $errorMail = preg_replace(
+                            '/\<a href="javascript\:\;" onClick="var obj=\$\(\#(.*?)\)\.toggle\(\)" style="color:#06c; margin:3px 0"\>arguments passed to function\<\/a\>/',
+                            '<span style="font-weight:bold; color:#06c; margin:3px 0">Functions arguments:</span>',
+                            $out
+                        );
                         $errorMail = preg_replace('/ style="display:none"/', '', $errorMail);
                     }
 
@@ -462,11 +493,18 @@ class Errors
         }
 
         $db = new DB($conn);
+
         if (DB::connected()) {
+            if ($errorId == 'all') {
+                $db->execute('DELETE FROM ' . $table, []);
+                echo '<strong>ALL</strong> errors deleted from error log.';
+
+                return;
+            }
+
             $db->execute('DELETE FROM ' . $table . ' WHERE error_code = ?', [$errorId]);
+            echo 'ID <strong>' . URI::getSegment(1, false) . '</strong> deleted from error log.';
         }
-        unset($db);
-        echo 'ID <strong>' . URI::getSegment(1, false) . '</strong> deleted from error log.';
     }
 
     /**
@@ -497,7 +535,11 @@ class Errors
             '<html>',
                 '<head>',
                     '<meta charset="UTF-8">',
-                    '<title>', Kernel::systemName(), ' version ', Kernel::systemVersion(), ' - Occurrence Errors</title>',
+                    '<title>',
+                        Kernel::systemName(),
+                        ' version ',
+                        Kernel::systemVersion(),
+                        ' - Occurrence Errors</title>',
 
                     '<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">',
 
@@ -505,30 +547,76 @@ class Errors
                     '<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>',
                 '</head>',
             '<body>',
-                '<div class="page-header"><h1 class="text-center">', Kernel::systemName(), ' <small>System Error Occurrences</small></h1></div>',
+                '<div class="page-header"><h1 class="text-center">',
+                    Kernel::systemName(),
+                    ' <small>System Error Occurrences</small></h1></div>',
 
                 '<div class="container">',
+                    (
+                        $dbc->affectedRows()
+                            ? (
+                                '<div class="panel-group text-right"><a class="btn btn-xs btn-danger" href="'
+                                . URI::buildURL(['_system_bug_solved_', 'all'])
+                                . '">DELETE ALL</a></div>'
+                            ) : ''
+                    ),
                     '<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">';
 
         while ($res = $dbc->fetchNext()) {
             echo
                 '<div class="panel panel-default">',
                     '<div class="panel-heading" role="tab" id="heading', $res['id'], '">',
-                        '<a data-toggle="collapse" data-parent="#accordion" href="#collapse', $res['id'], '" aria-expanded="true" aria-controls="collapse', $res['id'], '">',
-                            '<span class="label label-default">', $res['error_code'], '</span> ', $res['description'], ' <span class="badge">', $res['occurrences'], '</span>',
+                        '<a data-toggle="collapse" data-parent="#accordion" href="#collapse',
+                            $res['id'],
+                            '" aria-expanded="true" aria-controls="collapse',
+                            $res['id'],
+                        '">',
+                            '<span class="label label-default">',
+                                $res['error_code'],
+                            '</span> ',
+                            $res['description'],
+                            ' <span class="badge">',
+                                $res['occurrences'],
+                            '</span>',
                         '</a>',
-                            '<a class="btn btn-xs btn-primary pull-right" href="', URI::buildURL(['_system_bug_solved_', $res['error_code']]), '">',
-                                'DELETE',
-                            '</a>',
+                        '<a class="btn btn-xs btn-primary pull-right" href="',
+                            URI::buildURL(['_system_bug_solved_', $res['error_code']]),
+                        '">',
+                            'DELETE',
+                        '</a>',
                     '</div>',
-                    '<div id="collapse' . $res['id'] . '" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading' . $res['id'] . '">',
-                        '<div class="panel-body">';
+                    '<div id="collapse',
+                        $res['id'],
+                        '" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading',
+                        $res['id'],
+                    '">',
+                    '<div class="panel-body">';
 
-            $res['details'] = preg_replace('/<table([a-zA-Z0-9"=\%:,; \-]*)>/', '<table class="table table-bordered">', $res['details']);
-            $res['details'] = preg_replace('/<tr style="color:#000; display:none" class="bugList">/', '<tr class="bugList">', $res['details']);
-            $res['details'] = preg_replace('/(.*)<tr class="hideMoreInfo">/', '<tr class="hideMoreInfo">', $res['details']);
-            $res['details'] = preg_replace('/(.*)<!-- CONTENT -->/s', '', $res['details']);
-            $res['details'] = str_replace('[last_time]', $res['last_time'], $res['details']);
+            $res['details'] = preg_replace(
+                '/<table([a-zA-Z0-9"=\%:,; \-]*)>/',
+                '<table class="table table-bordered">',
+                $res['details']
+            );
+            $res['details'] = preg_replace(
+                '/<tr style="color:#000; display:none" class="bugList">/',
+                '<tr class="bugList">',
+                $res['details']
+            );
+            $res['details'] = preg_replace(
+                '/(.*)<tr class="hideMoreInfo">/',
+                '<tr class="hideMoreInfo">',
+                $res['details']
+            );
+            $res['details'] = preg_replace(
+                '/(.*)<!-- CONTENT -->/s',
+                '',
+                $res['details']
+            );
+            $res['details'] = str_replace(
+                '[last_time]',
+                $res['last_time'],
+                $res['details']
+            );
 
             echo $res['details'];
 
@@ -660,24 +748,60 @@ class Errors
         $tpl = preg_replace('/<!-- SYSTEM -->/', $uname, $tpl);
         $tpl = preg_replace('/<!-- HTTPS -->/', (ini_get('safe_mode') ? 'Yes' : 'No'), $tpl);
         $tpl = preg_replace('/<!-- DATE_TIME -->/', date('Y-m-d G:i:s'), $tpl);
-        $tpl = preg_replace('/<!-- REQUEST_URI -->/', isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : 'empty', $tpl);
-        $tpl = preg_replace('/<!-- REQUEST_METHOD -->/', isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : 'empty', $tpl);
-        $tpl = preg_replace('/<!-- SERVER_PROTOCOL -->/', isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'empty', $tpl);
+        $tpl = preg_replace('/<!-- REQUEST_URI -->/', $_SERVER['REQUEST_URI'] ?? 'empty', $tpl);
+        $tpl = preg_replace('/<!-- REQUEST_METHOD -->/', $_SERVER['REQUEST_METHOD'] ?? 'empty', $tpl);
+        $tpl = preg_replace('/<!-- SERVER_PROTOCOL -->/', $_SERVER['SERVER_PROTOCOL'] ?? 'empty', $tpl);
         $tpl = preg_replace('/<!-- HOST -->/', URI::buildURL(), $tpl);
         $tpl = preg_replace('/<!-- URL -->/', URI::getURIString() . '?' . implode('&', $getParams), $tpl);
         $tpl = preg_replace('/<!-- KERNEL_DEBUG -->/', Debug::get(), $tpl);
         $tpl = preg_replace('/<!-- BACKTRACE -->/', Debug::backtrace(), $tpl);
-        $tpl = preg_replace('/<!-- HTTP_REFERER -->/', isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '', $tpl);
+        $tpl = preg_replace('/<!-- HTTP_REFERER -->/', $_SERVER['HTTP_REFERER'] ?? '', $tpl);
         $tpl = preg_replace('/<!-- CLIENT_IP -->/', Strings::getRealRemoteAddr(), $tpl);
-        $tpl = preg_replace('/<!-- REVERSE -->/', (Strings::getRealRemoteAddr() ? gethostbyaddr(Strings::getRealRemoteAddr()) : 'no reverse'), $tpl);
-        $tpl = preg_replace('/<!-- HTTP_USER_AGENT -->/', isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '', $tpl);
+        $tpl = preg_replace(
+            '/<!-- REVERSE -->/',
+            (
+                Strings::getRealRemoteAddr()
+                    ? gethostbyaddr(Strings::getRealRemoteAddr())
+                    : 'no reverse'
+            ),
+            $tpl
+        );
+        $tpl = preg_replace('/<!-- HTTP_USER_AGENT -->/', $_SERVER['HTTP_USER_AGENT'] ?? '', $tpl);
         $tpl = preg_replace('/<!-- ADDITIONAL_INFO -->/', $additionalInfo, $tpl);
         $tpl = preg_replace('/<!-- _SERVER -->/', Debug::print_rc($_SERVER), $tpl);
         $tpl = preg_replace('/<!-- _POST -->/', Debug::print_rc($_POST), $tpl);
         $tpl = preg_replace('/<!-- _GET -->/', Debug::print_rc($_GET), $tpl);
         $tpl = preg_replace('/<!-- _COOKIE -->/', Debug::print_rc($_COOKIE), $tpl);
         $tpl = preg_replace('/<!-- _SESSION -->/', Debug::print_rc(Session::getAll()), $tpl);
-        $tpl = preg_replace(['!/\*.*?\*/!s', "/\n\s+/", "/\n(\s*\n)+/", "!\n//.*?\n!s", "/\n\}(.+?)\n/", "/\}\s+/", "/,\n/", "/>\n/", "/\{\s*?\n/", "/\}\n/", "/;\n/"], ['', "\n", "\n", "\n", "}\\1\n", '}', ', ', '>', '{', '} ', ';'], $tpl);
+        $tpl = preg_replace(
+            [
+                '!/\*.*?\*/!s',
+                "/\n\s+/",
+                "/\n(\s*\n)+/",
+                "!\n//.*?\n!s",
+                "/\n\}(.+?)\n/",
+                "/\}\s+/",
+                "/,\n/",
+                "/>\n/",
+                "/\{\s*?\n/",
+                "/\}\n/",
+                "/;\n/"
+            ],
+            [
+                '',
+                "\n",
+                "\n",
+                "\n",
+                "}\\1\n",
+                '}',
+                ', ',
+                '>',
+                '{',
+                '} ',
+                ';'
+            ],
+            $tpl
+        );
 
         return $tpl;
     }

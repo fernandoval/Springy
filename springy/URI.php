@@ -1,4 +1,5 @@
 <?php
+
 /**
  * URI handler class.
  *
@@ -7,7 +8,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.2.7.40
+ * @version   2.2.8
  */
 
 namespace Springy;
@@ -469,7 +470,7 @@ class URI
     /**
      * Returns the value of a query string variable.
      *
-     * Is an alias for _GET().
+     * Is an alias for URI::getParam().
      *
      * @param string $var is the name of the query string variable desired.
      *

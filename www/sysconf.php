@@ -33,17 +33,19 @@ $GLOBALS['SYSTEM'] = [
     'CONFIG_PATH'    => realpath(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'conf'),
     // Application directory
     'APP_PATH'       => realpath(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'app'),
+    // Controller path
     'CONTROLER_PATH' => '',
+    // Models and other classes path
     'CLASS_PATH'     => '',
     // Directory where the system writes data during the course of its operation
     'VAR_PATH'       => realpath(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'var'),
     // Directory for the subdirectories with migration scripts
     'MIGRATION_PATH' => realpath(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'migration'),
-    /// Vendor directory
+    // Vendor directory
     'VENDOR_PATH'    => realpath(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'vendor'),
 ];
 
-/// Diretório das controladoras
+// Diretório das controladoras
 $GLOBALS['SYSTEM']['CONTROLER_PATH'] = realpath($GLOBALS['SYSTEM']['APP_PATH'] . DIRECTORY_SEPARATOR . 'controllers');
-/// Diretório das classes da aplicação
+// Diretório das classes da aplicação
 $GLOBALS['SYSTEM']['CLASS_PATH'] = realpath($GLOBALS['SYSTEM']['APP_PATH'] . DIRECTORY_SEPARATOR . 'classes');

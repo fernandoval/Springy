@@ -1,24 +1,22 @@
 <?php
-/** @file
- *  Springy.
+
+/**
+ * BCrypt hash generator class.
  *
- *  @brief      BCrypt hash generator class.
+ * @copyright 2014 Fernando Val
+ * @author    Fernando Val <fernando.val@gmail.com>
+ * @author    Allan Marques <allan.marques@ymail.com>
+ * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- *  @copyright  Copyright (c) 2007-2018 Fernando Val
- *  @author     Allan Marques - allan.marques@ymail.com
+ * @version 1.0.0
  *
- *  @version    0.2.3.4
- *  @note       This class uses the password_compat class of Anthony Ferrara as a dependency.
- *  @ingroup    framework
+ * @depends This class uses the password_compat class of Anthony Ferrara as a dependency.
  */
 
 namespace Springy\Security;
 
 /**
- *  @brief  BCrypt hash generator class.
- *
- *  @note   Esta classe utiliza como dependência a classe password_compat de Anthony Ferrara,
- *          que deve ser previamente instalada com Composer ou manualmente.
+ * BCrypt hash generator class.
  */
 class BCryptHasher implements HasherInterface
 {
@@ -26,10 +24,10 @@ class BCryptHasher implements HasherInterface
     protected $salt;
 
     /**
-     *  @brief Construtor da classe.
+     * Constructor
      *
-     *  @param int $algorithm - Algoritmo.
-     *  @param string $salt - Sal customizado.
+     * @param int|string $algorithm
+     * @param string     $salt
      */
     public function __construct($algorithm = PASSWORD_DEFAULT, $salt = '')
     {
@@ -38,12 +36,12 @@ class BCryptHasher implements HasherInterface
     }
 
     /**
-     *  @brief Cria e retorna a string com o hash gerado da string passada por parâmetro.
+     * Make and returns a hash for given string.
      *
-     *  @param string $stringToHash - string para gerar o hash.
-     *  @param string $times - numero de vezes para rodar o algorítmo.
+     * @param string $stringToHash
+     * @param int    $times
      *
-     *  @return string.
+     * @return string
      */
     public function make($stringToHash, $times = 10)
     {
@@ -51,39 +49,39 @@ class BCryptHasher implements HasherInterface
     }
 
     /**
-     *  @brief Verifica se a string equivale ao hash.
+     * Checks the string against hash.
      *
-     *  @param string $stringToCHeck - String para comparar.
-     *  @param string $hash - Hash para comparação.
+     * @param string $stringToCheck
+     * @param string $hash
      *
-     *  @return bool.
+     * @return bool
      */
-    public function verify($stringToCheck, $hash)
+    public function verify($stringToCheck, $hash): bool
     {
         return password_verify($stringToCheck, $hash);
     }
 
     /**
-     *  @brief Verifica se a string necessita ser criptografada novamente.
+     * Checks whether the hash must be rebuilt.
      *
-     *  @param string $hash - String para verificar.
-     *  @param string $times - Quantas vezes o hash deveria ter sido rodado.
+     * @param string $hash
+     * @param int    $times
      *
-     *  @return bool.
+     * @return bool.
      */
-    public function needsRehash($hash, $times = 10)
+    public function needsRehash($hash, $times = 10): bool
     {
         return password_needs_rehash($hash, $this->algorithm, $this->options($times));
     }
 
     /**
-     *  @brief Retorna array de opções para a função de hash do BCrypt.
+     * Returns an option array to BCrypt hash function.
      *
-     *  @param int $times - Numero de vezes que o algorítmo deve ser executado.
+     * @param int $times
      *
-     *  @return array.
+     * @return array
      */
-    protected function options($times)
+    protected function options($times): array
     {
         $options = ['cost' => $times];
 
