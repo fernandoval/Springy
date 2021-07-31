@@ -76,7 +76,6 @@ class Errors
             if (array_key_exists('line', $trace)) {
                 $error .= ' at ' . $trace['file'] . ': ' . $trace['line'] . $ln;
             }
-
         }
 
         return $error;
