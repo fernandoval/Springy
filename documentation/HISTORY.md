@@ -2,6 +2,11 @@
 
 ## Version 4
 
+## 4.3.1
+- Implements column getter methods for Model;
+- Adds composer.lock file;
+- Small adjustments and enhancements.
+
 ## 4.3
 - Implements CGI mode;
 - Breaks compatibility with PHP 7.2 or older;
