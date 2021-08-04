@@ -2,6 +2,9 @@
 
 ## Version 4
 
+## 4.3.2
+- Implements secure cookie for session.
+
 ## 4.3.1
 - Implements column getter methods for Model;
 - Adds composer.lock file;
