@@ -10,7 +10,7 @@
  * @author    Allan Marques <allan.marques@ymail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.7.62
+ * @version   2.8.0
  */
 
 namespace Springy;
@@ -299,13 +299,26 @@ class Model extends DB implements \Iterator
             }
 
             $embObj->query($where, $order, $offset, $limit, $embbed - 1);
-            while ($er = $embObj->next()) {
+            while ($erow = $embObj->next()) {
                 foreach ($this->rows as $idx => $row) {
-                    if ($er[$foundBy] == $row[$relCol]) {
+                    if ($erow[$foundBy] == $row[$relCol]) {
+                        $embed = $erow;
+
+                        if (
+                            isset($attr['returns'])
+                            && is_array($attr['returns'])
+                            && count($attr['returns'])
+                        ) {
+                            $embed = [];
+                            foreach ($attr['returns'] as $column) {
+                                $embed[$column] = $erow[$column] ?? null;
+                            }
+                        }
+
                         if ($resType == 'list') {
-                            $this->rows[$idx][$attrName][] = $er;
+                            $this->rows[$idx][$attrName][] = $embed;
                         } else {
-                            $this->rows[$idx][$attrName] = $er;
+                            $this->rows[$idx][$attrName] = $embed;
                         }
                     }
                 }
@@ -1381,12 +1394,17 @@ class Model extends DB implements \Iterator
      *
      * @return int
      */
-    public function count($filter = null, $embbed = false)
+    public function count($filter = null, ?array $distinct = null)
     {
         $where = $this->_filter($filter);
+        $columns = '0';
+
+        if (is_array($distinct) && count($distinct)) {
+            $columns = 'DISTINCT ' . implode(', ', $distinct);
+        }
 
         $this->execute(
-            'SELECT COUNT(0) AS rowscount' . $this->_getFrom() . $where,
+            'SELECT COUNT(' . $columns . ') AS rowscount' . $this->_getFrom() . $where,
             $where->params()
         );
         $row = $this->fetchNext();
