@@ -8,7 +8,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.2.8
+ * @version   2.2.9
  */
 
 namespace Springy;
@@ -43,11 +43,6 @@ class URI
      */
     private static function _fetchURItring()
     {
-        // There is the old SUPERVAR in $_GET, given by .htaccess?
-        if (is_array($_GET) && !empty($_GET['SUPERVAR'])) {
-            return $_GET['SUPERVAR'];
-        }
-
         // The is REQUEST_URI?
         if (!empty($_SERVER['REQUEST_URI'])) {
             return explode('?', $_SERVER['REQUEST_URI'])[0];
@@ -123,16 +118,10 @@ class URI
 
         // Redireciona URIs terminadas em / para evitar conteúdo duplicado de SEO?
         if (Configuration::get('uri', 'redirect_last_slash') && substr(self::$uri_string, -1) == '/' && !(Configuration::get('uri', 'force_slash_on_index') && empty($Segments))) {
-            if (isset($_GET['SUPERVAR'])) {
-                unset($_GET['SUPERVAR']);
-            }
             self::redirect(self::buildURL(explode('/', trim(self::$uri_string, '/')), empty($_GET) ? [] : $_GET, false, 'dynamic', false), 301);
         }
         // Redireciona se for acesso à página inicial e a URI não terminar em / para mesma URL terminada com /
         elseif (self::$uri_string && substr(self::$uri_string, -1) != '/' && Configuration::get('uri', 'force_slash_on_index') && empty($Segments)) {
-            if (isset($_GET['SUPERVAR'])) {
-                unset($_GET['SUPERVAR']);
-            }
             self::redirect(self::buildURL(array_merge(explode('/', trim(self::$uri_string, '/')), ['/']), empty($_GET) ? [] : $_GET, false, 'dynamic', false), 301);
         }
 
@@ -154,9 +143,7 @@ class URI
 
         // Guarda os parâmetros passados por GET no atributo interno
         foreach ($_GET as $key => $value) {
-            if ($key != 'SUPERVAR') {
-                self::$get_params[$key] = $value;
-            }
+            self::$get_params[$key] = $value;
             unset($_GET[$key]);
         }
 
