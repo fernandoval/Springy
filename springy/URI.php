@@ -8,7 +8,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.2.9
+ * @version   2.2.10
  */
 
 namespace Springy;
