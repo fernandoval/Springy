@@ -8,7 +8,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.2.10
+ * @version   2.2.11
  */
 
 namespace Springy;
@@ -473,8 +473,8 @@ class URI
     /**
      * Returns the value of a query string variable.
      *
-     * @param string $var is the name of the query string variable desired.
-     * @param bool $numeric true if parameter needs to be integer.
+     * @param string $var     is the name of the query string variable desired.
+     * @param bool   $numeric true if parameter needs to be integer.
      *
      * @return mixed the value of the variable or false if it does not exists.
      */
