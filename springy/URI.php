@@ -474,13 +474,16 @@ class URI
      * Returns the value of a query string variable.
      *
      * @param string $var is the name of the query string variable desired.
+     * @param bool $numeric true if parameter needs to be integer.
      *
      * @return mixed the value of the variable or false if it does not exists.
      */
-    public static function getParam($var)
+    public static function getParam($var, $numeric = false)
     {
         if (array_key_exists($var, self::$get_params)) {
-            return self::$get_params[$var];
+            if (!$numeric || ($numeric && filter_var(self::$get_params[$var], FILTER_VALIDATE_INT))) {
+                return self::$get_params[$var];
+            }
         }
 
         return false;
