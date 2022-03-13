@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Cookie treatment class.
  *
@@ -7,7 +8,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   1.3.3.11
+ * @version   1.3.4
  */
 
 namespace Springy;
@@ -45,7 +46,7 @@ class Cookie
         if (is_array($key)) {
             // Set string representation
             $cooKey = key($key);
-            $cooVal = value($key);
+            $cooVal = current($key);
             $cookie = $cooKey . '[' . $cooVal . ']';
 
             // Set expiration time to -1 day (will cause browser deletion)
@@ -161,15 +162,30 @@ class Cookie
      *
      * @return void
      */
-    public static function set($key, $value, $expire = 0, $path = '', $domain = '', $secure = false, $httponly = true)
-    {
+    public static function set(
+        $key,
+        $value,
+        $expire = 0,
+        $path = '',
+        $domain = '',
+        $secure = false,
+        $httponly = true
+    ) {
         // Make sure they aren't trying to set a reserved word
         if (!in_array($key, self::$_reserved)) {
             // If $key is in array format, change it to string representation
             $key = self::_scrubKey($key, true);
 
             // Store the cookie
-            return setcookie($key, $value, ($expire ? time() + $expire : 0), $path, $domain, $secure, $httponly);
+            return setcookie(
+                $key,
+                $value,
+                ($expire ? time() + $expire : 0),
+                $path,
+                $domain,
+                $secure,
+                $httponly
+            );
         }
 
         // Otherwise, throw an error
