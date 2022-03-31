@@ -10,7 +10,7 @@
  * @author    Allan Marques <allan.marques@ymail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.8.0
+ * @version   2.8.1
  */
 
 namespace Springy;
@@ -1048,7 +1048,12 @@ class Model extends DB implements \Iterator
             $value
         ) : $value;
 
-        if ($oldvalue != $value || $newrow) {
+        if (
+            $newrow
+            || ($oldvalue != $value)
+            || (is_null($oldvalue) && !is_null($value))
+            || (!is_null($oldvalue) && is_null($value))
+        ) {
             $this->rows[$key][self::CHANGED_COLUMNS] = array_unique(
                 array_merge(
                     $this->rows[$key][self::CHANGED_COLUMNS] ?? [],
