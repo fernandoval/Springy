@@ -8,7 +8,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.2.11
+ * @version   2.2.12
  */
 
 namespace Springy;
@@ -74,7 +74,7 @@ class URI
      * Translate the URI in segments and query string variables.
      * This method is used by the framework starter to determine the controller which is be called.
      *
-     * @return void.
+     * @return string|null.
      */
     public static function parseURI()
     {
