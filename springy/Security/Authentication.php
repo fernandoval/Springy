@@ -8,7 +8,7 @@
  * @author    Allan Marques <allan.marques@ymail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version 1.0.0
+ * @version 1.1.0
  */
 
 namespace Springy\Security;
@@ -95,17 +95,17 @@ class Authentication
     /**
      * Attempts to login with givens user and password credentials.
      *
-     * @param string $login
-     * @param string $password
-     * @param bool   $remember    if true will save identity cookie
-     * @param bool   $loginValids if false will not save to session
+     * @param string $login       the user login.
+     * @param string $password    the user password.
+     * @param bool   $remember    saves remember cookie.
+     * @param bool   $saveSession saves in session if successful.
      *
      * @return bool
      */
-    public function attempt($login, $password, $remember = false, $loginValids = true): bool
+    public function attempt($login, $password, $remember = false, $saveSession = true): bool
     {
         if ($this->driver->isValid($login, $password)) {
-            if ($loginValids) {
+            if ($saveSession) {
                 $this->login($this->driver->getLastValidIdentity(), $remember);
             }
 
@@ -148,7 +148,9 @@ class Authentication
                 $this->user->getId(), //Id do usuário
                 5184000, //60 dias
                 '/',
-                config_get('system.session.domain')
+                config_get('system.session.domain'),
+                config_get('system.session.secure'),
+                true
             );
         }
     }
@@ -161,9 +163,9 @@ class Authentication
      *
      * @return void
      */
-    public function loginWithId($id, $remember = false): void
+    public function loginWithId($uid, $remember = false): void
     {
-        $user = $this->driver->getIdentityById($id);
+        $user = $this->driver->getIdentityById($uid);
 
         if ($user) {
             $this->login($user, $remember);
@@ -217,7 +219,9 @@ class Authentication
             '',
             time() - 3600,
             '/',
-            config_get('system.session.domain')
+            config_get('system.session.domain'),
+            config_get('system.session.secure'),
+            true
         );
         Cookie::delete($this->driver->getIdentitySessionKey());
     }
