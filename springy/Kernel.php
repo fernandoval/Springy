@@ -8,7 +8,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version    2.5.2
+ * @version    2.5.3
  */
 
 namespace Springy;
@@ -21,7 +21,7 @@ namespace Springy;
 class Kernel
 {
     /// Versão do framework
-    const VERSION = '4.3.2';
+    const VERSION = '4.3.3';
 
     /// Path constants
     const PATH_PROJECT = 'PROJ';
@@ -46,7 +46,7 @@ class Kernel
     private static $controller_root = [];
     /// Caminho do namespace do controller
     private static $controller_namespace = null;
-    /// The controller file path name
+    /** @var string|null The controller file path name */
     private static $controllerFile = null;
     /// The controller file class name
     private static $controllerName = null;
@@ -271,7 +271,7 @@ class Kernel
     {
         // Get controller file name
         self::$controllerFile = URI::parseURI();
-        if (is_null(self::$controllerFile)) {
+        if (is_null(self::$controllerFile) || !file_exists(self::$controllerFile)) {
             return;
         }
 
