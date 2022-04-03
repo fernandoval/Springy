@@ -362,12 +362,13 @@ class URI
         }
 
         $ctrl = trim(
-            str_replace(DIRECTORY_SEPARATOR, '/',
-            (
+            str_replace(
+                DIRECTORY_SEPARATOR,
+                '/',
                 Kernel::controllerRoot()
                     ? implode(DIRECTORY_SEPARATOR, Kernel::controllerRoot())
-                    : '')
-                ) . '/' . self::getControllerClass(), '/'
+                    : ''
+            ) . '/' . self::getControllerClass(), '/'
         );
 
         if (isset($pctlr[$ctrl . '/' . self::getSegment(0)])) {
