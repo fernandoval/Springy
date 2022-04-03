@@ -368,7 +368,8 @@ class URI
                 Kernel::controllerRoot()
                     ? implode(DIRECTORY_SEPARATOR, Kernel::controllerRoot())
                     : ''
-            ) . '/' . self::getControllerClass(), '/'
+            ) . '/' . self::getControllerClass(),
+            '/'
         );
 
         if (isset($pctlr[$ctrl . '/' . self::getSegment(0)])) {
