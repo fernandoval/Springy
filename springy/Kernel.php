@@ -8,7 +8,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version    2.5.0.86
+ * @version    2.5.3
  */
 
 namespace Springy;
@@ -21,7 +21,7 @@ namespace Springy;
 class Kernel
 {
     /// Versão do framework
-    const VERSION = '4.3.0';
+    const VERSION = '4.3.1';
 
     /// Path constants
     const PATH_PROJECT = 'PROJ';
@@ -46,7 +46,7 @@ class Kernel
     private static $controller_root = [];
     /// Caminho do namespace do controller
     private static $controller_namespace = null;
-    /// The controller file path name
+    /** @var string|null The controller file path name */
     private static $controllerFile = null;
     /// The controller file class name
     private static $controllerName = null;
@@ -229,9 +229,9 @@ class Kernel
         }
 
         // Has developer credential access in query string?
-        if (URI::_GET($devUser) == $devPass) {
+        if (URI::getParam($devUser) == $devPass) {
             Cookie::set('_developer', true);
-        } elseif (URI::_GET($devUser) == 'off') {
+        } elseif (URI::getParam($devUser) == 'off') {
             // Turning off dev debug access?
             Cookie::delete('_developer');
         }
@@ -249,9 +249,9 @@ class Kernel
         }
 
         // Has DBA credential access in query string?
-        if (URI::_GET($dbaUser) == $devPass) {
+        if (URI::getParam($dbaUser) == $devPass) {
             Cookie::set('_dba', true);
-        } elseif (URI::_GET($dbaUser) == 'off') {
+        } elseif (URI::getParam($dbaUser) == 'off') {
             // Turning off DBA debug access?
             Cookie::delete('_dba');
         }
@@ -271,7 +271,7 @@ class Kernel
     {
         // Get controller file name
         self::$controllerFile = URI::parseURI();
-        if (is_null(self::$controllerFile)) {
+        if (is_null(self::$controllerFile) || !file_exists(self::$controllerFile)) {
             return;
         }
 
@@ -368,7 +368,12 @@ class Kernel
         }
 
         // Verify the credential
-        if (!isset($_SERVER['PHP_AUTH_USER']) || !isset($_SERVER['PHP_AUTH_PW']) || $_SERVER['PHP_AUTH_USER'] != $auth['user'] || $_SERVER['PHP_AUTH_PW'] != $auth['pass']) {
+        if (
+            !isset($_SERVER['PHP_AUTH_USER'])
+            || !isset($_SERVER['PHP_AUTH_PW'])
+            || $_SERVER['PHP_AUTH_USER'] != $auth['user']
+            || $_SERVER['PHP_AUTH_PW'] != $auth['pass']
+        ) {
             header('WWW-Authenticate: Basic realm="' . utf8_decode('What r u doing here?') . '"');
             new Errors(401, 'Unauthorized');
         }
@@ -396,7 +401,7 @@ class Kernel
             return;
         }
 
-        if (preg_match('/^[0-9a-z]{8}$/', URI::getSegment(1, false))) {
+        if (preg_match('/^[0-9a-z]{8}|all$/', URI::getSegment(1, false))) {
             $error->bugSolved(URI::getSegment(1, false));
 
             return;
@@ -444,15 +449,39 @@ class Kernel
 
         // Define the application paths
         self::path(self::PATH_WEB_ROOT, $sysconf['ROOT_PATH']);
-        self::path(self::PATH_LIBRARY, isset($sysconf['SPRINGY_PATH']) ? $sysconf['SPRINGY_PATH'] : realpath(dirname(__FILE__)));
-        self::path(self::PATH_PROJECT, isset($sysconf['PROJECT_PATH']) ? $sysconf['PROJECT_PATH'] : realpath(self::path(self::PATH_LIBRARY) . DIRECTORY_SEPARATOR . '..'));
-        self::path(self::PATH_CONF, isset($sysconf['CONFIG_PATH']) ? $sysconf['CONFIG_PATH'] : realpath(self::path(self::PATH_PROJECT) . DIRECTORY_SEPARATOR . 'conf'));
-        self::path(self::PATH_VAR, isset($sysconf['VAR_PATH']) ? $sysconf['VAR_PATH'] : realpath(self::path(self::PATH_PROJECT) . DIRECTORY_SEPARATOR . 'var'));
-        self::path(self::PATH_APPLICATION, isset($sysconf['APP_PATH']) ? $sysconf['APP_PATH'] : realpath(self::path(self::PATH_PROJECT) . DIRECTORY_SEPARATOR . 'app'));
-        self::path(self::PATH_CONTROLLER, isset($sysconf['CONTROLER_PATH']) ? $sysconf['CONTROLER_PATH'] : realpath(self::path(self::PATH_APPLICATION) . DIRECTORY_SEPARATOR . 'controllers'));
-        self::path(self::PATH_CLASSES, isset($sysconf['CLASS_PATH']) ? $sysconf['CLASS_PATH'] : realpath(self::path(self::PATH_APPLICATION) . DIRECTORY_SEPARATOR . 'classes'));
-        self::path(self::PATH_MIGRATION, isset($sysconf['MIGRATION_PATH']) ? $sysconf['MIGRATION_PATH'] : realpath(self::path(self::PATH_PROJECT) . DIRECTORY_SEPARATOR . 'migration'));
-        self::path(self::PATH_VENDOR, isset($sysconf['VENDOR_PATH']) ? $sysconf['VENDOR_PATH'] : realpath(self::path(self::PATH_PROJECT) . DIRECTORY_SEPARATOR . 'vendor'));
+        self::path(self::PATH_LIBRARY, $sysconf['SPRINGY_PATH'] ?? realpath(dirname(__FILE__)));
+        self::path(
+            self::PATH_PROJECT,
+            $sysconf['PROJECT_PATH'] ?? realpath(self::path(self::PATH_LIBRARY) . DS . '..')
+        );
+        self::path(
+            self::PATH_CONF,
+            $sysconf['CONFIG_PATH'] ?? realpath(self::path(self::PATH_PROJECT) . DS . 'conf')
+        );
+        self::path(
+            self::PATH_VAR,
+            $sysconf['VAR_PATH'] ?? realpath(self::path(self::PATH_PROJECT) . DS . 'var')
+        );
+        self::path(
+            self::PATH_APPLICATION,
+            $sysconf['APP_PATH'] ?? realpath(self::path(self::PATH_PROJECT) . DS . 'app')
+        );
+        self::path(
+            self::PATH_CONTROLLER,
+            $sysconf['CONTROLER_PATH'] ?? realpath(self::path(self::PATH_APPLICATION) . DS . 'controllers')
+        );
+        self::path(
+            self::PATH_CLASSES,
+            $sysconf['CLASS_PATH'] ?? realpath(self::path(self::PATH_APPLICATION) . DS . 'classes')
+        );
+        self::path(
+            self::PATH_MIGRATION,
+            $sysconf['MIGRATION_PATH'] ?? realpath(self::path(self::PATH_PROJECT) . DS . 'migration')
+        );
+        self::path(
+            self::PATH_VENDOR,
+            $sysconf['VENDOR_PATH'] ?? realpath(self::path(self::PATH_PROJECT) . DS . 'vendor')
+        );
 
         // Pre start check list of application
         self::_httpAuthNeeded();
@@ -487,7 +516,7 @@ class Kernel
     /**
      * Returns the system runtime until now.
      *
-     * @return void
+     * @return string
      */
     public static function runTime()
     {

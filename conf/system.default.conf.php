@@ -39,6 +39,7 @@ $conf = [
         'name'      => 'SPRINGYSID', // The session cookie name
         'domain'    => '',
         'expires'   => 120,
+        'secure'    => true,
         'memcached' => [
             'address' => '127.0.0.1',
             'port'    => 11211,

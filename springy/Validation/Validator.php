@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Valuation class for the user-assigned data.
  *
@@ -7,7 +8,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   0.4.0.6
+ * @version   0.5.0
  */
 
 namespace Springy\Validation;
@@ -22,17 +23,39 @@ use Springy\Utils\Strings;
  */
 class Validator
 {
-    /// Default charset
+    // Validator constants
+    public const V_ALPHA = 'Alpha';
+    public const V_ALPHANUM = 'AlphaNum';
+    public const V_BETWEEN = 'Between';
+    public const V_DATE = 'Date';
+    public const V_DIFFERENT = 'Different';
+    public const V_EMAIL = 'Email';
+    public const V_IN = 'In';
+    public const V_INTEGER = 'Integer';
+    public const V_IP = 'Ip';
+    public const V_LENGTH_BETWEEN = 'LengthBetween';
+    public const V_MAX = 'Max';
+    public const V_MAX_LENGTH = 'MaxLength';
+    public const V_MIN = 'Min';
+    public const V_MIN_LENGTH = 'MinLength';
+    public const V_NOT_IN = 'NotIn';
+    public const V_NUMERIC = 'Numeric';
+    public const V_REGEX = 'Regex';
+    public const V_REQUIRED = 'Required';
+    public const V_SAME = 'Same';
+    public const V_URL = 'Url';
+
+    /** @var string default charset */
     protected $charset = 'UTF-8';
-    /// User-assigned data
+    /** @var array user-assigned data */
     protected $input;
-    /// Validation rules
+    /** @var array validation rules */
     protected $rules;
-    /// Custom error messages
+    /** @var array custom error messages */
     protected $messages;
-    /// Errors generated after validation
+    /** @var MessageContainer errors generated after validation */
     protected $errors;
-    /// Default error message
+    /** @var string default error message */
     protected $defaultErrorMessage = 'The field :field is invalid. Please enter a valid value.';
 
     /**
@@ -207,7 +230,9 @@ class Validator
     {
         foreach ($this->explodeRules($rules) as $rule) {
             if (!method_exists($this, $rule['method'])) {
-                throw new \BadMethodCallException('Validation rule "' . $rule['rule'] . '" has no equivalent method for validation.');
+                throw new \BadMethodCallException(
+                    'Validation rule "' . $rule['rule'] . '" has no equivalent method for validation.'
+                );
             }
 
             if (!call_user_func([$this, $rule['method']], $field, $rule['params'])) {
@@ -231,29 +256,26 @@ class Validator
             $rules = explode('|', $rules);
         }
 
-        foreach ($rules as $rule) {
-            $explodedRules[] = $this->parseRule($rule);
+        foreach ($rules as $key => $rule) {
+            $ruleAndParams = is_int($key)
+                ? (array) explode(':', $rule)
+                : [$key, $rule];
+            $params = [];
+
+            if (isset($ruleAndParams[1])) {
+                $params = is_string($ruleAndParams[1])
+                    ? (array) explode(',', $ruleAndParams[1])
+                    : $ruleAndParams[1];
+            }
+
+            $explodedRules[] = [
+                'rule'   => $ruleAndParams[0],
+                'method' => $this->parseMethod($ruleAndParams[0]),
+                'params' => $params,
+            ];
         }
 
         return $explodedRules;
-    }
-
-    /**
-     * Compiles the actual rule to an friendly array.
-     *
-     * @param string $rule
-     *
-     * @return array
-     */
-    protected function parseRule($rule)
-    {
-        $ruleAndParams = (array) explode(':', $rule);
-
-        return [
-            'rule'   => $ruleAndParams[0],
-            'method' => $this->parseMethod($ruleAndParams[0]),
-            'params' => isset($ruleAndParams[1]) ? (array) explode(',', $ruleAndParams[1]) : [],
-        ];
     }
 
     /**

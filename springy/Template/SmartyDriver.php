@@ -10,7 +10,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   1.7.2.16
+ * @version   1.7.17
  */
 
 namespace Springy\Template;
@@ -69,6 +69,7 @@ class SmartyDriver implements TemplateDriverInterface
         ]);
         $this->setCompileDir(Configuration::get('template', 'compiled_template_path'));
         $this->setConfigDir(Configuration::get('template', 'template_config_path'));
+        $this->tplObj->addPluginsDir(Configuration::get('template', 'template_plugins_path'));
         $this->setTemplate($tpl);
 
         // Iniciliza as variáveis com URLs padrão de template
@@ -103,8 +104,6 @@ class SmartyDriver implements TemplateDriverInterface
                 }
             }
         }
-
-        return true;
     }
 
     /**

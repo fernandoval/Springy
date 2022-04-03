@@ -10,7 +10,7 @@
  * @author    Allan Marques <allan.marques@ymail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.7.61
+ * @version   2.8.1
  */
 
 namespace Springy;
@@ -27,7 +27,7 @@ use Springy\Validation\Validator;
  */
 class Model extends DB implements \Iterator
 {
-    /// Tabela utilizada pela classe
+    /** @var string the name of the table */
     protected $tableName = '';
     /// Relação de colunas da tabela para a consulta (pode ser uma string separada por vírgula ou um array com nos nomes das colunas)
     protected $tableColumns = '*';
@@ -39,9 +39,11 @@ class Model extends DB implements \Iterator
     protected $insertDateColumn = null;
     /// Nome da coluna usada para definir que o registro foi excluído
     protected $deletedColumn = null;
-    /// Colunas passíveis de alteração
+    /** @var array list of columns that can be changed */
     protected $writableColumns = [];
-    /// Colunas que precisam passar por algum método de alteração
+    /** @var array list of special methods to get the columns values */
+    protected $getterColumns = [];
+    /** @var array list of special methods for set the columns values */
     protected $hookedColumns = [];
     /// Join other tables structured array
     protected $join;
@@ -63,8 +65,13 @@ class Model extends DB implements \Iterator
     protected $groupBy = [];
     /// Cláusula HAVING
     protected $having = [];
+    /** @var bool throws error when get or set undefined or unwritable column */
+    protected $throwErrUndefCol = false;
     /// The WHERE conditions
     public $where = null;
+
+    private const CHANGED_COLUMNS = '**CHANGED**';
+    private const NEW_ROW = '**NEW**';
 
     /**
      * Constructor.
@@ -292,13 +299,26 @@ class Model extends DB implements \Iterator
             }
 
             $embObj->query($where, $order, $offset, $limit, $embbed - 1);
-            while ($er = $embObj->next()) {
+            while ($erow = $embObj->next()) {
                 foreach ($this->rows as $idx => $row) {
-                    if ($er[$foundBy] == $row[$relCol]) {
+                    if ($erow[$foundBy] == $row[$relCol]) {
+                        $embed = $erow;
+
+                        if (
+                            isset($attr['returns'])
+                            && is_array($attr['returns'])
+                            && count($attr['returns'])
+                        ) {
+                            $embed = [];
+                            foreach ($attr['returns'] as $column) {
+                                $embed[$column] = $erow[$column] ?? null;
+                            }
+                        }
+
                         if ($resType == 'list') {
-                            $this->rows[$idx][$attrName][] = $er;
+                            $this->rows[$idx][$attrName][] = $embed;
                         } else {
-                            $this->rows[$idx][$attrName] = $er;
+                            $this->rows[$idx][$attrName] = $embed;
                         }
                     }
                 }
@@ -553,7 +573,7 @@ class Model extends DB implements \Iterator
     public function changedColumns()
     {
         if ($this->valid()) {
-            return isset($this->rows[key($this->rows)]['**CHANGED**']) ? $this->rows[key($this->rows)]['**CHANGED**'] : [];
+            return $this->rows[key($this->rows)][self::CHANGED_COLUMNS] ?? [];
         }
 
         return [];
@@ -567,8 +587,7 @@ class Model extends DB implements \Iterator
     public function clearChangedColumns()
     {
         if ($this->valid()) {
-            $this->rows[key($this->rows)]['**CHANGED**'] = [];
-            unset($this->rows[key($this->rows)]['**CHANGED**']);
+            $this->rows[key($this->rows)][self::CHANGED_COLUMNS] = [];
         }
     }
 
@@ -791,7 +810,7 @@ class Model extends DB implements \Iterator
             return false;
         }
 
-        if (!isset($this->rows[key($this->rows)]['**NEW**'])) {
+        if (!isset($this->rows[key($this->rows)][self::NEW_ROW])) {
             return $this->_update();
         }
 
@@ -937,20 +956,47 @@ class Model extends DB implements \Iterator
     /**
      * Gets a column or a record from the resultset.
      *
-     * @param string $column the name of the desired column or null to all columns of the current record.
+     * @param string|null $column the name of the desired column.
+     *                            if null then returns an array with all columns of the current record.
      *
      * @return mixed the valur of the column or an array with all columns data.
      */
     public function get($column = null)
     {
+        $columns = current($this->rows);
+
+        // All columns?
         if (is_null($column)) {
-            return current($this->rows);
+            if ($columns === false) {
+                return false;
+            }
+
+            $row = [];
+
+            foreach (array_keys($columns) as $key) {
+                $row[$key] = $this->get($key);
+            }
+
+            return $row;
         }
 
-        $columns = current($this->rows);
-        if (isset($columns[$column])) {
-            return $columns[$column];
+        // Specific column
+        if (!isset($columns[$column]) && $this->throwErrUndefCol) {
+            throw new Exception(
+                'Column "' . $column . '" is not exists in the context.',
+                E_USER_WARNING
+            );
         }
+
+        $value = $columns[$column] ?? null;
+
+        return (
+            isset($this->getterColumns[$column])
+            && method_exists($this, $this->getterColumns[$column])
+        ) ? call_user_func(
+            [$this, $this->getterColumns[$column]],
+            $value
+        ) : $value;
     }
 
     /**
@@ -959,7 +1005,7 @@ class Model extends DB implements \Iterator
      * @param string $column the name of the column.
      * @param mixed  $value  the value of the column.
      *
-     * @return bool true if the value was changed or false if the column does not exists or can not be changed.
+     * @return void
      */
     public function set($column, $value = null)
     {
@@ -968,35 +1014,53 @@ class Model extends DB implements \Iterator
                 $this->set($key, $val);
             }
 
-            return true;
+            return;
         }
 
-        if (in_array($column, $this->writableColumns)) {
-            if (empty($this->rows)) {
-                $this->rows[] = ['**NEW**' => true];
+        $key = key($this->rows);
+        $newrow = isset($this->rows[$key][self::NEW_ROW]);
+
+        if (!in_array($column, $this->writableColumns)) {
+            if ($this->throwErrUndefCol) {
+                throw new Exception(
+                    'Column "' . $column . '" is not writable.',
+                    E_USER_WARNING
+                );
             }
 
-            $oldvalue = isset($this->rows[key($this->rows)][$column]) ? $this->rows[key($this->rows)][$column] : null;
-            if (isset($this->hookedColumns[$column]) && method_exists($this, $this->hookedColumns[$column])) {
-                $this->rows[key($this->rows)][$column] = call_user_func_array([$this, $this->hookedColumns[$column]], [$value]);
-            } else {
-                $this->rows[key($this->rows)][$column] = $value;
-            }
-
-            if ($oldvalue != $value || isset($this->rows[key($this->rows)]['**NEW**'])) {
-                if (!isset($this->rows[key($this->rows)]['**CHANGED**'])) {
-                    $this->rows[key($this->rows)]['**CHANGED**'] = [];
-                }
-
-                if (!in_array($column, $this->rows[key($this->rows)]['**CHANGED**'])) {
-                    $this->rows[key($this->rows)]['**CHANGED**'][] = $column;
-                }
-            }
-
-            return true;
+            return;
+        } elseif (empty($this->rows)) {
+            $this->rows[] = [
+                self::NEW_ROW => true,
+                self::CHANGED_COLUMNS => [],
+            ];
+            $key = key($this->rows);
+            $newrow = true;
         }
 
-        return false;
+        $oldvalue = $this->rows[$key][$column] ?? null;
+
+        $this->rows[$key][$column] = (
+            isset($this->hookedColumns[$column])
+            && method_exists($this, $this->hookedColumns[$column])
+        ) ? call_user_func(
+            [$this, $this->hookedColumns[$column]],
+            $value
+        ) : $value;
+
+        if (
+            $newrow
+            || ($oldvalue != $value)
+            || (is_null($oldvalue) && !is_null($value))
+            || (!is_null($oldvalue) && is_null($value))
+        ) {
+            $this->rows[$key][self::CHANGED_COLUMNS] = array_unique(
+                array_merge(
+                    $this->rows[$key][self::CHANGED_COLUMNS] ?? [],
+                    [$column]
+                )
+            );
+        }
     }
 
     /**
@@ -1257,7 +1321,15 @@ class Model extends DB implements \Iterator
      */
     public function all()
     {
-        return $this->rows;
+        $rows = [];
+        reset($this->rows);
+
+        while ($this->valid()) {
+            $rows[] = $this->get();
+            $this->next();
+        }
+
+        return $rows;
     }
 
     /**
@@ -1267,7 +1339,9 @@ class Model extends DB implements \Iterator
      */
     public function reset()
     {
-        return reset($this->rows);
+        $reset = reset($this->rows);
+
+        return ($reset === false) ? false : $this->get();
     }
 
     /**
@@ -1277,7 +1351,9 @@ class Model extends DB implements \Iterator
      */
     public function prev()
     {
-        return prev($this->rows);
+        $prev = prev($this->rows);
+
+        return ($prev === false) ? false : $this->get();
     }
 
     /**
@@ -1287,7 +1363,7 @@ class Model extends DB implements \Iterator
      */
     public function next()
     {
-        $row = current($this->rows);
+        $row = $this->get();
 
         if ($row !== false) {
             next($this->rows);
@@ -1303,7 +1379,9 @@ class Model extends DB implements \Iterator
      */
     public function end()
     {
-        return end($this->rows);
+        $end = end($this->rows);
+
+        return ($end === false) ? false : $this->get();
     }
 
     /**
@@ -1321,12 +1399,17 @@ class Model extends DB implements \Iterator
      *
      * @return int
      */
-    public function count($filter = null, $embbed = false)
+    public function count($filter = null, ?array $distinct = null)
     {
         $where = $this->_filter($filter);
+        $columns = '0';
+
+        if (is_array($distinct) && count($distinct)) {
+            $columns = 'DISTINCT ' . implode(', ', $distinct);
+        }
 
         $this->execute(
-            'SELECT COUNT(0) AS rowscount' . $this->_getFrom() . $where,
+            'SELECT COUNT(' . $columns . ') AS rowscount' . $this->_getFrom() . $where,
             $where->params()
         );
         $row = $this->fetchNext();
@@ -1357,9 +1440,9 @@ class Model extends DB implements \Iterator
     /**
      * Magic method to get value from columns as if they were properties.
      *
-     * This method will use the get() method.
+     * This method is an alias to the get() method.
      *
-     * @param string $name the name of the column.
+     * @param string|null $name the name of the column.
      *
      * @return mixed
      */
@@ -1371,10 +1454,12 @@ class Model extends DB implements \Iterator
     /**
      * Magic method to set value in columns as if they were properties..
      *
-     * This method will use the set() method.
+     * This method is an alias to the set() method.
      *
      * @param string $name  the column name.
      * @param mixed  $value the value.
+     *
+     * @return void
      */
     public function __set($name, $value)
     {
@@ -1384,11 +1469,13 @@ class Model extends DB implements \Iterator
     /**
      * Gets the current record.
      *
+     * This method is an alias to the get() method.
+     *
      * @return array
      */
     public function current()
     {
-        return current($this->rows);
+        return $this->get();
     }
 
     /**
@@ -1408,7 +1495,7 @@ class Model extends DB implements \Iterator
      */
     public function rewind()
     {
-        $this->reset();
+        return $this->reset();
     }
 
     /**
@@ -1418,6 +1505,6 @@ class Model extends DB implements \Iterator
      */
     public function valid()
     {
-        return $this->current() !== false;
+        return current($this->rows) !== false;
     }
 }

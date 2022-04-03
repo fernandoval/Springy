@@ -25,11 +25,14 @@
 
 /// Configurações para o ambiente de Desenvolvimento
 $conf = [
-    'debug'             => true,
-    'maintenance'       => false,
-    'cache'             => false,
-    'cache-control'     => 'no-cache',
-    'system_error'      => [
+    'debug' => true,
+    'maintenance' => false,
+    'cache' => false,
+    'cache-control' => 'no-cache',
+    'session' => [
+        'secure' => false,
+    ],
+    'system_error' => [
         'save_in_database' => false,
     ],
 ];

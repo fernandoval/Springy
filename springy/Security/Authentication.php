@@ -1,13 +1,14 @@
 <?php
-/**	\file
- *	Springy.
+
+/**
+ * Identity authentication manager.
  *
- *	\brief      Gerenciador de autenticação de identidades.
- *  \copyright  Copyright (c) 2007-2016 Fernando Val
- *  \author     Allan Marques - allan.marques@ymail.com
- *	\warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version    0.3.2
- *	\ingroup    framework
+ * @copyright 2014 Fernando Val
+ * @author    Fernando Val <fernando.val@gmail.com>
+ * @author    Allan Marques <allan.marques@ymail.com>
+ * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
+ *
+ * @version 1.1.0
  */
 
 namespace Springy\Security;
@@ -16,18 +17,19 @@ use Springy\Cookie;
 use Springy\Session;
 
 /**
- * \brief Gerenciador de autenticação de identidades.
+ * Authentication class.
  */
 class Authentication
 {
-    /// Driver de autenticação
+    /** @var AuthDriverInterface authentication driver */
     protected $driver;
-    /// Usuário autenticado na sessão
+    /** @var stdClass|null user object */
     protected $user;
 
     /**
-     *  \brief Construtor da classe.
-     *  \param [in] (\Springy\Security\AuthDriverInterface) $driver.
+     * Constructor.
+     *
+     * @param AuthDriverInterface $driver
      */
     public function __construct(AuthDriverInterface $driver = null)
     {
@@ -38,9 +40,11 @@ class Authentication
     }
 
     /**
-     *  \brief Restaurar sessão de usuário que já esteja autenticação na aplicação.
+     * Wakes up the authenticated user from session.
+     *
+     * @return void
      */
-    protected function wakeupSession()
+    protected function wakeupSession(): void
     {
         $identitySessionData = Session::get($this->driver->getIdentitySessionKey());
 
@@ -52,32 +56,36 @@ class Authentication
     }
 
     /**
-     *  \brief Restaurar sessão de usuário que sessão já esteja expirado,
-     *         mas há um cookie de 'remember me'.
+     * Restores user session from identity cookie if exists.
+     *
+     * @return void
      */
-    protected function rememberSession()
+    protected function rememberSession(): void
     {
         if (
-            $this->user == null &&
-            $id = Cookie::get($this->driver->getIdentitySessionKey())
+            is_null($this->user)
+            && $id = Cookie::get($this->driver->getIdentitySessionKey())
         ) {
             $this->loginWithId($id);
         }
     }
 
     /**
-     *  \brief Seta o driver de autenticação do gerenciador.
-     *  \param [in] (\Springy\Security\AuthDriverInterface) $driver.
+     * Sets the authentication driver.
+     *
+     * @param AuthDriverInterface $driver
+     *
+     * @return void
      */
-    public function setDriver(AuthDriverInterface $driver)
+    public function setDriver(AuthDriverInterface $driver): void
     {
         $this->driver = $driver;
     }
 
     /**
-     *  \brief Retorna o driver de autenticação do gerenciador.
+     * Returns the authentication driver.
      *
-     *  @return (\Springy\Security\AuthDriverInterface)
+     * @return \Springy\Security\AuthDriverInterface
      */
     public function getDriver()
     {
@@ -85,17 +93,19 @@ class Authentication
     }
 
     /**
-     *  \brief Tenta a autenticação de um usuário com as credenciais passadas por parâmetro.
-     *  \param [in] (string) $login - Login do usuário
-     *  \param [in] (string) $password - Senha do usuário
-     *  \param [in] (bool) $remember - Indica se a sessão deve ser elmbrada por um cookie mesmo quando o tempo da sessão expirar
-     *  \param [in] (bool) $loginValids - Indica se os usuários autenticados devem ser automaticamente guardados na sessão
-     *  \return (boolean).
+     * Attempts to login with givens user and password credentials.
+     *
+     * @param string $login       the user login.
+     * @param string $password    the user password.
+     * @param bool   $remember    saves remember cookie.
+     * @param bool   $saveSession saves in session if successful.
+     *
+     * @return bool
      */
-    public function attempt($login, $password, $remember = false, $loginValids = true)
+    public function attempt($login, $password, $remember = false, $saveSession = true): bool
     {
         if ($this->driver->isValid($login, $password)) {
-            if ($loginValids) {
+            if ($saveSession) {
                 $this->login($this->driver->getLastValidIdentity(), $remember);
             }
 
@@ -106,23 +116,27 @@ class Authentication
     }
 
     /**
-     *  \brief Tenta a autenticação de um usuário com as credenciais passadas por parâmetro
-     *         sem guardar seus dados na sessão caso a autenticação obtiver sucesso.
-     *  \param [in] (string) $login - Login do usuário
-     *  \param [in] (string) $password - Senha do usuário
-     *  \return (boolean).
+     * Validates the given credential without login.
+     *
+     * @param string $login
+     * @param string $password
+     *
+     * @return bool
      */
-    public function validate($login, $password)
+    public function validate($login, $password): bool
     {
         return $this->attempt($login, $password, false, false);
     }
 
     /**
-     *  \brief Loga o usuário na aplicação, ou seja, guarda suas informações na sessão.
-     *  \param [in] (\Springy\Security\IdentityInterface) $user - Usuário para logar.
-     *  \param [in] (bool) $remember - Indica se a sessão deve ser elmbrada por um cookie mesmo quando o tempo da sessão expirar.
+     * Logs in the user and saves it into session.
+     *
+     * @param IdentityInterface $user
+     * @param bool              $remember if true saves the user id into identity cookie.
+     *
+     * @return void
      */
-    public function login(IdentityInterface $user, $remember = false)
+    public function login(IdentityInterface $user, $remember = false): void
     {
         $this->user = $user;
 
@@ -134,19 +148,24 @@ class Authentication
                 $this->user->getId(), //Id do usuário
                 5184000, //60 dias
                 '/',
-                config_get('system.session.domain')
+                config_get('system.session.domain'),
+                config_get('system.session.secure'),
+                true
             );
         }
     }
 
     /**
-     *  \brief Loga o usuário que possui o identificador passado por parâmetro.
-     *  \param [in] (variant) $id - Identificador do usuário que será logado.
-     *  \param [in] (bool) $remember - Indica se a sessão deve ser elmbrada por um cookie mesmo quando o tempo da sessão expirar.
+     * Logs in an user by givens id.
+     *
+     * @param mixed $id
+     * @param bool  $remember if true saves the user id into identity cookie.
+     *
+     * @return void
      */
-    public function loginWithId($id, $remember = false)
+    public function loginWithId($uid, $remember = false): void
     {
-        $user = $this->driver->getIdentityById($id);
+        $user = $this->driver->getIdentityById($uid);
 
         if ($user) {
             $this->login($user, $remember);
@@ -154,9 +173,11 @@ class Authentication
     }
 
     /**
-     * \brief Destroi a sessão do usuário atual.
+     * Clears logged in user and its session.
+     *
+     * @return void
      */
-    public function logout()
+    public function logout(): void
     {
         $this->user = null;
 
@@ -164,17 +185,19 @@ class Authentication
     }
 
     /**
-     *  \brief Retorna se há um usuário autenticado atualmente na sessão.
-     *  \return (boolean).
+     * Checks whether a user is logged in.
+     *
+     * @return bool
      */
-    public function check()
+    public function check(): bool
     {
-        return $this->user != null;
+        return !is_null($this->user);
     }
 
     /**
-     *  \brief Retorna o usuário atualmente logado na aplicação.
-     *  \return (\Springy\Security\IdentityInterface).
+     * Returns current user.
+     *
+     * @return \Springy\Security\IdentityInterface
      */
     public function user()
     {
@@ -182,9 +205,11 @@ class Authentication
     }
 
     /**
-     *  \brief Destroi a sessão do usuário atualmente logado na aplicação.
+     * Destroys the current logged in user session.
+     *
+     * @return void
      */
-    protected function destroyUserData()
+    protected function destroyUserData(): void
     {
         Session::set($this->driver->getIdentitySessionKey(), null);
         Session::unregister($this->driver->getIdentitySessionKey());
@@ -194,7 +219,9 @@ class Authentication
             '',
             time() - 3600,
             '/',
-            config_get('system.session.domain')
+            config_get('system.session.domain'),
+            config_get('system.session.secure'),
+            true
         );
         Cookie::delete($this->driver->getIdentitySessionKey());
     }

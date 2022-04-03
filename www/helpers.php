@@ -7,7 +7,7 @@
  * @author     Allan Marques <allan.marques@ymail.com>
  * @author     Fernando Val <fernando.val@gmail.com>
  *
- * @version    4.1.0
+ * @version    4.2.0
  *
  * Let's make the developer happier and more productive.
  */
@@ -34,6 +34,39 @@ function app($service = null)
     }
 
     return Springy\Core\Application::sharedInstance();
+}
+
+/**
+ * Gets a key into the array using dotted notation.
+ *
+ * @param array  $array
+ * @param string $key
+ * @param mixed  $default
+ *
+ * @return mixed
+ */
+function array_dotted_get(array $array, string $key, $default = null)
+{
+    return Springy\Utils\ArrayUtils::newInstance()->dottedGet($array, $key, $default);
+}
+
+/**
+ * Returns a URL string using URI::buildUrl() function.
+ *
+ * @param array  $segments
+ * @param array  $query
+ * @param string $host
+ * @param bool   $addIgnoredSgms
+ *
+ * @return string
+ */
+function build_url(
+    array $segments = [],
+    array $query = [],
+    string $host = 'dynamic',
+    bool $addIgnoredSgms = true
+): string {
+    return Springy\URI::buildURL($segments, $query, false, $host, $addIgnoredSgms);
 }
 
 /**
@@ -110,6 +143,25 @@ function dd($var, $die = true)
 }
 
 /**
+ * Helper function to Springy\URI::makeSlug().
+ *
+ * @param string $text
+ * @param string $space
+ * @param string $accept
+ * @param bool   $lowercase
+ *
+ * @return string
+ */
+function make_slug(
+    string $text,
+    string $separator = '-',
+    string $accept = '',
+    bool $lowercase = true
+): string {
+    return Springy\URI::makeSlug($text, $separator, $accept, $lowercase);
+}
+
+/**
  *  @brief Minify a CSS or JS file.
  *
  *  @note Is recommend the use of the Minify class by Matthias Mullie.
@@ -166,6 +218,19 @@ function minify($source, $destiny)
     }
 
     return $return;
+}
+
+/**
+ * Throws a Springy error.
+ *
+ * @param int    $status
+ * @param string $message
+ *
+ * @return void
+ */
+function throw_error($status = 500, $message = 'Internal Server Error'): void
+{
+    new Springy\Errors($status, $message);
 }
 
 /**
