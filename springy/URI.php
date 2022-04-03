@@ -8,7 +8,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.3.0
+ * @version   2.3.1
  */
 
 namespace Springy;
@@ -93,7 +93,8 @@ class URI
             // Redirects URIs ending with slash to avoid SEO problem.
             self::redirect(
                 self::buildURL(
-                    explode('/', trim(self::$uri_string, '/')), $_GET ?? [],
+                    explode('/', trim(self::$uri_string, '/')),
+                    $_GET ?? [],
                     false,
                     'dynamic',
                     false
@@ -110,7 +111,8 @@ class URI
             // Removes ending slash and redirects
             self::redirect(
                 self::buildURL(
-                    array_merge(explode('/', trim(self::$uri_string, '/')), ['/']), $_GET ?? [],
+                    array_merge(explode('/', trim(self::$uri_string, '/')), ['/']),
+                    $_GET ?? [],
                     false,
                     'dynamic',
                     false
@@ -359,7 +361,14 @@ class URI
             return;
         }
 
-        $ctrl = trim(str_replace(DIRECTORY_SEPARATOR, '/', (Kernel::controllerRoot() ? implode(DIRECTORY_SEPARATOR, Kernel::controllerRoot()) : '')) . '/' . self::getControllerClass(), '/');
+        $ctrl = trim(
+            str_replace(DIRECTORY_SEPARATOR, '/',
+            (
+                Kernel::controllerRoot()
+                    ? implode(DIRECTORY_SEPARATOR, Kernel::controllerRoot())
+                    : '')
+                ) . '/' . self::getControllerClass(), '/'
+        );
 
         if (isset($pctlr[$ctrl . '/' . self::getSegment(0)])) {
             $ctrl .= '/' . self::getSegment(0);
@@ -370,7 +379,10 @@ class URI
         }
 
         $action = 200;
-        if (isset($pctlr[$ctrl]['segments']) && count(self::$segments) - self::$segment_page - 1 > $pctlr[$ctrl]['segments']) {
+        if (
+            isset($pctlr[$ctrl]['segments'])
+            && count(self::$segments) - self::$segment_page - 1 > $pctlr[$ctrl]['segments']
+        ) {
             $action = $pctlr[$ctrl]['command'];
         }
         if (isset($pctlr[$ctrl]['validate'])) {
@@ -466,7 +478,8 @@ class URI
      *
      * @param int $segment integer with the number of the segment to fix as current page.
      *
-     * @return bool true if exists a $segment relative to the current page in the array of segments or false if does not exists.
+     * @return bool true if exists a $segment relative to the current page in
+     *              the array of segments or false if does not exists.
      */
     public static function setCurrentPage($segment)
     {
@@ -497,17 +510,6 @@ class URI
             - ($decRoot ? count(Kernel::controllerRoot()) : 0);
         $value = self::$segments[$realSegment] ?? false;
 
-        // if ($rel2Page) {
-        //     $segment += (1 + self::$segment_page);
-        // }
-        // if ($decRoot) {
-        //     $segment -= count(Kernel::controllerRoot());
-        // }
-        // if (array_key_exists($segment, self::$segments)) {
-        //     return self::$segments[$segment];
-        // }
-
-        // return false;
         return $value === '' ? 'index' : $value;
     }
 
@@ -675,8 +677,13 @@ class URI
      *
      * @return string
      */
-    public static function buildURL($segments = [], $query = [], $forceRewrite = false, $host = 'dynamic', $addIgnoredSgms = true)
-    {
+    public static function buildURL(
+        $segments = [],
+        $query = [],
+        $forceRewrite = false,
+        $host = 'dynamic',
+        $addIgnoredSgms = true
+    ): string {
         if ($addIgnoredSgms) {
             $segments = array_merge(self::$ignored_segments, is_array($segments) ? $segments : [$segments]);
         }
@@ -696,10 +703,6 @@ class URI
             }
         }
         $url .= $uri;
-
-        /*if (Configuration::get('system', 'ext_file_url')) {
-            $url .= Configuration::get('system', 'ext_file_url');
-        }*/
 
         // Monta os parâmetros a serem passados por GET
         self::encodeParam($query, '', $param);
@@ -802,7 +805,8 @@ class URI
     }
 
     /**
-     * Generates a slug, removing the accented and special characters from a string and convert spaces into minus symbol.
+     * Generates a slug, removing the accented and special characters from a
+     * string and convert spaces into minus symbol.
      *
      * @param string $txt       the text to be converted to slug format.
      * @param string $space     the character used as word separator (default = '-').
@@ -845,6 +849,7 @@ class URI
      */
     public static function isAjaxRequest(): bool
     {
-        return !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+        return !empty($_SERVER['HTTP_X_REQUESTED_WITH'])
+            && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
     }
 }
