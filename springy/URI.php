@@ -8,7 +8,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.2.12
+ * @version   2.3.0
  */
 
 namespace Springy;
@@ -23,25 +23,145 @@ use Springy\Utils\Strings_UTF8;
  */
 class URI
 {
-    /// String da URI
+    /** @var string The URI string */
     private static $uri_string = '';
-    /// Array dos segmentos da URI
+    /** @var array The path segments */
     private static $segments = [];
-    /// Array dos segmentos ignorados
+    /** @var array Ignored segments */
     private static $ignored_segments = [];
-    /// Array da relação dos parâmetros recebidos por GET
+    /** @var array Query string parameters array */
     private static $get_params = [];
-    /// Índice do segmento que determina a página atual
+    /** @var int Current page segment index */
     private static $segment_page = 0;
-    /// Nome da classe da controller
+    /** @var string|null Class name of the controller */
     private static $class_controller = null;
 
     /**
-     * Get the URI string.
+     * Checks whether request is a head method.
+     *
+     * @return void
+     */
+    private static function checkHeadMethod(): void
+    {
+        if (
+            isset($_SERVER)
+            && isset($_SERVER['REQUEST_METHOD'])
+            && $_SERVER['REQUEST_METHOD'] == 'HEAD'
+            && !isset($_SERVER['HTTP_HOST'])
+        ) {
+            header('Pragma: no-cache');
+            header('Expires: 0');
+            header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+            header('Cache-Control: private', false);
+            exit(md5(microtime()));
+        }
+    }
+
+    /**
+     * Checks whether to chanck root controller path for current host.
+     *
+     * @return void
+     */
+    private static function checkHostControllerRoot(): void
+    {
+        if ($url = (isset($_SERVER) && isset($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : '') {
+            foreach (Configuration::get('uri', 'host_controller_path') as $host => $root) {
+                if ($url == $host) {
+                    Kernel::controllerRoot($root);
+                    break;
+                }
+            }
+        }
+    }
+
+    /**
+     * Checks whether to redirect requests ending with slash.
+     *
+     * @param array $segments
+     *
+     * @return void
+     */
+    private static function checkRedirEndingBar(array $segments): void
+    {
+        if (
+            Configuration::get('uri', 'redirect_last_slash')
+            && substr(self::$uri_string, -1) == '/'
+            && !(Configuration::get('uri', 'force_slash_on_index')
+            && empty($segments))
+        ) {
+            dd(__LINE__);
+            // Redirects URIs ending with slash to avoid SEO problem.
+            self::redirect(
+                self::buildURL(
+                    explode('/', trim(self::$uri_string, '/')), $_GET ?? [],
+                    false,
+                    'dynamic',
+                    false
+                ),
+                301
+            );
+        } elseif (
+            self::$uri_string
+            && substr(self::$uri_string, -1) != '/'
+            && Configuration::get('uri', 'force_slash_on_index')
+            && empty($segments)
+        ) {
+            dd(__LINE__);
+            // Removes ending slash and redirects
+            self::redirect(
+                self::buildURL(
+                    array_merge(explode('/', trim(self::$uri_string, '/')), ['/']), $_GET ?? [],
+                    false,
+                    'dynamic',
+                    false
+                ),
+                301
+            );
+        }
+    }
+
+    /**
+     * Checks URI redirect option for not found controller.
+     *
+     * @param string|null $controller
+     * @param string      $uriString
+     *
+     * @return void
+     */
+    private static function checkRedirect(?string $controller, string $uriString): void
+    {
+        if (!is_null($controller)) {
+            return;
+        }
+
+        $redirects = Configuration::get('uri', 'redirects');
+
+        if (is_array($redirects)) {
+            foreach ($redirects as $key => $data) {
+                if (preg_match('/^' . $key . '$/', $uriString)) {
+                    foreach ($data['segments'] as $segment => $value) {
+                        if (substr($value, 0, 1) == '$') {
+                            $data['segments'][$segment] = self::$segments[(int) substr($value, 1)] ?? '';
+                        }
+                    }
+
+                    self::redirect(
+                        self::buildURL($data['segments'], $data['get'], $data['force_rewrite'], $data['host']),
+                        $data['type']
+                    );
+
+                    break;
+                }
+            }
+        }
+    }
+
+    /**
+     * Gets the URI string.
      *
      * @return string
      */
-    private static function _fetchURItring()
+    private static function fetchURItring(): string
     {
         // The is REQUEST_URI?
         if (!empty($_SERVER['REQUEST_URI'])) {
@@ -59,11 +179,139 @@ class URI
     }
 
     /**
-     * Define the name of the controller class.
+     * Finds the controller file.
+     *
+     * @return string|null
+     */
+    private static function findController(): ?string
+    {
+        $controller = null;
+        $base = Kernel::path(Kernel::PATH_CONTROLLER) . (
+            count(Kernel::controllerRoot())
+                ? DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, Kernel::controllerRoot())
+                : ''
+        );
+        $segments = [];
+        $segment = 0;
+
+        do {
+            $sgm = self::getSegment($segment++, false);
+
+            if ($sgm) {
+                $segments[] = $sgm;
+            }
+        } while ($sgm !== false);
+
+        while (count($segments) > 0) {
+            $path = $base . DS . implode($segments, DS);
+            $file = $path . '.page.php';
+            $indx = $path . DS . 'index.page.php';
+
+            if (file_exists($file)) {
+                // Found the controller file
+                $controller = $file;
+                self::setCurrentPage(count($segments) - 1);
+                self::setClassController(self::currentPage());
+
+                break;
+            } elseif (file_exists($indx)) {
+                // Found an index controller
+                $segment = count($segments);
+                $controller = $indx;
+
+                if (!self::getSegment($segment, false)) {
+                    self::$segments[] = '';
+                } else {
+                    array_splice(self::$segments, $segment, 0, ['']);
+                }
+
+                self::setCurrentPage($segment);
+                self::setClassController(self::currentPage());
+
+                break;
+            }
+
+            array_pop($segments);
+        }
+
+        return $controller;
+    }
+
+    /**
+     * Finds a controller in uri.routes configuration.
+     *
+     * @param string $uriString
+     *
+     * @return string|null
+     */
+    private static function findRoutedController(string $uriString): ?string
+    {
+        $controller = null;
+        $routes = Configuration::get('uri', 'routes');
+
+        if (is_array($routes)) {
+            foreach ($routes as $key => $data) {
+                if (!preg_match('/^' . $key . '$/', $uriString, $matches)) {
+                    continue;
+                } elseif (isset($data['root_controller'])) {
+                    Kernel::controllerRoot($data['root_controller']);
+                }
+
+                if (substr($data['controller'], 0, 1) == '$') {
+                    $data['controller'] = $matches[(int) substr($data['controller'], 1)];
+                }
+
+                $controller = Kernel::path(Kernel::PATH_CONTROLLER)
+                    . (
+                        count(Kernel::controllerRoot())
+                            ? DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, Kernel::controllerRoot())
+                            : ''
+                    ) . DIRECTORY_SEPARATOR . $data['controller'] . '.page.php';
+                self::setClassController($data['controller']);
+                self::setCurrentPage($data['segment']);
+
+                break;
+            }
+        }
+
+        return $controller;
+    }
+
+    /**
+     * Converts the URI string into an array.
+     *
+     * @param string $uriString
+     *
+     * @return array
+     */
+    private static function getSegmentsFromURI(string $uriString): array
+    {
+        $segments = [];
+        $segNum = 0;
+
+        foreach (explode('/', preg_replace('|/*(.+?)/*$|', '\\1', $uriString)) as $val) {
+            $val = trim($val);
+
+            if ($val != '') {
+                if ($segNum < Configuration::get('uri', 'ignored_segments')) {
+                    self::$ignored_segments[] = $val;
+                } else {
+                    $segments[] = $val;
+                }
+            }
+
+            $segNum++;
+        }
+
+        return array_filter($segments);
+    }
+
+    /**
+     * Defines the name of the controller class.
      *
      * @return void
      */
-    private static function _setClassController($classname)
+    private static function setClassController($classname)
     {
         self::$class_controller = $classname;
     }
@@ -78,161 +326,24 @@ class URI
      */
     public static function parseURI()
     {
-        if (isset($_SERVER) && isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'HEAD' && !isset($_SERVER['HTTP_HOST'])) {
-            header('Pragma: no-cache');
-            header('Expires: 0');
-            header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-            header('Cache-Control: private', false);
-            exit(md5(microtime()));
+        self::checkHeadMethod();
+        self::$uri_string = self::fetchURItring();
+        self::checkHostControllerRoot();
+        $uriString = trim(self::$uri_string, '/');
+        $segments = self::getSegmentsFromURI($uriString);
+        self::checkRedirEndingBar($segments);
+
+        // Adds 'index' if there is no segments
+        if (count($segments) === 0) {
+            $segments[] = '';
         }
 
-        self::$uri_string = self::_fetchURItring();
-
-        $UriString = trim(self::$uri_string, '/');
-
-        // Verifica se altera o diretório de controladoras para o HOST
-        if ($url = (isset($_SERVER) && isset($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : '') {
-            foreach (Configuration::get('uri', 'host_controller_path') as $host => $root) {
-                if ($url == $host) {
-                    Kernel::controllerRoot($root);
-                    break;
-                }
-            }
-        }
-
-        // Processa a URI e separa os segmentos
-        $Segments = [];
-        $SegNum = 0;
-        foreach (explode('/', preg_replace('|/*(.+?)/*$|', '\\1', $UriString)) as $val) {
-            $val = trim($val);
-
-            if ($val != '') {
-                if ($SegNum < Configuration::get('uri', 'ignored_segments')) {
-                    self::$ignored_segments[] = $val;
-                } else {
-                    $Segments[] = $val;
-                }
-            }
-            $SegNum++;
-        }
-
-        // Redireciona URIs terminadas em / para evitar conteúdo duplicado de SEO?
-        if (Configuration::get('uri', 'redirect_last_slash') && substr(self::$uri_string, -1) == '/' && !(Configuration::get('uri', 'force_slash_on_index') && empty($Segments))) {
-            self::redirect(self::buildURL(explode('/', trim(self::$uri_string, '/')), empty($_GET) ? [] : $_GET, false, 'dynamic', false), 301);
-        }
-        // Redireciona se for acesso à página inicial e a URI não terminar em / para mesma URL terminada com /
-        elseif (self::$uri_string && substr(self::$uri_string, -1) != '/' && Configuration::get('uri', 'force_slash_on_index') && empty($Segments)) {
-            self::redirect(self::buildURL(array_merge(explode('/', trim(self::$uri_string, '/')), ['/']), empty($_GET) ? [] : $_GET, false, 'dynamic', false), 301);
-        }
-
-        // Se nenhum segmento foi encontrado, define o segmento 'index'
-        if (empty($Segments)) {
-            $Segments[] = 'index';
-        }
-
-        // Define o primeiro segmento da URI como sendo a página solicitada
-        //self::$segment_page = (trim($Segments[0]) ? $Segments[0] : 'index');
-        //array_shift($Segments);
-
-        // Guarda os demais segmentos da URI no atributo interno
-        foreach ($Segments as $segment) {
-            if (trim($segment) != '') {
-                self::$segments[] = $segment;
-            }
-        }
-
-        // Guarda os parâmetros passados por GET no atributo interno
-        foreach ($_GET as $key => $value) {
-            self::$get_params[$key] = $value;
-            unset($_GET[$key]);
-        }
-
-        $controller = null;
-
-        // Procura a controller correta e corrige a página atual se necessário
-        $path = Kernel::path(Kernel::PATH_CONTROLLER) . (count(Kernel::controllerRoot()) ? DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, Kernel::controllerRoot()) : '');
-        $segment = 0;
-        while (self::getSegment($segment, false)) {
-            $path .= DIRECTORY_SEPARATOR . self::getSegment($segment, false);
-            $file = $path . '.page.php';
-            if (file_exists($file)) {
-                $controller = $file;
-                self::setCurrentPage($segment);
-                self::_setClassController(self::currentPage());
-                break;
-            } elseif (is_dir($path) && (!self::getSegment($segment + 1, false))) {
-                $file = $path . DIRECTORY_SEPARATOR . 'index.page.php';
-                if (file_exists($file)) {
-                    $controller = $file;
-                    self::addSegment('index');
-                    self::setCurrentPage($segment + 1);
-                    self::_setClassController(self::currentPage());
-                    break;
-                }
-            } elseif (is_dir($path)) {
-                $file = $path . DIRECTORY_SEPARATOR . 'index.page.php';
-                if (file_exists($file)) {
-                    $possible_controller = $file;
-                    $possible_segment_name = 'index';
-                    $possible_segment_num = $segment + 1;
-                }
-                $segment++;
-            } else {
-                break;
-            }
-        }
-
-        // Verifica se nenhuma controladora foi localizada, mas há uma elegível
-        if (is_null($controller) && isset($possible_controller)) {
-            $controller = $possible_controller;
-            self::insertSegment($possible_segment_num, $possible_segment_name);
-            self::setCurrentPage($possible_segment_num);
-            self::_setClassController(self::currentPage());
-        }
-
-        // Varre as rotas alternativas de controladoras
-        if (is_null($controller)) {
-            $routes = Configuration::get('uri', 'routes');
-            if (is_array($routes)) {
-                foreach ($routes as $key => $data) {
-                    if (preg_match('/^' . $key . '$/', $UriString, $matches)) {
-                        if (isset($data['root_controller'])) {
-                            Kernel::controllerRoot($data['root_controller']);
-                        }
-                        if (substr($data['controller'], 0, 1) == '$') {
-                            $data['controller'] = $matches[(int) substr($data['controller'], 1)];
-                        }
-                        $controller = Kernel::path(Kernel::PATH_CONTROLLER) . (count(Kernel::controllerRoot()) ? DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, Kernel::controllerRoot()) : '') . DIRECTORY_SEPARATOR . $data['controller'] . '.page.php';
-                        self::_setClassController($data['controller']);
-                        self::setCurrentPage($data['segment']);
-                        break;
-                    }
-                }
-            }
-            unset($routes);
-        }
-
-        // define o namespace do controller em relação a raiz da pasta de controlers
+        self::$segments = $segments;
+        self::$get_params = $_GET;
+        $_GET = [];
+        $controller = self::findController() ?? self::findRoutedController($uriString);
         Kernel::controllerNamespace($controller);
-
-        // Varre os redirecionamentos
-        if (is_null($controller)) {
-            $redirects = Configuration::get('uri', 'redirects');
-            if (is_array($redirects)) {
-                foreach ($redirects as $key => $data) {
-                    if (preg_match('/^' . $key . '$/', $UriString)) {
-                        foreach ($data['segments'] as $segment => $value) {
-                            if (substr($value, 0, 1) == '$') {
-                                $data['segments'][$segment] = isset(self::$segments[(int) substr($value, 1)]) ? self::$segments[(int) substr($value, 1)] : '';
-                            }
-                        }
-                        self::redirect(self::buildURL($data['segments'], $data['get'], $data['force_rewrite'], $data['host']), $data['type']);
-                        break;
-                    }
-                }
-            }
-            unset($redirects);
-        }
+        self::checkRedirect($controller, $uriString);
 
         return $controller;
     }
@@ -321,12 +432,16 @@ class URI
      */
     public static function relativePathPage($consider_controller_root = false)
     {
-        $path = (count(Kernel::controllerRoot()) && $consider_controller_root ? implode(DIRECTORY_SEPARATOR, Kernel::controllerRoot()) : '');
-        for ($i = 0; $i < self::$segment_page; $i++) {
-            $path .= (empty($path) ? '' : DIRECTORY_SEPARATOR) . self::getSegment($i, false);
+        $path = count(Kernel::controllerRoot()) && $consider_controller_root
+            ? implode(DIRECTORY_SEPARATOR, Kernel::controllerRoot())
+            : '';
+        $segs = array_slice(self::$segments, 0, self::$segment_page);
+
+        if (!empty($path)) {
+            array_unshift($segs, $path);
         }
 
-        return $path;
+        return implode(DIRECTORY_SEPARATOR, $segs);
     }
 
     /**
@@ -336,7 +451,14 @@ class URI
      */
     public static function currentPageURI()
     {
-        return trim(str_replace(DIRECTORY_SEPARATOR, '/', self::relativePathPage()) . '/' . self::currentPage(), '/');
+        return trim(
+            str_replace(
+                DIRECTORY_SEPARATOR,
+                '/',
+                self::relativePathPage()
+            ) . '/' . (self::$segments[self::$segment_page] ?? ''),
+            '/'
+        );
     }
 
     /**
@@ -366,21 +488,27 @@ class URI
      * @param bool $decRoot  is a boolean value to determine if the number of segments of the
      *                       root path of contollers must be decremented (true) or not (false = default).
      *
-     * @return mixed the value of the segment or false if it does not exists.
+     * @return string|bool the value of the segment or false if it does not exists.
      */
-    public static function getSegment($segment, $rel2Page = true, $decRoot = false)
+    public static function getSegment(int $segment, bool $rel2Page = true, bool $decRoot = false)
     {
-        if ($rel2Page) {
-            $segment += (1 + self::$segment_page);
-        }
-        if ($decRoot) {
-            $segment -= count(Kernel::controllerRoot());
-        }
-        if (array_key_exists($segment, self::$segments)) {
-            return self::$segments[$segment];
-        }
+        $realSegment = $segment
+            + ($rel2Page ? 1 + self::$segment_page : 0)
+            - ($decRoot ? count(Kernel::controllerRoot()) : 0);
+        $value = self::$segments[$realSegment] ?? false;
 
-        return false;
+        // if ($rel2Page) {
+        //     $segment += (1 + self::$segment_page);
+        // }
+        // if ($decRoot) {
+        //     $segment -= count(Kernel::controllerRoot());
+        // }
+        // if (array_key_exists($segment, self::$segments)) {
+        //     return self::$segments[$segment];
+        // }
+
+        // return false;
+        return $value === '' ? 'index' : $value;
     }
 
     /**
