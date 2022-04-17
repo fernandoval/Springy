@@ -21,9 +21,7 @@
  *
  *  \see systemcfg
  */
-/**@{*/
 
-/// Configurações para o ambiente de Desenvolvimento
 $conf = [
     'debug' => true,
     'maintenance' => false,
@@ -35,6 +33,10 @@ $conf = [
     'system_error' => [
         'save_in_database' => false,
     ],
+    'system_internal_methods' => [
+        'about' => true,
+        'phpinfo' => true,
+        'system_errors' => true,
+        'test_error' => true,
+    ],
 ];
-
-/**@}*/

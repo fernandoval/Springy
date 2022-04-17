@@ -1,26 +1,7 @@
 <?php
-/**
- * General system configutations.
- *
- * @copyright 2007 Fernando Val
- * @author    Fernando Val <fernando.val@gmail.com>
- */
 
-/**
- *  - \c 'session' - Session configurations
- *    - \c 'memcached' - MemcacheD service configuration;
- *      - \c 'address' - The MemcacheD server address;
- *      - \c 'port' - The MemcacheD server port;
- *    - \c 'database' - Database configurations for session:
- *      - \c 'server' - The server configuration setting in db.conf;
- *      - \c 'table'  - The session table name.
- *  - \c system_error - Configurações de tratamento de erros da aplicação
- *    - \c save_in_database - Informa ao sistema se as ocorrências de erros devem ser armazenadas em banco de dados.
- *    - \c table_name - Informa ao sistema o nome da tabela onde as ocorrências de erro devem ser armazenadas.
- *    - \c db_server - Nome da conexão de banco de dados para armazenamento de erros. Se omitido utilizará a default.
- *    - \c create_table - Informa ao sistema se a tabela de erros deve ser criada, caso não exista.
- *  	Em caso afirmativo o sistema utlizará o script SQL armazenado no arquivo system_errors_create_table.sql que
- *  	deverá estar no diretório da biblioteca do sistema.
+/*
+ * General system configutations.
  */
 $conf = [
     'debug'              => true,
@@ -34,26 +15,121 @@ $conf = [
     'bug_authentication' => [],
     'assets_source_path' => sysconf('APP_PATH') . DS . 'assets',
     'assets_path'        => sysconf('ROOT_PATH') . DS . 'assets',
+
+    /*
+     * Session configuration
+     */
     'session'            => [
-        'type'      => 'file', // 'file', 'memcached' or 'database'
-        'name'      => 'SPRINGYSID', // The session cookie name
+        /*
+         * Defines the session engine type.
+         *
+         * Supported values:
+         *
+         * 'file'      : default PHP session controll;
+         * 'memcached' : uses MemcacheD service;
+         * 'database'  : uses database table.
+         */
+        'type'      => 'file',
+
+        /*
+         * The session cookie name.
+         */
+        'name'      => 'SPRINGYSID',
+
+        /*
+         * Session cookie domain.
+         */
         'domain'    => '',
+
+        /*
+         * Session expiration time in seconds.
+         */
         'expires'   => 120,
+
+        /*
+         * Uses secure cookie for sessions.
+         */
         'secure'    => true,
+
+        /*
+         * MemcacheD service configurations.
+         * Used only if 'memcached' defined as session engine type.
+         */
         'memcached' => [
             'address' => '127.0.0.1',
             'port'    => 11211,
         ],
+
+        /*
+         * Database configurations.
+         * Used only if 'database' defined as session engine type.
+         */
         'database' => [
             'server' => 'default',
             'table'  => '_sessions',
         ],
     ],
-    'system_error'       => [
-        'reported_errors'  => [405, 406, 408, 409, 410, 412, 413, 414, 415, 416, 417, 418, 422, 423, 424, 425, 426, 450, 499, 500, 501, 502, 504, 505],
+
+    /*
+     * System error configurations.
+     */
+    'system_error' => [
+        /*
+         * HTTP response code that will be reported as system errors.
+         */
+        'reported_errors'  => [
+            405,
+            406,
+            408,
+            409,
+            410,
+            412,
+            413,
+            414,
+            415,
+            416,
+            417,
+            418,
+            422,
+            423,
+            424,
+            425,
+            426,
+            450,
+            499,
+            500,
+            501,
+            502,
+            504,
+            505,
+        ],
+
+        /*
+         * Save system erros in database errors table.
+         */
         'save_in_database' => false,
-        'table_name'       => '_system_errors',
-        'db_server'        => 'default',
-        'create_table'     => true,
+
+        /*
+         * Database error table name. Only if errors saved in database.
+         */
+        'table_name' => '_system_errors',
+
+        /*
+         * Database connection name for errors saved in database.
+         */
+        'db_server' => 'default',
+
+        /*
+         * Sets error table creation if does not exists.
+         * The system will use system_errors_create_table.sql script to it.
+         */
+        'create_table' => true,
+    ],
+
+    'system_internal_methods' => [
+        'about' => false,
+        'phpinfo' => false,
+        'system_errors' => false,
+        'test_error' => false,
     ],
 ];
