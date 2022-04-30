@@ -10,7 +10,9 @@
   underscore replacing minus sign;
 - Implemented support to __invoke() method before _default() in controllers;
 - Hook controllers signed as deprecated;
-- Empty function `_ignore_global` to ignore Global pre-controller deprecated.
+- Empty function `_ignore_global` to ignore Global pre-controller deprecated;
+- Deleted the following classes: DBDelete, DBExpression, DBFiltro, DBInsert,
+  DBSelect, DBUpdate and DBWhere.
 
 ## 4.3.1
 - Adds Model column getter methods;
