@@ -90,11 +90,8 @@ class Kernel
             return;
         }
 
-        // Call hook controller
-        self::callHookController();
         // Invokes de controller
         self::callControllerMethod(new self::$controllerName());
-
         // Print out the debug
         Core\Debug::printOut();
     }
@@ -129,17 +126,12 @@ class Kernel
     }
 
     /**
-     * Starts the global pre-controller hook if needed.
+     * Starts the global pre-controller hook.
      *
      * @return void
      */
     private static function callGlobal()
     {
-        // The global is disabled?
-        if (!self::$runGlobal) {
-            return;
-        }
-
         // Global pre-controller file path name
         $globalPath = self::path(self::PATH_CONTROLLER) . DS . '_global.php';
 
@@ -153,33 +145,6 @@ class Kernel
 
         if (class_exists($controllerName)) {
             new $controllerName();
-        }
-    }
-
-    /**
-     * Calls the hook controller if exists.
-     *
-     * @return void
-     *
-     * @deprecated 4.5.0
-     */
-    private static function callHookController()
-    {
-        /// The hook controller file name
-        $defaultFile = dirname(self::$controllerFile) . DS . '_default.php';
-
-        // Hook controller exists?
-        if (!file_exists($defaultFile)) {
-            return;
-        }
-
-        $contollerName = 'Default_Controller';
-
-        // Load the hook controller file
-        require $defaultFile;
-
-        if (class_exists($contollerName)) {
-            new $contollerName();
         }
     }
 
@@ -318,19 +283,14 @@ class Kernel
     {
         // Get controller file name
         self::$controllerFile = URI::parseURI();
+
         if (is_null(self::$controllerFile) || !file_exists(self::$controllerFile)) {
             return;
         }
 
-        // Validate the URI before load the controller
+        // Validate the URI and load the controller.
         URI::validateURI();
-
         self::defineControllerName();
-
-        // Bypass the global pre-controller?
-        if (defined('BYPASS_CONTROLLERS') || method_exists(self::$controllerName, '_ignore_global')) {
-            self::$runGlobal = false;
-        }
     }
 
     /**
@@ -344,7 +304,7 @@ class Kernel
         require_once self::$controllerFile;
 
         $class = URI::getControllerClass();
-        $name = ucwords($class, '-') . 'Controller';
+        $name = str_replace('-', '', ucwords($class, '-')) . 'Controller';
 
         if (class_exists($name)) {
             self::$controllerName = $name;
@@ -352,6 +312,8 @@ class Kernel
             return;
         }
 
+        // Legacy mode
+        // @deprecated v4.5.0
         $name = str_replace('-', '_', URI::getControllerClass()) . '_Controller';
 
         if (class_exists($name)) {

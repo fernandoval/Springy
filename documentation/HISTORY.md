@@ -9,8 +9,8 @@
 - Implemented named method support using StudlyCaps pattern before with
   underscore replacing minus sign;
 - Implemented support to __invoke() method before _default() in controllers;
-- Hook controllers signed as deprecated and its support will be ended in version
-  4.5;
+- Hook controllers signed as deprecated;
+- Empty function `_ignore_global` to ignore Global pre-controller deprecated.
 
 ## 4.3.1
 - Adds Model column getter methods;
