@@ -3,6 +3,8 @@
 ## Version 4
 
 ## 4.4.0
+- Adds support to bootstrap application script as an alternative to deprecated
+  `_global` controller.
 - Adds configuration to enable or disable internal special commands;
 - Enhancements in URI class;
 - Adds supoort to StudlyCaps controller classa names without underscores;
@@ -13,7 +15,8 @@
 - Empty function `_ignore_global` to ignore Global pre-controller deprecated;
 - Deleted the following classes: DBDelete, DBExpression, DBFiltro, DBInsert,
   DBSelect, DBUpdate and DBWhere;
-- Pagination class deprecated and deleted.
+- Pagination class deprecated and deleted;
+- Deleted Doxygen documentation.
 
 ## 4.3.1
 - Adds Model column getter methods;
