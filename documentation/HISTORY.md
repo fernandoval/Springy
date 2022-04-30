@@ -12,7 +12,8 @@
 - Hook controllers signed as deprecated;
 - Empty function `_ignore_global` to ignore Global pre-controller deprecated;
 - Deleted the following classes: DBDelete, DBExpression, DBFiltro, DBInsert,
-  DBSelect, DBUpdate and DBWhere.
+  DBSelect, DBUpdate and DBWhere;
+- Pagination class deprecated and deleted.
 
 ## 4.3.1
 - Adds Model column getter methods;
