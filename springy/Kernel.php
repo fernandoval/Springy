@@ -8,7 +8,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version    2.5.5
+ * @version   2.5.5
  */
 
 namespace Springy;
@@ -130,6 +130,16 @@ class Kernel
      */
     private static function callGlobal()
     {
+        // Bootstrap
+        $btPath = self::path(self::PATH_APPLICATION) . DS . 'bootstrap.php';
+
+        // The global pre-controller exists?
+        if (file_exists($btPath)) {
+            require_once $btPath;
+
+            return;
+        }
+
         // Global pre-controller file path name
         $globalPath = self::path(self::PATH_CONTROLLER) . DS . '_global.php';
 
