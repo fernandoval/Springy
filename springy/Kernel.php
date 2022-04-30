@@ -8,7 +8,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version    2.5.4
+ * @version    2.5.5
  */
 
 namespace Springy;
@@ -50,8 +50,6 @@ class Kernel
     private static $controllerFile = null;
     /// The controller file class name
     private static $controllerName = null;
-    /// Run global pre-controller switch
-    private static $runGlobal = true;
 
     /// System environment
     private static $environment = '';
