@@ -3,8 +3,9 @@
 ## Version 4
 
 ## 4.4.0
+- Adds functions without underscore prefix to deprecate old standard functions;
 - Adds support to bootstrap application script as an alternative to deprecated
-  `_global` controller.
+  `_global` controller;
 - Adds configuration to enable or disable internal special commands;
 - Enhancements in URI class;
 - Adds supoort to StudlyCaps controller classa names without underscores;

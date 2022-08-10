@@ -45,9 +45,9 @@ Sample how to use a template view:
     $tpl->display();
 ```
 
-If your controller extends Springy\\[Controller](/documentation/en/library/Controller.md) class, you can use the protected method `_template()` to create the template object, like this:
+If your controller extends Springy\\[Controller](/documentation/en/library/Controller.md) class, you can use the protected method `createTemplate()` to create the template object, like this:
 ```php
-    $this->_template('my-template');
+    $this->createTemplate('my-template');
     $this->template->assign('var', 'a value to the variable');
     $this->template->display();
 ```

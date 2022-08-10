@@ -1,30 +1,23 @@
 <?php
-/**	\file
- * 	\brief Sample controller for the main page.
- *
- *  \copyright  ₢ 2007-2018 Fernando Val.
- *  \author     Fernando Val - fernando.val@gmail.com
- *  \ingroup    controllers
+
+/**
+ * Sample controller for the main page.
  */
+
 use Springy\Controller;
 
-class Index_Controller extends Controller
+class IndexController extends Controller
 {
-    /**
-     *  \brief Método principal (default).
-     *
-     *  Este método é executado se nenhum outro método for definido na URI para ser chamado, quando essa controladora é chamada.
-     */
-    public function _default()
+    public function __invoke()
     {
         $date = date('F j, Y');
 
-        Springy\Kernel::debug('Exemplo de debug 1');
-        Springy\Kernel::debug('Exemplo de debug 2', 'Exemplo com título');
-        Springy\Kernel::debug('Exemplo de debug 3', 'Título do Exemplo 3', false, false);
+        debug('Exemplo de debug 1');
+        debug('Exemplo de debug 2', 'Exemplo com título');
+        debug('Exemplo de debug 3', 'Título do Exemplo 3', false, false);
 
-        $tpl = $this->_template();
-        $tpl->assign('date', $date);
-        $tpl->display();
+        $this->createTemplate();
+        $this->template->assign('date', $date);
+        $this->template->display();
     }
 }

@@ -8,7 +8,7 @@
  * @author    Allan Marques <allan.marques@ymail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   0.4.0.7
+ * @version   0.5.0
  */
 
 namespace Springy;
@@ -17,16 +17,19 @@ use Springy\Security\AclManager;
 
 class Controller extends AclManager
 {
-    /// Define if the controller is restricted to signed in users.
+    /** @var bool Define if the controller is restricted to signed in users. */
     protected $authNeeded = false;
-    /// Define a URL to redirect the user if it is not signed ($authNeeded must be true). Can be a string or an array used by URI::buildUrl();
+    /**
+     * @var bool|string|array Define a URL to redirect the user if it is not signed ($authNeeded must be true).
+     *                        Can be a string or an array used by URI::buildUrl();
+     **/
     protected $redirectUnsigned = false;
 
-    /// The template object
+    /** @var Springy\Template|null The template object */
     protected $template = null;
-    /// Define if the template's page must be cached.
+    /** @var bool Define if the template's page must be cached. */
     protected $tplIsCached = false;
-    /// Define the live time (in seconds) of the cache.
+    /** @var int Define the live time (in seconds) of the cache. */
     protected $tplCacheTime = 1800; // 30 minutes default
     /// Define an identificator to the template cache.
     protected $tplCacheId = null;
@@ -53,65 +56,43 @@ class Controller extends AclManager
         // Verify if is an authenticated user
         if ($this->user->isLoaded()) {
             // Call user special verifications
-            if (!$this->_userSpecialVerifications()) {
-                $this->_forbidden();
+            if (!$this->userSpecialVerifications()) {
+                $this->forbidden();
             }
 
             // Check if the controller and respective method is permitted to the user
-            $this->_authorizationCheck();
+            $this->authorizationCheck();
 
             return true;
         }
 
         // Kill the application with the 403 forbidden page.
-        $this->_forbidden();
+        $this->forbidden();
     }
 
     /**
      * Checks the user permission for the called method.
      *
      * This is an internal method you can use to check the user permission.
+     *
+     * @return void
      */
-    protected function _authorizationCheck()
+    protected function authorizationCheck(): void
     {
         // Check if the controller and respective method is permitted to the user
         if (!$this->isPermitted()) {
-            $this->_forbidden();
+            $this->forbidden();
         }
     }
 
     /**
-     * Sends a "403 - Forbidden" error and kill the application.
+     * Back compatibility function.
+     *
+     * @deprecated 4.5.0
      */
-    protected function _forbidden()
+    protected function _authorizationCheck()
     {
-        if ($this->redirectUnsigned) {
-            if (is_array($this->redirectUnsigned) && isset($this->redirectUnsigned['segments']) && isset($this->redirectUnsigned['query']) && isset($this->redirectUnsigned['forceRewrite']) && isset($this->redirectUnsigned['host'])) {
-                $url = URI::buildURL($this->redirectUnsigned['segments'], $this->redirectUnsigned['query'], $this->redirectUnsigned['forceRewrite'], $this->redirectUnsigned['host']);
-            } else {
-                $url = URI::buildURL($this->redirectUnsigned);
-            }
-
-            $this->_redirect($url);
-        }
-
-        new Errors(403, 'Forbidden');
-    }
-
-    /**
-     * Sends a "404 - Page not found" error and kill the application.
-     */
-    protected function _pageNotFound()
-    {
-        new Errors(404, 'Page not found');
-    }
-
-    /**
-     * Sends a URL redirect to the user browser and kill the application.
-     */
-    protected function _redirect($url)
-    {
-        URI::redirect($url);
+        $this->authorizationCheck();
     }
 
     /**
@@ -121,9 +102,9 @@ class Controller extends AclManager
      *
      * The $template object is created, it's cache is validated and then it is returned to the controller.
      *
-     * @return Template Returns the template object.
+     * @return void
      */
-    protected function _template($template = null)
+    protected function createTemplate($template = null): void
     {
         $this->template = new Template($template);
 
@@ -137,6 +118,82 @@ class Controller extends AclManager
 
             $this->template->setCacheId($this->tplCacheId);
         }
+    }
+
+    /**
+     * Sends a "403 - Forbidden" error and kill the application.
+     */
+    protected function forbidden()
+    {
+        if ($this->redirectUnsigned) {
+            if (is_array($this->redirectUnsigned) && isset($this->redirectUnsigned['segments']) && isset($this->redirectUnsigned['query']) && isset($this->redirectUnsigned['forceRewrite']) && isset($this->redirectUnsigned['host'])) {
+                $url = URI::buildURL($this->redirectUnsigned['segments'], $this->redirectUnsigned['query'], $this->redirectUnsigned['forceRewrite'], $this->redirectUnsigned['host']);
+            } else {
+                $url = URI::buildURL($this->redirectUnsigned);
+            }
+
+            $this->redirect($url);
+        }
+
+        new Errors(403, 'Forbidden');
+    }
+
+    /**
+     * Back compatibility function.
+     *
+     * @deprecated 4.5.0
+     */
+    protected function _forbidden(): void
+    {
+        $this->forbidden();
+    }
+
+    /**
+     * Sends a "404 - Page not found" error and kill the application.
+     */
+    protected function pageNotFound(): void
+    {
+        new Errors(404, 'Page not found');
+    }
+
+    /**
+     * Back compatibility function.
+     *
+     * @deprecated 4.5.0
+     */
+    protected function _pageNotFound()
+    {
+        $this->pageNotFound();
+    }
+
+    /**
+     * Sends a URL redirect to the user browser and kill the application.
+     */
+    protected function redirect($url): void
+    {
+        URI::redirect($url);
+    }
+
+    /**
+     * Back compatibility function.
+     *
+     * @deprecated 4.5.0
+     */
+    protected function _redirect($url)
+    {
+        $this->redirect($url);
+    }
+
+    /**
+     * Template initialization method to back compatibility.
+     *
+     * @return Template Returns the template object.
+     *
+     * @deprecated 4.5.0
+     */
+    protected function _template($template = null)
+    {
+        $this->createTemplate($template);
 
         return $this->template;
     }
@@ -151,8 +208,18 @@ class Controller extends AclManager
      *
      * @return bool true if user can access the module or false if not.
      */
-    protected function _userSpecialVerifications()
+    protected function userSpecialVerifications(): bool
     {
         return true;
+    }
+
+    /**
+     * Back compatibility function.
+     *
+     * @deprecated 4.5.0
+     */
+    protected function _userSpecialVerifications()
+    {
+        return $this->userSpecialVerifications();
     }
 }

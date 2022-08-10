@@ -36,7 +36,7 @@ class IndexController extends Controller
 {
     public function _default()
     {
-        $this->_template();
+        $this->createTemplate();
         $this->template->display();
     }
 }

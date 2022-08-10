@@ -7,12 +7,12 @@
  * @author     Allan Marques <allan.marques@ymail.com>
  * @author     Fernando Val <fernando.val@gmail.com>
  *
- * @version    4.2.0
+ * @version    4.3.0
  *
  * Let's make the developer happier and more productive.
  */
 
-/// Definig the constantes
+// Definig the constantes
 if (!defined('DS')) {
     define('DS', DIRECTORY_SEPARATOR);
 }
@@ -24,8 +24,9 @@ if (!defined('DS')) {
  *  or a registered service with the name passed by parameter.
  *
  *  @param string $service Name of the service (optional).
+ *                         If null, returnos Springy\Core\Application instance.
  *
- *  @return class Springy\Core\Application
+ *  @return mixed
  */
 function app($service = null)
 {
@@ -323,7 +324,17 @@ function springyAutoload($class)
 function springyExceptionHandler($error)
 {
     $errors = new Springy\Errors();
-    $errors->handler($error->getCode(), $error->getMessage(), $error->getFile(), $error->getLine(), (method_exists($error, 'getContext') ? $error->getContext() : null));
+    $errors->handler(
+        $error->getCode(),
+        $error->getMessage(),
+        $error->getFile(),
+        $error->getLine(),
+        (
+            method_exists($error, 'getContext')
+                ? call_user_func([$error, 'getContext'])
+                : null
+        )
+    );
 }
 
 /**
@@ -362,8 +373,3 @@ class SpringyException extends Exception
         return $this->context;
     }
 }
-
-// Define error handlers
-error_reporting(E_ALL);
-set_exception_handler('springyExceptionHandler');
-set_error_handler('springyErrorHandler');
