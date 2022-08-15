@@ -7,7 +7,7 @@
  * @author     Allan Marques <allan.marques@ymail.com>
  * @author     Fernando Val <fernando.val@gmail.com>
  *
- * @version    4.3.0
+ * @version    4.3.1
  *
  * Let's make the developer happier and more productive.
  */
@@ -176,11 +176,11 @@ function make_slug(
 function minify($source, $destiny)
 {
     $fileType = (substr($source, -4) == '.css' ? 'css' : (substr($source, -3) == '.js' ? 'js' : 'off'));
+    $path = pathinfo($destiny, PATHINFO_DIRNAME);
 
     // Check the destination directory exists or create if not
-    $path = pathinfo($destiny, PATHINFO_DIRNAME);
     if (!is_dir($path)) {
-        mkdir($path, 0755, true);
+        mkdir($path, 0775, true);
     }
 
     $buffer = file_get_contents($source);
