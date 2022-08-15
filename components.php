@@ -41,7 +41,6 @@
  * by Matthias Mullie.
  * https://github.com/matthiasmullie/minify
  */
-
 define('DS', DIRECTORY_SEPARATOR);
 
 define('LF', "\n");
