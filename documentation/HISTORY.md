@@ -12,6 +12,7 @@
 - Implemented named method support using StudlyCaps pattern before with
   underscore replacing minus sign;
 - Implemented support to __invoke() method before _default() in controllers;
+- Fixed bug in Configuration::set() function;
 - Hook controllers signed as deprecated;
 - Empty function `_ignore_global` to ignore Global pre-controller deprecated;
 - Deleted the following classes: DBDelete, DBExpression, DBFiltro, DBInsert,
