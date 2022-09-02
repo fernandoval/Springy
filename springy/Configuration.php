@@ -7,7 +7,7 @@
  * @author    Allan Marques <allan.marques@ymail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version    3.0.19
+ * @version    3.0.20
  */
 
 namespace Springy;
@@ -79,6 +79,7 @@ class Configuration
 
             if ($firstSegment) {
                 $var = substr($local, strpos($local, '.') + 1);
+                $local = $firstSegment;
             }
 
             if (!$var) {
