@@ -108,10 +108,10 @@ function sysconf($key)
 /**
  * An alias for Springy\Core\Debug::add() method.
  *
- * @param string $txt the text to be printed in debug.
- * @param string $name a name to the debut information.
- * @param bool $highlight a flag to set if information will be highlighted.
- * @param bool $revert.
+ * @param string $txt       the text to be printed in debug.
+ * @param string $name      a name to the debut information.
+ * @param bool   $highlight a flag to set if information will be highlighted.
+ * @param bool   $revert.
  *
  * @return void
  */
@@ -124,7 +124,7 @@ function debug($txt, $name = '', $highlight = true, $revert = true)
  * A var_dump and die help function.
  *
  * @param mixed $var the variable or value to be sent to standard output.
- * @param bool $die a boolen flag to determine if system die after print the value of $var.
+ * @param bool  $die a boolen flag to determine if system die after print the value of $var.
  *
  * @return void
  */
@@ -314,7 +314,7 @@ function springyAutoload($class)
 
     if (!empty($vars['subclass'])) {
         $subclass = substr($vars['subclass'], 1);
-        $hiphened = $prefix . $nameSpace . DS . $nameSpace .'-' . $subclass . $suffix;
+        $hiphened = $prefix . $nameSpace . DS . $nameSpace . '-' . $subclass . $suffix;
         $underlined = $prefix . $nameSpace . DS . $nameSpace . '_' . $subclass . $suffix;
         $className = $prefix . $nameSpace . $vars['subclass'] . $suffix;
     }
