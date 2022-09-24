@@ -47,6 +47,11 @@
 
         "components/jquery": "~3.1"
     },
+    "autoload": {
+        "psr-4": {
+            "Springy\\": "springy/"
+        }
+    },
     "change-this-to-scripts": {
         "post-install-cmd": "php -f components.php",
         "post-update-cmd": "php -f components.php"

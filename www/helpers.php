@@ -7,7 +7,7 @@
  * @author     Allan Marques <allan.marques@ymail.com>
  * @author     Fernando Val <fernando.val@gmail.com>
  *
- * @version    4.3.1
+ * @version    4.4.0
  *
  * Let's make the developer happier and more productive.
  */
@@ -18,15 +18,15 @@ if (!defined('DS')) {
 }
 
 /**
- *  @brief Get shared container application instance.
+ * Get shared container application instance.
  *
- *  Returns the shared instance of the application container
- *  or a registered service with the name passed by parameter.
+ * Returns the shared instance of the application container
+ * or a registered service with the name passed by parameter.
  *
- *  @param string $service Name of the service (optional).
- *                         If null, returnos Springy\Core\Application instance.
+ * @param string $service Name of the service (optional).
+ *                        If null, returnos Springy\Core\Application instance.
  *
- *  @return mixed
+ * @return mixed
  */
 function app($service = null)
 {
@@ -71,11 +71,11 @@ function build_url(
 }
 
 /**
- *  @brief An alias for Springy\Configuration::get() method.
+ * An alias for Springy\Configuration::get() method.
  *
- *  @param string $key the name of the configuration key in dotted notation.
+ * @param string $key the name of the configuration key in dotted notation.
  *
- *  @return mixed the value of the key.
+ * @return mixed the value of the key.
  */
 function config_get($key)
 {
@@ -83,10 +83,10 @@ function config_get($key)
 }
 
 /**
- *  @brief An alias for Springy\Configuration::set() method.
+ * An alias for Springy\Configuration::set() method.
  *
- *  @param string $key the name of the configuration key in dotted notation.
- *  @param string $val the new value of the configuration key.
+ * @param string $key the name of the configuration key in dotted notation.
+ * @param string $val the new value of the configuration key.
  */
 function config_set($key, $val)
 {
@@ -94,11 +94,11 @@ function config_set($key, $val)
 }
 
 /**
- *  @brief Global SYSTEM variable wrapper.
+ * Global SYSTEM variable wrapper.
  *
- *  @param string $key.
+ * @param string $key.
  *
- *  @return mixed.
+ * @return mixed.
  */
 function sysconf($key)
 {
@@ -106,14 +106,14 @@ function sysconf($key)
 }
 
 /**
- *  @brief An alias for Springy\Core\Debug::add() method.
+ * An alias for Springy\Core\Debug::add() method.
  *
- *  @param string $txt the text to be printed in debug.
- *  @param string $name a name to the debut information.
- *  @param bool $highlight a flag to set if information will be highlighted.
- *  @param bool $revert.
+ * @param string $txt the text to be printed in debug.
+ * @param string $name a name to the debut information.
+ * @param bool $highlight a flag to set if information will be highlighted.
+ * @param bool $revert.
  *
- *  @return void
+ * @return void
  */
 function debug($txt, $name = '', $highlight = true, $revert = true)
 {
@@ -121,12 +121,12 @@ function debug($txt, $name = '', $highlight = true, $revert = true)
 }
 
 /**
- *  @brief A var_dump and die help function.
+ * A var_dump and die help function.
  *
- *  @param mixed $var the variable or value to be sent to standard output.
- *  @param bool $die a boolen flag to determine if system die after print the value of $var.
+ * @param mixed $var the variable or value to be sent to standard output.
+ * @param bool $die a boolen flag to determine if system die after print the value of $var.
  *
- *  @return void
+ * @return void
  */
 function dd($var, $die = true)
 {
@@ -163,6 +163,46 @@ function make_slug(
 }
 
 /**
+ * Makes directory recusrively and grants permission mode avoiding umask.
+ *
+ * @param string $dirpath
+ * @param int    $mode
+ *
+ * @return bool
+ */
+function mkdir_recursive(string $dirpath, $mode): bool
+{
+    $dirpath = rtrim($dirpath, DS);
+
+    if (empty($dirpath)) {
+        throw_error(500, 'Empty path.');
+    }
+
+    $parts = explode(DS, $dirpath);
+    $base = '';
+
+    foreach ($parts as $dir) {
+        $base .= $dir;
+
+        if ($dir === '' || $dir === '.' || $dir === '..' || is_dir($base)) {
+            $base .= DS;
+
+            continue;
+        } elseif (!mkdir($base, $mode)) {
+            return false;
+        }
+
+        if ($mode != ($mode & ~umask())) {
+            chmod($base, $mode);
+        }
+
+        $base .= DS;
+    }
+
+    return true;
+}
+
+/**
  *  @brief Minify a CSS or JS file.
  *
  *  @note Is recommend the use of the Minify class by Matthias Mullie.
@@ -179,9 +219,7 @@ function minify($source, $destiny)
     $path = pathinfo($destiny, PATHINFO_DIRNAME);
 
     // Check the destination directory exists or create if not
-    if (!is_dir($path)) {
-        mkdir($path, 0775, true);
-    }
+    mkdir_recursive($path, 0775, true);
 
     $buffer = file_get_contents($source);
 
@@ -249,79 +287,54 @@ function with($object)
 }
 
 /**
- *  @brief Framework autoload function.
+ * Framework autoload function.
  *
- *  @param string $class the class name.
+ * @param string $class the class name.
  *
- *  @return void
+ * @return void
  */
 function springyAutoload($class)
 {
-    $aclass = explode('\\', $class);
-    if (count($aclass) > 1) {
-        if ($aclass[0] == 'Springy') {
-            array_shift($aclass);
-        }
-        $file = implode(DS, $aclass);
-    } else {
-        $file = $aclass[0];
+    // New namespaced application class loader
+    $classFile = sysconf('CLASS_PATH') . DS . implode(DS, explode('\\', $class)) . '.php';
+
+    if (file_exists($classFile)) {
+        require_once $classFile;
+
+        return;
     }
 
-    if (file_exists(sysconf('SPRINGY_PATH') . DS . $file . '.php')) {
-        require_once sysconf('SPRINGY_PATH') . DS . $file . '.php';
-    } else {
-        // procura na user_classes
+    // Old loader method
+    preg_match('/^(?<class>[A-Za-z]+)(?<subclass>.*?)(?<type>_Static)?$/', $class, $vars);
 
-        // verifica se a classe utiliza o padrão com namespace (ou classe estática)
-        // ex: class Oferta_Comercial_Static == arquivo user_classes/oferta/oferta-comercial.static.php
+    $prefix = sysconf('CLASS_PATH') . DS;
+    $suffix = isset($vars['type']) ? '.static' : '.class';
+    $nameSpace = $vars['class'];
+    $className = $hiphened = $underlined = $prefix . $nameSpace . $suffix;
 
-        preg_match('/^(?<class>[A-Za-z]+)(?<subclass>.*?)(?<type>_Static)?$/', $class, $vars);
+    if (!empty($vars['subclass'])) {
+        $subclass = substr($vars['subclass'], 1);
+        $hiphened = $prefix . $nameSpace . DS . $nameSpace .'-' . $subclass . $suffix;
+        $underlined = $prefix . $nameSpace . DS . $nameSpace . '_' . $subclass . $suffix;
+        $className = $prefix . $nameSpace . $vars['subclass'] . $suffix;
+    }
 
-        $nameSpace = $class = $vars['class'];
-
-        if (!empty($vars['subclass'])) {
-            $class .= '-' . substr($vars['subclass'], 1);
-        }
-
-        if (isset($vars['type'])) {
-            $class .= '.static';
-        } else {
-            $class .= '.class';
-        }
-
-        // procura a classe nas Libarys
-        if (file_exists(sysconf('CLASS_PATH') . DS . $nameSpace . DS . $class . '.php')) {
-            require_once sysconf('CLASS_PATH') . DS . $nameSpace . DS . $class . '.php';
-        } elseif (file_exists(sysconf('CLASS_PATH') . DS . $class . '.php')) {
-            require_once sysconf('CLASS_PATH') . DS . $class . '.php';
-        } else {
-            $class = $vars['class'];
-
-            if (!empty($vars['subclass'])) {
-                $class .= '_' . substr($vars['subclass'], 1);
-            }
-
-            if (isset($vars['type'])) {
-                $class .= '.static';
-            } else {
-                $class .= '.class';
-            }
-
-            if (file_exists(sysconf('CLASS_PATH') . DS . $nameSpace . DS . $class . '.php')) {
-                require_once sysconf('CLASS_PATH') . DS . $nameSpace . DS . $class . '.php';
-            } elseif (file_exists(sysconf('CLASS_PATH') . DS . $class . '.php')) {
-                require_once sysconf('CLASS_PATH') . DS . $class . '.php';
-            }
-        }
+    // procura a classe nas Libarys
+    if (file_exists($hiphened . '.php')) {
+        require_once $hiphened . '.php';
+    } elseif (file_exists($underlined . '.php')) {
+        require_once $underlined . '.php';
+    } elseif (file_exists($className . '.php')) {
+        require_once $className . '.php';
     }
 }
 
 /**
- *  @brief Exception error handler.
+ * Exception error handler.
  *
- *  @param Error $error the error object.
+ * @param Error $error the error object.
  *
- *  @return void
+ * @return void
  */
 function springyExceptionHandler($error)
 {
@@ -340,7 +353,7 @@ function springyExceptionHandler($error)
 }
 
 /**
- *  @brief Error handler.
+ * Error handler.
  */
 function springyErrorHandler($errno, $errstr, $errfile, $errline, $errContext)
 {
@@ -349,7 +362,7 @@ function springyErrorHandler($errno, $errstr, $errfile, $errline, $errContext)
 }
 
 /**
- *  @brief Framework Exception class.
+ * Framework Exception class.
  */
 class SpringyException extends Exception
 {
