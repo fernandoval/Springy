@@ -8,7 +8,7 @@
  * @author    Allan Marques <allan.marques@ymail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   0.5.0
+ * @version   0.5.1
  */
 
 namespace Springy;
@@ -25,7 +25,7 @@ class Controller extends AclManager
      **/
     protected $redirectUnsigned = false;
 
-    /** @var Springy\Template|null The template object */
+    /** @var Template|null The template object */
     protected $template = null;
     /** @var bool Define if the template's page must be cached. */
     protected $tplIsCached = false;
