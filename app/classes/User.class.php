@@ -1,11 +1,8 @@
 <?php
-/** \file
- *  \brief Classe model for users table.
+/**
+ * Classe model for users table.
  *
- *  This is a sample class for users table. You can delete it from your project and write your own.
- *
- *  \ingroup  models
- *  \author   Fernando Val - fernando.val@gmail.com
+ * This is a sample class for users table. You can delete it from your project and write your own.
  */
 use Springy\Model;
 use Springy\Security\AclUserInterface;
@@ -22,17 +19,17 @@ class User extends Model implements IdentityInterface, AclUserInterface
     protected $permissions = [];
 
     /**
-     *  \brief Hook to password column.
+     * Hook to password column.
      *
-     *  When a value is setted to this column, you value is changed to a hash using BCrypt hasher.
+     * When a value is setted to this column, you value is changed to a hash using BCrypt hasher.
      */
     protected function cypherPass($pass)
     {
-        return with(new \Springy\Security\BCryptHasher())->make($pass);
+        return (new \Springy\Security\BCryptHasher())->make($pass);
     }
 
     /**
-     *  \brief Load data from session.
+     * Load data from session.
      */
     public function fillFromSession(array $data)
     {
@@ -44,7 +41,7 @@ class User extends Model implements IdentityInterface, AclUserInterface
     }
 
     /**
-     *  \brief Get the user credentials.
+     * Get the user credentials.
      */
     public function getCredentials()
     {
@@ -55,7 +52,7 @@ class User extends Model implements IdentityInterface, AclUserInterface
     }
 
     /**
-     *  \brief Get the user ID to login by cookie.
+     * Get the user ID to login by cookie.
      */
     public function getId()
     {
@@ -63,7 +60,7 @@ class User extends Model implements IdentityInterface, AclUserInterface
     }
 
     /**
-     *  \brief Get the name of column used to identify the user on cookie.
+     * Get the name of column used to identify the user on cookie.
      */
     public function getIdField()
     {
@@ -74,7 +71,7 @@ class User extends Model implements IdentityInterface, AclUserInterface
     }
 
     /**
-     *  \brief Get the session data.
+     * Get the session data.
      */
     public function getSessionData()
     {
@@ -82,7 +79,7 @@ class User extends Model implements IdentityInterface, AclUserInterface
     }
 
     /**
-     *  \brief Get the session name.
+     * Get the session name.
      */
     public function getSessionKey()
     {
@@ -90,7 +87,7 @@ class User extends Model implements IdentityInterface, AclUserInterface
     }
 
     /**
-     *  \brief Load the class by credencial.
+     * Load the class by credencial.
      */
     public function loadByCredentials(array $data)
     {
@@ -102,7 +99,7 @@ class User extends Model implements IdentityInterface, AclUserInterface
     }
 
     /**
-     *  \brief Load the array with user permissions.
+     * Load the array with user permissions.
      */
     private function loadPermissions()
     {
@@ -120,7 +117,7 @@ class User extends Model implements IdentityInterface, AclUserInterface
     }
 
     /**
-     *  \brief Get the permission for the access.
+     * Get the permission for the access.
      */
     public function getPermissionFor($aclObjectName)
     {
@@ -134,7 +131,7 @@ class User extends Model implements IdentityInterface, AclUserInterface
     }
 
     /**
-     *  \brief The valitation rules to save into table.
+     * The valitation rules to save into table.
      */
     protected function validationRules()
     {
@@ -147,7 +144,7 @@ class User extends Model implements IdentityInterface, AclUserInterface
     }
 
     /**
-     *  \brief Validation error messages.
+     * Validation error messages.
      */
     protected function validationErrorMessages()
     {
@@ -170,9 +167,9 @@ class User extends Model implements IdentityInterface, AclUserInterface
     }
 
     /**
-     *  \brief Trigger for validate register before insert it.
+     * Trigger for validate register before insert it.
      *
-     *  You can verify if the email already exists in database.
+     * You can verify if the email already exists in database.
      */
     protected function triggerBeforeInsert()
     {
@@ -196,9 +193,9 @@ class User extends Model implements IdentityInterface, AclUserInterface
     }
 
     /**
-     *  \brief Trigger for validate register before update it.
+     * Trigger for validate register before update it.
      *
-     *  You can verify if the email already exists in database when user try to change it.
+     * You can verify if the email already exists in database when user try to change it.
      */
     protected function triggerBeforeUpdate()
     {
