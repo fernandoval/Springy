@@ -235,11 +235,13 @@ function throw_error($status = 500, $message = 'Internal Server Error'): void
 }
 
 /**
- *  @brief Return the object (WTF?).
+ * Return the object (WTF?).
  *
- *  @param mixed $object the object.
+ * @param mixed $object the object.
  *
- *  @return mixed Return the $object.
+ * @return mixed Return the $object.
+ *
+ * @deprecated 4.4.0
  */
 function with($object)
 {

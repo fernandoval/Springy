@@ -3,6 +3,8 @@
 ## Version 4
 
 ## 4.4.0
+- Deprecates `.static` application classes;
+- Deprecates `with()` helper function;
 - Adds functions without underscore prefix to deprecate old standard functions;
 - Adds support to bootstrap application script as an alternative to deprecated
   `_global` controller;
