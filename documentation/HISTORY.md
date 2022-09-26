@@ -3,6 +3,10 @@
 ## Version 4
 
 ## 4.4.0
+- Added support to `Controller` suffix without underscore to controller names
+  to help in convertion to new namespace method;
+- Added support to `App\Controller` namespace without `Controller` or
+  `_Controller` name suffix to controllers;
 - Deprecates `.class` suffix for application classes;
 - Deprecates `.static` suffix for application classes;
 - Deprecates application classes with hiphen in its name;
@@ -11,17 +15,17 @@
 - Adds support to bootstrap application script as an alternative to deprecated
   `_global` controller;
 - Adds configuration to enable or disable internal special commands;
-- Enhancements in URI class;
+- Enhancements in `URI` class;
 - Adds supoort to StudlyCaps controller classa names without underscores;
 - Implemented named method support using StudlyCaps pattern before with
   underscore replacing minus sign;
-- Implemented support to __invoke() method before _default() in controllers;
-- Fixed bug in Configuration::set() function;
+- Implemented support to `__invoke()` method before `_default()` in controllers;
+- Fixed bug in `Configuration::set()` function;
 - Hook controllers signed as deprecated;
 - Empty function `_ignore_global` to ignore Global pre-controller deprecated;
-- Deleted the following classes: DBDelete, DBExpression, DBFiltro, DBInsert,
-  DBSelect, DBUpdate and DBWhere;
-- Pagination class deprecated and deleted;
+- Deleted the following classes: `DBDelete`, `DBExpression`, `DBFiltro`,
+  `DBInsert`, `DBSelect`, `DBUpdate` and `DBWhere`;
+- `Pagination` class deprecated and deleted;
 - Deleted Doxygen documentation.
 
 ## 4.3.1

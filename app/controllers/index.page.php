@@ -4,9 +4,11 @@
  * Sample controller for the main page.
  */
 
+namespace App\Controller;
+
 use Springy\Controller;
 
-class IndexController extends Controller
+class Index extends Controller
 {
     public function __invoke()
     {

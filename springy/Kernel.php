@@ -8,7 +8,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.5.5
+ * @version   2.6.0
  */
 
 namespace Springy;
@@ -21,7 +21,7 @@ namespace Springy;
 class Kernel
 {
     // Framework version
-    const VERSION = '4.4.0 alpha 1';
+    const VERSION = '4.4.0 beta 1';
 
     /// Path constants
     const PATH_PROJECT = 'PROJ';
@@ -312,22 +312,19 @@ class Kernel
         require_once self::$controllerFile;
 
         $class = URI::getControllerClass();
-        $name = str_replace('-', '', ucwords($class, '-')) . 'Controller';
+        $name = str_replace('-', '', ucwords($class, '-'));
+        $classNames = [
+            'App\\Controller\\' . $name,
+            $name . 'Controller', // @deprecated v4.5.0
+            str_replace('-', '_', URI::getControllerClass()) . '_Controller', // @deprecated v4.5.0
+        ];
 
-        if (class_exists($name)) {
-            self::$controllerName = $name;
+        foreach ($classNames as $className) {
+            if (class_exists($className)) {
+                self::$controllerName = $className;
 
-            return;
-        }
-
-        // Legacy mode
-        // @deprecated v4.5.0
-        $name = str_replace('-', '_', URI::getControllerClass()) . '_Controller';
-
-        if (class_exists($name)) {
-            self::$controllerName = $name;
-
-            return;
+                return;
+            }
         }
     }
 
