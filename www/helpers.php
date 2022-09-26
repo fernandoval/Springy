@@ -7,7 +7,7 @@
  * @author     Allan Marques <allan.marques@ymail.com>
  * @author     Fernando Val <fernando.val@gmail.com>
  *
- * @version    4.4.0
+ * @version    4.4.1
  *
  * Let's make the developer happier and more productive.
  */
@@ -308,24 +308,33 @@ function springyAutoload($class)
     preg_match('/^(?<class>[A-Za-z]+)(?<subclass>.*?)(?<type>_Static)?$/', $class, $vars);
 
     $prefix = sysconf('CLASS_PATH') . DS;
-    $suffix = isset($vars['type']) ? '.static' : '.class';
+    $suffix = isset($vars['type']) ? '.static.php' : '.class.php';
     $nameSpace = $vars['class'];
-    $className = $hiphened = $underlined = $prefix . $nameSpace . $suffix;
+    $fileNames = [
+        $suffix,
+        '.php',
+    ];
 
     if (!empty($vars['subclass'])) {
         $subclass = substr($vars['subclass'], 1);
-        $hiphened = $prefix . $nameSpace . DS . $nameSpace . '-' . $subclass . $suffix;
-        $underlined = $prefix . $nameSpace . DS . $nameSpace . '_' . $subclass . $suffix;
-        $className = $prefix . $nameSpace . $vars['subclass'] . $suffix;
+        $fileNames = [
+            DS . $nameSpace . '-' . $subclass . $suffix,
+            DS . $nameSpace . '_' . $subclass . $suffix,
+            $vars['subclass'] . $suffix,
+            DS . $nameSpace . '-' . $subclass . '.php',
+            DS . $nameSpace . '_' . $subclass . '.php',
+            $vars['subclass'] . '.php',
+        ];
     }
 
-    // procura a classe nas Libarys
-    if (file_exists($hiphened . '.php')) {
-        require_once $hiphened . '.php';
-    } elseif (file_exists($underlined . '.php')) {
-        require_once $underlined . '.php';
-    } elseif (file_exists($className . '.php')) {
-        require_once $className . '.php';
+    foreach ($fileNames as $file) {
+        $path = $prefix . $nameSpace . $file;
+
+        if (file_exists($path)) {
+            require_once $path;
+
+            return;
+        }
     }
 }
 
