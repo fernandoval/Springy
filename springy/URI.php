@@ -8,7 +8,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.3.1
+ * @version   2.3.4
  */
 
 namespace Springy;
@@ -190,7 +190,7 @@ class URI
         $controller = null;
         $base = Kernel::path(Kernel::PATH_CONTROLLER) . (
             count(Kernel::controllerRoot())
-                ? DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, Kernel::controllerRoot())
+                ? DS . implode(DS, Kernel::controllerRoot())
                 : ''
         );
         $segments = [];
@@ -205,7 +205,7 @@ class URI
         } while ($sgm !== false);
 
         while (count($segments) > 0) {
-            $path = $base . DS . implode($segments, DS);
+            $path = $base . DS . implode(DS, $segments);
             $file = $path . '.page.php';
             $indx = $path . DS . 'index.page.php';
 
@@ -266,9 +266,9 @@ class URI
                 $controller = Kernel::path(Kernel::PATH_CONTROLLER)
                     . (
                         count(Kernel::controllerRoot())
-                            ? DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, Kernel::controllerRoot())
+                            ? DS . implode(DS, Kernel::controllerRoot())
                             : ''
-                    ) . DIRECTORY_SEPARATOR . $data['controller'] . '.page.php';
+                    ) . DS . $data['controller'] . '.page.php';
                 self::setClassController($data['controller']);
                 self::setCurrentPage($data['segment']);
 
@@ -305,7 +305,12 @@ class URI
             $segNum++;
         }
 
-        return array_filter($segments);
+        return array_filter(
+            $segments,
+            function ($seg) {
+                return $seg !== '';
+            }
+        );
     }
 
     /**
@@ -363,10 +368,10 @@ class URI
 
         $ctrl = trim(
             str_replace(
-                DIRECTORY_SEPARATOR,
+                DS,
                 '/',
                 Kernel::controllerRoot()
-                    ? implode(DIRECTORY_SEPARATOR, Kernel::controllerRoot())
+                    ? implode(DS, Kernel::controllerRoot())
                     : ''
             ) . '/' . self::getControllerClass(),
             '/'
@@ -447,7 +452,7 @@ class URI
     public static function relativePathPage($consider_controller_root = false)
     {
         $path = count(Kernel::controllerRoot()) && $consider_controller_root
-            ? implode(DIRECTORY_SEPARATOR, Kernel::controllerRoot())
+            ? implode(DS, Kernel::controllerRoot())
             : '';
         $segs = array_slice(self::$segments, 0, self::$segment_page);
 
@@ -455,7 +460,7 @@ class URI
             array_unshift($segs, $path);
         }
 
-        return implode(DIRECTORY_SEPARATOR, $segs);
+        return implode(DS, $segs);
     }
 
     /**
@@ -467,7 +472,7 @@ class URI
     {
         return trim(
             str_replace(
-                DIRECTORY_SEPARATOR,
+                DS,
                 '/',
                 self::relativePathPage()
             ) . '/' . (self::$segments[self::$segment_page] ?? ''),

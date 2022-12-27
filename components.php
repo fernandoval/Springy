@@ -1,12 +1,13 @@
 #!/usr/bin/php
 <?php
+
 /**
  * Components manager.
  *
  * @copyright 2015 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
  *
- * @version   4.0.0.13
+ * @version   4.0.14
  *
  * This is script is not a Composer plugin.
  *
@@ -215,7 +216,7 @@ class Main
             }
 
             if (!$this->realCopy($path, $dest, $minify)) {
-                echo TAB, CS_RED, '[ERROR] Copying (', $filename, ') to (', $dest . DS . basename($filename), ')', CS_RESET, LF;
+                echo TAB, CS_RED, '[ERROR] Copying (', $path, ') to (', $dest, ')', CS_RESET, LF;
             }
 
             return;
@@ -264,7 +265,7 @@ class Main
      * @param array  $data
      * @param string $path
      *
-     * @return void
+     * @return array
      */
     private function getComponentFiles($data, $path)
     {
@@ -284,11 +285,7 @@ class Main
                 return [];
             }
 
-            if (is_array($bower['main'])) {
-                return $bower['main'];
-            }
-
-            return [$bower['main']];
+            return is_array($bower['main']) ? $bower['main'] : [$bower['main']];
         }
 
         return ['*'];
@@ -307,8 +304,9 @@ class Main
     private function getDestinantion($component, $data)
     {
         $destination = '.' . DS . implode(DS, explode('/', $data['target']));
+
         if (!is_dir($destination)) {
-            if (!mkdir($destination, 0755, true)) {
+            if (!mkdir($destination, 0775, true)) {
                 $this->fatalError(TAB . 'Can\'t create "' . $destination . '" directory.');
             }
         }

@@ -6,7 +6,7 @@
  * @copyright 2007 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
  *
- * @version    5.1.0
+ * @version    5.2.0
  */
 $springyStartTime = microtime(true); // Memoriza a hora do início do processamento
 
@@ -20,6 +20,10 @@ if (!file_exists('sysconf.php') || !file_exists('helpers.php')) {
 require 'sysconf.php';
 // Load helper script.
 require 'helpers.php';
+// Define error handlers
+error_reporting(E_ALL);
+set_exception_handler('springyExceptionHandler');
+set_error_handler('springyErrorHandler');
 
 // Load Composer autoload
 if (file_exists(sysconf('VENDOR_PATH') . DS . 'autoload.php')) {

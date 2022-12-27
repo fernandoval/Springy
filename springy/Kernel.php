@@ -8,7 +8,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version    2.5.3
+ * @version   2.6.0
  */
 
 namespace Springy;
@@ -20,8 +20,8 @@ namespace Springy;
  */
 class Kernel
 {
-    /// Versão do framework
-    const VERSION = '4.3.1';
+    // Framework version
+    const VERSION = '4.4.0';
 
     /// Path constants
     const PATH_PROJECT = 'PROJ';
@@ -50,8 +50,6 @@ class Kernel
     private static $controllerFile = null;
     /// The controller file class name
     private static $controllerName = null;
-    /// Run global pre-controller switch
-    private static $runGlobal = true;
 
     /// System environment
     private static $environment = '';
@@ -83,82 +81,78 @@ class Kernel
      *
      * @return void
      */
-    private static function _callController()
+    private static function callController()
     {
         // Has a controller defined?
         if (is_null(self::$controllerName)) {
             return;
         }
 
-        // Call hook controller
-        self::_callHookController();
-
-        // Controller class exists?
-        if (!class_exists(self::$controllerName)) {
-            new Errors(404, 'No ' . self::$controllerName . ' on ' . self::$controllerFile);
-        }
-
-        /// The controller
-        $controller = new self::$controllerName();
-        /// The controller function
-        $pageMethod = self::_getControllerMethod($controller);
-
-        // The page method can be executed?
-        if (is_callable([$controller, $pageMethod])) {
-            call_user_func([$controller, $pageMethod]);
-        }
-
+        // Invokes de controller
+        self::callControllerMethod(new self::$controllerName());
         // Print out the debug
         Core\Debug::printOut();
     }
 
     /**
-     * Starts the global pre-controller hook if needed.
+     * Call the right method in the controller.
+     *
+     * @param object $controller the controller.
      *
      * @return void
      */
-    private static function _callGlobal()
+    private static function callControllerMethod($controller): void
     {
-        // The global is disabled?
-        if (!self::$runGlobal) {
+        $uriSeg = URI::getSegment(0, true);
+        $methods = [
+            '__invoke',
+            '_default',
+        ];
+
+        if ($uriSeg) {
+            array_unshift($methods, str_replace('-', '_', $uriSeg));
+            array_unshift($methods, str_replace('-', '', ucwords($uriSeg, '-_')));
+        }
+
+        foreach ($methods as $method) {
+            if (is_callable([$controller, $method])) {
+                call_user_func([$controller, $method]);
+
+                return;
+            }
+        }
+    }
+
+    /**
+     * Starts the global pre-controller hook.
+     *
+     * @return void
+     */
+    private static function callGlobal()
+    {
+        // Bootstrap
+        $btPath = self::path(self::PATH_APPLICATION) . DS . 'bootstrap.php';
+
+        // The global pre-controller exists?
+        if (file_exists($btPath)) {
+            require_once $btPath;
+
             return;
         }
 
-        /// Global pre-controller file path name
-        $globalPath = self::path(self::PATH_CONTROLLER) . DIRECTORY_SEPARATOR . '_global.php';
+        // Global pre-controller file path name
+        $globalPath = self::path(self::PATH_CONTROLLER) . DS . '_global.php';
 
         // The global pre-controller exists?
         if (!file_exists($globalPath)) {
             return;
         }
 
-        // Load the global pre-controller file
+        $controllerName = 'Global_Controller';
         require_once $globalPath;
-        if (class_exists('Global_Controller')) {
-            // Create the global pre-controller class
-            new \Global_Controller();
-        }
-    }
 
-    /**
-     * Calls the hook controller if exists.
-     *
-     * @return void
-     */
-    private static function _callHookController()
-    {
-        /// The hook controller file name
-        $defaultFile = dirname(self::$controllerFile) . DIRECTORY_SEPARATOR . '_default.php';
-
-        // Hook controller exists?
-        if (!file_exists($defaultFile)) {
-            return;
-        }
-
-        // Load the hook controller file
-        require $defaultFile;
-        if (class_exists('Default_Controller')) {
-            new \Default_Controller();
+        if (class_exists($controllerName)) {
+            new $controllerName();
         }
     }
 
@@ -167,48 +161,74 @@ class Kernel
      *
      * @return void
      */
-    private static function _callSpecialCommands()
+    private static function callSpecialCommands()
     {
-        // Has a controller?
         if (!is_null(self::$controllerName) || self::$cgiMode) {
             return;
         }
 
-        /// The command
-        $command = URI::getSegment(0, false);
+        $about = function () {
+            if (!config_get('system.system_internal_methods.about')) {
+                return false;
+            }
 
-        switch ($command) {
-            case '_':
-            case '_springy_':
-                new Core\Copyright(true);
+            new Core\Copyright(true);
 
-                return;
-            case '_pi_':
+            return true;
+        };
+        $sysbug = function ($command) {
+            if (!config_get('system.system_internal_methods.system_errors')) {
+                return false;
+            }
+
+            self::systemBugPage($command);
+
+            return true;
+        };
+        $methods = [
+            '_' => $about,
+            '_springy_' => $about,
+            '_pi_' => function () {
+                if (!config_get('system.system_internal_methods.phpinfo')) {
+                    return false;
+                }
+
                 phpinfo();
                 ob_end_flush();
 
-                return;
-            case '_error_':
-                self::_testError();
+                return true;
+            },
+            '_error_' => function () {
+                if (!config_get('system.system_internal_methods.test_error')) {
+                    return false;
+                }
 
-                break;
-            case '_system_bug_':
-            case '_system_bug_solved_':
-                self::_systemBugPage($command);
+                self::testError();
 
-                return;
-            case '__migration__':
+                return false;
+            },
+            '__migration__' => function () {
                 // Cli mode only
                 if (!defined('STDIN')) {
                     echo 'This script can be executed only in CLI mode.';
+
                     exit(998);
                 }
 
                 $controller = new Migrator();
                 $controller->run();
 
-                return;
+                return true;
+            },
+            '_system_bug_' => $sysbug,
+            '_system_bug_solved_' => $sysbug,
+        ];
 
+        // The command
+        $command = URI::getSegment(0, false);
+
+        if (($methods[$command] ?? false) && call_user_func($methods[$command], $command)) {
+            return;
         }
 
         new Errors(404, 'Page not found');
@@ -219,7 +239,7 @@ class Kernel
      *
      * @return void
      */
-    private static function _checkDevAccessDebug()
+    private static function checkDevAccessDebug()
     {
         // Has a developer credential?
         $devUser = Configuration::get('system', 'developer_user');
@@ -267,45 +287,45 @@ class Kernel
      *
      * @return void
      */
-    private static function _defineController()
+    private static function defineController(): void
     {
         // Get controller file name
         self::$controllerFile = URI::parseURI();
+
         if (is_null(self::$controllerFile) || !file_exists(self::$controllerFile)) {
             return;
         }
 
-        // Validate the URI before load the controller
+        // Validate the URI and load the controller.
         URI::validateURI();
-
-        // Load the controller file
-        require_once self::$controllerFile;
-
-        // Define o nome da classe controladora
-        self::$controllerName = str_replace('-', '_', URI::getControllerClass()) . '_Controller';
-
-        // Bypass the global pre-controller?
-        if (defined('BYPASS_CONTROLLERS') || method_exists(self::$controllerName, '_ignore_global')) {
-            self::$runGlobal = false;
-        }
+        self::defineControllerName();
     }
 
     /**
-     * Gets the name of method to be called in controller.
+     * Defines controller class name.
      *
-     * @param object $controller the controller.
-     *
-     * @return string The name of method.
+     * @return void
      */
-    private static function _getControllerMethod($controller)
+    private static function defineControllerName(): void
     {
-        $pageMethod = str_replace('-', '_', URI::getSegment(0, true));
+        // Load the controller file
+        require_once self::$controllerFile;
 
-        if (!$pageMethod || !is_callable([$controller, $pageMethod])) {
-            $pageMethod = '_default';
+        $class = URI::getControllerClass();
+        $name = str_replace('-', '', ucwords($class, '-'));
+        $classNames = [
+            'App\\Controller\\' . $name,
+            $name . 'Controller', // @deprecated v4.5.0
+            str_replace('-', '_', URI::getControllerClass()) . '_Controller', // @deprecated v4.5.0
+        ];
+
+        foreach ($classNames as $className) {
+            if (class_exists($className)) {
+                self::$controllerName = $className;
+
+                return;
+            }
         }
-
-        return $pageMethod;
     }
 
     /**
@@ -313,7 +333,7 @@ class Kernel
      *
      * @return void
      */
-    private static function _httpAuthNeeded()
+    private static function httpAuthNeeded()
     {
         $auth = Configuration::get('system', 'authentication');
 
@@ -339,7 +359,7 @@ class Kernel
      *
      * @return void
      */
-    private static function _httpStartup()
+    private static function httpStartup()
     {
         if (defined('STDIN')) {
             return;
@@ -354,7 +374,7 @@ class Kernel
      *
      * @return void
      */
-    private static function _systemBugAccess()
+    private static function systemBugAccess()
     {
         // Has a credential to system bug page?
         $auth = Configuration::get('system', 'bug_authentication');
@@ -388,10 +408,10 @@ class Kernel
      *
      * @return void
      */
-    private static function _systemBugPage($page)
+    private static function systemBugPage($page)
     {
         // Check the access
-        self::_systemBugAccess();
+        self::systemBugAccess();
 
         $error = new Errors();
 
@@ -415,7 +435,7 @@ class Kernel
      *
      * @return void
      */
-    private static function _testError()
+    private static function testError()
     {
         if ($error = URI::getSegment(0)) {
             new Errors((int) $error, 'System error');
@@ -484,9 +504,9 @@ class Kernel
         );
 
         // Pre start check list of application
-        self::_httpAuthNeeded();
-        self::_httpStartup();
-        self::_checkDevAccessDebug();
+        self::httpAuthNeeded();
+        self::httpStartup();
+        self::checkDevAccessDebug();
 
         // Debug mode?
         ini_set('display_errors', Configuration::get('system', 'debug') ? 1 : 0);
@@ -497,10 +517,10 @@ class Kernel
         }
 
         // Start the application
-        self::_defineController();
-        self::_callGlobal();
-        self::_callController();
-        self::_callSpecialCommands();
+        self::defineController();
+        self::callGlobal();
+        self::callController();
+        self::callSpecialCommands();
     }
 
     /**
