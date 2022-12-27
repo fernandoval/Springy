@@ -21,7 +21,7 @@ namespace Springy;
 class Kernel
 {
     // Framework version
-    const VERSION = '4.4.0 beta 1';
+    const VERSION = '4.4.0';
 
     /// Path constants
     const PATH_PROJECT = 'PROJ';
