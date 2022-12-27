@@ -10,7 +10,7 @@
  * @author    Allan Marques <allan.marques@ymail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.8.1
+ * @version   2.8.2
  */
 
 namespace Springy;
@@ -301,7 +301,7 @@ class Model extends DB implements \Iterator
             $embObj->query($where, $order, $offset, $limit, $embbed - 1);
             while ($erow = $embObj->next()) {
                 foreach ($this->rows as $idx => $row) {
-                    if ($erow[$foundBy] == $row[$relCol]) {
+                    if ($erow[$foundBy] == $row[$relCol] && $this->_conditionalWhen($row, $attr)) {
                         $embed = $erow;
 
                         if (
