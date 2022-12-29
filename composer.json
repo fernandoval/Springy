@@ -38,7 +38,7 @@
     "require": {
         "php": ">=7.2",
 
-        "smarty/smarty": "^3.1",
+        "smarty/smarty": "^4.3",
         "twig/twig": "<2.5",
         "ircmaxell/password-compat": "1.0.*",
         "matthiasmullie/minify": "^1.3",

@@ -10,7 +10,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   1.7.17
+ * @version   1.7.18
  */
 
 namespace Springy\Template;
@@ -56,7 +56,6 @@ class SmartyDriver implements TemplateDriverInterface
 
         if (Configuration::get('template', 'strict_variables')) {
             $this->tplObj->error_reporting = E_ALL & ~E_NOTICE;
-            \Smarty::muteExpectedErrors();
         }
         $this->tplObj->debugging = Configuration::get('template', 'debug');
         $this->tplObj->debugging_ctrl = Configuration::get('template', 'debugging_ctrl');
@@ -249,11 +248,6 @@ class SmartyDriver implements TemplateDriverInterface
         foreach ($this->templateFuncs as $func) {
             $this->tplObj->registerPlugin($func[0], $func[1], $func[2], $func[3], $func[4]);
         }
-
-        // if ( Configuration::get('template', 'debug') ) {
-        //     $this->tplObj->muteExpectedErrors();
-        //     $this->tplObj->display_debug( $this->tplObj );
-        // }
 
         return $this->tplObj->fetch($this->templateName . self::TPL_NAME_SUFIX, $this->templateCacheId, $this->templateCompileId);
     }
