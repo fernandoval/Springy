@@ -53,9 +53,9 @@
             "Springy\\": "springy/"
         }
     },
-    "change-this-to-scripts": {
-        "post-install-cmd": "php -f components.php",
-        "post-update-cmd": "php -f components.php"
+    "scripts": {
+        "components": "php -f components.php",
+        "read-me": "Adds @components post-install-cmd and post-update-cmd if needed"
     },
     "repositories": []
 }
