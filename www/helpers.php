@@ -7,7 +7,7 @@
  * @author     Allan Marques <allan.marques@ymail.com>
  * @author     Fernando Val <fernando.val@gmail.com>
  *
- * @version    4.4.1
+ * @version    4.5.0
  *
  * Let's make the developer happier and more productive.
  */
@@ -257,6 +257,24 @@ function minify($source, $destiny)
     }
 
     return $return;
+}
+
+/**
+ * Returns a string in StudlyCaps format.
+ *
+ * @param string $value
+ *
+ * @return string
+ */
+function studly_caps(string $value): string
+{
+    $normalized = [];
+    $segments = explode('-', $value);
+    foreach ($segments as $value) {
+        $normalized[] = $value ? ucwords($value, '_') : '-';
+    }
+
+    return implode('', $normalized);
 }
 
 /**

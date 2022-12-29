@@ -8,7 +8,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.6.0
+ * @version   2.7.0
  */
 
 namespace Springy;
@@ -21,7 +21,10 @@ namespace Springy;
 class Kernel
 {
     // Framework version
-    const VERSION = '4.4.0';
+    const VERSION = '4.5.0 alpha 1';
+
+    // Default controller namespace
+    public const DEFAULT_NS = 'App\\Web\\';
 
     /// Path constants
     const PATH_PROJECT = 'PROJ';
@@ -235,6 +238,24 @@ class Kernel
     }
 
     /**
+     * Tryes to load a full qualified name controller class.
+     *
+     * @param string $name
+     *
+     * @return bool
+     */
+    private static function checkController(string $name): bool
+    {
+        if (!class_exists($name)) {
+            return false;
+        }
+
+        self::$controllerName = $name;
+
+        return true;
+    }
+
+    /**
      * Checks if has a developer accessing for debug.
      *
      * @return void
@@ -293,6 +314,8 @@ class Kernel
         self::$controllerFile = URI::parseURI();
 
         if (is_null(self::$controllerFile) || !file_exists(self::$controllerFile)) {
+            self::findControllerByNamespace();
+
             return;
         }
 
@@ -326,6 +349,94 @@ class Kernel
                 return;
             }
         }
+    }
+
+    /**
+     * Tries to find a web controller from the URI segments using new namespace
+     * qualifying PSR-4.
+     *
+     * @return bool
+     */
+    private static function findControllerByNamespace(): void
+    {
+        $arguments = array_filter(URI::getAllSegments());
+        $namespace = self::getNamespace($arguments);
+
+        do {
+            // Adds and finds an Index controller in current $arguments path
+            $arguments[] = 'Index';
+            if (
+                self::checkController($namespace . self::normalizeNamePath($arguments))
+            ) {
+                URI::setCurrentPage(count($arguments));
+                URI::setClassController(URI::currentPage());
+
+                return;
+            }
+
+            // Removes Index and finds the full qualified name controller
+            array_pop($arguments);
+            if (
+                count($arguments)
+                && self::checkController($namespace . self::normalizeNamePath($arguments))
+            ) {
+                URI::setCurrentPage(count($arguments));
+                URI::setClassController(URI::currentPage());
+
+                return;
+            }
+
+            array_pop($arguments);
+        } while (count($arguments));
+    }
+
+    /**
+     * Gets the controller namespace.
+     *
+     * @param array $segments
+     *
+     * @return string
+     */
+    private static function getNamespace(array &$segments): string
+    {
+        $config = self::getRouteConfiguration();
+        $uri = '/' . implode('/', $segments);
+        $matches = [];
+
+        foreach (($config['segments'] ?? []) as $route => $namespace) {
+            $pattern = sprintf('#^%s(/(.+))?$#', $route);
+            if (preg_match_all($pattern, $uri, $matches, PREG_PATTERN_ORDER)) {
+                $segments = explode('/', trim($matches[1][0], '/'));
+
+                return trim($namespace, " \t\0\x0B\\") . '\\';
+            }
+        }
+
+        return trim($config['namespace'] ?? self::DEFAULT_NS, " \t\0\x0B\\") . '\\';
+    }
+
+    /**
+     * Gets the configuration array for routing.
+     *
+     * @return array
+     */
+    private static function getRouteConfiguration(): array
+    {
+        $host = URI::getHost();
+        foreach ((Configuration::get('uri', 'routing.hosts') ?: []) as $route => $data) {
+            $pattern = sprintf('#^%s$#', $route);
+            if (preg_match_all($pattern, $host)) {
+                return [
+                    'namespace' => $data['namespace'] ?? self::DEFAULT_NS,
+                    'segments' => $data['segments'] ?? [],
+                ];
+            }
+        }
+
+        return [
+            'namespace' => Configuration::get('uri', 'routing.namespace') ?: self::DEFAULT_NS,
+            'segments' => Configuration::get('uri', 'routing.segments') ?: [],
+        ];
     }
 
     /**
@@ -367,6 +478,24 @@ class Kernel
 
         // Send Cache-Control header
         header('Cache-Control: ' . Configuration::get('system', 'cache-control'), true);
+    }
+
+    /**
+     * Normalizes the array of segments to a class namespace.
+     *
+     * @param array $segments
+     *
+     * @return string
+     */
+    private static function normalizeNamePath(array $segments): string
+    {
+        $normalized = [];
+
+        foreach ($segments as $value) {
+            $normalized[] = studly_caps($value);
+        }
+
+        return implode('\\', $normalized);
     }
 
     /**

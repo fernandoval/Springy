@@ -8,7 +8,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.3.4
+ * @version   2.4.0
  */
 
 namespace Springy;
@@ -23,6 +23,8 @@ use Springy\Utils\Strings_UTF8;
  */
 class URI
 {
+    /** @var string HTTP host */
+    private static $httpHost = '';
     /** @var string The URI string */
     private static $uri_string = '';
     /** @var array The path segments */
@@ -163,7 +165,7 @@ class URI
      *
      * @return string
      */
-    private static function fetchURItring(): string
+    private static function fetchURI(): string
     {
         // The is REQUEST_URI?
         if (!empty($_SERVER['REQUEST_URI'])) {
@@ -314,13 +316,45 @@ class URI
     }
 
     /**
+     * Parses the $_SERVER['HTTP_HOST] variable.
+     *
+     * @return string
+     */
+    private static function parseHost(): string
+    {
+        if (php_sapi_name() === 'cli') {
+            return '$';
+        }
+
+        return preg_replace(
+            '/([^:]+)(:\\d+)?/',
+            '$1',
+            $_SERVER['HTTP_HOST'] ?? ''
+        ) . (
+            ($_SERVER['SERVER_PORT'] ?? 80) != 80
+            ? ':' . $_SERVER['SERVER_PORT']
+            : ''
+        );
+    }
+
+    /**
      * Defines the name of the controller class.
      *
      * @return void
      */
-    private static function setClassController($classname)
+    public static function setClassController($classname)
     {
         self::$class_controller = $classname;
+    }
+
+    /**
+     * Returns the current host with port number but without protocol.
+     *
+     * @return string
+     */
+    public static function getHost(): string
+    {
+        return self::$httpHost;
     }
 
     /**
@@ -334,7 +368,8 @@ class URI
     public static function parseURI()
     {
         self::checkHeadMethod();
-        self::$uri_string = self::fetchURItring();
+        self::$httpHost = self::parseHost();
+        self::$uri_string = self::fetchURI();
         self::checkHostControllerRoot();
         $uriString = trim(self::$uri_string, '/');
         $segments = self::getSegmentsFromURI($uriString);
