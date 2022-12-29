@@ -36,7 +36,7 @@
         "phpunit/phpunit": "~6.0"
     },
     "require": {
-        "php": ">=7.2",
+        "php": ">=7.4",
 
         "smarty/smarty": "^4.3",
         "twig/twig": "^2.15",
