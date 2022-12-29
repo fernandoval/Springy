@@ -15,7 +15,7 @@ class HasherTest extends TestCase
 {
     public $hasher;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->hasher = new Hasher();
     }

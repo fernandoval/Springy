@@ -15,7 +15,7 @@ class MessageContainerTest extends TestCase
 {
     protected $msgContainer;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->msgContainer = new MessageContainer();
     }

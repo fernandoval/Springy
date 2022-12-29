@@ -17,7 +17,7 @@ class MediatorTest extends TestCase
     protected $mediator;
     protected $container;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->container = new DIContainer();
         $this->mediator = new Mediator($this->container);

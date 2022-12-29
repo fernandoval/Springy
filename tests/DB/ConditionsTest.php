@@ -14,7 +14,7 @@ class ConditionsTest extends TestCase
 {
     protected $conditions;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->conditions = new Conditions();
         $this->conditions->condition('column_a', 0);

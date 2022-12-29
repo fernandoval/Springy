@@ -13,7 +13,7 @@ use Springy\Utils\ArrayUtils;
 
 class ArrayUtilsTest extends TestCase
 {
-    public function setUp()
+    protected function setUp(): void
     {
         $this->arrayUtils = new ArrayUtils();
         $this->data = [
