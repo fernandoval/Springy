@@ -8,7 +8,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.7.0
+ * @version   2.7.1
  */
 
 namespace Springy;
@@ -241,16 +241,19 @@ class Kernel
      * Tryes to load a full qualified name controller class.
      *
      * @param string $name
+     * @param array  $arguments
      *
      * @return bool
      */
-    private static function checkController(string $name): bool
+    private static function checkController(string $name, array $arguments): bool
     {
         if (!class_exists($name)) {
             return false;
         }
 
         self::$controllerName = $name;
+        URI::setCurrentPage(count($arguments) - 1);
+        URI::setClassController(URI::currentPage());
 
         return true;
     }
@@ -365,12 +368,7 @@ class Kernel
         do {
             // Adds and finds an Index controller in current $arguments path
             $arguments[] = 'Index';
-            if (
-                self::checkController($namespace . self::normalizeNamePath($arguments))
-            ) {
-                URI::setCurrentPage(count($arguments));
-                URI::setClassController(URI::currentPage());
-
+            if (self::checkController($namespace . self::normalizeNamePath($arguments), $arguments)) {
                 return;
             }
 
@@ -378,11 +376,8 @@ class Kernel
             array_pop($arguments);
             if (
                 count($arguments)
-                && self::checkController($namespace . self::normalizeNamePath($arguments))
+                && self::checkController($namespace . self::normalizeNamePath($arguments), $arguments)
             ) {
-                URI::setCurrentPage(count($arguments));
-                URI::setClassController(URI::currentPage());
-
                 return;
             }
 
@@ -407,10 +402,13 @@ class Kernel
             $pattern = sprintf('#^%s(/(.+))?$#', $route);
             if (preg_match_all($pattern, $uri, $matches, PREG_PATTERN_ORDER)) {
                 $segments = explode('/', trim($matches[1][0], '/'));
+                self::$controller_namespace = $route;
 
                 return trim($namespace, " \t\0\x0B\\") . '\\';
             }
         }
+
+        self::$controller_namespace = '';
 
         return trim($config['namespace'] ?? self::DEFAULT_NS, " \t\0\x0B\\") . '\\';
     }

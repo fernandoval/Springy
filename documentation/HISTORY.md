@@ -2,6 +2,12 @@
 
 ## Version 4
 
+## 4.5.0
+- Implemented support to execute controllers using PSR-4 autoload;
+- Added support to PHP 8.0, 8.1 and 8.2;
+- Droped support to PHP 7.0, 7.1, 7.2 and 7.3;
+- Added GitHub Actions test case.
+
 ## 4.4.0
 - Added support to `Controller` suffix without underscore to controller names
   to help in convertion to new namespace method;
