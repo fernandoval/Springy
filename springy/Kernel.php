@@ -8,7 +8,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.7.2
+ * @version   2.7.3
  */
 
 namespace Springy;
@@ -399,17 +399,17 @@ class Kernel
         $uri = '/' . implode('/', $segments);
         $matches = [];
 
-        foreach (($config['segments'] ?? []) as $route => $namespace) {
+        foreach ($config['segments'] as $route => $namespace) {
             $pattern = sprintf('#^%s(/(.+))?$#', $route);
             if (preg_match_all($pattern, $uri, $matches, PREG_PATTERN_ORDER)) {
                 $segments = explode('/', trim($matches[1][0], '/'));
-                self::$controller_namespace = $route;
+                self::$controller_namespace = $config['module'] . $route;
 
                 return trim($namespace, " \t\0\x0B\\") . '\\';
             }
         }
 
-        self::$controller_namespace = '';
+        self::$controller_namespace = $config['module'];
 
         return trim($config['namespace'] ?? self::DEFAULT_NS, " \t\0\x0B\\") . '\\';
     }
@@ -426,6 +426,7 @@ class Kernel
             $pattern = sprintf('#^%s$#', $route);
             if (preg_match_all($pattern, $host)) {
                 return [
+                    'module' => $data['module'] ?? '',
                     'namespace' => $data['namespace'] ?? self::DEFAULT_NS,
                     'segments' => $data['segments'] ?? [],
                 ];
@@ -433,6 +434,7 @@ class Kernel
         }
 
         return [
+            'module' => Configuration::get('uri', 'routing.module') ?: '',
             'namespace' => Configuration::get('uri', 'routing.namespace') ?: self::DEFAULT_NS,
             'segments' => Configuration::get('uri', 'routing.segments') ?: [],
         ];

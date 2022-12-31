@@ -91,6 +91,13 @@ $conf = [
      */
     'routing' => [
         /*
+         * Default module for controllers.
+         *
+         * @var string
+         */
+        'module' => '',
+
+        /*
          * Default namespace for controllers.
          *
          * @var string
@@ -113,6 +120,7 @@ $conf = [
          */
         'hosts' => [
             'localhost\.localdomain' => [
+                'module' => 'local',
                 'namespace' => 'App\\Local\\Web',
                 'segments' => [
                     '/api' => 'App\\Local\\Api',
