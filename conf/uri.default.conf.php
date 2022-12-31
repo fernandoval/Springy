@@ -86,6 +86,41 @@
 
 /// Configurações para todos os ambientes
 $conf = [
+    /*
+     * New routing for PSR-4 controllers
+     */
+    'routing' => [
+        /*
+         * Default namespace for controllers.
+         *
+         * @var string
+         */
+        'namespace' => 'App\\Web\\',
+
+        /*
+         * Default namespaces by URI segments.
+         *
+         * @var array
+         */
+        'segments' => [
+            '/api' => 'App\\Api',
+        ],
+
+        /*
+         * Routing configuration by HTTP host.
+         *
+         * @var array
+         */
+        'hosts' => [
+            'localhost\.localdomain' => [
+                'namespace' => 'App\\Local\\Web',
+                'segments' => [
+                    '/api' => 'App\\Local\\Api',
+                ],
+            ],
+        ],
+    ],
+
     'routes' => [
         'home(\/)*(\?(.*))*' => ['segment' => 0, 'controller' => 'index'],
     ],
