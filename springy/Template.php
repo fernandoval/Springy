@@ -7,7 +7,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   4.2.0.13
+ * @version   4.2.14
  */
 
 namespace Springy;
@@ -46,8 +46,6 @@ class Template
             default:
                 new Errors('500', 'Template engine not implemented');
         }
-
-        return true;
     }
 
     /**
@@ -65,9 +63,9 @@ class Template
      *
      * @return void
      */
-    public function setTemplateDir($path)
+    public function setTemplateDir($path): void
     {
-        return $this->tplObj->setTemplateDir($path);
+        $this->tplObj->setTemplateDir($path);
     }
 
     /**
@@ -77,9 +75,9 @@ class Template
      *
      * @return void
      */
-    public function setCompileDir($path)
+    public function setCompileDir($path): void
     {
-        return $this->tplObj->setCompileDir($path);
+        $this->tplObj->setCompileDir($path);
     }
 
     /**
@@ -89,9 +87,9 @@ class Template
      *
      * @return void
      */
-    public function setConfigDir($path)
+    public function setConfigDir($path): void
     {
-        return $this->tplObj->setConfigDir($path);
+        $this->tplObj->setConfigDir($path);
     }
 
     /**
@@ -101,17 +99,9 @@ class Template
      *
      * @return void
      */
-    public function setCacheDir($path)
+    public function setCacheDir($path): void
     {
-        return $this->tplObj->setCacheDir($path);
-    }
-
-    /**
-     * Verifica o template ideal de acordo com a página.
-     */
-    private function setAutoTemplatePaths()
-    {
-        return $this->tplObj->setAutoTemplatePaths();
+        $this->tplObj->setCacheDir($path);
     }
 
     /**
@@ -119,7 +109,7 @@ class Template
      *
      * @return bool
      */
-    public function isCached()
+    public function isCached(): bool
     {
         return $this->tplObj->isCached();
     }
@@ -131,9 +121,9 @@ class Template
      *
      * @return void
      */
-    public function setCaching($value = 'current')
+    public function setCaching($value = 'current'): void
     {
-        return $this->tplObj->setCaching($value);
+        $this->tplObj->setCaching($value);
     }
 
     /**
@@ -143,7 +133,7 @@ class Template
      *
      * @return void
      */
-    public function setCacheLifetime($seconds)
+    public function setCacheLifetime($seconds): void
     {
         $this->tplObj->setCacheLifetime($seconds);
     }
@@ -153,7 +143,7 @@ class Template
      *
      * @return string
      */
-    public function fetch()
+    public function fetch(): string
     {
         return $this->tplObj->fetch();
     }
@@ -163,7 +153,7 @@ class Template
      *
      * @return void
      */
-    public function display()
+    public function display(): void
     {
         echo $this->tplObj->fetch();
     }
@@ -175,9 +165,9 @@ class Template
      *
      * @return void
      */
-    public function setTemplate($tpl)
+    public function setTemplate($tpl): void
     {
-        return $this->tplObj->setTemplate($tpl);
+        $this->tplObj->setTemplate($tpl);
     }
 
     /**
@@ -187,9 +177,9 @@ class Template
      *
      * @return void
      */
-    public function setCacheId($id)
+    public function setCacheId($id): void
     {
-        return $this->tplObj->setCacheId($id);
+        $this->tplObj->setCacheId($id);
     }
 
     /**
@@ -199,9 +189,9 @@ class Template
      *
      * @return void
      */
-    public function setCompileId($id)
+    public function setCompileId($id): void
     {
-        return $this->tplObj->setCompileId($id);
+        $this->tplObj->setCompileId($id);
     }
 
     /**
@@ -213,25 +203,25 @@ class Template
      *
      * @return void
      */
-    public function assign($var, $value = null, $nocache = false)
+    public function assign($var, $value = null, $nocache = false): void
     {
-        return $this->tplObj->assign($var, $value, $nocache);
+        $this->tplObj->assign($var, $value, $nocache);
     }
 
     /**
      * Registers custom functions or methods as template plugins.
      *
      * @param mixed        $type        defines the type of the plugin.
-     * @param strin        $name        defines the name of the plugin.
+     * @param string       $name        defines the name of the plugin.
      * @param string|array $callback    defines the callback.
      * @param mixed        $cacheable
      * @param mixed        $cache_attrs
      *
      * @return void
      */
-    public function registerPlugin($type, $name, $callback, $cacheable = null, $cache_attrs = null)
+    public function registerPlugin($type, $name, $callback, $cacheable = null, $cache_attrs = null): void
     {
-        return $this->tplObj->registerPlugin($type, $name, $callback, $cacheable, $cache_attrs);
+        $this->tplObj->registerPlugin($type, $name, $callback, $cacheable, $cache_attrs);
     }
 
     /**
@@ -241,9 +231,9 @@ class Template
      *
      * @return void
      */
-    public function clearAssign($var)
+    public function clearAssign($var): void
     {
-        return $this->tplObj->clearAssign($var);
+        $this->tplObj->clearAssign($var);
     }
 
     /**
@@ -255,9 +245,9 @@ class Template
      *
      * @return void
      */
-    public function clearAllCache($expire_time)
+    public function clearAllCache($expire_time): void
     {
-        return $this->tplObj->clearAllCache($expire_time);
+        $this->tplObj->clearAllCache($expire_time);
     }
 
     /**
@@ -267,9 +257,9 @@ class Template
      *
      * @return void
      */
-    public function clearCache($expireTime = null)
+    public function clearCache($expireTime = null): void
     {
-        return $this->tplObj->clearCache($expireTime);
+        $this->tplObj->clearCache($expireTime);
     }
 
     /**
@@ -279,9 +269,9 @@ class Template
      *
      * @return void
      */
-    public function clearCompiled($expTime)
+    public function clearCompiled($expTime): void
     {
-        return $this->tplObj->clearCompiled($expTime);
+        $this->tplObj->clearCompiled($expTime);
     }
 
     /**
@@ -291,9 +281,9 @@ class Template
      *
      * @return void
      */
-    public function clearConfig($var)
+    public function clearConfig($var): void
     {
-        return $this->tplObj->clearConfig($var);
+        $this->tplObj->clearConfig($var);
     }
 
     /**
@@ -303,7 +293,7 @@ class Template
      *
      * @return bool
      */
-    public function templateExists($tplName)
+    public function templateExists($tplName): bool
     {
         if ($this->tplObj->templateExists($tplName)) {
             return true;

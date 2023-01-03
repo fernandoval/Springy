@@ -8,7 +8,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.4.0
+ * @version   2.4.1
  */
 
 namespace Springy;
@@ -686,7 +686,7 @@ class URI
      *
      * @param string $var the name of the query string variable to be deleted.
      *
-     * @return voit
+     * @return void
      */
     public static function removeParam($var)
     {

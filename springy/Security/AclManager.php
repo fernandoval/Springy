@@ -7,7 +7,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   0.3.0.4
+ * @version   0.3.5
  */
 
 namespace Springy\Security;
@@ -127,7 +127,7 @@ class AclManager
      *
      * @param string $separator
      *
-     * @return string
+     * @return void
      */
     public function setSeparator($separator)
     {

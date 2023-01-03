@@ -10,7 +10,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   0.16.2.18
+ * @version   0.16.19
  */
 
 namespace Springy\Template;
@@ -106,8 +106,6 @@ class TwigDriver implements TemplateDriverInterface
                 }
             }
         }
-
-        return true;
     }
 
     /**
@@ -379,7 +377,7 @@ class TwigDriver implements TemplateDriverInterface
      * Registers custom functions or methods as template plugins.
      *
      * @param mixed        $type        defines the type of the plugin.
-     * @param strin        $name        defines the name of the plugin.
+     * @param string       $name        defines the name of the plugin.
      * @param string|array $callback    defines the callback.
      * @param mixed        $cacheable
      * @param mixed        $cache_attrs
@@ -400,7 +398,7 @@ class TwigDriver implements TemplateDriverInterface
      */
     public function clearAssign($var)
     {
-        unset($this->tplVars[$var]);
+        unset($this->templateVars[$var]);
     }
 
     /**

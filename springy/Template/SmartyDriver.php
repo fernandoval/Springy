@@ -10,7 +10,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   1.7.18
+ * @version   1.7.19
  */
 
 namespace Springy\Template;
@@ -329,7 +329,7 @@ class SmartyDriver implements TemplateDriverInterface
      * Registers custom functions or methods as template plugins.
      *
      * @param mixed        $type        defines the type of the plugin.
-     * @param strin        $name        defines the name of the plugin.
+     * @param string       $name        defines the name of the plugin.
      * @param string|array $callback    defines the callback.
      * @param mixed        $cacheable
      * @param mixed        $cache_attrs
@@ -350,7 +350,7 @@ class SmartyDriver implements TemplateDriverInterface
      */
     public function clearAssign($var)
     {
-        unset($this->tplVars[$var]);
+        unset($this->templateVars[$var]);
     }
 
     /**

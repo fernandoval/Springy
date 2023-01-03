@@ -8,7 +8,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.7.3
+ * @version   2.7.4
  */
 
 namespace Springy;
@@ -678,7 +678,7 @@ class Kernel
      *
      * @param string $env - if defined, set the system environment.
      *
-     * @return A string containing the system environment
+     * @return mixed A string containing the system environment
      */
     public static function environment($env = null, $alias = [], $envar = '')
     {
@@ -1019,7 +1019,7 @@ class Kernel
      *
      * @param mixed $array the array to be converted.
      *
-     * @return stdClass
+     * @return object|bool
      */
     public static function arrayToObject($array)
     {

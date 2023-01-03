@@ -2,12 +2,12 @@
 /**
  * Container class for text messages.
  *
- * @copyright 2014-2018 Fernando Val
+ * @copyright 2014 Fernando Val
  * @author    Allan Marques <allan.marques@ymail.com>
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   0.2.0.4
+ * @version   0.2.5
  */
 
 namespace Springy\Utils;
@@ -115,7 +115,7 @@ class MessageContainer implements ArrayAccess
      * @param string $key identification key.
      * @param string $msg the message.
      *
-     * @return Springy\Utils\MessageContainer
+     * @return self
      */
     public function add($key, $msg)
     {

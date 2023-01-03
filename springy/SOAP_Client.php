@@ -1,21 +1,19 @@
 <?php
 
-/** \file
- *  Springy.
+/**
+ * SOAP Client.
  *
- *  \brief      Classe para cliente SOAP.
+ * @copyright 2007 Fernando Val
+ * @author    Fernando Val <fernando.val@gmail.com>
+ * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- *  \copyright  Copyright (c) 2007-2018 Fernando Val
- *  \author     Fernando Val - fernando.val@gmail.com
- *
- *  \version    2.0.1.15
- *  \ingroup    framework
+ * @version   2.0.16
  */
 
 namespace Springy;
 
 /**
- *  \brief Classe para cliente SOAP.
+ * SOAP client class.
  */
 class SOAP_Client
 {
@@ -25,11 +23,12 @@ class SOAP_Client
     private $error = '';
 
     /**
-     *  \brief Construtor da classe.
+     * Constructor.
      *
-     *  @param[in] (string) $endpoint - endereço URI do web service
-     *  @param[in] (bool) $wsdl - define o modo de chamada como WSDL
-     *  @param[in] (array) $options - array de opções
+     * @param string $endpoint web service address.
+     * @param bool   $wsdl     if true turns WSDL mode on.
+     * @param array  $options  options array.
+     * @param bool   $wsse     turns w.s.security on/off.
      */
     public function __construct($endpoint = '', $wsdl = false, $options = [], $wsse = false)
     {
@@ -52,8 +51,6 @@ class SOAP_Client
         }
         ini_set('default_socket_timeout', $options['connection_timeout']);
 
-        // restore_error_handler();
-
         set_time_limit(0);
 
         Kernel::addIgnoredError([0, E_WARNING, E_ERROR]);
@@ -74,45 +71,38 @@ class SOAP_Client
             if (isset($objSoapVarWSSEHeader)) {
                 $this->client->__setSoapHeaders([$objSoapVarWSSEHeader]);
             }
-        }
-        // catch (Exception $e) {
-        catch (\SoapFault $e) {
+        } catch (\SoapFault $err) {
             Kernel::delIgnoredError([0, E_WARNING, E_ERROR]);
-            $this->error = $e->getMessage();
+            $this->error = $err->getMessage();
 
-            return false;
+            return;
         }
 
         Kernel::delIgnoredError([0, E_WARNING, E_ERROR]);
 
         set_time_limit(30);
-        // set_error_handler('springyErrorHandler');
-
-        return true;
     }
 
     /**
-     *  \brief Faz uma chamada ao web service.
+     * Summary of Call
      *
-     *  @param[out] (mixed) &$result - variável passada por referência que receberá o retorno da chamada ao método SOAP
-     *  @param[in] (string) $operation - nome da função SOAP
-     *  @param[in] (array|stdClass) $params - parâmatros a serem passados para o web service
+     * @param mixed                  $result        by reference will receive the result of the call.
+     * @param string                 $operation     SOAP function.
+     * @param array|Object           $params        arguments to the web service.
+     * @param array|null             $options
+     * @param \SoapHeader|array|null $input_headers
      *
-     *  @result (boolean) Retornará true se a chamada for bem sucedida ou false se houver um erro de conexão com o serviço
+     * @return bool returns true on success or false if fails.
      */
-    public function call(&$result, $operation, $params = [], $options = null, $input_headers = null)
+    public function call(&$result, $operation, $params = [], $options = null, $input_headers = null): bool
     {
         set_time_limit(0);
 
-        // $params = $this->_arrayToObject($params);
         $params = [Kernel::objectToArray($params)];
-
-        // restore_error_handler();
 
         Kernel::addIgnoredError([0, E_WARNING]);
 
         try {
-            // $result = $this->client->$operation($params);
             $result = $this->client->__soapCall($operation, $params, $options, $input_headers, $output_headers);
         } catch (\SoapFault $exception) {
             Kernel::delIgnoredError([0, E_WARNING]);
@@ -123,14 +113,15 @@ class SOAP_Client
 
         Kernel::delIgnoredError([0, E_WARNING]);
 
-        // set_error_handler('springyErrorHandler');
         set_time_limit(30);
 
         return true;
     }
 
     /**
-     *  \brief Retorna a última requisição.
+     * Returns last request.
+     *
+     * @return null|string
      */
     public function getLastRequest()
     {
@@ -138,7 +129,9 @@ class SOAP_Client
     }
 
     /**
-     *  \brief Retorna a última resposta.
+     * Returns last response.
+     *
+     * @return null|string
      */
     public function getLastResponse()
     {
@@ -146,9 +139,9 @@ class SOAP_Client
     }
 
     /**
-     *  \brief Pega o último erro.
+     * Returns last error.
      *
-     *  @return Retorna o último erro de execução do método SOAP
+     * @return string
      */
     public function getError()
     {
@@ -165,11 +158,11 @@ class WsseAuthHeader extends \SoapHeader
     private $wss_ns = 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd';
 
     /**
-     *  \brief Método construtur.
+     * Constructor.
      *
-     *  @param[in] (string) $user - username
-     *  @param[in] (string) $pass - password
-     *  @param[in] (string) $ns - namespace (optional)
+     * @param string $user
+     * @param string $pass
+     * @param mixed  $ns
      */
     public function __construct($user, $pass, $ns = null)
     {

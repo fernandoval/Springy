@@ -1,23 +1,23 @@
 <?php
-/** \file
- *  Springy.
+
+/**
+ * Class to SOAP connections.
  *
- *	\brief		Classe para conexão SOAP
- *  \copyright	Copyright (c) 2007-2016 Fernando Val
- *  \author		Fernando Val  - fernando.val@gmail.com
- *	\warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *	\version	0.6.9
- *  \ingroup	framework
+ * This class is not complete. Do not use it.
  *
- *  This class is not terminated and is experimental. Do not use.
+ * @copyright 2007 Fernando Val
+ * @author    Fernando Val <fernando.val@gmail.com>
+ * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
+ *
+ * @version   0.6.10
+ *
+ * @deprecated 0.6.10
  */
 
 namespace Springy;
 
 /**
- *  \brief Classe para conexão SOAP.
- *
- *  \warning Esta classe ainda está sendo desenvolvida e é experimental. Não a utilize.
+ * SOAP class.
  */
 class SOAP
 {
@@ -33,7 +33,10 @@ class SOAP
     private $proxypassword = '';
 
     /**
-     *	\brief Construtor da classe agregadora.
+     * Constructor.
+     *
+     * @param string $endpoint
+     * @param bool   $wsdl
      */
     public function __construct($endpoint = '', $wsdl = false)
     {
@@ -42,87 +45,5 @@ class SOAP
         $this->proxyport = Configuration::get('soap', 'proxyport');
         $this->proxyusername = Configuration::get('soap', 'proxyusername');
         $this->proxypassword = Configuration::get('soap', 'proxypassword');
-    }
-
-    /**
-     *	\brief Construtor da classe cliente.
-     */
-    public function clientCreate($endpoint = '', $wsdl = false)
-    {
-        // Cria o cliente de SOAP
-        $this->client = new \nusoap_client($endpoint, $wsdl, $this->proxyhost, $this->proxyport, $this->proxyusername, $this->proxypassword);
-
-        // Pega o erro, caso tenha havido
-        $err = $this->client->getError();
-
-        if ($err) {
-            return false;
-        }
-
-        $this->client->useHTTPPersistentConnection();
-
-        return true;
-    }
-
-    /**
-     *	\brief Pega o último erro.
-     */
-    public function getClientError()
-    {
-        return $this->client->getError();
-    }
-
-    /**
-     *	\brief Pega o resultado do debug.
-     */
-    public function getClientDebug()
-    {
-        return $this->client->getDebug();
-    }
-
-    /**
-     *	\brief Faz uma chamada SOAP.
-     */
-    public function clientCall(&$result, $operation, $params = [], $namespace = 'http://tempuri.org', $soapAction = '', $headers = false, $rpcParams = null, $style = 'rpc', $use = 'encoded')
-    {
-        $result = $this->client->call($operation, $params, $namespace, $soapAction, $headers, $rpcParams, $style, $use);
-        if ($this->client->fault) {
-            return false;
-        } else {
-            $err = $this->client->getError();
-            if ($err) {
-                $result = $err;
-
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     *	\brief Define se tenta usar conexão cURL se possível.
-     *
-     *	@param[in] bool $useCURL: Tenta usar conexão cURL?
-     */
-    public function setClientUseCurl($useCURL)
-    {
-        $this->client->setUseCurl($useCURL);
-    }
-
-    /**
-     *	\brief For creating serializable abstractions of native PHP types.
-     */
-    public function soapval($name, $type, $value = -1, $element_ns = false, $type_ns = false, $attributes = false)
-    {
-        return new \soapval($name, $type, $value, $element_ns, $type_ns, $attributes);
-    }
-
-    /**
-     *	\brief Define o encoding.
-     */
-    public function setSOAPEncoding($encoding)
-    {
-        $this->client->soap_defencoding = $encoding;
     }
 }
