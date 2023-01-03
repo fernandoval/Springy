@@ -8,7 +8,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.7.5
+ * @version   2.7.6
  */
 
 namespace Springy;
@@ -368,17 +368,18 @@ class Kernel
         $namespace = self::getNamespace($arguments);
 
         do {
-            // Adds and finds an Index controller in current $arguments path
-            $arguments[] = 'Index';
-            if (self::checkController($namespace . self::normalizeNamePath($arguments), $arguments)) {
-                return;
-            }
-
-            // Removes Index and finds the full qualified name controller
-            array_pop($arguments);
             if (
-                count($arguments)
-                && self::checkController($namespace . self::normalizeNamePath($arguments), $arguments)
+                // Adds and finds an Index controller in current $arguments path
+                self::checkController(
+                    $namespace . self::normalizeNamePath(array_merge($arguments, ['Index'])),
+                    $arguments
+                )
+                ||
+                // Removes Index and finds the full qualified name controller
+                (
+                    count($arguments)
+                    && self::checkController($namespace . self::normalizeNamePath($arguments), $arguments)
+                )
             ) {
                 return;
             }
