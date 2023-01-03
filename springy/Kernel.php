@@ -8,7 +8,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.7.4
+ * @version   2.7.5
  */
 
 namespace Springy;
@@ -252,7 +252,8 @@ class Kernel
         }
 
         self::$controllerName = $name;
-        $namespace = array_filter(explode('/', trim(self::$controller_namespace, '/')));
+        $namespace = array_filter(explode('/', trim(self::$controller_namespace)));
+        array_shift($namespace);
         URI::setCurrentPage(count($namespace) + count($arguments) - 1);
         URI::setClassController(URI::currentPage());
 
