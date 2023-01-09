@@ -7,7 +7,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   0.3.5
+ * @version   1.0.0
  */
 
 namespace Springy\Security;
@@ -52,11 +52,10 @@ class AclManager
      *
      * @return void
      */
-    public function setupCurrentAclObject()
+    public function setupCurrentAclObject(): void
     {
-        $this->module = substr(Kernel::controllerNamespace(), strlen($this->modulePrefix)) or $this->defaultModule;
+        $this->module = $this->modulePrefix ?: Kernel::controllerNamespace();
         $this->controller = URI::getControllerClass();
-        // $this->action = URI::getSegment(0);
 
         $segments = [];
         $ind = 0;
