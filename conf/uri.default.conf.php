@@ -127,6 +127,15 @@ $conf = [
                 ],
             ],
         ],
+
+        /*
+         * Page routing.
+         *
+         * @var array
+         */
+        'routes' => [
+            'end-of-user-license-agreement' => 'Eula',
+        ],
     ],
 
     'routes' => [

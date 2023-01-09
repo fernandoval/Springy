@@ -8,7 +8,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.7.7
+ * @version   2.8.0
  */
 
 namespace Springy;
@@ -78,6 +78,27 @@ class Kernel
     private static $templateVars = [];
     /// Default template functions
     private static $templateFuncs = [];
+
+    /**
+     * Builds controller name seeking routes configuration.
+     *
+     * @param string $namespace
+     * @param array  $arguments
+     *
+     * @return string
+     */
+    private static function buildControllerName(string $namespace, array $arguments): string
+    {
+        $path = implode('/', $arguments);
+
+        foreach ((Configuration::get('uri', 'routing.routes') ?: []) as $route => $controller) {
+            if (preg_match('#' . $route . '#', $path)) {
+                return $namespace . $controller;
+            }
+        }
+
+        return $namespace . self::normalizeNamePath($arguments);
+    }
 
     /**
      * Calls the application controller if defined.
@@ -378,7 +399,7 @@ class Kernel
                 // Removes Index and finds the full qualified name controller
                 (
                     count($arguments)
-                    && self::checkController($namespace . self::normalizeNamePath($arguments), $arguments)
+                    && self::checkController(self::buildControllerName($namespace, $arguments), $arguments)
                 )
             ) {
                 return;
