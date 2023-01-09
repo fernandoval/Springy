@@ -10,7 +10,7 @@
  * @author    Allan Marques <allan.marques@ymail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.8.2
+ * @version   2.8.3
  */
 
 namespace Springy;
@@ -451,7 +451,7 @@ class Model extends DB implements \Iterator
      */
     protected function triggerAfterDelete()
     {
-        return true;
+        // Do nothing.
     }
 
     /**
@@ -464,7 +464,7 @@ class Model extends DB implements \Iterator
      */
     protected function triggerAfterInsert()
     {
-        return true;
+        // Do nothing.
     }
 
     /**
@@ -477,13 +477,13 @@ class Model extends DB implements \Iterator
      */
     protected function triggerAfterUpdate()
     {
-        return true;
+        // Do nothing.
     }
 
     /**
      * Returns an array with the column(s) of the primary key.
      *
-     * @return array the array with column(s) of the primary key or false.
+     * @return array|string|bool the array with column(s) of the primary key or false.
      */
     public function getPKColumns()
     {
@@ -939,7 +939,7 @@ class Model extends DB implements \Iterator
             $where = new Where();
             $where->filter($conditions);
         } else {
-            throw new \Exception('Invalid condition type.', 500);
+            throw new Exception('Invalid condition type.', 500);
         }
 
         if (!empty($this->deletedColumn) && !$where->get($this->deletedColumn)) {
@@ -1002,8 +1002,8 @@ class Model extends DB implements \Iterator
     /**
      * Sets the value of a column.
      *
-     * @param string $column the name of the column.
-     * @param mixed  $value  the value of the column.
+     * @param string|array $column the name of the column.
+     * @param mixed        $value  the value of the column.
      *
      * @return void
      */
@@ -1481,7 +1481,7 @@ class Model extends DB implements \Iterator
     /**
      * Gets the names of the columns.
      *
-     * @return array
+     * @return int
      */
     public function key()
     {
