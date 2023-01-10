@@ -8,7 +8,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.4.1
+ * @version   2.5.0
  */
 
 namespace Springy;
@@ -457,6 +457,16 @@ class URI
     public static function getControllerClass()
     {
         return self::$class_controller;
+    }
+
+    /**
+     * Returns the index of the current page controller.
+     *
+     * @return int
+     */
+    public static function getSegmentPage(): int
+    {
+        return self::$segment_page;
     }
 
     /**

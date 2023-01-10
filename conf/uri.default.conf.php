@@ -110,7 +110,7 @@ $conf = [
          * @var array
          */
         'segments' => [
-            '/api' => 'App\\Api',
+            'api' => 'App\\Api',
         ],
 
         /*
@@ -123,7 +123,7 @@ $conf = [
                 'module' => 'local',
                 'namespace' => 'App\\Local\\Web',
                 'segments' => [
-                    '/api' => 'App\\Local\\Api',
+                    'api' => 'App\\Local\\Api',
                 ],
             ],
         ],

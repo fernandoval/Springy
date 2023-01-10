@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Parent class for controllers.
  *
@@ -8,7 +9,7 @@
  * @author    Allan Marques <allan.marques@ymail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   0.5.1
+ * @version   1.0.0
  */
 
 namespace Springy;
@@ -50,7 +51,7 @@ class Controller extends AclManager
 
         // Do nothing if is free for unsigned users
         if (!$this->authNeeded) {
-            return true;
+            return;
         }
 
         // Verify if is an authenticated user
@@ -63,7 +64,7 @@ class Controller extends AclManager
             // Check if the controller and respective method is permitted to the user
             $this->authorizationCheck();
 
-            return true;
+            return;
         }
 
         // Kill the application with the 403 forbidden page.

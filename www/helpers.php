@@ -7,7 +7,7 @@
  * @author     Allan Marques <allan.marques@ymail.com>
  * @author     Fernando Val <fernando.val@gmail.com>
  *
- * @version    4.5.0
+ * @version    4.5.1
  *
  * Let's make the developer happier and more productive.
  */
@@ -219,7 +219,7 @@ function minify($source, $destiny)
     $path = pathinfo($destiny, PATHINFO_DIRNAME);
 
     // Check the destination directory exists or create if not
-    mkdir_recursive($path, 0775, true);
+    mkdir_recursive($path, 0775);
 
     $buffer = file_get_contents($source);
 

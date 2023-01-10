@@ -8,7 +8,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   1.3.4
+ * @version   1.3.5
  */
 
 namespace Springy;
@@ -177,7 +177,7 @@ class Cookie
             $key = self::_scrubKey($key, true);
 
             // Store the cookie
-            return setcookie(
+            setcookie(
                 $key,
                 $value,
                 ($expire ? time() + $expire : 0),
@@ -186,6 +186,8 @@ class Cookie
                 $secure,
                 $httponly
             );
+
+            return;
         }
 
         // Otherwise, throw an error

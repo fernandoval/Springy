@@ -8,7 +8,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.8.0
+ * @version   2.8.1
  */
 
 namespace Springy;
@@ -423,10 +423,11 @@ class Kernel
         $matches = [];
 
         foreach ($config['segments'] as $route => $namespace) {
-            $pattern = sprintf('#^%s(/(.+))?$#', $route);
+            $pattern = sprintf('#^\/%s(\/(.+))?$#', $route);
+
             if (preg_match_all($pattern, $uri, $matches, PREG_PATTERN_ORDER)) {
                 $segments = explode('/', trim($matches[1][0], '/'));
-                self::$controller_namespace = $config['module'] . $route;
+                self::$controller_namespace = $config['module'] . '/' . $route;
 
                 return trim($namespace, " \t\0\x0B\\") . '\\';
             }

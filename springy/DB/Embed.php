@@ -1,16 +1,14 @@
 <?php
-/** @file
- *  Springy.
+
+/**
+ * Class to construct embbeded objects.
  *
- *  @brief      Child database class to construct embbeded objects.
+ * This class is experimental and not is terminated yet.
  *
- *  @note       This class is experimental and not is terminated yet.
+ * @copyright 2016 Fernando Val
+ * @author    Fernando Val <fernando.val@gmail.com>
  *
- *  @copyright  Copyright (c) 2016 Fernando Val
- *  @author     Fernando Val - fernando.val@gmail.com
- *
- *  @version    0.1.0.1
- *  @ingroup    framework
+ * @version    0.1.2
  */
 class Embed
 {
@@ -38,9 +36,6 @@ class Embed
     const TYPE_DATA = 'data';
     const TYPE_LIST = 'list';
 
-    /**
-     *  @brief The constructor method.
-     */
     public function __construct($name, $type = self::TYPE_LIST, $model = null, $foundBy = null, $column = null)
     {
         $this->name = $name;
@@ -54,9 +49,9 @@ class Embed
     }
 
     /**
-     *  @brief Add an embedded object in this embedded object.
+     * Adds an embedded object in this embedded object.
      *
-     *  @params $embedded must be an Embed object.
+     * @param self $embedded must be an Embed object.
      */
     public function addEmbedded(self $embedded)
     {
@@ -64,9 +59,11 @@ class Embed
     }
 
     /**
-     *  @brief Set the name of the column in incorporator model used to find embbeded object rows.
+     * Sets the name of the column in incorporator model used to find embbeded object rows.
+     *
+     * @return void
      */
-    public function column(string $column)
+    public function column(string $column): void
     {
         $this->column = $column;
     }
@@ -105,11 +102,11 @@ class Embed
     }
 
     /**
-     *  @brief The attribute name of the embedded object.
+     * The attribute name of the embedded object.
      *
-     *  @params string $name if defined change the attribute name.
+     * @param string $name if defined change the attribute name.
      *
-     *  @return A string with the attribute name.
+     * @return string A string with the attribute name.
      */
     public function name($name = null)
     {
@@ -129,7 +126,9 @@ class Embed
     }
 
     /**
-     *  @brief Parse this object and return an array to use in Model objects.
+     * Parse this object and return an array to use in Model objects.
+     *
+     * @return array
      */
     public function get()
     {

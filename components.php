@@ -7,7 +7,7 @@
  * @copyright 2015 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
  *
- * @version   4.0.14
+ * @version   4.0.15
  *
  * This is script is not a Composer plugin.
  *
@@ -238,10 +238,9 @@ class Main
 
         // Oh! Is a wildcard path.
 
-        $success = false;
         $dest = dirname($dest);
         foreach (glob($path) as $filename) {
-            $success = $this->recursiveCopy($filename, $dest . DS . basename($filename), $minify, $component);
+            $this->recursiveCopy($filename, $dest . DS . basename($filename), $minify, $component);
         }
     }
 

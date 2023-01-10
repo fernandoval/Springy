@@ -7,7 +7,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.0.16
+ * @version   2.0.17
  */
 
 namespace Springy;
@@ -84,11 +84,11 @@ class SOAP_Client
     }
 
     /**
-     * Summary of Call
+     * Summary of Call.
      *
      * @param mixed                  $result        by reference will receive the result of the call.
      * @param string                 $operation     SOAP function.
-     * @param array|Object           $params        arguments to the web service.
+     * @param array|object           $params        arguments to the web service.
      * @param array|null             $options
      * @param \SoapHeader|array|null $input_headers
      *

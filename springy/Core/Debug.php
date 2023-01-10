@@ -174,11 +174,11 @@ class Debug
     }
 
     /**
-     *  @brief Imprime os detalhes de uma variável em cores.
+     * Prints details about a variable.
      *
-     *  @param variant $par - variável
+     * @param mixed $par
      *
-     *  @return string Retorna uma string HTML.
+     * @return string Retorna uma string HTML.
      */
     public static function print_rc($par)
     {

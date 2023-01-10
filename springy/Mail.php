@@ -1,12 +1,13 @@
 <?php
-/**	\file
- *	Springy.
+
+/**
+ * Email sender.
  *
- *	\brief      Classe para envio de email.
- *  \copyright  ₢ 2007-2016 Fernando Val
- *  \author     Fernando Val - fernando.val@gmail.com
- *	\version    3.1.0.21
- *	\ingroup    framework
+ * @copyright 2007-2016 Fernando Val
+ * @author    Fernando Val <fernando.val@gmail.com>
+ * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
+ *
+ * @version   3.1.22
  */
 
 namespace Springy;
@@ -61,8 +62,6 @@ class Mail
             default:
                 throw new \Exception('Mail driver invalid');
         }
-
-        return true;
     }
 
     /**
@@ -223,7 +222,9 @@ class Mail
     }
 
     /**
-     *	\brief Envia a mensagem.
+     * Sends the message.
+     *
+     * @return mixed
      */
     public function send()
     {
@@ -231,17 +232,17 @@ class Mail
     }
 
     /**
-     *	\brief Envia a mensagem.
+     * Sends a menssage.
      *
-     *	@param[in] (string) $from - endereço de email do remetente da mensagem
-     *	@param[in] (string) $from_name - nome do remetente da mensagem
-     *	@param[in] (string) $mailto - endereço de email do destinatário da mensagem
-     *	@param[in] (string) $to_name - nome do destinatário da mensagem
-     *	@param[in] (string) $subject - assunto da mensagem
-     *	@param[in] (string) $htmlmessage - mensagem em formato HTML
-     *	@param[in] (string) $textmessage - mensagem em formato texto puro
+     * @param string $from        email from address.
+     * @param string $from_name   email from name.
+     * @param string $mailto      email to address.
+     * @param string $to_name     email to name.
+     * @param string $subject     subject.
+     * @param string $htmlmessage HTML formated body.
+     * @param string $textmessage plain text body.
      *
-     *	@return Retorna true se a mensagem foi enviada com sucesso ou a mensagem de erro
+     * * @return mixed
      */
     public function sendMessage($from, $from_name, $mailto, $to_name, $subject, $htmlmessage, $textmessage)
     {

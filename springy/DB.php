@@ -279,8 +279,8 @@ class DB
     /**
      * Sends the error occurrency to the webmaster.
      *
-     * @param string       $msg
-     * @param PDOException $exception
+     * @param string        $msg
+     * @param \PDOException $exception
      *
      * @return void
      */

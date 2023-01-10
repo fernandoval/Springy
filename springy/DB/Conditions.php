@@ -6,7 +6,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   0.5.1.7
+ * @version   0.5.8
  */
 
 namespace Springy\DB;
@@ -305,7 +305,7 @@ class Conditions
      *
      * @return void
      */
-    public function filter($filter)
+    public function filter($filter): void
     {
         $operators = [
             'eq'                    => self::OP_EQUAL,
@@ -333,7 +333,5 @@ class Conditions
                 $this->condition($field, $value);
             }
         }
-
-        return true;
     }
 }
