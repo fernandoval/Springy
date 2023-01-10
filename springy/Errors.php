@@ -10,7 +10,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   3.0.52
+ * @version   3.0.53
  */
 
 namespace Springy;
@@ -340,7 +340,7 @@ class Errors
             case E_USER_DEPRECATED:
                 $printError = 'Deprecated Function';
                 if (Configuration::get('system', 'ignore_deprecated')) {
-                    return false;
+                    return;
                 }
             break;
             case E_RECOVERABLE_ERROR:
@@ -458,7 +458,7 @@ class Errors
                         'Error on ' . Kernel::systemName() .
                         ' v' . Kernel::systemVersion() .
                         ' [' . Kernel::environment() .
-                        '] at ' . URI::httpHost()
+                        '] at ' . URI::getHost()
                     );
                     $email->body($errorMail);
                     $email->send();

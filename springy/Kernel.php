@@ -8,7 +8,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.8.1
+ * @version   2.8.2
  */
 
 namespace Springy;
@@ -446,6 +446,7 @@ class Kernel
     private static function getRouteConfiguration(): array
     {
         $host = URI::getHost();
+
         foreach ((Configuration::get('uri', 'routing.hosts') ?: []) as $route => $data) {
             $pattern = sprintf('#^%s$#', $route);
             if (preg_match_all($pattern, $host)) {
@@ -713,7 +714,7 @@ class Kernel
                     $env = getenv($envar);
                 }
 
-                $env = empty($env) ? URI::httpHost() : $env;
+                $env = empty($env) ? URI::getHost() : $env;
                 if (empty($env)) {
                     $env = 'unknown';
                 }

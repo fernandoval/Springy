@@ -7,7 +7,7 @@
  * @author    Allan Marques <allan.marques@ymail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version    3.0.20
+ * @version    3.0.21
  */
 
 namespace Springy;
@@ -140,7 +140,7 @@ class Configuration
             return;
         }
 
-        $host = URI::httpHost();
+        $host = URI::getHost();
 
         if (!$host || !isset($over_conf[$host])) {
             return;
@@ -163,7 +163,7 @@ class Configuration
         self::_loadJSON($file, $local);
 
         // Overwrite the configuration for a specific host, if exists
-        if (!$host = URI::httpHost()) {
+        if (!$host = URI::getHost()) {
             return;
         }
 

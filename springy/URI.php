@@ -8,7 +8,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.5.0
+ * @version   2.6.0
  */
 
 namespace Springy;
@@ -66,9 +66,9 @@ class URI
      */
     private static function checkHostControllerRoot(): void
     {
-        if ($url = (isset($_SERVER) && isset($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : '') {
+        if (self::$httpHost) {
             foreach (Configuration::get('uri', 'host_controller_path') as $host => $root) {
-                if ($url == $host) {
+                if ($host === self::$httpHost) {
                     Kernel::controllerRoot($root);
                     break;
                 }
@@ -318,15 +318,17 @@ class URI
     /**
      * Parses the $_SERVER['HTTP_HOST] variable.
      *
-     * @return string
+     * @return void
      */
-    private static function parseHost(): string
+    private static function parseHost(): void
     {
         if (php_sapi_name() === 'cli') {
-            return '$';
+            self::$httpHost = 'cmd.shell';
+
+            return;
         }
 
-        return preg_replace(
+        self::$httpHost = preg_replace(
             '/([^:]+)(:\\d+)?/',
             '$1',
             $_SERVER['HTTP_HOST'] ?? ''
@@ -368,7 +370,7 @@ class URI
     public static function parseURI()
     {
         self::checkHeadMethod();
-        self::$httpHost = self::parseHost();
+        self::parseHost();
         self::$uri_string = self::fetchURI();
         self::checkHostControllerRoot();
         $uriString = trim(self::$uri_string, '/');
@@ -766,17 +768,13 @@ class URI
      * Returns the current host with protocol.
      *
      * @return string
+     *
+     * @deprecated 2.6.0
+     * @uses URI::getHost()
      */
     public static function httpHost()
     {
-        return trim(
-            preg_replace(
-                '/([^:]+)(:\\d+)?/',
-                '$1' . ((sysconf('CONSIDER_PORT_NUMBER') !== null && sysconf('CONSIDER_PORT_NUMBER')) ? '$2' : ''),
-                $_SERVER['HTTP_HOST'] ?? ''
-            ),
-            ' ..@'
-        );
+        return self::$httpHost;
     }
 
     /**
