@@ -6,7 +6,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.2.1
+ * @version   2.2.2
  */
 
 namespace Springy;
@@ -49,7 +49,7 @@ class Session
      *
      * @param string|null $engine
      *
-     * @throws Exception
+     * @throws \Exception
      *
      * @return void
      */
