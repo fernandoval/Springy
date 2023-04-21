@@ -7,7 +7,7 @@
  * @copyright 2015 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
  *
- * @version   5.0.0
+ * @version   5.0.1
  *
  * This is script is not a Composer plugin.
  *
@@ -289,12 +289,14 @@ function getDir(string $path): array
  */
 function getDestinantion(string $component, array $data)
 {
-    $destination = '.' . DS . implode(DS, explode('/', $data['target']));
+    if (!is_string($data['target'])) {
+        fatalError(TAB . 'No destination defined for "' . $component . '" component.');
+    }
 
-    if (!is_dir($destination)) {
-        if (!mkdir($destination, 0775, true)) {
-            fatalError(TAB . 'Can\'t create "' . $destination . '" directory.');
-        }
+    $destination = __DIR__ . DS . implode(DS, explode('/', $data['target']));
+
+    if (!is_dir($destination) && !mkdir($destination, 0775, true)) {
+        fatalError(TAB . 'Can\'t create "' . $destination . '" directory.');
     }
 
     return $destination;
