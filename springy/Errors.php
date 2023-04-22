@@ -17,7 +17,9 @@ namespace Springy;
 
 use Exception;
 use Springy\Core\Debug;
+use Springy\Exceptions\SpringyException;
 use Springy\Utils\Strings;
+use Throwable;
 
 /**
  * Error handler class.
@@ -27,33 +29,37 @@ class Errors
     /**
      * Constructor method.
      *
-     * Warning! If $httpStatus is greater or equal 400 the application handler error will be started.
+     * Warning! If $httpStatus is greater or equal 400 the application handler
+     * error will be started.
      *
-     * @param int    $httpStatus is the HTTP status code that will be set to header.
+     * @param int    $httpStatus is the HTTP status code that will be set to
+     *                           header.
      * @param string $message    is a text to print in error message.
      */
     public function __construct($httpStatus = 200, $message = '')
     {
         if ($httpStatus >= 400) {
-            $debug = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 1);
-            $this->handler(E_USER_ERROR, $message, $debug[0]['file'], $debug[0]['line'], '', $httpStatus);
+            $this->process(
+                new SpringyException($message, E_USER_ERROR),
+                $httpStatus
+            );
         }
     }
 
     /**
-     * Error message for cli execution.
+     * Error message for cli mode.
      *
      * @param string $errorId
-     * @param string $errMessage
+     * @param string $desc
      *
      * @return string
      */
-    private function cliErrMsg($errorId, $errMessage): string
+    private function cliErrMsg(string $errorId, string $desc): string
     {
         $ln = "\n";
 
         $error = 'Error ID: ' . $errorId . $ln .
-            'Description: ' . $errMessage . $ln .
+            'Description: ' . $desc . $ln .
             'Run time: ' . Kernel::runTime() . ' seconds' . $ln .
             'Date: ' . date('Y-m-d') . $ln .
             'Time: ' . date('G:i:s') . $ln .
@@ -82,184 +88,55 @@ class Errors
     }
 
     /**
-     * Generate the output message error.
+     * Generate HTML with error informations.
+     *
+     * @param string $title
+     * @param string $errorId
+     *
+     * @return string
      */
-    private function generateOutputMessage($errMessage, $errorId, $additionalInfo)
+    protected function generateOutputMessage(string $title, string $errorId, Throwable $error): string
     {
         $getParams = [];
         foreach (URI::getParams() as $var => $value) {
             $getParams[] = $var . '=' . (is_array($value) ? json_encode($value) : $value);
         }
 
-        if (PHP_SAPI === 'cli' || defined('STDIN')) {
-            return $this->cliErrMsg($errorId, $errMessage);
-            // return 'Error ID: '.$errorId."\n".
-            //     'Description: '.$errMessage."\n".
-            //     'Run time: '.Kernel::runTime().' seconds'."\n".
-            //     'Date: '.date('Y-m-d')."\n".
-            //     'Time: '.date('G:i:s')."\n".
-            //     'Request: '.(isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : 'undefined')."\n";
+        $errorTemplate = __DIR__ . DS . 'error_template.html';
+        $temmplate = '<table width="100%" border="0" cellspacing="0" cellpadding="0">'
+            . '<tr><td>Error Description</td></tr>'
+            . '<tr><td><!-- DESCRIPTION --></td></tr>'
+            . '</table>'
+            . '<table width="100%" border="0" cellspacing="0" cellpadding="0">'
+            . '<tr><td colspan="2">Debug Information</td></tr>'
+            . '<tr><td>Execution time:</td><td><!-- EXEC_TIME --> seconds</td></tr>'
+            . '<tr><td>System:</td><td><!-- SYSTEM --></td></tr>'
+            . '<tr><td>HTTPS:</td><td><!-- HTTPS --></td></tr>'
+            . '<tr><td>Date:</td><td><!-- DATE_TIME --></td></tr>'
+            . '<tr><td>Request:</td><td><!-- REQUEST_URI --></td></tr>'
+            . '<tr><td>Request Method:</td><td><!-- REQUEST_METHOD --></td></tr>'
+            . '<tr><td>Server Protocol:</td><td><!-- SERVER_PROTOCOL --></td></tr>'
+            . '<tr><td>URL:</td><td><!-- URL --></td></tr>'
+            . '<tr><td colspan="2">Debug:</td></tr>'
+            . '<tr><td colspan="2"><!-- KERNEL_DEBUG --></td></tr>'
+            . '<tr><td colspan="2">Info:</td></tr>'
+            . '<tr><td colspan="2"><!-- BACKTRACE --></td></tr>'
+            . '<tr><td colspan="2">Client Information</td></tr>'
+            . '<tr><td>HTTP Referer:</td><td><!-- HTTP_REFERER --></td></tr>'
+            . '<tr><td>Client IP:</td><td><!-- CLIENT_IP --></td></tr>'
+            . '<tr><td>Reverse:</td><td><!-- REVERSE --></td></tr>'
+            . '<tr><td>User Agent:</td><td><!-- HTTP_USER_AGENT --></td></tr>'
+            . '<tr><td colspan="2">PHP vars</td></tr>'
+            . '<tr><td valign="top">_POST</td><td><!-- _POST --></td></tr>'
+            . '<tr><td valign="top">_GET</td><td><!-- _GET --></td></tr>'
+            . '<tr><td valign="top">_COOKIE</td><td><!-- _COOKIE --></td></tr>'
+            . '</table>';
+
+        if (file_exists($errorTemplate)) {
+            $temmplate = file_get_contents($errorTemplate) ?: $temmplate;
         }
 
-        // Mount error output information
-        try {
-            $uname = php_uname('n');
-        } catch (Exception $e) {
-            $uname = $_SERVER['HOST_NAME'];
-        }
-
-        $errorTemplate = dirname(realpath(__FILE__)) . DIRECTORY_SEPARATOR . 'error_template.html';
-        if (file_exists($errorTemplate) && $out = file_get_contents($errorTemplate)) {
-            return $this->parseTemplate($out, $errorId, $errMessage, $additionalInfo);
-        }
-
-        return '<table class="table table-bordered" width="100%" border="0" cellspacing="0" cellpadding="0">' .
-            '  <tr>' .
-            '    <td style="background-color:#66C; color:#FFF; font-weight:bold; padding-left:10px; padding:3px 2px">Error Description</td>' .
-            '  </tr>' .
-            '  <tr>' .
-            '    <td style="padding:3px 2px">' . $errMessage . '</td>' .
-            '  </tr>' .
-            '  <tr>' .
-            '    <td style="padding:3px 2px"><strong>Error ID:</strong> ' . $errorId . ' (<a href="' . URI::buildURL(['_system_bug_solved_', $errorId]) . '">was solved</a>)</td>' .
-            '  </tr>' .
-             // . '  <tr style="color:#000; display:none" class="bugList">'
-             // . '    <td style="padding:3px 2px"><strong>Número de ocorrências:</strong> [n_ocorrencias] | <strong>Última ocorrência:</strong> [ultima_ocorrencia] (<a href="javascript:;">mais informações</a>)</td>'
-             // . '  </tr>'
-            '  <tr class="hideMoreInfo">' .
-            '    <td colspan="2">' .
-            '      <table width="100%" border="0" cellspacing="0" cellpadding="0" style="font-family:Arial, Helvetica, sans-serif; font-size:12px">' .
-            '        <tr>' .
-            '          <td colspan="2" style="background-color:#66C; color:#FFF; font-weight:bold; padding-left:10px; padding:3px 2px">Debug Information</td>' .
-            '        </tr>' .
-            '        <tr style="background:#efefef">' .
-            '          <td style="padding:3px 2px"><label style="font-weight:bold">Execution time:</label></td>' .
-            '          <td style="padding:3px 2px">' . Kernel::runTime() . ' seconds</td>' .
-            '        </tr>' .
-            '        <tr>' .
-            '          <td style="padding:3px 2px"><label style="font-weight:bold">System:</label></td>' .
-            '          <td style="padding:3px 2px">' . $uname . '</td>' .
-            '        </tr>' .
-            '        <tr style="background:#efefef">' .
-            '          <td style="padding:3px 2px"><label style="font-weight:bold">HTTPS:</label></td>' .
-            '          <td style="padding:3px 2px">' . (ini_get('safe_mode') ? 'Yes' : 'No') . '</td>' .
-            '        </tr>' .
-            '        <tr>' .
-            '          <td style="padding:3px 2px"><label style="font-weight:bold">Date:</label></td>' .
-            '          <td style="padding:3px 2px">' . date('Y-m-d') . '</td>' .
-            '        </tr>' .
-            '        <tr style="background:#efefef">' .
-            '          <td style="padding:3px 2px"><label style="font-weight:bold">Time:</label></td>' .
-            '          <td style="padding:3px 2px">' . date('G:i:s') . '</td>' .
-            '        </tr>' .
-            '        <tr>' .
-            '          <td style="padding:3px 2px"><label style="font-weight:bold">Request:</label></td>' .
-            '          <td style="padding:3px 2px">' . $_SERVER['REQUEST_URI'] . '</td>' .
-            '        </tr>' .
-            '        <tr style="background:#efefef">' .
-            '          <td style="padding:3px 2px"><label style="font-weight:bold">Request Method:</label></td>' .
-            '          <td style="padding:3px 2px">' . $_SERVER['REQUEST_METHOD'] . '</td>' .
-            '        </tr>' .
-            '        <tr>' .
-            '          <td style="padding:3px 2px"><label style="font-weight:bold">Server Protocol:</label></td>' .
-            '          <td style="padding:3px 2px">' . $_SERVER['SERVER_PROTOCOL'] . '</td>' .
-            '        </tr>' .
-            '        <tr style="background:#efefef">' .
-            '          <td style="padding:3px 2px"><label style="font-weight:bold">URL:</label></td>' .
-            '          <td style="padding:3px 2px">' . URI::getURIString() . '?' . implode('&', $getParams) . '</td>' .
-            '        </tr>' .
-            '        <tr>' .
-            '          <td valign="top" style="padding:3px 2px"><label style="font-weight:bold">Debug:</label></td>' .
-            '          <td style="padding:3px 2px"><table width="100%"><tr><td style="font-family:Arial, Helvetica, sans-serif; font-size:12px; padding:3px 2px">' . Debug::get() . '</td></tr></table></td>' .
-            '        </tr>' .
-            '        <tr style="background:#efefef">' .
-            '          <td valign="top" style="padding:3px 2px"><label style="font-weight:bold">Info:</label></td>' .
-            '          <td style="padding:3px 2px"><table width="100%"><tr><td style="padding:3px 2px">' . Debug::backtrace() . '</td></tr></table></td>' .
-            '        </tr>' .
-            '        <tr>' .
-            '          <td colspan="2" style="background-color:#66C; color:#FFF; font-weight:bold; padding-left:10px; padding:3px 2px">Client Information</td>' .
-            '        </tr>' .
-            '        <tr>' .
-            '          <td style="padding:3px 2px"><label style="font-weight:bold">HTTP Referer:</label></td>' .
-            '          <td style="padding:3px 2px">' . (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '') . '</td>' .
-            '        </tr>' .
-            '        <tr style="background:#efefef">' .
-            '          <td style="padding:3px 2px"><label style="font-weight:bold">Client IP:</label></td>' .
-            '          <td style="padding:3px 2px">' . Strings::getRealRemoteAddr() . '</td>' .
-            '        </tr>' .
-            '        <tr style="background:#efefef">' .
-            '          <td style="padding:3px 2px"><label style="font-weight:bold">Reverse:</label></td>' .
-            '          <td style="padding:3px 2px">' . (Strings::getRealRemoteAddr() ? gethostbyaddr(Strings::getRealRemoteAddr()) : 'no IP') . '</td>' .
-            '        </tr>' .
-            '        <tr>' .
-            '          <td style="padding:3px 2px"><label style="font-weight:bold">User Agent:</label></td>' .
-            '          <td style="padding:3px 2px">' . (isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '') . '</td>' .
-            '        </tr>' .
-            $additionalInfo .
-            '        <tr>' .
-            '          <td colspan="2" style="background-color:#66C; color:#FFF; font-weight:bold; padding-left:10px; padding:3px 2px">PHP vars</td>' .
-            '        </tr>' .
-            '        <tr>' .
-            '          <td valign="top" style="padding:3px 2px"><label style="font-weight:bold">_POST</label></td>' .
-            '          <td style="padding:3px 2px">' . Debug::print_rc($_POST) . '</td>' .
-            '        </tr>' .
-            '        <tr>' .
-            '          <td valign="top" style="padding:3px 2px"><label style="font-weight:bold">_GET</label></td>' .
-            '          <td style="padding:3px 2px">' . Debug::print_rc($_GET) . '</td>' .
-            '        </tr>' .
-            '        <tr>' .
-            '          <td valign="top" style="padding:3px 2px"><label style="font-weight:bold">_COOKIE</label></td>' .
-            '          <td style="padding:3px 2px">' . Debug::print_rc($_COOKIE) . '</td>' .
-            '        </tr>' .
-            '        <tr>' .
-            '          <td valign="top" style="padding:3px 2px"><label style="font-weight:bold">_SESSION</label></td>' .
-            '          <td style="padding:3px 2px">' . Debug::print_rc(Session::getAll()) . '</td>' .
-            '        </tr>' .
-            '      </table>' .
-            '    </td>' .
-            '  </tr>' .
-            '</table>';
-    }
-
-    /**
-     * Ends the application with an error.
-     *
-     * @param mixed  $errorType
-     * @param string $msg
-     *
-     * @return void
-     *
-     * @deprecated 4.3
-     */
-    public static function displayError($errorType, $msg = '')
-    {
-        new self($errorType, $msg);
-    }
-
-    /**
-     * Throws the error handler.
-     *
-     * @param int|string  $errno
-     * @param string      $errstr
-     * @param string      $errfile
-     * @param int         $errline
-     * @param string|null $errcontext
-     * @param int         $errorType
-     *
-     * @return void
-     *
-     * @deprecated 4.3
-     */
-    public static function errorHandler(
-        $errno,
-        $errstr,
-        $errfile,
-        $errline,
-        $errcontext = null,
-        $errorType = 500
-    ) {
-        $error = new self();
-        $error->handler($errno, $errstr, $errfile, $errline, $errcontext, $errorType);
+        return $this->parseTemplate($temmplate, $errorId, $title, $error);
     }
 
     /**
@@ -269,33 +146,61 @@ class Errors
      * @param string      $errstr
      * @param string      $errfile
      * @param int         $errline
-     * @param string|null $errcontext
+     * @param mixed       $errcontext
      * @param int         $errorType
      *
      * @return void
+     *
+     * @deprecated 4.5
      */
     public function handler($errno, $errstr, $errfile, $errline, $errcontext = null, $errorType = 500)
     {
-        if (in_array($errno, Kernel::getIgnoredError())) {
+        $this->process(
+            new SpringyException($errstr, $errno, null, $errfile, $errline),
+            $errorType
+        );
+    }
+
+    /**
+     * Errors and exceptions final handler.
+     *
+     * @param int|string $errno
+     * @param string     $errstr
+     * @param string     $errfile
+     * @param int        $errline
+     * @param int        $httpCode
+     *
+     * @return void
+     */
+    public function process(Throwable $error, $httpCode = 500)
+    {
+        if (in_array($error->getCode(), Kernel::getIgnoredError())) {
             return;
         }
 
         DB::rollBackAll();
 
-        switch ($errno) {
+        switch ($error->getCode()) {
             case E_ERROR:
                 $printError = 'Error';
             break;
             case E_WARNING:
                 $printError = 'Warning';
-                $aFile = explode(DIRECTORY_SEPARATOR, $errfile);
-                if (in_array('smarty', $aFile) || strpos($errstr, 'filemtime') !== false || strpos($errstr, 'unlink') !== false) {
+                $aFile = explode(DIRECTORY_SEPARATOR, $error->getFile());
+                if (
+                    in_array('smarty', $aFile)
+                    || strpos($error->getMessage(), 'filemtime') !== false
+                    || strpos($error->getMessage(), 'unlink') !== false
+                ) {
                     return;
-                } elseif (in_array('Twig', $aFile) && strpos($errstr, 'include_once') !== false) {
+                } elseif (
+                    in_array('Twig', $aFile)
+                    && strpos($error->getMessage(), 'include_once') !== false
+                ) {
                     return;
                 }
                 $tplPash = Configuration::get('template', 'compiled_template_path');
-                if (substr($errfile, 0, strlen($tplPash)) == $tplPash) {
+                if (substr($error->getFile(), 0, strlen($tplPash)) == $tplPash) {
                     return;
                 }
             break;
@@ -305,7 +210,7 @@ class Errors
             case E_NOTICE:
                 $printError = 'Notice';
                 $tplPash = Configuration::get('template', 'compiled_template_path');
-                if (substr($errfile, 0, strlen($tplPash)) == $tplPash) {
+                if (substr($error->getFile(), 0, strlen($tplPash)) == $tplPash) {
                     return;
                 }
             break;
@@ -347,129 +252,136 @@ class Errors
                 $printError = 'Fatal Error';
             break;
             default:
-                $printError = 'Unknown Error (' . $errno . ')';
+                $printError = 'Unknown Error (' . $error->getCode() . ')';
             break;
         }
 
         $this->sendReport(
+            hash('crc32', $error->getCode() . $error->getFile() . $error->getLine()),
             (PHP_SAPI === 'cli' || defined('STDIN'))
-                ? $printError . ' - ' . $errstr . ' in ' . $errfile . ' on line ' . $errline
+                ? $printError . ' - ' . $error->getMessage()
+                    . ' in ' . $error->getFile()
+                    . ' on line ' . $error->getLine()
                 : '<span style="color:#FF0000">'
                     . $printError . '</span>: <em>'
-                    . $errstr . '</em> in <strong>'
-                    . $errfile . '</strong> on line <strong>'
-                    . $errline . '</strong>',
-            $errorType,
-            hash('crc32', $errno . $errfile . $errline) // error id
+                    . $error->getMessage() . '</em> in <strong>'
+                    . $error->getFile() . '</strong> on line <strong>'
+                    . $error->getLine() . '</strong>',
+            $httpCode,
+            $error
         );
+    }
+
+    /**
+     * Saves error log in database, if configured.
+     *
+     * @param string $errorId
+     * @param string $msg
+     * @param string $details
+     *
+     * @return bool Returns true if log was inserted and false in othercase.
+     */
+    protected function saveInDb(string $errorId, string $title, string $details): bool
+    {
+        if (!Configuration::get('system', 'system_error.save_in_database')) {
+            return false;
+        }
+
+        $conn = Configuration::get('system', 'system_error.db_server') ?: 'default';
+        $table = Configuration::get('system', 'system_error.table_name') ?: 'system_errors';
+        $dbc = new DB($conn);
+
+        if (!DB::connected()) {
+            return true;
+        }
+
+        $dbc->errorReportStatus(false);
+        $res = $dbc->execute('SELECT id FROM ' . $table . ' WHERE error_code = ?', [$errorId])
+            ? $dbc->fetchNext()
+            : false;
+        $command = ($res === false)
+            ? 'INSERT INTO ' . $table . ' (error_code, description, details, occurrences) VALUES (?, ?, ?, 1)'
+            : 'UPDATE ' . $table . ' SET occurrences = occurrences + 1 WHERE error_code = ?';
+        $params = ($res === false) ? [$errorId, $title, $details] : [$errorId];
+        $create = file_get_contents(__DIR__ . DS . 'system_errors_create_table.sql');
+
+        if (
+            $res === false
+            && $dbc->statmentErrorCode()
+            && Configuration::get('system', 'system_error.create_table')
+            && $create
+        ) {
+            $dbc->execute(str_replace('%table_name%', $table, $create));
+        }
+
+        $dbc->execute($command, $params);
+
+        return $res === false;
     }
 
     /**
      * Sends the error to the webmaster.
      *
-     * @param string     $msg
-     * @param int|string $errorType
-     * @param string     $errorId
-     * @param string     $additionalInfo
+     * @param string    $errorId
+     * @param string    $title
+     * @param int       $httpCode
+     * @param Throwable $error
      *
      * @return void
      */
-    public function sendReport($msg, $errorType, $errorId, $additionalInfo = '')
+    public function sendReport(string $errorId, string $title, int $httpCode, Throwable $error)
     {
         restore_error_handler();
 
-        $out = $this->generateOutputMessage($msg, $errorId, $additionalInfo);
+        $out = $this->generateOutputMessage($title, $errorId, $error);
+        $reportedErrors = Configuration::get('system', 'system_error.reported_errors');
 
-        // Verify if this type of error is reported
-        if ($reportedErrors = Configuration::get('system', 'system_error.reported_errors')) {
-            if (!is_array($reportedErrors)) {
-                $reportedErrors = explode(',', $reportedErrors);
-            }
-            $sendReport = in_array($errorType, $reportedErrors);
-        } else {
-            $sendReport = true;
-        }
-        unset($reportedErrors);
-
-        // Report this error to system admin?
-        if ($sendReport) {
-            // Save the error information in database?
-            if (Configuration::get('system', 'system_error.save_in_database')) {
-                if (!$conn = Configuration::get('system', 'system_error.db_server')) {
-                    $conn = 'default';
-                }
-                if (!$table = Configuration::get('system', 'system_error.table_name')) {
-                    $table = 'system_errors';
-                }
-
-                $dbc = new DB($conn);
-                if (DB::connected()) {
-                    $res = false;
-                    $dbc->errorReportStatus(false);
-
-                    if (!$dbc->execute('SELECT id FROM ' . $table . ' WHERE error_code = ?', [$errorId])) {
-                        if ($dbc->statmentErrorCode()) {
-                            if (
-                                Configuration::get('system', 'system_error.create_table')
-                                && $sql = file_get_contents(dirname(__FILE__) . DS . 'system_errors_create_table.sql')
-                            ) {
-                                $dbc->execute(str_replace('%table_name%', $table, $sql));
-                            }
-                        }
-                    } else {
-                        $res = $dbc->fetchNext();
-                    }
-
-                    if ($res) {
-                        $repeated = true;
-                        $dbc->execute(
-                            'UPDATE ' . $table . ' SET occurrences = occurrences + 1 WHERE error_code = ?',
-                            [$errorId]
-                        );
-                    } else {
-                        $dbc->execute(
-                            'INSERT INTO ' . $table . ' (error_code, description, details, occurrences) VALUES (?, ?, ?, 1)',
-                            [$errorId, $msg, $out]
-                        );
-                    }
-                }
-                unset($dbc, $table, $conn);
-            }
-
-            // Send mail message to the system administrator
-            if (Configuration::get('mail', 'errors_go_to')) {
-                if (!isset($repeated)) {
-                    $errorTemplate = dirname(realpath(__FILE__)) . DS . 'error_mail_template.html';
-                    if (file_exists($errorTemplate) && $errorMail = file_get_contents($errorTemplate)) {
-                        $errorMail = $this->parseTemplate($errorMail, $errorId, $msg, $additionalInfo);
-                    } else {
-                        $errorMail = preg_replace(
-                            '/\<a href="javascript\:\;" onClick="var obj=\$\(\#(.*?)\)\.toggle\(\)" style="color:#06c; margin:3px 0"\>arguments passed to function\<\/a\>/',
-                            '<span style="font-weight:bold; color:#06c; margin:3px 0">Functions arguments:</span>',
-                            $out
-                        );
-                        $errorMail = preg_replace('/ style="display:none"/', '', $errorMail);
-                    }
-
-                    $email = new Mail();
-                    $email->to(Configuration::get('mail', 'errors_go_to'), 'System Admin');
-                    $email->from(Configuration::get('mail', 'system_adm_mail'), Kernel::systemName() . ' - System Error Report');
-                    $email->subject(
-                        'Error on ' . Kernel::systemName() .
-                        ' v' . Kernel::systemVersion() .
-                        ' [' . Kernel::environment() .
-                        '] at ' . URI::getHost()
-                    );
-                    $email->body($errorMail);
-                    $email->send();
-                    unset($email);
-                }
-            }
+        if (is_string($reportedErrors)) {
+            $reportedErrors = explode(',', $reportedErrors);
         }
 
-        Kernel::callErrorHook($errorType, $msg, $errorId, $additionalInfo);
+        $isReported = is_array($reportedErrors) ? in_array($httpCode, $reportedErrors) : true;
 
-        $this->printHtml($errorType, $out);
+        if ($isReported && $this->saveInDb($errorId, $title, $out) && Configuration::get('mail', 'errors_go_to')) {
+            $errorTemplate = __DIR__ . DS . 'error_mail_template.html';
+            $errorMail = preg_replace(
+                '/display:none;/',
+                '',
+                preg_replace(
+                    '/\<a href="javascript\:\;" onClick="var obj=\$\(\#(.*?)\)\.toggle\(\)" style="color:#06c; margin:3px 0"\>arguments passed to function\<\/a\>/',
+                    '<span style="font-weight:bold; color:#06c; margin:3px 0">Functions arguments:</span>',
+                    $out
+                )
+            );
+
+            if (file_exists($errorTemplate)) {
+                $errorMail = $this->parseTemplate(
+                    file_get_contents($errorTemplate) ?: $errorMail,
+                    $errorId,
+                    $title,
+                    $error
+                );
+            }
+
+            $email = new Mail();
+            $email->to(Configuration::get('mail', 'errors_go_to'), 'System Admin');
+            $email->from(
+                Configuration::get('mail', 'system_adm_mail'),
+                Kernel::systemName() . ' - System Error Report'
+            );
+            $email->subject(
+                'Error on ' . Kernel::systemName() .
+                ' v' . Kernel::systemVersion() .
+                ' [' . Kernel::environment() .
+                '] at ' . URI::getHost()
+            );
+            $email->body($errorMail);
+            $email->send();
+        }
+
+        Kernel::callErrorHook($httpCode, $title, $errorId, '');
+
+        $this->printHtml($errorId, $httpCode, $out);
 
         // Terminate application with error status code 1.
         exit(1);
@@ -597,7 +509,7 @@ class Errors
                 $res['details']
             );
             $res['details'] = preg_replace(
-                '/<tr style="color:#000; display:none" class="bugList">/',
+                '/<tr style="color:#000; display:none;" class="bugList">/',
                 '<tr class="bugList">',
                 $res['details']
             );
@@ -628,107 +540,84 @@ class Errors
     /**
      * Prints the error message and quits the application.
      *
+     * @param string     $errorId
      * @param int|string $errorType
-     * @param string     $msg
+     * @param string     $desc
      *
      * @return void
      */
-    private function printHtml($errorType, $msg)
+    private function printHtml(string $errorId, $errorType, string $desc)
     {
         $lineFeed = "\n";
 
         // Verifica se a saída do erro não é em ajax ou json
-        //if (!Configuration::get('system', 'ajax') || !in_array('Content-type: application/json; charset=' . Kernel::charset(), headers_list())) {
-        if (!URI::isAjaxRequest()) {
-            if (ob_get_contents()) {
-                ob_clean();
-            }
-
-            header('Content-type: text/html; charset=UTF-8', true, $errorType);
-
-            if (Kernel::isCGIMode()) {
-                echo 'Status: ' . $errorType . $lineFeed . $lineFeed;
-            }
-
-            if (PHP_SAPI === 'cli' || defined('STDIN')) {
-                echo $msg . $lineFeed;
-
-                return;
-            }
-
-            if (!is_null(Configuration::get('template', 'template_engine'))) {
-                $tplName = Configuration::get('template', 'errors.' . $errorType);
-                $tpl = new Template();
-                if (!$tplName) {
-                    $tplName = '_error' . $errorType;
-                }
-            }
-
-            if (isset($tpl) && $tpl->templateExists($tplName)) {
-                $tpl->setTemplate($tplName);
-
-                $tpl->assign('errorDebug', (Configuration::get('system', 'debug') ? $msg : ''));
-
-                $tpl->display();
-
-                return;
-            }
-
-            echo '<!DOCTYPE html>';
-            echo '<html lang="en">';
-            echo '  <head>';
-            echo '    <meta charset="utf-8">';
-            echo '    <meta http-equiv="X-UA-Compatible" content="IE=edge">';
-            echo '    <meta name="viewport" content="width=device-width, initial-scale=1">';
-            echo '    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">';
-            echo '    <title>' . Kernel::systemName() . ' (' . Kernel::systemVersion() . ')</title>';
-            echo '    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">';
-            echo '    <!--[if lt IE 9]>';
-            echo '      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>';
-            echo '      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>';
-            echo '    <![endif]-->';
-            echo '  </head>';
-            echo '  <body>';
-            echo '    <h1 class="text-center">Error ' . $errorType . '</h1>';
-            if (Configuration::get('system', 'debug')) {
-                echo '    <div class="container">';
-                echo '      ' . $msg;
-                echo '    </div>';
-            }
-            echo '    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>';
-            echo '    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>';
-            echo '  </body>';
-            echo '</html>';
-
-            return;
+        if (ob_get_contents()) {
+            ob_clean();
         }
 
-        header('Content-type: application/json; charset=utf-8', true, $errorType);
+        header('Content-type: text/html; charset=UTF-8', true, $errorType ?? 0);
 
         if (Kernel::isCGIMode()) {
             echo 'Status: ' . $errorType . $lineFeed . $lineFeed;
         }
 
-        if (Configuration::get('system', 'debug')) {
-            if (is_array($msg)) {
-                echo json_encode($msg);
-            } elseif ($msg != '') {
-                echo $msg;
+        if (PHP_SAPI === 'cli' || defined('STDIN')) {
+            echo $this->cliErrMsg($errorId, $desc) . $lineFeed;
+
+            return;
+        }
+
+        if (!is_null(Configuration::get('template', 'template_engine'))) {
+            $tplName = Configuration::get('template', 'errors.' . $errorType) ?: '_error' . $errorType;
+            $tpl = new Template();
+
+            if ($tpl->templateExists($tplName)) {
+                $tpl->setTemplate($tplName);
+                $tpl->assign('errorDebug', (Configuration::get('system', 'debug') ? $desc : ''));
+                $tpl->display();
+
+                return;
             }
         }
+
+        echo '<!DOCTYPE html>';
+        echo '<html lang="en">';
+        echo '  <head>';
+        echo '    <meta charset="utf-8">';
+        echo '    <meta http-equiv="X-UA-Compatible" content="IE=edge">';
+        echo '    <meta name="viewport" content="width=device-width, initial-scale=1">';
+        echo '    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">';
+        echo '    <title>' . Kernel::systemName() . ' (' . Kernel::systemVersion() . ')</title>';
+        echo '    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">';
+        echo '    <!--[if lt IE 9]>';
+        echo '      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>';
+        echo '      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>';
+        echo '    <![endif]-->';
+        echo '  </head>';
+        echo '  <body>';
+        echo '    <h1 class="text-center">Error ' . $errorType . '</h1>';
+        if (Configuration::get('system', 'debug')) {
+            echo '    <div class="container">';
+            echo '      ' . $desc;
+            echo '    </div>';
+        }
+        echo '    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>';
+        echo '    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>';
+        echo '  </body>';
+        echo '</html>';
     }
 
     /**
      * Puts error details into the template message.
      *
-     * @param string $tpl
-     * @param string $errorId
-     * @param string $msg
-     * @param string $additionalInfo
+     * @param string    $tpl
+     * @param string    $errorId
+     * @param string    $desc
+     * @param Throwable $error
      *
      * @return string
      */
-    private function parseTemplate($tpl, $errorId, $msg, $additionalInfo)
+    protected function parseTemplate(string $tpl, string $errorId, string $desc, Throwable $error): string
     {
         $getParams = [];
         foreach (URI::getParams() as $var => $value) {
@@ -741,7 +630,7 @@ class Errors
             $uname = $_SERVER['HOST_NAME'];
         }
 
-        $tpl = preg_replace('/<!-- DESCRIPTION -->/', $msg, $tpl);
+        $tpl = preg_replace('/<!-- DESCRIPTION -->/', $desc, $tpl);
         $tpl = preg_replace('/<!-- ERROR_ID -->/', $errorId, $tpl);
         $tpl = preg_replace('/<!-- EXEC_TIME -->/', Kernel::runTime(), $tpl);
         $tpl = preg_replace('/<!-- SYSTEM -->/', $uname, $tpl);
@@ -753,7 +642,7 @@ class Errors
         $tpl = preg_replace('/<!-- HOST -->/', URI::buildURL(), $tpl);
         $tpl = preg_replace('/<!-- URL -->/', URI::getURIString() . '?' . implode('&', $getParams), $tpl);
         $tpl = preg_replace('/<!-- KERNEL_DEBUG -->/', Debug::get(), $tpl);
-        $tpl = preg_replace('/<!-- BACKTRACE -->/', Debug::backtrace(), $tpl);
+        $tpl = preg_replace('/<!-- BACKTRACE -->/', Debug::backtrace($error->getTrace()), $tpl);
         $tpl = preg_replace('/<!-- HTTP_REFERER -->/', $_SERVER['HTTP_REFERER'] ?? '', $tpl);
         $tpl = preg_replace('/<!-- CLIENT_IP -->/', Strings::getRealRemoteAddr(), $tpl);
         $tpl = preg_replace(
@@ -766,7 +655,6 @@ class Errors
             $tpl
         );
         $tpl = preg_replace('/<!-- HTTP_USER_AGENT -->/', $_SERVER['HTTP_USER_AGENT'] ?? '', $tpl);
-        $tpl = preg_replace('/<!-- ADDITIONAL_INFO -->/', $additionalInfo, $tpl);
         $tpl = preg_replace('/<!-- _SERVER -->/', Debug::print_rc($_SERVER), $tpl);
         $tpl = preg_replace('/<!-- _POST -->/', Debug::print_rc($_POST), $tpl);
         $tpl = preg_replace('/<!-- _GET -->/', Debug::print_rc($_GET), $tpl);

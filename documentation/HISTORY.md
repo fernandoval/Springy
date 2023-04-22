@@ -2,15 +2,17 @@
 
 ## Version 4
 
-## 4.5.0
+### 4.5.0
 - Implemented support to execute controllers using PSR-4 autoload;
 - Added support to PHP 8.0, 8.1 and 8.2;
 - Droped support to PHP 7.0, 7.1, 7.2 and 7.3;
 - Changes ACL module definition;
 - Deprecates ACL default module setup;
+- Adjustments and optimizations;
+- Support to PHPMailer upgraded to v6.x;
 - Added GitHub Actions test case.
 
-## 4.4.0
+### 4.4.0
 - Added support to `Controller` suffix without underscore to controller names
   to help in convertion to new namespace method;
 - Added support to `App\Controller` namespace without `Controller` or
@@ -36,7 +38,7 @@
 - `Pagination` class deprecated and deleted;
 - Deleted Doxygen documentation.
 
-## 4.3.1
+### 4.3.1
 - Adds Model column getter methods;
 - Adds helper functions;
 - Adds composer.lock file;
@@ -51,21 +53,21 @@
 - Fixes file not found Kernel panic;
 - Removed deprecated SUPERVAR query strig.
 
-## 4.3
+### 4.3.0
 - Implements CGI mode;
 - Breaks compatibility with PHP 7.2 or older;
 - Small adjustments and enhancements.
 
-## 4.2.2
+### 4.2.2
 - Deprecated css_dir, js_dir, images_dir and swf_dir entries from uri
   configuration;
 - Removed urlJS, urlCSS, urlIMG e urlSWF template variables.
 
-## 4.2.1
+### 4.2.1
 - Fixed SendGrid SDK version;
 - Other enhancements and adjustments.
 
-## 4.2.0
+### 4.2.0
 - Fixed bug in Kernel::delIgnoredError;
 - PSR fixes in URI class;
 - Method URI::http_host renamed to camel case format URI::httpHost
@@ -137,6 +139,7 @@
 - Removed support to HHVM.
 
 ## Version 3
+
 ### 3.6.3
 - Added a method to remove a column from the conditions in DB\Condition class;
 - Added support to configuration files in JSON format;
@@ -467,6 +470,7 @@
   (deprecated).
 
 ## Version 2
+
 ### 2.2.1
 - Script da controladora Default renomeado para _default.php;
 - Eliminação da classe FILO;
@@ -500,6 +504,7 @@
 - Criação do namespace FW.
 
 ## Version 1
+
 ### 1.4.0
 - Criação da classe Configuration;
 - Removidos métodos de configuração do sistema do Kernel;

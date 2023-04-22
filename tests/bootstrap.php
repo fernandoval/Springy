@@ -6,7 +6,7 @@
  * @copyright 2015 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
  *
- * @version   1.0.4
+ * @version   1.0.5
  */
 
 // Edit the two lines above and set the relative path to sysconf.php e helpers.php scripts
@@ -24,9 +24,7 @@ if (file_exists(sysconf('VENDOR_PATH') . DIRECTORY_SEPARATOR . 'autoload.php')) 
     require sysconf('VENDOR_PATH') . DIRECTORY_SEPARATOR . 'autoload.php';
 }
 
-// set_exception_handler('springyExceptionHandler');
 restore_exception_handler();
-// set_error_handler('springyErrorHandler');
 restore_error_handler();
 
 // Springy\Kernel::initiate($GLOBALS['SYSTEM'], $springyStartTime);

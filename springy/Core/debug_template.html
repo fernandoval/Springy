@@ -247,20 +247,8 @@
                         title += 'in [i]?frame ' + window.name + ' ';
                     }
 
-                    param = '';
-                    if (infos.param) {
-                        infos.param = infos.param.split('&');
-                        infos.param.each(function (p) {
-                            param = (param ? ', ' : '') + '[' + p + ']';
-                        });
-                    }
-
                     if (infos.url) {
                         span.append($.parseHTML('<br />URL: ' + infos.url));
-                    }
-
-                    if (param) {
-                        span.append($.parseHTML('<br />Parameters:' + param));
                     }
 
                     span.append($.parseHTML('<br />Time: ' + (now.getHours() < 10 ? '0' : '') + now.getHours() + ':' + (now.getMinutes() < 10 ? '0' : '') + now.getMinutes() + ':' + (now.getSeconds() < 10 ? '0' : '') + now.getSeconds() + ''));
@@ -295,7 +283,6 @@
             var json,
                 p = {
                     url: ajaxOptions.url,
-                    params: decodeURI(ajaxOptions.data)
                 };
 
             if (e.type === 'ajaxError') {

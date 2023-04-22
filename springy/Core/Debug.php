@@ -6,7 +6,7 @@
  * @copyright 2007 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
  *
- * @version    1.0.4.9
+ * @version    1.0.11
  */
 
 namespace Springy\Core;
@@ -32,7 +32,7 @@ class Debug
             $name,
             $highlight,
             $txt,
-            debug_backtrace(),
+            debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 3),
         ];
         if ($revert) {
             array_unshift(self::$debug, $debug);
@@ -55,8 +55,8 @@ class Debug
     {
         if (!is_array($debug)) {
             $debug = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, $limit);
+            array_shift($debug);
         }
-        array_shift($debug);
 
         $aDados = [];
 
@@ -89,7 +89,7 @@ class Debug
 
                 if (count($backtrace['args'])) {
                     $aid = 'args_' . mt_rand() . str_replace('.', '', current(explode(' ', microtime())));
-                    $result .= '<br /><a href="javascript:;" onClick="var obj=$(\'#' . $aid . '\').toggle()" style="color:#06c; margin:3px 0">arguments passed to function</a>' . (is_array($backtrace['args']) ? '<div id="' . $aid . '" style="display:none">' . self::print_rc($backtrace['args']) . '</div>' : $backtrace['args']);
+                    $result .= '<br /><a href="javascript:;" onClick="var obj=$(\'#' . $aid . '\').toggle()" style="color:#06c; margin:3px 0">arguments passed to function</a>' . (is_array($backtrace['args']) ? '<div id="' . $aid . '" style="display:none;">' . self::print_rc($backtrace['args']) . '</div>' : $backtrace['args']);
                 }
                 $result .= '      </li>';
                 $htmlLI++;
@@ -118,7 +118,7 @@ class Debug
                         '<div> ' . ($debug[2] ? self::print_rc($debug[3]) : $debug[3]) . '</div>' .
                         '<div>' .
                         '<div class="Spring-Debug-Backtrace-Button"><a href="javascript:;" onclick="var obj=$(\'#' . $did . '\').toggle()">open debug backtrace</a></div>' .
-                        '<div class="Spring-Debug-Backtrace-Data" id="' . $did . '" style="display:none" class="Spring-Debug-Backtrace">' . self::backtrace($debug[4]) . '</div></div>' .
+                        '<div class="Spring-Debug-Backtrace-Data" id="' . $did . '" style="display:none;" class="Spring-Debug-Backtrace">' . self::backtrace($debug[4]) . '</div></div>' .
                         '</div>';
         }
 

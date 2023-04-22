@@ -213,6 +213,8 @@ function delRemovedComponents(array $components): void
  * @param string $error
  *
  * @return void
+ *
+ * @SuppressWarnings(PHPMD.ExitExpression)
  */
 function fatalError(string $error): void
 {

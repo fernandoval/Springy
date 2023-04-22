@@ -7,10 +7,12 @@
  * @author     Allan Marques <allan.marques@ymail.com>
  * @author     Fernando Val <fernando.val@gmail.com>
  *
- * @version    4.5.1
+ * @version    4.6.0
  *
  * Let's make the developer happier and more productive.
  */
+
+use Springy\Exceptions\SpringyException;
 
 // Definig the constantes
 if (!defined('DS')) {
@@ -359,59 +361,22 @@ function springyAutoload($class)
 /**
  * Exception error handler.
  *
- * @param Error $error the error object.
+ * @param Throwable $error
  *
  * @return void
  */
-function springyExceptionHandler($error)
+function springyExceptionHandler(Throwable $error)
 {
-    $errors = new Springy\Errors();
-    $errors->handler(
-        $error->getCode(),
-        $error->getMessage(),
-        $error->getFile(),
-        $error->getLine(),
-        (
-            method_exists($error, 'getContext')
-                ? call_user_func([$error, 'getContext'])
-                : null
-        )
-    );
+    (new Springy\Errors())->process($error, 500);
 }
 
 /**
  * Error handler.
  */
-function springyErrorHandler($errno, $errstr, $errfile, $errline, $errContext)
+function springyErrorHandler($errno, $errstr, $errfile, $errline)
 {
-    $errors = new Springy\Errors();
-    $errors->handler($errno, $errstr, $errfile, $errline, $errContext);
-}
-
-/**
- * Framework Exception class.
- */
-class SpringyException extends Exception
-{
-    /// Contexto do erro
-    private $context = null;
-
-    /**
-     *  \brief Constructor method.
-     */
-    public function __construct($code, $message, $file, $line, $context = null)
-    {
-        parent::__construct($message, $code);
-        $this->file = $file;
-        $this->line = $line;
-        $this->context = $context;
-    }
-
-    /**
-     *  \brief Return the errot context.
-     */
-    public function getContext()
-    {
-        return $this->context;
-    }
+    (new Springy\Errors())->process(
+        new SpringyException($errstr, $errno, null, $errfile, $errline),
+        500
+    );
 }
