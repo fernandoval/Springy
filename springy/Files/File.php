@@ -46,7 +46,7 @@ class File extends SplFileInfo
      *
      * \return (string).
      */
-    public function getExtension()
+    public function getExtension(): string
     {
         return pathinfo($this->getBasename(), PATHINFO_EXTENSION);
     }

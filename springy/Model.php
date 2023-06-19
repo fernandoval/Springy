@@ -10,12 +10,13 @@
  * @author    Allan Marques <allan.marques@ymail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.8.3
+ * @version   2.9.0
  */
 
 namespace Springy;
 
 use Exception;
+use Iterator;
 use Springy\DB\Conditions;
 use Springy\DB\Where;
 use Springy\Validation\Validator;
@@ -25,7 +26,7 @@ use Springy\Validation\Validator;
  *
  * This class extends the DB class.
  */
-class Model extends DB implements \Iterator
+class Model extends DB
 {
     /** @var string the name of the table */
     protected $tableName = '';
@@ -250,11 +251,11 @@ class Model extends DB implements \Iterator
         $where = new Where();
 
         foreach ($this->embeddedObj as $obj => $attr) {
-            $modelName = isset($attr['model']) ? $attr['model'] : $obj;
-            $attrName = isset($attr['attr_name']) ? $attr['attr_name'] : $obj;
-            $foundBy = isset($attr['found_by']) ? $attr['found_by'] : $attr['pk'];
-            $relCol = isset($attr['column']) ? $attr['column'] : $attr['fk'];
-            $resType = isset($attr['type']) ? $attr['type'] : (isset($attr['attr_type']) ? $attr['attr_type'] : 'list');
+            $modelName = $attr['model'] ?? $obj;
+            $attrName = $attr['attr_name'] ?? $obj;
+            $foundBy = $attr['found_by'] ?? $attr['pk'];
+            $relCol = $attr['column'] ?? $attr['fk'];
+            $resType = $attr['type'] ?? ($attr['attr_type'] ?? 'list');
 
             // The array of values to search
             $keys = [];
@@ -265,8 +266,10 @@ class Model extends DB implements \Iterator
                     continue;
                 }
 
-                if (!in_array($row[$relCol], $keys)) {
-                    $keys[] = $row[$relCol];
+                $val = is_callable($relCol) ? call_user_func($relCol, $row) : $row[$relCol];
+
+                if (!in_array($val, $keys)) {
+                    $keys[] = $val;
                 }
             }
             if (!count($keys)) {
@@ -276,32 +279,31 @@ class Model extends DB implements \Iterator
             // Filter
             $where->clear();
             $where->condition($foundBy, $keys, Where::OP_IN);
-            if (isset($attr['filter']) && is_array($attr['filter'])) {
+            if (is_array($attr['filter'] ?? null)) {
                 $where->filter($attr['filter']);
             }
 
-            // Order
-            $order = isset($attr['order']) ? $attr['order'] : [];
-            // Offset
-            $offset = isset($attr['offset']) ? $attr['offset'] : null;
-            // Limit
-            $limit = isset($attr['limit']) ? $attr['limit'] : null;
-
+            /** @var Model */
             $embObj = new $modelName();
-            if (isset($attr['columns']) && is_array($attr['columns'])) {
+
+            if (is_array($attr['columns'] ?? null)) {
                 $embObj->setColumns($attr['columns']);
             }
-            if (isset($attr['group_by']) && is_array($attr['group_by'])) {
+            if (is_array($attr['group_by'] ?? null)) {
                 $embObj->groupBy($attr['group_by']);
             }
             if (isset($attr['embedded_obj'])) {
                 $embObj->setEmbeddedObj($attr['embedded_obj']);
             }
 
-            $embObj->query($where, $order, $offset, $limit, $embbed - 1);
+            $embObj->query($where, $attr['order'] ?? [], $attr['offset'] ?? null, $attr['limit'] ?? null, $embbed - 1);
+
             while ($erow = $embObj->next()) {
                 foreach ($this->rows as $idx => $row) {
-                    if ($erow[$foundBy] == $row[$relCol] && $this->_conditionalWhen($row, $attr)) {
+                    if (
+                        $erow[$foundBy] == (is_callable($relCol) ? call_user_func($relCol, $row) : $row[$relCol])
+                        && $this->_conditionalWhen($row, $attr)
+                    ) {
                         $embed = $erow;
 
                         if (

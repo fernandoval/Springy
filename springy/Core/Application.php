@@ -1,13 +1,13 @@
 <?php
-/** \file
- *  Springy.
+
+/**
+ * Application dependency container.
  *
- *  \brief      Classe container de dependências de toda aplicação
- *  \copyright  Copyright (c) 2007-2016 Fernando Val\n
- *  \author     Allan Marques - allan.marques@ymail.com
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.2.1
- *  \ingroup    framework
+ * @copyright 2015 Fernando Val
+ * @author    Fernando Val <fernando.val@gmail.com>
+ * @author    Allan Marques <allan.marques@ymail.com>
+ *
+ * @version 0.3.0
  */
 
 namespace Springy\Core;
@@ -16,16 +16,13 @@ use Springy\Container\DIContainer;
 use Springy\Events\Mediator;
 
 /**
- * \brief Classe container de dependências de toda aplicação.
+ * Application class.
  */
 class Application extends DIContainer
 {
-    /// Intância compartilhada desta classe.
+    /** @var self static instance of this class */
     protected static $sharedInstance;
 
-    /**
-     * \brief Construtor da classe.
-     */
     public function __construct()
     {
         parent::__construct();
@@ -34,49 +31,54 @@ class Application extends DIContainer
     }
 
     /**
-     * \brief Registra um handler de eventos para o evento indicado com a prioridade indicada
-     * \param [in] (string) $event - Nome do evento
-     * \param [in] (variant) $handler - Handler do evento
-     * \param [in] (int) $priority - Prioridade do handler, maior melhor.
-     * \return \Springy\Core\Application.
-     */
-    public function on($event, $handler, $priority = 0)
-    {
-        $this->resolve('events')->on($event, $handler, $priority);
-
-        return $this;
-    }
-
-    /**
-     * \brief Remove o registro de um handler de eventos
-     * \param [in] (string) $event - Nome do evento
-     * \return \Springy\Core\Application.
-     */
-    public function off($event)
-    {
-        $this->resolve('events')->off($event);
-
-        return $this;
-    }
-
-    /**
-     * \brief Dispara o evento com o nome indicado,
-     *        com os dados passados por parametro para cada handler
-     * \param [in] (type) $event
-     * \param [in] (type) $data
-     * \return (array).
-     */
-    public function fire($event, $data = [])
-    {
-        return $this->resolve('events')->fire($event, $data);
-    }
-
-    /**
-     * \brief Retorna a instancia compartilhada desta classe.
+     * Register an event handler.
      *
-     * @return \Springy\Core\Application
+     * @param string|array $event
+     * @param mixed        $handler
+     * @param int          $priority
+     *
+     * @return self
      */
-    public static function sharedInstance()
+    public function on($event, $handler, int $priority = 0): self
+    {
+        $this->offsetGet('events')->registerHandlerFor($event, $handler, $priority);
+
+        return $this;
+    }
+
+    /**
+     * Removes an event handler.
+     *
+     * @param string $event
+     *
+     * @return self
+     */
+    public function off(string $event): self
+    {
+        $this->offsetGet('events')->forget($event);
+
+        return $this;
+    }
+
+    /**
+     * Fires the event $event with parameters $data.
+     *
+     * @param string $event
+     * @param array  $data
+     *
+     * @return mixed
+     */
+    public function fire(string $event, array $data = []): mixed
+    {
+        return $this->offsetGet('events')->fire($event, $data);
+    }
+
+    /**
+     * Returns the shared instance of the class.
+     *
+     * @return self
+     */
+    public static function sharedInstance(): self
     {
         if (!static::$sharedInstance) {
             static::$sharedInstance = new static();
@@ -86,9 +88,11 @@ class Application extends DIContainer
     }
 
     /**
-     * \brief Registra as dependências padrões da aplicação.
+     * Registers default dependencies for the application.
+     *
+     * @return void
      */
-    protected function bindDefaultDependencies()
+    protected function bindDefaultDependencies(): void
     {
         $this->instance('events', new Mediator($this));
     }

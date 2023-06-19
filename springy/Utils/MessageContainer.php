@@ -232,46 +232,22 @@ class MessageContainer implements ArrayAccess
         return $format;
     }
 
-    /**
-     * An alias for 'has()'.
-     *
-     * @see has
-     * @deprecated 0.3
-     */
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return $this->has($offset);
     }
 
-    /**
-     * An alias for 'get()'.
-     *
-     * @see get
-     * @deprecated 0.3
-     */
-    public function offsetGet($offset)
+    public function offsetGet($offset): mixed
     {
         return $this->get($offset);
     }
 
-    /**
-     * An alias for 'add()'.
-     *
-     * @see add
-     * @deprecated 0.3
-     */
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         $this->add($offset, $value);
     }
 
-    /**
-     * An alias for 'forget()'.
-     *
-     * @see forget
-     * @deprecated 0.3
-     */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         $this->forget($offset);
     }

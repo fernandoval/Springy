@@ -13,6 +13,8 @@
 
 namespace Springy;
 
+use Springy\Exceptions\SpringyException;
+
 /**
  * Framework kernel class.
  *
@@ -21,7 +23,7 @@ namespace Springy;
 class Kernel
 {
     // Framework version
-    const VERSION = '4.5.0 alpha 1';
+    const VERSION = '4.5.0 beta 1';
 
     // Default controller namespace
     public const DEFAULT_NS = 'App\\Web\\';
@@ -84,16 +86,19 @@ class Kernel
      *
      * @param string $namespace
      * @param array  $arguments
+     * @param bool   $routing
      *
      * @return string
      */
-    private static function buildControllerName(string $namespace, array $arguments): string
+    private static function buildControllerName(string $namespace, array $arguments, bool $routing): string
     {
-        $path = implode('/', $arguments);
+        if ($routing) {
+            $path = implode('/', $arguments);
 
-        foreach ((Configuration::get('uri', 'routing.routes') ?: []) as $route => $controller) {
-            if (preg_match('#' . $route . '#', $path)) {
-                return $namespace . $controller;
+            foreach ((Configuration::get('uri', 'routing.routes.' . $namespace) ?: []) as $route => $controller) {
+                if (preg_match('#' . $route . '#', $path)) {
+                    return $namespace . $controller;
+                }
             }
         }
 
@@ -388,25 +393,11 @@ class Kernel
         $arguments = array_filter(URI::getAllSegments());
         $namespace = self::getNamespace($arguments);
 
-        do {
-            if (
-                // Adds and finds an Index controller in current $arguments path
-                self::checkController(
-                    $namespace . self::normalizeNamePath(array_merge($arguments, ['Index'])),
-                    $arguments
-                )
-                ||
-                // Removes Index and finds the full qualified name controller
-                (
-                    count($arguments)
-                    && self::checkController(self::buildControllerName($namespace, $arguments), $arguments)
-                )
-            ) {
-                return;
-            }
+        if (self::hasController($namespace, $arguments, false)) {
+            return;
+        }
 
-            array_pop($arguments);
-        } while (count($arguments));
+        self::hasController($namespace, $arguments, true);
     }
 
     /**
@@ -463,6 +454,43 @@ class Kernel
             'namespace' => Configuration::get('uri', 'routing.namespace') ?: self::DEFAULT_NS,
             'segments' => Configuration::get('uri', 'routing.segments') ?: [],
         ];
+    }
+
+    /**
+     * Looking for the controller walking through the arguments.
+     *
+     * @param string $namespace
+     * @param array  $arguments
+     * @param bool   $routing
+     *
+     * @return bool
+     */
+    private static function hasController(string $namespace, array $arguments, bool $routing): bool
+    {
+        do {
+            if (
+                // Adds and finds an Index controller in current $arguments path
+                self::checkController(
+                    $namespace . self::normalizeNamePath(array_merge($arguments, ['Index'])),
+                    $arguments
+                )
+                ||
+                // Removes Index and finds the full qualified name controller
+                (
+                    count($arguments)
+                    && self::checkController(
+                        self::buildControllerName($namespace, $arguments, $routing),
+                        $arguments
+                    )
+                )
+            ) {
+                return true;
+            }
+
+            array_pop($arguments);
+        } while (count($arguments));
+
+        return false;
     }
 
     /**
@@ -582,7 +610,10 @@ class Kernel
             return;
         }
 
-        $error->handler(E_USER_ERROR, 'Page not found', __FILE__, __LINE__, '', 404);
+        $error->process(
+            new SpringyException('Page not found', E_USER_ERROR, null, __FILE__, __LINE__),
+            404
+        );
     }
 
     /**

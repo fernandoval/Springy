@@ -5,7 +5,7 @@
 ### 4.5.0
 - Implemented support to execute controllers using PSR-4 autoload;
 - Added support to PHP 8.0, 8.1 and 8.2;
-- Droped support to PHP 7.0, 7.1, 7.2 and 7.3;
+- Droped support to PHP 7.x;
 - Changes ACL module definition;
 - Deprecates ACL default module setup;
 - Adjustments and optimizations;

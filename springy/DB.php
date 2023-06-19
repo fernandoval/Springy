@@ -8,12 +8,14 @@
  * @author    Allan Marques <allan.marques@ymail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   1.9.0.33
+ * @version   1.9.1
  */
 
 namespace Springy;
 
+use Exception;
 use Springy\Core\Debug;
+use Springy\Exceptions\SpringyException;
 
 /**
  * Relational database access class.
@@ -117,7 +119,7 @@ class DB
         self::$conErrors[$database] = true;
 
         if (!$conf['host_name'] || !$conf['database']) {
-            $this->reportError('Hostname / Database not defined.');
+            $this->reportError('Hostname or database not defined.');
         }
 
         $retries = $conf['retries'] ?? 3;
@@ -144,9 +146,12 @@ class DB
                 }
 
                 $callers = debug_backtrace();
-                if (!isset($callers[1]) || $callers[1]['class'] != 'Springy\Errors' || $callers[1]['function'] != 'sendReport') {
-                    $errors = new Errors();
-                    $errors->handler((int) $error->getCode(), $error->getMessage(), $error->getFile(), $error->getLine(), null);
+                if (
+                    !isset($callers[1])
+                    || $callers[1]['class'] != 'Springy\Errors'
+                    || $callers[1]['function'] != 'sendReport'
+                ) {
+                    (new Errors())->process($error);
                 }
             }
         } while (!isset(self::$conectionIds[$database]));
@@ -253,101 +258,38 @@ class DB
     }
 
     /**
-     * Disables the error report.
-     *
-     * @deprecated 1.9.0.33
-     *
-     * @return void
-     */
-    public function disableReportError()
-    {
-        throw new \Exception('Deprecated method');
-    }
-
-    /**
-     * Enables the error report.
-     *
-     * @deprecated 1.9.0.33
-     *
-     * @return void
-     */
-    public function enableReportError()
-    {
-        throw new \Exception('Deprecated method');
-    }
-
-    /**
      * Sends the error occurrency to the webmaster.
      *
-     * @param string        $msg
-     * @param \PDOException $exception
+     * @param string $msg
      *
      * @return void
      */
-    private function reportError($msg, \PDOException $exception = null)
+    private function reportError($msg)
     {
         if (!$this->reportError) {
             return;
         }
 
-        // Read the database access configurations
-        $conf = Configuration::get('db', $this->database);
-
-        $sqlError = 'Still this connection was not executed some instruction SQL using.';
-        if (isset($this->lastQuery)) {
-            if (PHP_SAPI === 'cli' || defined('STDIN')) {
-                $sqlError = htmlentities((is_object($this->lastQuery) ? $this->lastQuery->__toString() : $this->lastQuery)) . "\n" . 'Parametros: ' . Debug::print_rc($this->lastValues);
-            } else {
-                $sqlError = '<pre>' . htmlentities((is_object($this->lastQuery) ? $this->lastQuery->__toString() : $this->lastQuery)) . '</pre><br /> Parametros:<br />' . Debug::print_rc($this->lastValues);
-            }
-        }
-
         $errorInfo = [0, 0, 'Unknown error'];
+
         if ($this->resSQL) {
             $errorInfo = $this->resSQL->errorInfo();
         } elseif ($this->dataConnect) {
             $errorInfo = $this->dataConnect->errorInfo();
         }
 
-        $htmlError = '<tr>'
-            . '  <td style="background-color:#66C; color:#FFF; font-weight:bold; padding-left:10px; padding:3px 2px" colspan="2">DBMS informations</td>'
-            . '</tr>'
-            . '<tr>'
-            . '  <td valign="top"><label style="font-weight:bold">Host:</label></td>'
-            . '  <td>' . $conf['host_name'] . '</td>'
-            . '</tr>'
-            . '<tr style="background:#efefef">'
-            . '  <td valign="top"><label style="font-weight:bold">User:</label></td>'
-            . '  <td><span style="background:#efefef">' . ($conf['user_name'] ?? 'not set') . '</span></td>'
-            . '</tr>'
-            . '<tr>'
-            . '  <td valign="top"><label style="font-weight:bold">Password:</label></td>'
-            . '  <td>' . ($conf['password'] ?? 'not set') . '</td>'
-            . '</tr>'
-            . '<tr>'
-            . '  <td valign="top"><label style="font-weight:bold">DB:</label></td>'
-            . '  <td><span style="background:#efefef">' . ($conf['database'] ?? 'not set') . '</span></td>'
-            . '</tr>';
-        if (PHP_SAPI === 'cli' || defined('STDIN')) {
-            $htmlError = 'DBMS informations' . "\n"
-                . 'Host: ' . $conf['host_name'] . "\n"
-                . 'Login: ' . ($conf['user_name'] ?? 'not set') . "\n"
-                . 'Senha: ' . ($conf['password'] ?? 'not set') . "\n"
-                . 'DB: ' . ($conf['database'] ?? 'not set') . "\n";
-        }
-        unset($sqlError);
+        $dbt = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 1);
+        $file = $dbt[0]['file'];
+        $line = $dbt[0]['line'];
 
         // Send the report of error and kill the application
-        $errors = new Errors();
-        $errors->sendReport(
-            '<span style="color:#FF0000">' . $msg . '</span> - ' .
-            '(' . $errorInfo[1] . ') ' . $errorInfo[2] .
-            ($exception ? '<br />' . $exception->getMessage() : '') .
-            '<br /><pre>' . $this->lastQuery . '</pre><br />Values: ' .
-            Debug::print_rc($this->lastValues),
-            500,
+        (new Errors())->sendReport(
             hash('crc32', $msg . $errorInfo[1] . $this->lastQuery), // error id
-            $htmlError
+            '<span style="color:#FF0000">' . $msg . '</span> - (' . $errorInfo[1] . ') ' . $errorInfo[2]
+            . '<br /><pre>' . $this->lastQuery . '</pre><br />Values: '
+            . Debug::print_rc($this->lastValues),
+            500,
+            new SpringyException($msg, E_USER_ERROR, null, $file, $line)
         );
     }
 
@@ -414,18 +356,6 @@ class DB
     }
 
     /**
-     * Rolls back all transactions.
-     *
-     * @deprecated 1.9.0.33
-     *
-     * @return void
-     */
-    public static function transactionAllRollBack()
-    {
-        throw new \Exception('Deprecated method');
-    }
-
-    /**
      * Executes a query.
      *
      * @param string   $sql
@@ -480,7 +410,7 @@ class DB
             if (($this->resSQL = $this->dataConnect->prepare($this->lastQuery)) === false) {
                 $this->sqlErrorCode = $this->resSQL->errorCode();
                 $this->sqlErrorInfo = $this->resSQL->errorInfo();
-                $this->reportError('Can\'t prepare query.');
+                $this->reportError('Error preparing query.');
 
                 return false;
             }
@@ -517,7 +447,7 @@ class DB
             if ($this->resSQL->execute() === false) {
                 $this->sqlErrorCode = $this->resSQL->errorCode();
                 $this->sqlErrorInfo = $this->resSQL->errorInfo();
-                $this->reportError('Can\'t execute query.');
+                $this->reportError('Error executing query.');
 
                 return false;
             }
@@ -658,16 +588,6 @@ class DB
     }
 
     /**
-     * @deprecated 1.9.0.33
-     *
-     * @return void
-     */
-    public function num_rows()
-    {
-        throw new \Exception('Deprecated method');
-    }
-
-    /**
      * Returns all rows of the resultset.
      *
      * @param int $resultType
@@ -683,18 +603,6 @@ class DB
         }
 
         return false;
-    }
-
-    /**
-     * @deprecated 1.9.0.33
-     *
-     * @param int $resultType
-     *
-     * @return void
-     */
-    public function get_all($resultType = \PDO::FETCH_ASSOC)
-    {
-        throw new \Exception('Deprecated method');
     }
 
     /**
@@ -846,14 +754,6 @@ class DB
     }
 
     /**
-     * @deprecated 1.9.0.33
-     */
-    public static function dateToTime($dateTime)
-    {
-        throw new \Exception('Deprecated method');
-    }
-
-    /**
      * Converts a date string in DBMS ISO format to a long date string in brazilian portuguese.
      *
      * @param string $dataTimeStamp
@@ -867,13 +767,5 @@ class DB
         $numMes = (int) date('m', $dateTime);
 
         return date('d', $dateTime) . ' de ' . $mes[--$numMes] . ' de ' . date('Y', $dateTime);
-    }
-
-    /**
-     * @deprecated 1.9.0.33
-     */
-    public static function dateToStr($dataTimeStamp)
-    {
-        throw new \Exception('Deprecated method');
     }
 }
