@@ -516,7 +516,7 @@ class Kernel
             return;
         }
 
-        header('WWW-Authenticate: Basic realm="' . utf8_decode('What are you doing here?') . '"');
+        header('WWW-Authenticate: Basic realm="What are you doing here?"');
         header('HTTP/1.0 401 Unauthorized');
         exit('Unauthorized!');
     }
@@ -579,7 +579,7 @@ class Kernel
             || $_SERVER['PHP_AUTH_USER'] != $auth['user']
             || $_SERVER['PHP_AUTH_PW'] != $auth['pass']
         ) {
-            header('WWW-Authenticate: Basic realm="' . utf8_decode('What r u doing here?') . '"');
+            header('WWW-Authenticate: Basic realm="What r u doing here?"');
             new Errors(401, 'Unauthorized');
         }
 
