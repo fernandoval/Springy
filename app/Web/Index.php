@@ -4,7 +4,7 @@
  * Sample controller for the main page.
  */
 
-namespace App\Controller;
+namespace App\Web;
 
 use Springy\Controller;
 

@@ -1,8 +1,9 @@
 <?php
-/** \file
- *  \brief      Configurations for Springy\URI class.
- *  \copyright  Copyright (c) 2007-2016 Fernando Val
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido.
+
+/**
+ * Springy Framework Configuration File.
+ *
+ * Do not remove this file.
  */
 
 /**
@@ -84,7 +85,6 @@
  *  \see uricfg
  */
 
-/// Configurações para todos os ambientes
 $conf = [
     /*
      * New routing for PSR-4 controllers
@@ -116,6 +116,8 @@ $conf = [
         /*
          * Routing configuration by HTTP host.
          *
+         * Keys are regular expressions.
+         *
          * @var array
          */
         'hosts' => [
@@ -125,6 +127,14 @@ $conf = [
                 'segments' => [
                     'api' => 'App\\Local\\Api',
                 ],
+                'template' => ['$admin'],
+            ],
+            // Command line controllers
+            'cmd\.shell' => [
+                'module' => '',
+                'namespace' => 'App\\Console',
+                'segments' => [],
+                'template' => [],
             ],
         ],
 
@@ -134,21 +144,47 @@ $conf = [
          * @var array
          */
         'routes' => [
-            'end-of-user-license-agreement' => 'Eula',
+            'App\\Web\\' => [
+                'end-of-user-license-agreement' => 'Eula',
+            ],
         ],
     ],
 
+    /*
+     * Old style regex routing.
+     */
     'routes' => [
-        'home(\/)*(\?(.*))*' => ['segment' => 0, 'controller' => 'index'],
+        'home(\/)*(\?(.*))*' => [
+            'segment' => 0,
+            'controller' => 'index'
+        ],
     ],
+    /*
+     * Old style redirections.
+     */
     'redirects' => [
-        '404' => ['segments' => [], 'get' => [], 'force_rewrite' => false, 'host' => 'dynamic', 'type' => 301],
+        '404' => [
+            'segments' => [],
+            'get' => [],
+            'force_rewrite' => false,
+            'host' => 'dynamic',
+            'type' => 301,
+        ],
     ],
+    /*
+     * Old style controller rounting.
+     */
     'prevalidate_controller' => [
-        'mycontroller'      => ['command' => 301, 'segments' => 2],
-        'myothercontroller' => ['command' => 404, 'segments' => 2, 'validate' => ['/^[a-z0-9\-]+$/', '/^[0-9]+$/']],
+        // 'mycontroller'      => ['command' => 301, 'segments' => 2],
+        // 'myothercontroller' => ['command' => 404, 'segments' => 2, 'validate' => ['/^[a-z0-9\-]+$/', '/^[0-9]+$/']],
     ],
-    'system_root'                     => '/',
+    /*
+     * Old style controller path by host.
+     */
+    'host_controller_path' => [
+        // 'cmd.shell' => ['$command'],
+    ],
+    'system_root' => '/',
     'register_method_set_common_urls' => null,
     // URLs comuns do site
     'common_urls'                     => [

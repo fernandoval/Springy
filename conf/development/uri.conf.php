@@ -1,8 +1,11 @@
 <?php
-/** \file
- *  \brief      Configurations for Springy\URI class.
- *  \copyright  Copyright (c) 2007-2016 Fernando Val
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido.
+
+/**
+ * Springy Framework Configuration File.
+ *
+ * Used for "development" environment.
+ *
+ * If removed, only uri.default.conf.php will be used.
  */
 
 /**
@@ -18,9 +21,7 @@
  *
  *  \see uricfg
  */
-/**@{*/
 
-/// Configurações para o ambiente de Desenvolvimento
 $conf = [
     'host_controller_path' => [
         'host.seusite.localhost' => ['diretorio'],
@@ -30,7 +31,7 @@ $conf = [
     'secure'  => $_SERVER['HTTP_HOST'],
 ];
 
-/// Configurações sobrescritas para hosts específicos (EXEMPLO)
+// Configurações sobrescritas para hosts específicos (EXEMPLO)
 $over_conf = [
     'host.seusite.localhost' => [
         'dynamic'                => 'http://host.seusite.localhost',
@@ -39,5 +40,3 @@ $over_conf = [
         ],
     ],
 ];
-
-/**@}*/

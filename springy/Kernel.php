@@ -8,7 +8,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.8.2
+ * @version   2.8.3
  */
 
 namespace Springy;
@@ -441,6 +441,8 @@ class Kernel
         foreach ((Configuration::get('uri', 'routing.hosts') ?: []) as $route => $data) {
             $pattern = sprintf('#^%s$#', $route);
             if (preg_match_all($pattern, $host)) {
+                self::$controller_root = $data['template'] ?? [];
+
                 return [
                     'module' => $data['module'] ?? '',
                     'namespace' => $data['namespace'] ?? self::DEFAULT_NS,
