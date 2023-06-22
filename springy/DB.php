@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Relational database access class.
  *
@@ -8,7 +9,7 @@
  * @author    Allan Marques <allan.marques@ymail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   1.9.1
+ * @version   1.9.2
  */
 
 namespace Springy;
@@ -383,7 +384,7 @@ class DB
         $sql = null;
 
         // Recupera a configuração de cache
-        $dbcache = (Configuration::get('db', 'cache'));
+        $dbcache = Configuration::get('db', 'cache');
         // Limpa o que estiver em memória e tiver sido carregado de cache
         $this->cacheStatement = null;
         // Configuração de cache está ligada?
@@ -422,16 +423,16 @@ class DB
                     switch (gettype($where)) {
                         case 'boolean':
                             $param = \PDO::PARAM_BOOL;
-                        break;
+                            break;
                         case 'integer':
                             $param = \PDO::PARAM_INT;
-                        break;
+                            break;
                         case 'NULL':
                             $param = \PDO::PARAM_NULL;
-                        break;
+                            break;
                         default:
                             $param = \PDO::PARAM_STR;
-                        break;
+                            break;
                     }
 
                     if (is_numeric($key)) {

@@ -1,8 +1,9 @@
 <?php
-/** \file
- *  \brief      Database configurations.
- *  \copyright	Copyright (c) 2007-2016 Fernando Val
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido.
+
+/**
+ * Springy Framework Configuration File.
+ *
+ * Do not remove this file.
  */
 
 /**
@@ -43,9 +44,6 @@
  *  \li \c cache > server_port - Porta do servidor memcached
  *
  *  \see config
- *
- *  @{
- *  @}
  */
 
 /**
@@ -58,13 +56,9 @@
  *
  *  \see dbcfg
  */
-/**@{*/
 
-/// Entradas para todos os ambientes
 $conf = [
     '_migration' => [
         'table_name' => '_database_version_control',
     ],
 ];
-
-/**@}*/

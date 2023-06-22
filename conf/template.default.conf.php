@@ -1,8 +1,9 @@
 <?php
-/** \file
- *  \brief      Configurations for Springy\Template class.
- *  \copyright  Copyright (c) 2007-2016 FVAL Consultoria e Informática Ltda.\n
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido.
+
+/**
+ * Springy Framework Configuration File.
+ *
+ * Do not remove this file.
  */
 
 /**
@@ -33,9 +34,6 @@
  *      Diretórios contendo milhares de arquivos criam problema de performance porque, nesses casos, o sistema de arquivos do sistema operacional demora a responder.
  *
  *  \see config
- *
- *  @{
- *  @}
  */
 
 /**
@@ -48,9 +46,7 @@
  *
  *  \see templatecfg
  */
-/**@{*/
 
-/// Configurações para todos os ambientes
 $conf = [
     'template_engine'        => 'smarty',
     'debug'                  => false,
@@ -71,5 +67,3 @@ $conf = [
         503 => '_error503',
     ],
 ];
-
-/**@}*/

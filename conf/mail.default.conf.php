@@ -1,8 +1,9 @@
 <?php
-/** \file
- *  \brief      Configurations for Springy\Mail class.
- *  \copyright  Copyright (c) 2007-2016 Fernando Val
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido.
+
+/**
+ * Springy Framework Configuration File.
+ *
+ * Do not remove this file.
  */
 
 /**
@@ -58,9 +59,6 @@
  *  "swiftmailer/swiftmailer": "*"
  *
  *  \see config
- *
- *  @{
- *  @}
  */
 
 /**
@@ -73,9 +71,7 @@
  *
  *  \see emailcfg
  */
-/**@{*/
 
-/// Entradas para todos os ambientes
 $conf = [
     // Mail to notify system errors (used by framework)
     'errors_go_to'    => '',
@@ -145,5 +141,3 @@ $conf = [
         ],
     ],
 ];
-
-/**@}*/

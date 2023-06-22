@@ -8,7 +8,7 @@
  *
  * @see       https://github.com/PHPMailer/PHPMailer
  *
- * @version    1.2.0
+ * @version    1.2.1
  */
 
 namespace Springy\Mail;
@@ -142,9 +142,9 @@ class PHPMailerDriver implements MailDriverInterface
      *
      * @param string $category the category.
      *
-     * @return void
-     *
      * @throws Exception
+     *
+     * @return void
      */
     public function addCategory($category)
     {
@@ -207,9 +207,9 @@ class PHPMailerDriver implements MailDriverInterface
      *
      * @param string $name the id of the template.
      *
-     * @return void
-     *
      * @throws Exception
+     *
+     * @return void
      */
     public function setTemplate($name)
     {
@@ -222,9 +222,9 @@ class PHPMailerDriver implements MailDriverInterface
      * @param string $name  name of the template variable.
      * @param string $value the value.
      *
-     * @return void
-     *
      * @throws Exception
+     *
+     * @return void
      */
     public function addTemplateVar($name, $value)
     {

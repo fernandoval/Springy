@@ -142,12 +142,12 @@ class Errors
     /**
      * Handlers the error.
      *
-     * @param int|string  $errno
-     * @param string      $errstr
-     * @param string      $errfile
-     * @param int         $errline
-     * @param mixed       $errcontext
-     * @param int         $errorType
+     * @param int|string $errno
+     * @param string     $errstr
+     * @param string     $errfile
+     * @param int        $errline
+     * @param mixed      $errcontext
+     * @param int        $errorType
      *
      * @return void
      *
@@ -183,7 +183,7 @@ class Errors
         switch ($error->getCode()) {
             case E_ERROR:
                 $printError = 'Error';
-            break;
+                break;
             case E_WARNING:
                 $printError = 'Warning';
                 $aFile = explode(DIRECTORY_SEPARATOR, $error->getFile());
@@ -203,54 +203,54 @@ class Errors
                 if (substr($error->getFile(), 0, strlen($tplPash)) == $tplPash) {
                     return;
                 }
-            break;
+                break;
             case E_PARSE:
                 $printError = 'Parse Error';
-            break;
+                break;
             case E_NOTICE:
                 $printError = 'Notice';
                 $tplPash = Configuration::get('template', 'compiled_template_path');
                 if (substr($error->getFile(), 0, strlen($tplPash)) == $tplPash) {
                     return;
                 }
-            break;
+                break;
             case E_CORE_ERROR:
                 $printError = 'Core Error';
-            break;
+                break;
             case E_CORE_WARNING:
                 $printError = 'Core Warning';
-            break;
+                break;
             case E_COMPILE_ERROR:
                 $printError = 'Compile Error';
-            break;
+                break;
             case E_COMPILE_WARNING:
                 $printError = 'Compile Warning';
-            break;
+                break;
             case E_USER_ERROR:
                 $printError = 'User Error';
-            break;
+                break;
             case E_USER_WARNING:
                 $printError = 'User Warning';
-            break;
+                break;
             case E_USER_NOTICE:
                 $printError = 'User Notice';
-            break;
+                break;
             case E_STRICT:
                 $printError = 'Fatal Error';
-            break;
+                break;
             case 1044:
                 $printError = 'Access Denied to Database';
-            break;
+                break;
             case E_DEPRECATED:
             case E_USER_DEPRECATED:
                 $printError = 'Deprecated Function';
                 if (Configuration::get('system', 'ignore_deprecated')) {
                     return;
                 }
-            break;
+                break;
             case E_RECOVERABLE_ERROR:
                 $printError = 'Fatal Error';
-            break;
+                break;
             default:
                 $printError = 'Unknown Error (' . $error->getCode() . ')';
             break;

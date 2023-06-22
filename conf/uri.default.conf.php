@@ -69,9 +69,6 @@
  *  - 'secure' - Host seguro do site. Ex.: 'https://www.seusite.com'
  *
  *  \see config
- *
- *  @{
- *  @}
  */
 
 /**

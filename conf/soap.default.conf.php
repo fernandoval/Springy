@@ -1,8 +1,9 @@
 <?php
-/** \file
- *  \brief      Configurações da classe SOAP.
- *  \copyright  Copyright (c) 2007-2016 Fernando Val
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido.
+
+/**
+ * Springy Framework Configuration File.
+ *
+ * Do not remove this file.
  */
 
 /**
@@ -19,9 +20,6 @@
  *  - \c timeout - determina o timeout em segundos
  *
  *  \see config
- *
- *  @{
- *  @}
  **/
 
 /**
@@ -36,7 +34,4 @@
  */
 /**@{*/
 
-/// Entradas para todos os ambientes
 $conf = [];
-
-/**@}*/

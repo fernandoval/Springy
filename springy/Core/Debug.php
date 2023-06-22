@@ -6,7 +6,7 @@
  * @copyright 2007 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
  *
- * @version    1.0.11
+ * @version    1.0.12
  */
 
 namespace Springy\Core;
@@ -111,7 +111,8 @@ class Debug
             $did = 'debug_' . mt_rand() . str_replace('.', '', current(explode(' ', microtime())));
 
             $unit = ['b', 'KB', 'MB', 'GB', 'TB', 'PB'];
-            $memoria = round($debug[0] / pow(1024, ($idx = floor(log($debug[0], 1024)))), 2) . ' ' . $unit[$idx];
+            $idx = floor(log($debug[0], 1024));
+            $memoria = round($debug[0] / pow(1024, $idx), 2) . ' ' . $unit[$idx];
 
             $return[] = '<div class="Spring-Debug-Info">' .
                         '<p>' . ($debug[1] ? $debug[1] . ' - ' : '') . 'Allocated Memory: ' . $memoria . '</p>' .
@@ -132,10 +133,15 @@ class Debug
      */
     public static function printOut()
     {
-        if (!defined('STDIN') && Configuration::get('system', 'debug') == true && !Configuration::get('system', 'sys_ajax')) {
+        if (
+            !defined('STDIN')
+            && Configuration::get('system', 'debug') === true
+            && !Configuration::get('system', 'sys_ajax')
+        ) {
             $size = memory_get_peak_usage(true);
             $unit = ['b', 'KB', 'MB', 'GB', 'TB', 'PB'];
-            $mem = round($size / pow(1024, ($idx = floor(log($size, 1024)))), 2) . ' ' . $unit[$idx];
+            $idx = floor(log($size, 1024));
+            $mem = round($size / pow(1024, $idx), 2) . ' ' . $unit[$idx];
             unset($unit, $size);
 
             self::add(

@@ -7,7 +7,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @author    Allan Marques <allan.marques@ymail.com>
  *
- * @version   0.2.0
+ * @version   0.2.1
  */
 
 namespace Springy\Container;
@@ -86,9 +86,9 @@ class DIContainer implements ArrayAccess
      *
      * @param mixed $key
      *
-     * @return mixed
-     *
      * @throws InvalidArgumentException if parameter $key not exists in container.
+     *
+     * @return mixed
      */
     public function param($key): mixed
     {
@@ -121,9 +121,9 @@ class DIContainer implements ArrayAccess
      * @param string $key
      * @param array  $params
      *
-     * @return mixed
-     *
      * @throws InvalidArgumentException if factory not exists.
+     *
+     * @return mixed
      */
     public function make(string $key, array $params = []): mixed
     {
@@ -153,9 +153,9 @@ class DIContainer implements ArrayAccess
      * @param string  $key
      * @param Closure $extension
      *
-     * @return void
-     *
      * @throws InvalidArgumentException if factory $key not exists.
+     *
+     * @return void
      */
     public function extend(string $key, Closure $extension): void
     {
@@ -172,9 +172,9 @@ class DIContainer implements ArrayAccess
      * @param string|Closure $key
      * @param Closure|object $instance
      *
-     * @return mixed
-     *
      * @throws InvalidArgumentException if $instance if not a closure or object.
+     *
+     * @return mixed
      */
     public function instance($key, $instance = null): mixed
     {
@@ -204,9 +204,9 @@ class DIContainer implements ArrayAccess
      *
      * @param string $key
      *
-     * @return object
-     *
      * @throws InvalidArgumentException if instance not exists.
+     *
+     * @return object
      */
     public function shared(string $key)
     {

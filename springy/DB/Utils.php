@@ -1,12 +1,15 @@
 <?php
+
 /**
  * Class to quote keywords in database commands.
+ *
+ * WARNING! WARNING! THIS CLASS IS EXPERIMENTAL. DO NOT USE IT!
  *
  * @copyright 2018 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   0.2.0.2
+ * @version   0.2.3
  */
 
 namespace Springy\DB;
@@ -125,7 +128,6 @@ class Utils
                 $quoting = true;
             } elseif ($char == $this->closeQuote && $quoting) {
                 $quoting = false;
-            // } elseif (preg_match('/^\w$/', $char)) {
             } elseif (strpos('_1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz', $char) !== false) {
                 $buffer .= $char;
             } elseif ($char == '(') {
@@ -135,7 +137,6 @@ class Utils
                 $parsed .= $this->quote($buffer) . $char;
                 $prefix = true;
                 $buffer = '';
-            // } elseif (preg_match('/^\W$/', $char)) {
             } elseif (strpos('_1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz', $char) !== false) {
                 if ($buffer || !$parsed) {
                     $parsed .= ($prefix ? '' : $this->quote($table) . '.') . $this->quote($buffer);

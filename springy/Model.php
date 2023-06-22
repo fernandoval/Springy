@@ -10,13 +10,12 @@
  * @author    Allan Marques <allan.marques@ymail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.9.0
+ * @version   2.9.1
  */
 
 namespace Springy;
 
 use Exception;
-use Iterator;
 use Springy\DB\Conditions;
 use Springy\DB\Where;
 use Springy\Validation\Validator;
