@@ -11,7 +11,25 @@
 - Adjustments and optimizations;
 - Support to PHPMailer upgraded to v6.x;
 - Added GitHub Actions test case;
-- Removed deprecated function URI::getHost().
+- Deprecated Controller::_authorizationCheck();
+- Deprecated Controller::_forbidden();
+- Deprecated Controller::_pageNotFound();
+- Deprecated Controller::_redirect();
+- Deprecated Controller::_template();
+- Deprecated Controller::_userSpecialVerifications();
+- Deprecated CreditCardValidation class;
+- Deprecated Error::handler();
+- Deprecated Log class;
+- Deprecated Container\DIContainer::has();
+- Deprecated Container\DIContainer::resolve();
+- Deprecated Events\Mediator::on();
+- Deprecated Events\Mediator::off();
+- Deprecated Security\AclManager::setDefaultModule();
+- Deprecated Security\AclManager::getDefaultModule();
+- Deprecated Utils\Excel class;
+- Removed deprecated function URI::getHost();
+- Removed deprecated function Cookie::del();
+- Removed SOAP class.
 
 ### 4.4.0
 - Added support to `Controller` suffix without underscore to controller names

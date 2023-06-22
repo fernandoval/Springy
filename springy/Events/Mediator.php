@@ -7,7 +7,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @author    Allan Marques <allan.marques@ymail.com>
  *
- * @version 0.3.0
+ * @version 0.3.1
  */
 
 namespace Springy\Events;
@@ -100,7 +100,7 @@ class Mediator
     /**
      * Alias of registerHandlerFor().
      *
-     * @deprecated 4.6
+     * @deprecated 4.5.0
      */
     public function on($event, $handler, $priority = 0)
     {
@@ -135,7 +135,7 @@ class Mediator
     /**
      * Alias of forget().
      *
-     * @deprecated 4.6
+     * @deprecated 4.5.0
      */
     public function off($event)
     {

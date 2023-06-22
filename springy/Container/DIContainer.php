@@ -7,7 +7,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @author    Allan Marques <allan.marques@ymail.com>
  *
- * @version   0.2.1
+ * @version   0.2.2
  */
 
 namespace Springy\Container;
@@ -230,7 +230,7 @@ class DIContainer implements ArrayAccess
      *
      * @return bool
      *
-     * @deprecated 4.6
+     * @deprecated 4.5.0
      */
     public function has(string $key): bool
     {
@@ -244,7 +244,7 @@ class DIContainer implements ArrayAccess
      *
      * @return mixed
      *
-     * @deprecated 4.6
+     * @deprecated 4.5.0
      */
     public function resolve(string $key)
     {
