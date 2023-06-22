@@ -10,7 +10,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   3.0.53
+ * @version   3.0.54
  */
 
 namespace Springy;
@@ -253,7 +253,7 @@ class Errors
                 break;
             default:
                 $printError = 'Unknown Error (' . $error->getCode() . ')';
-            break;
+                break;
         }
 
         $this->sendReport(

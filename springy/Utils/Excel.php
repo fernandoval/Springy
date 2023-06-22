@@ -343,7 +343,7 @@ class Excel
     /**
      * Adiciona uma coluna na tabela.
      *
-     * @param mixed       $value Coloumn Value
+     * @param mixed       $value  Coloumn Value
      * @param string|null $column
      *
      * @return void

@@ -5,7 +5,6 @@
  *
  * @copyright 2003 The Analysis and Solutions Company
  * @copyright 2007 Fernando Val
- *
  * @author Daniel Convissor <danielc@analysisandsolutions.com>
  * @author Fernando Val <fernando.val@gmail.com>
  * @author Mauricio Bastos <mbastos@gmail.com>

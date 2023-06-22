@@ -27,6 +27,7 @@
 - Deprecated Security\AclManager::setDefaultModule();
 - Deprecated Security\AclManager::getDefaultModule();
 - Deprecated Utils\Excel class;
+- Deprecated Utils\ZipFile class;
 - Removed deprecated function URI::getHost();
 - Removed deprecated function Cookie::del();
 - Removed SOAP class.

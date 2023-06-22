@@ -60,6 +60,9 @@ Os arquivos pré-distribuídos com o framework são de uso interno das classes e
 Seu sistema poderá possuir arquivos de configuração específicos, bastando obedecer o formato e a estrutura de nomes e diretórios.
 
 - **[system](/documentation/pt/system-conf.md)**
+- **[db](/documentation/pt/db-conf.md)**
+- **[uri](/documentation/pt/uri-conf.md)**
+- **[mail](/documentation/pt/mail-conf.md)**
 
 ## Models
 

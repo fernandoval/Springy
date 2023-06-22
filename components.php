@@ -7,7 +7,7 @@
  * @copyright 2015 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
  *
- * @version   5.0.2
+ * @version   5.0.3
  *
  * This is script is not a Composer plugin.
  *
@@ -520,7 +520,7 @@ function recursiveCopy(string $path, string $dest, string $minify): array
         );
     } elseif (is_file($path)) {
         copyFile($path, $dest, $minify);
-        $installed[] =  [
+        $installed[] = [
             'path' => $dest,
             'type' => 'f',
         ];
