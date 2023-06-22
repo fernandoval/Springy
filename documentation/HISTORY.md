@@ -10,7 +10,8 @@
 - Deprecates ACL default module setup;
 - Adjustments and optimizations;
 - Support to PHPMailer upgraded to v6.x;
-- Added GitHub Actions test case.
+- Added GitHub Actions test case;
+- Removed deprecated function URI::getHost().
 
 ### 4.4.0
 - Added support to `Controller` suffix without underscore to controller names

@@ -765,19 +765,6 @@ class URI
     }
 
     /**
-     * Returns the current host with protocol.
-     *
-     * @return string
-     *
-     * @deprecated 2.6.0
-     * @uses URI::getHost()
-     */
-    public static function httpHost()
-    {
-        return self::$httpHost;
-    }
-
-    /**
      * Returns the host protocol.
      *
      * @param string $host the with or without protocol prefix, or the configuration entry for host.
