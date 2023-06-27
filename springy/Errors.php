@@ -10,7 +10,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   3.1.0
+ * @version   3.1.1
  */
 
 namespace Springy;
@@ -86,7 +86,7 @@ class Errors
     }
 
     /**
-     * Converts error to JSON string;
+     * Converts error to JSON string.
      *
      * @param Throwable $error
      *
@@ -136,7 +136,7 @@ class Errors
      */
     protected function getErrorName(Throwable $error): string
     {
-        return ([
+        $name = [
             E_ERROR => 'Error',
             E_WARNING => 'Warning',
             E_PARSE => 'Parse Error',
@@ -153,7 +153,9 @@ class Errors
             E_DEPRECATED => 'Deprecated',
             E_USER_DEPRECATED => 'Deprecated by User',
             E_RECOVERABLE_ERROR => 'Recoverable Error',
-        ])[$error->getCode()] ?? 'Unknown Error (' . $error->getCode() . ')';
+        ];
+
+        return $name[$error->getCode()] ?? 'Unknown Error (' . $error->getCode() . ')';
     }
 
     /**
