@@ -8,7 +8,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.8.3
+ * @version   2.8.4
  */
 
 namespace Springy;
@@ -606,7 +606,7 @@ class Kernel
             return;
         }
 
-        if (preg_match('/^[0-9a-z]{8}|all$/', URI::getSegment(1, false))) {
+        if (preg_match('/(^[0-9a-z]{8}(,[0-9a-z]{8})*|all)$/', URI::getSegment(1, false))) {
             $error->bugSolved(URI::getSegment(1, false));
 
             return;

@@ -9,7 +9,7 @@
  * @author    Allan Marques <allan.marques@ymail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   1.9.2
+ * @version   1.9.3
  */
 
 namespace Springy;
@@ -286,8 +286,8 @@ class DB
         // Send the report of error and kill the application
         (new Errors())->sendReport(
             hash('crc32', $msg . $errorInfo[1] . $this->lastQuery), // error id
-            '<span style="color:#FF0000">' . $msg . '</span> - (' . $errorInfo[1] . ') ' . $errorInfo[2]
-            . '<br /><pre>' . $this->lastQuery . '</pre><br />Values: '
+            $msg . ' (' . $errorInfo[1] . ') ' . $errorInfo[2]
+            . ' - ' . $this->lastQuery . ' Values: '
             . Debug::print_rc($this->lastValues),
             500,
             new SpringyException($msg, E_USER_ERROR, null, $file, $line)

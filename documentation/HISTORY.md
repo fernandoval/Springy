@@ -30,7 +30,8 @@
 - Deprecated Utils\ZipFile class;
 - Removed deprecated function URI::getHost();
 - Removed deprecated function Cookie::del();
-- Removed SOAP class.
+- Removed SOAP class;
+- Updated error HTML asset files.
 
 ### 4.4.0
 - Added support to `Controller` suffix without underscore to controller names
