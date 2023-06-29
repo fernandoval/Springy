@@ -1,24 +1,22 @@
 <?php
-/** \file
- *  Springy.
+
+/**
+ * Event handlers inferface
  *
- *  \brief      Interface para classes handlers de eventos.
- *  \copyright  Copyright (c) 2007-2016 Fernando Val
- *  \author     Allan Marques - allan.marques@ymail.com
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.1.1
- *  \ingroup    framework
+ * @copyright 2007 Fernando Val
+ * @author    Allan Marques <allan.marques@ymail.com>
+ * @author    Fernando Val <fernando.val@gmail.com>
+ * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
+ *
+ * @version   0.1.2
  */
 
 namespace Springy\Events;
 
-/**
- * \brief Interface para classes handlers de eventos.
- */
 interface HandlerInterface
 {
     /**
-     * \brief Registra esta classe como handlers nos evetnos necessários.
+     * Registra esta classe como handlers nos evetnos necessários.
      */
     public function subscribes(Mediator $mediator);
 }

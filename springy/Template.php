@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Template handler class.
  *
@@ -7,7 +8,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   4.2.14
+ * @version   4.2.15
  */
 
 namespace Springy;
@@ -19,8 +20,8 @@ namespace Springy;
  */
 class Template
 {
-    const TPL_ENGINE_SMARTY = 'smarty';
-    const TPL_ENGINE_TWIG = 'twig';
+    public const TPL_ENGINE_SMARTY = 'smarty';
+    public const TPL_ENGINE_TWIG = 'twig';
 
     private $tplObj = null;
 
@@ -31,7 +32,7 @@ class Template
      */
     public function __construct($tpl = null)
     {
-        if (!$driver = Configuration::get('template', 'template_engine')) {
+        if (!$driver = config_get('template.template_engine')) {
             $driver = self::TPL_ENGINE_SMARTY;
         }
 
@@ -44,7 +45,7 @@ class Template
                 $this->tplObj = new Template\TwigDriver($tpl);
                 break;
             default:
-                new Errors('500', 'Template engine not implemented');
+                throw_error('500', 'Template engine not implemented');
         }
     }
 
@@ -199,7 +200,8 @@ class Template
      *
      * @param string $var     the name of the variable.
      * @param mixed  $value   the value of the variable.
-     * @param bool   $nocache (optional) if true, the variable is assigned as nocache variable.
+     * @param bool   $nocache (optional) if true, the variable is assigned as
+     *                        nocache variable.
      *
      * @return void
      */
@@ -239,7 +241,8 @@ class Template
     /**
      * Clears the entire template cache.
      *
-     * As an optional parameter, you can supply a minimum age in seconds the cache files must be before they will get cleared.
+     * As an optional parameter, you can supply a minimum age in seconds the
+     * cache files must be before they will get cleared.
      *
      * @param int $expire_time
      *
@@ -253,7 +256,8 @@ class Template
     /**
      * Clears the cache of the template.
      *
-     * @param int $expireTime only compiled templates older than exp_time seconds are cleared.
+     * @param int $expireTime only compiled templates older than exp_time
+     * seconds are cleared.
      *
      * @return void
      */
@@ -265,7 +269,8 @@ class Template
     /**
      * Clears the compiled version of the template.
      *
-     * @param int $expTime only compiled templates older than exp_time seconds are cleared.
+     * @param int $expTime only compiled templates older than exp_time seconds
+     * are cleared.
      *
      * @return void
      */
@@ -299,7 +304,7 @@ class Template
             return true;
         }
 
-        $this->tplObj->addTemplateDir(Configuration::get('template', 'default_template_path'));
+        $this->tplObj->addTemplateDir(config_get('template.default_template_path'));
 
         return $this->tplObj->templateExists($tplName);
     }

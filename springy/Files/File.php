@@ -1,15 +1,14 @@
 <?php
-/** \file
- *  Springy.
+
+/**
+ * File manipulation class.
  *
- *  \brief      Classe para manipulação de arquivos do sistema de arquivos.
+ * @copyright 2007 Fernando Val
+ * @author    Allan Marques <allan.marques@ymail.com>
+ * @author    Fernando Val <fernando.val@gmail.com>
+ * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- *  \copyright  Copyright (c) 2007-2018 Fernando Val
- *  \author     Allan Marques - allan.marques@ymail.com
- *
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.1.0.1
- *  \ingroup    framework
+ * @version   0.1.2
  */
 
 namespace Springy\Files;
@@ -20,17 +19,17 @@ use RuntimeException;
 use SplFileInfo;
 
 /**
- * \brief Classe para manipulação de arquivos do sistema de arquivos.
+ * File class.
  */
 class File extends SplFileInfo
 {
     /**
-     * \brief Construtor da classe.
+     * Constructor.
      *
-     * \param [in] (string) $filename - Caminho do arquivo
-     * \param [in} (bool) $checkFile - Indicador se o arquivo deve ser checado
+     * @param string $filename
+     * @param bool   $checkFile
      *
-     * \throws InvalidArgumentException.
+     * @throws InvalidArgumentException
      */
     public function __construct($filename, $checkFile = true)
     {
@@ -42,9 +41,9 @@ class File extends SplFileInfo
     }
 
     /**
-     * \brief Retorna a extensão do arquivo.
+     * Gets file extension.
      *
-     * \return (string).
+     * @return string
      */
     public function getExtension(): string
     {
@@ -52,9 +51,9 @@ class File extends SplFileInfo
     }
 
     /**
-     * \brief Retorna o mimeType do arquivo.
+     * Gets file MIME type.
      *
-     * \return (string).
+     * @return void
      */
     public function getMimeType()
     {
@@ -64,14 +63,14 @@ class File extends SplFileInfo
     }
 
     /**
-     * \brief Move o arquivo para outro diretório e retorna um objeto representando-o.
+     * Moves the file.
      *
-     * \param [in] (string) $directory - Caminho do diretório para mover
-     * \param [in] (string) $name - Novo nome do arquivo
+     * @param string $directory directory path to move
+     * @param string $name      new file name
      *
-     * \return (Springy\Files\File)
+     * @throws RuntimeException
      *
-     * \throws RuntimeException.
+     * @return self
      */
     public function moveTo($directory, $name = null)
     {
@@ -80,43 +79,50 @@ class File extends SplFileInfo
         if (!@rename($this->getPathname(), $target)) {
             $error = error_get_last();
 
-            throw new RuntimeException(sprintf('Could not move the file "%s" to "%s" (%s)', $this->getPathname(), $target, strip_tags($error['message'])));
+            throw new RuntimeException(
+                sprintf('Could not move the file "%s" to "%s" (%s)',
+                    $this->getPathname(),
+                    $target,
+                    strip_tags($error['message'])
+                )
+            );
         }
 
-        @chmod($target, 0666 & ~umask());
+        chmod($target, 0666 & ~umask());
 
         return $target;
     }
 
     /**
-     * \brief Cria um objeto reresentando que será movido no futuro.
+     * Gets new File object.
      *
-     * \param [in] (string) $directory - Camino do diretório para mover
-     * \param [in] (string) $name - Novo nome do arquivo
+     * @param string $directory directory path to move
+     * @param string $name      new file name
      *
-     * \return Springy\Files\File
+     * @throws RuntimeException
      *
-     * \throws RuntimeException.
+     * @return self
      */
     protected function getTargetFile($directory, $name = null)
     {
-        if (!is_dir($directory) && (@mkdir($directory, 0777, true) === false)) {
+        if (!is_dir($directory) && (mkdir($directory, 0777, true) === false)) {
             throw new RuntimeException(sprintf('Unable to create the "%s" directory', $directory));
         } elseif (!is_writable($directory)) {
             throw new RuntimeException(sprintf('Unable to write in the "%s" directory', $directory));
         }
 
-        $target = rtrim($directory, '/\\') . DIRECTORY_SEPARATOR . (null === $name ? $this->getBasename() : $this->getName($name));
+        $target = rtrim($directory, '/\\') . DS
+            . (null === $name ? $this->getBasename() : $this->getName($name));
 
         return new self($target, false);
     }
 
     /**
-     * \brief Retorna o nome real do arquivo.
+     * Gets original file name.
      *
-     * \param [in] (string) $name
+     * @param string $name
      *
-     * \return (string).
+     * @return string
      */
     protected function getName($name)
     {

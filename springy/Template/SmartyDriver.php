@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class driver for Smarty template engine.
  *
@@ -10,7 +11,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   1.7.19
+ * @version   1.7.20
  */
 
 namespace Springy\Template;
@@ -180,7 +181,11 @@ class SmartyDriver implements TemplateDriverInterface
      */
     public function isCached()
     {
-        return $this->tplObj->isCached($this->templateName . self::TPL_NAME_SUFIX, $this->templateCacheId, $this->templateCompileId);
+        return $this->tplObj->isCached(
+            $this->templateName . self::TPL_NAME_SUFIX,
+            $this->templateCacheId,
+            $this->templateCompileId
+        );
     }
 
     /**
@@ -192,7 +197,9 @@ class SmartyDriver implements TemplateDriverInterface
      */
     public function setCaching($value = 'current')
     {
-        $this->tplObj->setCaching($value != 'current' ? \Smarty::CACHING_LIFETIME_SAVED : \Smarty::CACHING_LIFETIME_CURRENT);
+        $this->tplObj->setCaching(
+            $value != 'current' ? \Smarty::CACHING_LIFETIME_SAVED : \Smarty::CACHING_LIFETIME_CURRENT
+        );
     }
 
     /**
@@ -249,7 +256,11 @@ class SmartyDriver implements TemplateDriverInterface
             $this->tplObj->registerPlugin($func[0], $func[1], $func[2], $func[3], $func[4]);
         }
 
-        return $this->tplObj->fetch($this->templateName . self::TPL_NAME_SUFIX, $this->templateCacheId, $this->templateCompileId);
+        return $this->tplObj->fetch(
+            $this->templateName . self::TPL_NAME_SUFIX,
+            $this->templateCacheId,
+            $this->templateCompileId
+        );
     }
 
     /**
@@ -356,7 +367,8 @@ class SmartyDriver implements TemplateDriverInterface
     /**
      * Clears the entire template cache.
      *
-     * As an optional parameter, you can supply a minimum age in seconds the cache files must be before they will get cleared.
+     * As an optional parameter, you can supply a minimum age in seconds the
+     * cache files must be before they will get cleared.
      */
     public function clearAllCache($expire_time)
     {
@@ -366,25 +378,36 @@ class SmartyDriver implements TemplateDriverInterface
     /**
      * Clears the cache of the template.
      *
-     * @param int $expireTime only compiled templates older than exp_time seconds are cleared.
+     * @param int $expireTime only compiled templates older than exp_time
+     *                        seconds are cleared.
      *
      * @todo Implement cache and compiled identifiers.
      */
     public function clearCache($expireTime = null)
     {
-        $this->tplObj->clearCache($this->templateName . self::TPL_NAME_SUFIX, $this->templateCacheId, $this->templateCompileId, $expireTime);
+        $this->tplObj->clearCache(
+            $this->templateName . self::TPL_NAME_SUFIX,
+            $this->templateCacheId,
+            $this->templateCompileId,
+            $expireTime
+        );
     }
 
     /**
      * Clears the compiled version of the template.
      *
-     * @param int $expTime only compiled templates older than exp_time seconds are cleared.
+     * @param int $expTime only compiled templates older than exp_time seconds
+     *                     are cleared.
      *
      * @todo Implement compiled identifier.
      */
     public function clearCompiled($expTime)
     {
-        $this->tplObj->clearCompiledTemplate($this->templateName . self::TPL_NAME_SUFIX, $this->templateCompileId, $expTime);
+        $this->tplObj->clearCompiledTemplate(
+            $this->templateName . self::TPL_NAME_SUFIX,
+            $this->templateCompileId,
+            $expTime
+        );
     }
 
     /**
@@ -433,6 +456,11 @@ class SmartyDriver implements TemplateDriverInterface
             $get['v'] = filemtime($filePath);
         }
 
-        return URI::buildURL(explode('/', $fileURI), $get, isset($_SERVER['HTTPS']), empty($params['host']) ? 'static' : $params['host'], false);
+        return build_url(
+            explode('/', $fileURI),
+            $get,
+            empty($params['host']) ? 'static' : $params['host'],
+            false
+        );
     }
 }

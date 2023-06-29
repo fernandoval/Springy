@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Driver class for use with SendGrid v7 class for integration with SendGrid API v3.
  *
@@ -7,7 +8,7 @@
  *
  * @see       https://github.com/sendgrid/sendgrid-php
  *
- * @version    3.2.0.9
+ * @version    3.2.10
  */
 
 namespace Springy\Mail;
@@ -222,7 +223,8 @@ class SendGridDriver implements MailDriverInterface
             $response = $this->sendgrid->send($this->mailObj);
             $error = $response->body();
         } catch (\Exception $err) {
-            $error = $err->getCode() . ' - ' . $err->getMessage() . ' at ' . $err->getFile() . ' (' . $err->getLine() . ')';
+            $error = $err->getCode() . ' - ' . $err->getMessage()
+                . ' at ' . $err->getFile() . ' (' . $err->getLine() . ')';
         }
 
         return $error;
