@@ -7,7 +7,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.1.5
+ * @version   2.1.6
  */
 
 namespace Springy\Mail;
@@ -104,7 +104,7 @@ interface MailDriverInterface
     public function addTemplateVar($name, $value);
 
     /**
-     * Send the mail message
+     * Send the mail message.
      *
      * @return mixed The error message or a empty string if success.
      */

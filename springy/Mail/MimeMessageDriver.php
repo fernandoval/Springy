@@ -9,7 +9,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   1.1.7
+ * @version   1.1.8
  */
 
 namespace Springy\Mail;
@@ -50,7 +50,8 @@ class MimeMessageDriver implements MailDriverInterface
     ];
 
     /**
-     * Constructor method
+     * Constructor method.
+     *
      * @param array $cfg array with de configuration.
      */
     public function __construct($cfg)
@@ -254,7 +255,7 @@ class MimeMessageDriver implements MailDriverInterface
     }
 
     /**
-     * Send the mail message
+     * Send the mail message.
      *
      * @return mixed The error message or a empty string if success.
      */

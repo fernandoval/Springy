@@ -8,7 +8,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   0.1.2
+ * @version   0.1.3
  */
 
 namespace Springy\Files;
@@ -80,7 +80,8 @@ class File extends SplFileInfo
             $error = error_get_last();
 
             throw new RuntimeException(
-                sprintf('Could not move the file "%s" to "%s" (%s)',
+                sprintf(
+                    'Could not move the file "%s" to "%s" (%s)',
                     $this->getPathname(),
                     $target,
                     strip_tags($error['message'])

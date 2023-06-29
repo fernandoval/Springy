@@ -9,7 +9,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.1.8
+ * @version   2.1.9
  */
 
 namespace Springy\Mail;
@@ -28,7 +28,7 @@ class SwiftMailerDriver implements MailDriverInterface
     private $mailObj = null;
 
     /**
-     * Constructor method
+     * Constructor method.
      *
      * @param array $cfg
      */

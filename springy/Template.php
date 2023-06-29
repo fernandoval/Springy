@@ -8,7 +8,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   4.2.15
+ * @version   4.2.16
  */
 
 namespace Springy;
@@ -257,7 +257,7 @@ class Template
      * Clears the cache of the template.
      *
      * @param int $expireTime only compiled templates older than exp_time
-     * seconds are cleared.
+     *                        seconds are cleared.
      *
      * @return void
      */
@@ -270,7 +270,7 @@ class Template
      * Clears the compiled version of the template.
      *
      * @param int $expTime only compiled templates older than exp_time seconds
-     * are cleared.
+     *                     are cleared.
      *
      * @return void
      */
