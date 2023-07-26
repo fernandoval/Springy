@@ -7,7 +7,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   0.14.0
+ * @version   0.14.1
  */
 
 namespace Springy\Utils;
@@ -269,7 +269,6 @@ class Strings
      *
      * @deprecated 4.5.0
      */
-
     public static function numero($numero, $tamanho = '', $minimo = 1, $float = false, $negativo = false)
     {
         return preg_match(

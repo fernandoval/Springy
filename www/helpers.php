@@ -7,7 +7,7 @@
  * @author     Allan Marques <allan.marques@ymail.com>
  * @author     Fernando Val <fernando.val@gmail.com>
  *
- * @version    4.6.2
+ * @version    4.6.3
  *
  * Let's make the developer happier and more productive.
  */
@@ -208,7 +208,7 @@ function mkdir_recursive(string $dirpath, $mode): bool
  * @note Is recommend the use of the Minify class by Matthias Mullie.
  *       https://github.com/matthiasmullie/minify
  *
- * @param string $name the source file name.
+ * @param string $name    the source file name.
  * @param string $destiny the destination file name.
  *
  * @return void
