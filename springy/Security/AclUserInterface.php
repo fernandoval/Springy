@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ACL identity user interface.
  *
@@ -6,7 +7,7 @@
  * @author    Allan Marques <allan.marques@ymail.com>
  * @author    Fernando Val <fernando.val@gmail.com>
  *
- * @version    0.1.3
+ * @version    0.1.4
  */
 
 namespace Springy\Security;

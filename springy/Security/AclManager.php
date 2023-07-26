@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ACL (Access Control List) Authorization class for the application.
  *
@@ -7,7 +8,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   1.1.0
+ * @version   1.1.1
  */
 
 namespace Springy\Security;
