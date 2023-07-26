@@ -6,7 +6,7 @@
  * @copyright 2007 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
  *
- * @version    1.0.12
+ * @version    1.0.13
  */
 
 namespace Springy\Core;
@@ -19,11 +19,11 @@ use Springy\Kernel;
  */
 class Debug
 {
-    /// Debug information array
+    /** @var array Debug information array */
     private static $debug = [];
 
     /**
-     *  @brief Add a information to the debug window.
+     * Add a information to the debug window.
      */
     public static function add($txt, $name = '', $highlight = true, $revert = true)
     {
@@ -44,12 +44,12 @@ class Debug
     }
 
     /**
-     *  @brief Get the debug backtrace.
+     * Get the debug backtrace.
      *
-     *  @param array $debug array with the backtrace or null to get from the system.
-     *  @param int $limit this parameter can be used to limit the number of stack frames loaded.
-     *      Setting zero value (0) it catch all stack frames.
-     *      By default (limit=10) it catch 10 stack frames.
+     * @param array $debug array with the backtrace or null to get from the system.
+     * @param int   $limit this parameter can be used to limit the number of stack frames loaded.
+     *                     Setting zero value (0) it catch all stack frames.
+     *                     By default (limit=10) it catch 10 stack frames.
      */
     public static function backtrace($debug = null, $limit = 10)
     {
@@ -100,9 +100,9 @@ class Debug
     }
 
     /**
-     *  @brief Get the debug content in the string format.
+     * Get the debug content in the string format.
      *
-     *  @return string Retorna uma string contendo os dados capturados em debug.
+     * @return string Retorna uma string contendo os dados capturados em debug.
      */
     public static function get()
     {
@@ -127,9 +127,9 @@ class Debug
     }
 
     /**
-     *  @brief Print out the debug content.
+     * Print out the debug content.
      *
-     *  @return void
+     * @return void
      */
     public static function printOut()
     {

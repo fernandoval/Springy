@@ -24,13 +24,6 @@ class StringsTest extends TestCase
         $this->assertTrue(Strings::validateEmailAddress('fernando@fval.nonexiuuste', false));
     }
 
-    public function testThatDateGetsValidatedSuccessfully()
-    {
-        $this->assertTrue(Strings::data('25/01/1987'));
-        $this->assertFalse(Strings::data('31d/f02/gg2014'));
-        $this->assertFalse(Strings::data('31/02/2014'));
-    }
-
     public function testCnpj()
     {
         $cnpj = '22.608.842/0001-63';

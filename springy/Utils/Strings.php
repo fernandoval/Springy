@@ -7,7 +7,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   0.13.25
+ * @version   0.14.0
  */
 
 namespace Springy\Utils;
@@ -86,7 +86,7 @@ class Strings
     }
 
     /**
-     *  \brief Verifica se é um slug válido.
+     * Verifica se é um slug válido.
      */
     public static function validateSlug($txt)
     {
@@ -94,12 +94,12 @@ class Strings
     }
 
     /**
-     *  \brief Valida um texto qualquer, verificanso se tem um tamanho mínimo e máximo desejado.
-     *  O método também remove todas as TAGs HTML que o texto possua.
+     * Valida um texto qualquer, verificanso se tem um tamanho mínimo e máximo desejado.
+     * O método também remove todas as TAGs HTML que o texto possua.
      *
-     *  @param string $txt - Texto a ser validado
-     *  @param int $min - Tamanho mínimo esperado para o texto (default=3).
-     *  @param int $max - Tamanho máximo que o texto pode ter. Se deixar em branco permite textos de tamanho infinito.
+     * @param string $txt Texto a ser validado
+     * @param int    $min Tamanho mínimo esperado para o texto (default=3).
+     * @param int    $max Tamanho máximo que o texto pode ter. Se deixar em branco permite textos de tamanho infinito.
      */
     public static function validateText(&$txt, $min = 3, $max = false)
     {
@@ -110,7 +110,7 @@ class Strings
     }
 
     /**
-     *  \brief Verify if a IP is from a local area network.
+     * Verify if a IP is from a local area network.
      */
     public static function isPraviteNetwork($userIP)
     {
@@ -131,13 +131,17 @@ class Strings
     }
 
     /**
-     *  \brief Verify if given IP is valid.
+     * Verify if given IP is valid.
      *
-     *  \return Return true when given IP is valid or false if not.
+     * @return bool Return true when given IP is valid or false if not.
      */
     public static function isValidIP($ipValue)
     {
-        if (filter_var($ipValue, FILTER_VALIDATE_IP) === false || self::isPraviteNetwork($ipValue) || !strcasecmp($ipValue, 'unknown')) {
+        if (
+            filter_var($ipValue, FILTER_VALIDATE_IP) === false
+            || self::isPraviteNetwork($ipValue)
+            || !strcasecmp($ipValue, 'unknown')
+        ) {
             return false;
         }
 
@@ -145,16 +149,16 @@ class Strings
     }
 
     /**
-     *  \brief Retorna o endereço IP remoto real.
+     * Retorna o endereço IP remoto real.
      *
-     *  Existem certas situações em que o verdadeiro IP do visitante fica mascarado quando o servidor de aplicação
-     *  está por trás de um firewall ou balanceador de carga. Nesses casos é necessário fazer certas verificações em
-     *  lugar de pegar apenas o valor da vairável $_SERVER['REMOTE_ADDR'].
+     * Existem certas situações em que o verdadeiro IP do visitante fica mascarado quando o servidor de aplicação
+     * está por trás de um firewall ou balanceador de carga. Nesses casos é necessário fazer certas verificações em
+     * lugar de pegar apenas o valor da vairável $_SERVER['REMOTE_ADDR'].
      *
-     *  Este método tenta recuperar o real IP do visitante, fazendo verificações e garantindo que nenhum valor de IP
-     *  inválido seja retornado.
+     * Este método tenta recuperar o real IP do visitante, fazendo verificações e garantindo que nenhum valor de IP
+     * inválido seja retornado.
      *
-     *  \return Retorna uma string contendo o IP real do host que fez a requisição.
+     * @return string Retorna uma string contendo o IP real do host que fez a requisição.
      */
     public static function getRealRemoteAddr()
     {
@@ -188,10 +192,12 @@ class Strings
     }
 
     /**
-     *  \brief Gena um identificador único global (globally unique identifier - GUID).
+     * Gena um identificador único global (globally unique identifier - GUID).
      *
-     *  \note Esta função foi copiada da contribuição de Alix Axel para a documentação do PHP
-     *  em http://php.net/manual/en/function.com-create-guid.php
+     * Esta função foi copiada da contribuição de Alix Axel para a documentação do PHP
+     * em http://php.net/manual/en/function.com-create-guid.php
+     *
+     * @deprecated 4.5.0
      */
     public static function guid()
     {
@@ -199,15 +205,25 @@ class Strings
             return trim(com_create_guid(), '{}');
         }
 
-        return sprintf('%04X%04X-%04X-%04X-%04X-%04X%04X%04X', mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(16384, 20479), mt_rand(32768, 49151), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535));
+        return sprintf(
+            '%04X%04X-%04X-%04X-%04X-%04X%04X%04X',
+            mt_rand(0, 65535),
+            mt_rand(0, 65535),
+            mt_rand(0, 65535),
+            mt_rand(16384, 20479),
+            mt_rand(32768, 49151),
+            mt_rand(0, 65535),
+            mt_rand(0, 65535),
+            mt_rand(0, 65535)
+        );
     }
 
     /**
-     *  \brief Converte um IPv4 em valor inteiro.
+     * Converte um IPv4 em valor inteiro.
      *
-     *  @param string $ipv4 - endereço ip
+     * @param string $ipv4 endereço ip
      *
-     *  @return Retorna um valor inteiro
+     * @return int
      */
     public static function ipv4ToNumber($ipv4)
     {
@@ -218,11 +234,14 @@ class Strings
         }
 
         // Calcula o valor do IP
-        return (16777216 * (int) $parts[0]) + (65536 * (int) $parts[1]) + (256 * (int) $parts[2]) + (int) $parts[3];
+        return (16777216 * (int) $parts[0])
+            + (65536 * (int) $parts[1])
+            + (256 * (int) $parts[2])
+            + (int) $parts[3];
     }
 
     /**
-     *  \brief Troca caracteres acentuados por não acentuado.
+     * Troca caracteres acentuados por não acentuado.
      */
     public static function removeAccentedChars($txt)
     {
@@ -235,25 +254,41 @@ class Strings
 
     /* As funções abaixo ainda estão em processo de migração para o framework e não devem ser utilizadas */
 
-    /*
-     * @param[in] (string)$numero - variável a ser validado
-     * @param[in] (string)$tamanho - quantidade máxima de caracteres [0-9] aceitos. Se for passado vazio (''), será infinito
-     * @param[in] (string)$minimo - quantidade mínima de caracteres [0-9] aceitos
-     * @param[in] (boolean|int|string)$float - Se for === false, não poderá ser flutuante. Se for int, será o número máximo de caracteres aceitos após o ponto. Se for vazio ('') será infinito
-     * @param[in] (boolean)$negativo - informa se o número poderá ser negativo
+    /**
+     * Valida um número.
+     *
+     * @param string          $numero   variável a ser validado.
+     * @param string          $tamanho  quantidade máxima de caracteres [0-9] aceitos.
+     *                                  Se for passado vazio (''), será infinito.
+     * @param string          $minimo   quantidade mínima de caracteres [0-9] aceitos.
+     * @param bool|int|string $float    Se for === false, não poderá ser flutuante.
+     *                                  Se for int, será o número máximo de caracteres
+     *                                  aceitos após o ponto.
+     *                                  Se for vazio ('') será infinito.
+     * @param bool            $negativo informa se o número poderá ser negativo
+     *
+     * @deprecated 4.5.0
      */
 
     public static function numero($numero, $tamanho = '', $minimo = 1, $float = false, $negativo = false)
     {
-        return preg_match('/^' . ($negativo ? '[\-]?' : '') . '[0-9]{' . $minimo . ',' . $tamanho . '}' . ($float !== false ? '\.[0-9]{1,' . $float . '}' : '') . '$/', $numero);
+        return preg_match(
+            '/^' . ($negativo ? '[\-]?' : '') . '[0-9]{' . $minimo . ',' . $tamanho . '}'
+            . ($float !== false ? '\.[0-9]{1,' . $float . '}' : '') . '$/',
+            $numero
+        );
     }
 
     /**
-     *  \brief Valida uma data no formato dd/mm/yyyy.
+     * Valida uma data no formato dd/mm/yyyy.
      *
-     *  Só serão consideradas válidas datas de 01/01/1900 até 31/12/2199.
+     * Só serão consideradas válidas datas de 01/01/1900 até 31/12/2199.
      *
-     *  @param[in] (string)$data - data no formato d/m/Y
+     * @param string $data data no formato d/m/Y
+     *
+     * @deprecated 4.5.0
+     *
+     * @return bool
      */
     public static function data($data)
     {
@@ -267,6 +302,8 @@ class Strings
      *
      * @param string $hora
      * @param bool   $segundos Valida os segundos, default: false
+     *
+     * @deprecated 4.5.0
      *
      * @return bool
      */
@@ -282,28 +319,41 @@ class Strings
     }
 
     /**
-     *  \brief Valida o tamanho de uma string.
+     * Valida o tamanho de uma string.
      *
-     *  Essa função não tem muito sentido em existir. Está sendo mantida apenas
-     *  para compatibilidade com versões anteriores do framework.
+     * Essa função não tem muito sentido em existir. Está sendo mantida apenas
+     * para compatibilidade com versões anteriores do framework.
      *
-     *  Ela foi criada por causa da função nunca agregada, mas mantida sem
-     *  documentação, denominada senha, que verifica apenas os tamanhos
-     *  mínimo e máximo de um string fornecido.
+     * Ela foi criada por causa da função nunca agregada, mas mantida sem
+     * documentação, denominada senha, que verifica apenas os tamanhos
+     * mínimo e máximo de um string fornecido.
      *
-     *  Sugestão: elaborar uma função ou classe melhor para verificação de
-     *  senhas, que, preferencialmente, tenha recursos como o de teste de força
-     *  da senha.
+     * Sugestão: elaborar uma função ou classe melhor para verificação de
+     * senhas, que, preferencialmente, tenha recursos como o de teste de força
+     * da senha.
      *
-     *  \param (string)$string - String a ser verificado
-     *  \param (int)$minSize - tamanho mínimo aceito. Padrão = 5
-     *  \param (int)$maxSize - tamanho máximo aceito. Padrão = 16
+     * @param string $string  String a ser verificado
+     * @param int    $minSize tamanho mínimo aceito. Padrão = 5
+     * @param int    $maxSize tamanho máximo aceito. Padrão = 16
+     *
+     * @deprecated 4.5.0
+     *
+     * @return int|bool
      */
     public static function sizeMatch($string, $minSize = 5, $maxSize = 16)
     {
         return preg_match('/^(.){' . $minSize . ',' . $maxSize . '}$/', $string);
     }
 
+    /**
+     * Valida o formato de CEP.
+     *
+     * @param string $cep
+     *
+     * @deprecated 4.5.0
+     *
+     * @return int|bool
+     */
     public static function cep(&$cep)
     {
         $cep = preg_replace('/[-.]/', '', $cep);
@@ -311,6 +361,16 @@ class Strings
         return preg_match('/^[0-9]{8}$/', $cep);
     }
 
+    /**
+     * Valida o formato de CEP.
+     *
+     * @param string $ddd
+     * @param string $telefone
+     *
+     * @deprecated 4.5.0
+     *
+     * @return bool
+     */
     public static function telefone(&$ddd, &$telefone)
     {
         $telefone = preg_replace('/[^0-9]/', '', $telefone);
@@ -334,7 +394,7 @@ class Strings
     }
 
     /**
-     * @brief Verify a brazilian document number CPF.
+     * Verify a brazilian document number CPF.
      *
      * @param string $cpf the CPF number.
      */

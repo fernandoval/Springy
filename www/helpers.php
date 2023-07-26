@@ -7,12 +7,10 @@
  * @author     Allan Marques <allan.marques@ymail.com>
  * @author     Fernando Val <fernando.val@gmail.com>
  *
- * @version    4.6.0
+ * @version    4.6.2
  *
  * Let's make the developer happier and more productive.
  */
-
-use Springy\Exceptions\SpringyException;
 
 // Definig the constantes
 if (!defined('DS')) {
@@ -33,7 +31,7 @@ if (!defined('DS')) {
 function app($service = null)
 {
     if ($service) {
-        return app()->resolve($service);
+        return app()->offsetGet($service);
     }
 
     return Springy\Core\Application::sharedInstance();
@@ -205,15 +203,15 @@ function mkdir_recursive(string $dirpath, $mode): bool
 }
 
 /**
- *  @brief Minify a CSS or JS file.
+ * @brief Minify a CSS or JS file.
  *
- *  @note Is recommend the use of the Minify class by Matthias Mullie.
- *      https://github.com/matthiasmullie/minify
+ * @note Is recommend the use of the Minify class by Matthias Mullie.
+ *       https://github.com/matthiasmullie/minify
  *
- *  @param string $name the source file name.
- *  @param string $destiny the destination file name.
+ * @param string $name the source file name.
+ * @param string $destiny the destination file name.
  *
- *  @return void
+ * @return void
  */
 function minify($source, $destiny)
 {
@@ -376,7 +374,7 @@ function springyExceptionHandler(Throwable $error)
 function springyErrorHandler($errno, $errstr, $errfile, $errline)
 {
     (new Springy\Errors())->process(
-        new SpringyException($errstr, $errno, null, $errfile, $errline),
+        new Springy\Exceptions\SpringyException($errstr, $errno, null, $errfile, $errline),
         500
     );
 }

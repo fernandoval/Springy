@@ -26,6 +26,13 @@
 - Deprecated Events\Mediator::off();
 - Deprecated Security\AclManager::setDefaultModule();
 - Deprecated Security\AclManager::getDefaultModule();
+- Deprecated Strings::cep();
+- Deprecated Strings::data();
+- Deprecated Strings::guid();
+- Deprecated Strings::hora();
+- Deprecated Strings::numero();
+- Deprecated Strings::sizeMatch();
+- Deprecated Strings::telefone();
 - Deprecated Utils\Excel class;
 - Deprecated Utils\ZipFile class;
 - Removed deprecated function URI::getHost();

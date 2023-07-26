@@ -7,7 +7,7 @@
  * @author    Allan Marques <allan.marques@ymail.com>
  * @author    Fernando Val <fernando.val@gmail.com>
  *
- * @version   0.1.2
+ * @version   0.1.3
  */
 
 namespace Springy\Security;
@@ -15,7 +15,7 @@ namespace Springy\Security;
 interface HasherInterface
 {
     /**
-     * Makes and returns the hash string
+     * Makes and returns the hash string.
      *
      * @param string $stringToHash
      * @param int    $times

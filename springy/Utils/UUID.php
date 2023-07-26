@@ -7,7 +7,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version	  0.1.5
+ * @version   0.1.6
  */
 
 namespace Springy\Utils;
@@ -32,11 +32,11 @@ class UUID
     {
         $hash = uniqid(md5(rand()));
 
-        return substr($hash, 0, 8) . '-' .
-            substr($hash, 8, 4) . '-' .
-            substr($hash, 12, 4) . '-' .
-            substr($hash, 16, 4) . '-' .
-            substr($hash, 20, 12);
+        return substr($hash, 0, 8) . '-'
+            . substr($hash, 8, 4) . '-'
+            . substr($hash, 12, 4) . '-'
+            . substr($hash, 16, 4) . '-'
+            . substr($hash, 20, 12);
     }
 
     /**
@@ -73,19 +73,15 @@ class UUID
             '%08s-%04s-%04x-%04x-%12s',
             // 32 bits for "time_low"
             substr($hash, 0, 8),
-
             // 16 bits for "time_mid"
             substr($hash, 8, 4),
-
             // 16 bits for "time_hi_and_version",
             // four most significant bits holds version number 3
             (hexdec(substr($hash, 12, 4)) & 0x0FFF) | 0x3000,
-
             // 16 bits, 8 bits for "clk_seq_hi_res",
             // 8 bits for "clk_seq_low",
             // two most significant bits holds zero and one for variant DCE1.1
             (hexdec(substr($hash, 16, 4)) & 0x3FFF) | 0x8000,
-
             // 48 bits for "node"
             substr($hash, 20, 12)
         );
@@ -105,19 +101,15 @@ class UUID
             // 32 bits for "time_low"
             mt_rand(0, 0xFFFF),
             mt_rand(0, 0xFFFF),
-
             // 16 bits for "time_mid"
             mt_rand(0, 0xFFFF),
-
             // 16 bits for "time_hi_and_version",
             // four most significant bits holds version number 4
             mt_rand(0, 0x0FFF) | 0x4000,
-
             // 16 bits, 8 bits for "clk_seq_hi_res",
             // 8 bits for "clk_seq_low",
             // two most significant bits holds zero and one for variant DCE1.1
             mt_rand(0, 0x3FFF) | 0x8000,
-
             // 48 bits for "node"
             mt_rand(0, 0xFFFF),
             mt_rand(0, 0xFFFF),
@@ -159,19 +151,15 @@ class UUID
             '%08s-%04s-%04x-%04x-%12s',
             // 32 bits for "time_low"
             substr($hash, 0, 8),
-
             // 16 bits for "time_mid"
             substr($hash, 8, 4),
-
             // 16 bits for "time_hi_and_version",
             // four most significant bits holds version number 5
             (hexdec(substr($hash, 12, 4)) & 0x0FFF) | 0x5000,
-
             // 16 bits, 8 bits for "clk_seq_hi_res",
             // 8 bits for "clk_seq_low",
             // two most significant bits holds zero and one for variant DCE1.1
             (hexdec(substr($hash, 16, 4)) & 0x3FFF) | 0x8000,
-
             // 48 bits for "node"
             substr($hash, 20, 12)
         );
