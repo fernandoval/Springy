@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  * Springy Framework Configuration File.
  *
  * Used for "production" environment.

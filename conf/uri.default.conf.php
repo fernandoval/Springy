@@ -1,13 +1,12 @@
 <?php
 
-/**
+/*
  * Springy Framework Configuration File.
  *
  * As entradas colocadas nesse arquivo serão aplicadas a todos os ambientes do sistema.
  *
  * Do not remove this file.
  */
-
 $conf = [
     /*
      * New routing for PSR-4 controllers
