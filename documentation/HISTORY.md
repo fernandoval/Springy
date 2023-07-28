@@ -9,46 +9,53 @@
 - Changes ACL module definition;
 - Deprecates ACL default module setup;
 - Adjustments and optimizations;
-- Support to PHPMailer upgraded to v6.x;
+- Support to `PHPMailer` upgraded to v6.x;
 - Added GitHub Actions test case;
-- Deprecated Controller::_authorizationCheck();
-- Deprecated Controller::_forbidden();
-- Deprecated Controller::_pageNotFound();
-- Deprecated Controller::_redirect();
-- Deprecated Controller::_template();
-- Deprecated Controller::_userSpecialVerifications();
-- Deprecated CreditCardValidation class;
-- Deprecated Error::handler();
-- Deprecated Log class;
-- Deprecated Container\DIContainer::has();
-- Deprecated Container\DIContainer::resolve();
-- Deprecated Events\Mediator::on();
-- Deprecated Events\Mediator::off();
-- Deprecated Security\AclManager::setDefaultModule();
-- Deprecated Security\AclManager::getDefaultModule();
-- Deprecated Strings::cep();
-- Deprecated Strings::data();
-- Deprecated Strings::guid();
-- Deprecated Strings::hora();
-- Deprecated Strings::numero();
-- Deprecated Strings::sizeMatch();
-- Deprecated Strings::telefone();
-- Deprecated Utils\Excel class;
-- Deprecated Utils\ZipFile class;
-- Removed deprecated function URI::getHost();
-- Removed deprecated function Cookie::del();
-- Removed SOAP class;
-- Updated error HTML asset files.
+- Deprecated `Controller::_authorizationCheck()`;
+- Deprecated `Controller::_forbidden()`;
+- Deprecated `Controller::_pageNotFound()`;
+- Deprecated `Controller::_redirect()`;
+- Deprecated `Controller::_template()`;
+- Deprecated `Controller::_userSpecialVerifications()`;
+- Deprecated `CreditCardValidation` class;
+- Deprecated `Error::handler()`;
+- Deprecated `Log` class;
+- Deprecated `Container\DIContainer::has()`;
+- Deprecated `Container\DIContainer::resolve()`;
+- Deprecated `Events\Mediator::on()`;
+- Deprecated `Events\Mediator::off()`;
+- Deprecated `Security\AclManager::setDefaultModule()`;
+- Deprecated `Security\AclManager::getDefaultModule()`;
+- Deprecated `Strings::cep()`;
+- Deprecated `Strings::data()`;
+- Deprecated `Strings::guid()`;
+- Deprecated `Strings::hora()`;
+- Deprecated `Strings::numero()`;
+- Deprecated `Strings::sizeMatch()`;
+- Deprecated `Strings::telefone()`;
+- Deprecated `Utils\Excel class`;
+- Deprecated `Utils\ZipFile class`;
+- Removed deprecated function `URI::_GET()`;
+- Removed deprecated function `URI::getHost()`;
+- Removed deprecated function `Cookie::del()`;
+- Removed `SOAP` class;
+- Updated error HTML asset files;
+- Deprecated configuratios:
+  - `uri.routes`;
+  - `uri.redirects`;
+  - `uri.prevalidate_controller`;
+  - `uri.host_controller_path`.
 
 ### 4.4.0
 - Added support to `Controller` suffix without underscore to controller names
   to help in convertion to new namespace method;
 - Added support to `App\Controller` namespace without `Controller` or
   `_Controller` name suffix to controllers;
-- Deprecates `.class` suffix for application classes;
-- Deprecates `.static` suffix for application classes;
-- Deprecates application classes with hiphen in its name;
-- Deprecates `with()` helper function;
+- Deprecated `.class` suffix for application classes;
+- Deprecated `.static` suffix for application classes;
+- Deprecated application classes with hiphen in its name;
+- Deprecated `with()` helper function;
+- Deprecated `URI::_GET()` function;
 - Adds functions without underscore prefix to deprecate old standard functions;
 - Adds support to bootstrap application script as an alternative to deprecated
   `_global` controller;
@@ -61,9 +68,15 @@
 - Fixed bug in `Configuration::set()` function;
 - Hook controllers signed as deprecated;
 - Empty function `_ignore_global` to ignore Global pre-controller deprecated;
-- Deleted the following classes: `DBDelete`, `DBExpression`, `DBFiltro`,
-  `DBInsert`, `DBSelect`, `DBUpdate` and `DBWhere`;
-- `Pagination` class deprecated and deleted;
+- Removed the following classes:
+  - `DBDelete`;
+  - `DBExpression`;
+  - `DBFiltro`;
+  - `DBInsert`;
+  - `DBSelect`;
+  - `DBUpdate`;
+  - `DBWhere`;
+- Removed `Pagination` class;
 - Deleted Doxygen documentation.
 
 ### 4.3.1
@@ -72,14 +85,14 @@
 - Adds composer.lock file;
 - Implements secure cookie for session;
 - Implements column getter methods for Model;
-- Adjustments in Cookie;
-- Adjustments in Model;
-- Enhances in URI;
-- Enhances in Validator;
-- Fixes in Model;
-- Fixes in Session;
-- Fixes file not found Kernel panic;
-- Removed deprecated SUPERVAR query strig.
+- Adjustments in `Cookie`;
+- Adjustments in `Model`;
+- Enhances in `URI`;
+- Enhances in `Validator`;
+- Fixes in `Model`;
+- Fixes in `Session`;
+- Fixes file not found `Kernel` panic;
+- Removed "SUPERVAR" query strig.
 
 ### 4.3.0
 - Implements CGI mode;
@@ -87,18 +100,24 @@
 - Small adjustments and enhancements.
 
 ### 4.2.2
-- Deprecated css_dir, js_dir, images_dir and swf_dir entries from uri
-  configuration;
-- Removed urlJS, urlCSS, urlIMG e urlSWF template variables.
+- Deprecated configurations:
+  - `template.urlJS`,
+  - `template.urlCSS`;
+  - `template.urlIMG`;
+  - `template.urlSWF`;
+  - `uri.css_dir`;
+  - `uri.js_dir`;
+  - `uri.images_dir`;
+  - `uri.swf_dir`.
 
 ### 4.2.1
 - Fixed SendGrid SDK version;
 - Other enhancements and adjustments.
 
 ### 4.2.0
-- Fixed bug in Kernel::delIgnoredError;
+- Fixed bug in `Kernel::delIgnoredError`;
 - PSR fixes in URI class;
-- Method URI::http_host renamed to camel case format URI::httpHost
+- Method `URI::http_host()` renamed to camel case format `URI::httpHost()`.
 
 ### 4.1.0
 - New method templateObject in Template;

@@ -7,6 +7,7 @@
  *
  * Do not remove this file.
  */
+
 $conf = [
     /*
      * New routing for PSR-4 controllers
@@ -74,6 +75,8 @@ $conf = [
 
     /*
      * Old style regex routing.
+     *
+     * @deprecated 4.5.0
      */
     'routes' => [
         'home(\/)*(\?(.*))*' => [
@@ -83,6 +86,8 @@ $conf = [
     ],
     /*
      * Old style redirections.
+     *
+     * @deprecated 4.5.0
      */
     'redirects' => [
         '404' => [
@@ -95,6 +100,8 @@ $conf = [
     ],
     /*
      * Old style controller rounting.
+     *
+     * @deprecated 4.5.0
      */
     'prevalidate_controller' => [
         // 'mycontroller'      => ['command' => 301, 'segments' => 2],
@@ -102,6 +109,8 @@ $conf = [
     ],
     /*
      * Old style controller path by host.
+     *
+     * @deprecated 4.5.0
      */
     'host_controller_path' => [
         // 'cmd.shell' => ['$command'],

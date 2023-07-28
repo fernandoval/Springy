@@ -6,13 +6,13 @@
  * @copyright 2007 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
- * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.6.0
+ * @version   2.7.0
  */
 
 namespace Springy;
 
+use Springy\Exceptions\SpringyException;
 use Springy\Utils\Strings_ANSI;
 use Springy\Utils\Strings_UTF8;
 
@@ -403,6 +403,14 @@ class URI
             return;
         }
 
+        throw new SpringyException(
+            'uri.prevalidate_controller are deprecated',
+            E_DEPRECATED,
+            null,
+            __FILE__,
+            __LINE__
+        );
+
         $ctrl = trim(
             str_replace(
                 DS,
@@ -437,17 +445,13 @@ class URI
             }
         }
 
-        switch ($action) {
-            case 301:
-            case 302:
-                while (count(self::$segments) - self::$segment_page - 1 > $pctlr[$ctrl]['segments']) {
-                    array_pop(self::$segments);
-                }
-                self::redirect(self::buildURL(self::$segments, empty($_GET) ? [] : $_GET), $action);
-            case 404:
-            case 500:
-            case 503:
-                new Errors($action);
+        if ($action >= 300 && $action < 400) {
+            while (count(self::$segments) - self::$segment_page - 1 > $pctlr[$ctrl]['segments']) {
+                array_pop(self::$segments);
+            }
+            self::redirect(self::buildURL(self::$segments, empty($_GET) ? [] : $_GET), $action);
+        } elseif ($action >= 400) {
+            new Errors($action);
         }
     }
 
@@ -641,22 +645,6 @@ class URI
     /**
      * Returns the value of a query string variable.
      *
-     * Is an alias for URI::getParam().
-     *
-     * @param string $var is the name of the query string variable desired.
-     *
-     * @return mixed the value of the variable or false if it does not exists.
-     *
-     * @deprecated 4.4.0
-     */
-    public static function _GET($var)
-    {
-        return self::getParam($var);
-    }
-
-    /**
-     * Returns the value of a query string variable.
-     *
      * @param string $var     is the name of the query string variable desired.
      * @param bool   $numeric true if parameter needs to be integer.
      *
@@ -761,7 +749,7 @@ class URI
         // Monta os parâmetros a serem passados por GET
         self::encodeParam($query, '', $param);
 
-        return self::_host($host) . $url . $param;
+        return self::host($host) . $url . $param;
     }
 
     /**
@@ -771,7 +759,7 @@ class URI
      *
      * @return string
      */
-    private static function _host($host = 'dynamic')
+    private static function host($host = 'dynamic')
     {
         if (preg_match('|^(.+):\/\/(.+)|i', $host)) {
             return $host;
@@ -807,7 +795,8 @@ class URI
     /**
      * Sets a redirect status header and finish the application.
      *
-     * This method sends the status header with a URI redirection to the user browser and finish the application execution.
+     * This method sends the status header with a URI redirection to the user
+     * browser and finish the application execution.
      *
      * @param string $url    the URI.
      * @param int    $header the redirection code (default = 302).
