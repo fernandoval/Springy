@@ -809,7 +809,7 @@ class DB
             'Setembro',
             'Outubro',
             'Novembro',
-            'Dezembro'
+            'Dezembro',
         ];
         $numMes = (int) date('m', $dateTime);
 
