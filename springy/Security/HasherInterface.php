@@ -7,7 +7,7 @@
  * @author    Allan Marques <allan.marques@ymail.com>
  * @author    Fernando Val <fernando.val@gmail.com>
  *
- * @version   0.1.3
+ * @version   0.2.0
  */
 
 namespace Springy\Security;
@@ -32,7 +32,7 @@ interface HasherInterface
      *
      * @return bool
      */
-    public function verify($stringToCheck, $hash);
+    public function verify(string $stringToCheck, string $hash);
 
     /**
      * Checks if the string needs to be re-encrypted.

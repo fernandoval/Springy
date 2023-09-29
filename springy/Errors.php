@@ -10,12 +10,13 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   3.1.1
+ * @version   3.2.0
  */
 
 namespace Springy;
 
 use Exception;
+use PDOException;
 use Springy\Exceptions\SpringyException;
 use Springy\Utils\Strings;
 use Throwable;
@@ -326,13 +327,7 @@ class Errors
         }
 
         $dbsrv = config_get('system.system_error.db_server') ?: 'default';
-        $table = config_get('system.system_error.table_name') ?: 'system_errors';
-        $dbc = new DB($dbsrv);
-
-        if (!DB::connected($dbsrv)) {
-            return true;
-        }
-
+        $table = config_get('system.system_error.table_name') ?: '_system_errors';
         $description = sprintf(
             '%s - %s in %s [%s]',
             $this->getErrorName($error),
@@ -340,25 +335,29 @@ class Errors
             $error->getFile(),
             $error->getLine()
         );
-        $dbc->errorReportStatus(false);
-        $res = $dbc->execute('SELECT id FROM ' . $table . ' WHERE error_code = ?', [$errorId])
-            ? $dbc->fetchNext()
-            : false;
-        $command = ($res === false)
-            ? 'INSERT INTO ' . $table . ' (error_code, description, details, occurrences) VALUES (?, ?, ?, 1)'
-            : 'UPDATE ' . $table . ' SET occurrences = occurrences + 1 WHERE error_code = ?';
-        $params = ($res === false)
-            ? [$errorId, $description, $this->errorToJson($error)]
-            : [$errorId];
-        $create = file_get_contents(__DIR__ . DS . 'system_errors_create_table.sql');
+        $command = 'INSERT INTO ' . $table . ' (error_code, description, details, occurrences) VALUES (?, ?, ?, 1)';
+        $params = [$errorId, $description, $this->errorToJson($error)];
 
-        if (
-            $res === false
-            && $dbc->statmentErrorCode()
-            && config_get('system.system_error.create_table')
-            && $create
-        ) {
-            $dbc->execute(str_replace('%table_name%', $table, $create));
+        $dbc = new DB($dbsrv);
+
+        if (!DB::connected($dbsrv)) {
+            return true;
+        }
+
+        $dbc->errorReportStatus(false);
+
+        try {
+            $dbc->execute('SELECT id FROM ' . $table . ' WHERE error_code = ?', [$errorId]);
+            $res = $dbc->fetchNext();
+
+            if ($res !== false) {
+                $command = 'UPDATE ' . $table . ' SET occurrences = occurrences + 1 WHERE error_code = ?';
+                $params = [$errorId];
+            }
+        } catch (PDOException $err) {
+            if (!$this->wasErrorTableCreated($dbc, $table)) {
+                return true;
+            }
         }
 
         $dbc->execute($command, $params);
@@ -576,5 +575,30 @@ class Errors
         $output = str_replace('{errorId}', $errorId, $output);
         $output = str_replace('{errorCode}', $errorType, $output);
         echo $output;
+    }
+
+    /**
+     * Attempts to create the application error log table.
+     *
+     * @param DB     $dbc
+     * @param string $table
+     *
+     * @return bool
+     */
+    private function wasErrorTableCreated(DB $dbc, string $table): bool
+    {
+        $create = file_get_contents(__DIR__ . DS . 'system_errors_create_table.sql');
+
+        if (!config_get('system.system_error.create_table') || !$create) {
+            return false;
+        }
+
+        try {
+            $dbc->execute(str_replace('%table_name%', $table, $create));
+        } catch (\Throwable $err) {
+            return false;
+        }
+
+        return true;
     }
 }

@@ -9,7 +9,7 @@
  * @author    Allan Marques <allan.marques@ymail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   1.9.3
+ * @version   1.9.4
  */
 
 namespace Springy;
@@ -114,7 +114,8 @@ class DB
         }
 
         /*
-         * A variável abaixo é setada pois caso a conexão com o banco falhe, o callback de erro será chamado e a variável já estará setada.
+         * A variável abaixo é setada pois caso a conexão com o banco falhe, o callback de erro será chamado e a
+         * variável já estará setada.
          * Caso a conexão seja feita com sucesso, a variavel é removida.
          */
         self::$conErrors[$database] = true;
@@ -175,8 +176,8 @@ class DB
         // Lê as configurações de controle de round robin
         $roundRobin = Configuration::get('db', 'round_robin');
 
-        // Efetua controle de round robin por Memcached
         if ($roundRobin['type'] == 'memcached') {
+            // Efetua controle de round robin por Memcached
             $memCached = new \Memcached();
             $memCached->addServer($roundRobin['server_addr'], $roundRobin['server_port']);
 
@@ -189,13 +190,12 @@ class DB
             }
 
             $memCached->set('dbrr_' . $database, $actual, 0);
-        }
-        // Efetua controle de round robin em arquivo
-        elseif ($roundRobin['type'] == 'file') {
-            // Define o próximo servidor do pool
-            if ((!file_exists($roundRobin['server_addr'] . DIRECTORY_SEPARATOR . 'dbrr_' . $database)) || !($actual = (int) file_get_contents($roundRobin['server_addr'] . DIRECTORY_SEPARATOR . 'dbrr_' . $database))) {
-                $actual = 0;
-            }
+        } elseif ($roundRobin['type'] == 'file') {
+            // Efetua controle de round robin em arquivo
+            $actual = file_exists($roundRobin['server_addr'] . DS . 'dbrr_' . $database)
+                ? (int) file_get_contents($roundRobin['server_addr'] . DS . 'dbrr_' . $database)
+                : 0;
+
             if (++$actual >= count($dbconf['host_name'])) {
                 $actual = 0;
             }
@@ -223,7 +223,9 @@ class DB
      */
     public static function connected($database = 'default')
     {
-        return !isset(self::$conErrors[$database]) && isset(self::$conectionIds[$database]) && self::$conectionIds[$database]['PDO'];
+        return !isset(self::$conErrors[$database])
+            && isset(self::$conectionIds[$database])
+            && self::$conectionIds[$database]['PDO'];
     }
 
     /**
@@ -234,7 +236,7 @@ class DB
     public function disconnect()
     {
         if (static::connected($this->database)) {
-            ///	a instância de conexão é estática, para não criar uma nova a cada nova instância da classe
+            // a instância de conexão é estática, para não criar uma nova a cada nova instância da classe
             unset(self::$conectionIds[$this->database]['PDO']);
             $this->dataConnect = false;
         }
@@ -371,11 +373,18 @@ class DB
         $this->sqlErrorInfo = null;
         self::$sqlNum++;
 
-        // Verifica se está sendo usado o recurso de contagem de linhas encontrados da última consulta do MySQL e cria um comando único
-        if ((is_int($this->cacheExpires) || is_int($cacheLifeTime))
+        /*
+         * Verifica se está sendo usado o recurso de contagem de linhas
+         * encontrados da última consulta do MySQL e cria um comando único
+         */
+        if (
+            (is_int($this->cacheExpires) || is_int($cacheLifeTime))
             && strtoupper(substr(ltrim($sql), 0, 19)) == 'SELECT FOUND_ROWS()'
-            && strtoupper(substr(ltrim($this->lastQuery), 0, 7)) == 'SELECT ') {
-            $this->lastQuery = $sql . '; /* ' . md5(implode('//', array_merge([$this->lastQuery], $this->lastValues))) . ' */';
+            && strtoupper(substr(ltrim($this->lastQuery), 0, 7)) == 'SELECT '
+        ) {
+            $this->lastQuery = $sql . '; /* ' . md5(
+                implode('//', array_merge([$this->lastQuery], $this->lastValues))
+            ) . ' */';
         } else {
             $this->lastQuery = $sql;
         }
@@ -388,11 +397,19 @@ class DB
         // Limpa o que estiver em memória e tiver sido carregado de cache
         $this->cacheStatement = null;
         // Configuração de cache está ligada?
-        if (is_array($this->lastValues) && is_array($dbcache) && isset($dbcache['type']) && $dbcache['type'] == 'memcached') {
+        if (
+            is_array($this->lastValues)
+            && is_array($dbcache)
+            && isset($dbcache['type'])
+            && $dbcache['type'] == 'memcached'
+        ) {
             $cacheKey = md5(implode('//', array_merge([$this->lastQuery], $this->lastValues)));
             $this->resSQL = null;
             // O comando é um SELECT e é para guardar em cache?
-            if ((is_int($this->cacheExpires) || is_int($cacheLifeTime)) && strtoupper(substr(ltrim($this->lastQuery), 0, 7)) == 'SELECT ') {
+            if (
+                (is_int($this->cacheExpires) || is_int($cacheLifeTime))
+                && strtoupper(substr(ltrim($this->lastQuery), 0, 7)) == 'SELECT '
+            ) {
                 try {
                     $mc = new \Memcached();
                     $mc->addServer($dbcache['server_addr'], $dbcache['server_port']);
@@ -456,12 +473,22 @@ class DB
             // Configuração de cache está ligada?
             if (is_array($dbcache) && isset($dbcache['type']) && $dbcache['type'] == 'memcached') {
                 // O comando é um SELECT e é para guardar em cache?
-                if ((is_int($this->cacheExpires) || is_int($cacheLifeTime)) && strtoupper(substr(ltrim($this->lastQuery), 0, 7)) == 'SELECT ') {
+                if (
+                    (is_int($this->cacheExpires) || is_int($cacheLifeTime))
+                    && strtoupper(substr(ltrim($this->lastQuery), 0, 7)) == 'SELECT '
+                ) {
                     try {
                         $mc = new \Memcached();
                         $mc->addServer($dbcache['server_addr'], $dbcache['server_port']);
                         $this->cacheStatement = $this->fetchAll();
-                        $mc->set('cacheDB_' . $cacheKey, $this->cacheStatement, min(is_int($cacheLifeTime) ? $cacheLifeTime : 86400, is_int($this->cacheExpires) ? $this->cacheExpires : 86400));
+                        $mc->set(
+                            'cacheDB_' . $cacheKey,
+                            $this->cacheStatement,
+                            min(
+                                is_int($cacheLifeTime) ? $cacheLifeTime : 86400,
+                                is_int($this->cacheExpires) ? $this->cacheExpires : 86400
+                            )
+                        );
                         unset($mc);
                         $this->resSQL->closeCursor();
                         $this->resSQL = null;
@@ -709,6 +736,8 @@ class DB
      * @param string $datetime Date and time in brazilian format (d/m/Y H:i:s)
      * @param bool   $flgtime
      *
+     * @deprecated 4.6.0
+     *
      * @return string
      */
     public static function castDateBrToDb($datetime, $flgtime = false)
@@ -724,6 +753,8 @@ class DB
      * @param string $datetime
      * @param bool   $flgtime
      * @param bool   $sec
+     *
+     * @deprecated 4.6.0
      *
      * @return string
      */
@@ -759,12 +790,27 @@ class DB
      *
      * @param string $dataTimeStamp
      *
+     * @deprecated 4.6.0
+     *
      * @return string
      */
     public static function longBrazilianDate($dataTimeStamp)
     {
         $dateTime = static::makeDbDateTime($dataTimeStamp);
-        $mes = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+        $mes = [
+            'Janeiro',
+            'Fevereiro',
+            'Março',
+            'Abril',
+            'Maio',
+            'Junho',
+            'Julho',
+            'Agosto',
+            'Setembro',
+            'Outubro',
+            'Novembro',
+            'Dezembro'
+        ];
         $numMes = (int) date('m', $dateTime);
 
         return date('d', $dateTime) . ' de ' . $mes[--$numMes] . ' de ' . date('Y', $dateTime);

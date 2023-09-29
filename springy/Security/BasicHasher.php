@@ -8,7 +8,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   0.1.2
+ * @version   0.2.0
  */
 
 namespace Springy\Security;
@@ -52,7 +52,7 @@ class BasicHasher implements HasherInterface
      *
      * @return bool
      */
-    public function verify($stringToCheck, $hash)
+    public function verify(string $stringToCheck, string $hash)
     {
         return $this->generateHash($stringToCheck) === $hash;
     }

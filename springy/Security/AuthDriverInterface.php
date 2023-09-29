@@ -7,7 +7,7 @@
  * @author    Allan Marques <allan.marques@ymail.com>
  * @author    Fernando Val <fernando.val@gmail.com>
  *
- * @version   0.1.3
+ * @version   0.2.0
  */
 
 namespace Springy\Security;
@@ -29,7 +29,7 @@ interface AuthDriverInterface
      *
      * @return bool
      */
-    public function isValid($login, $password);
+    public function isValid(string $login, string $password);
 
     /**
      * Sets the identity that will be the default type to perform the authentication.

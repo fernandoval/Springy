@@ -9,6 +9,7 @@
 - Changes ACL module definition;
 - Deprecates ACL default module setup;
 - Adjustments and optimizations;
+- Fixed bugs to `Migrator` an `Errors` class;
 - Support to `PHPMailer` upgraded to v6.x;
 - Added GitHub Actions test case;
 - Deprecated `Controller::_authorizationCheck()`;
@@ -22,6 +23,9 @@
 - Deprecated `Log` class;
 - Deprecated `Container\DIContainer::has()`;
 - Deprecated `Container\DIContainer::resolve()`;
+- Deprecated `DB::castDateBrToDb()`;
+- Deprecated `DB::castDateDbToBr()`;
+- Deprecated `DB::longBrazilianDate()`;
 - Deprecated `Events\Mediator::on()`;
 - Deprecated `Events\Mediator::off()`;
 - Deprecated `Security\AclManager::setDefaultModule()`;

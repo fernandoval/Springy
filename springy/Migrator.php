@@ -7,12 +7,13 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   0.4.10
+ * @version   0.5.0
  */
 
 namespace Springy;
 
 use Exception;
+use PDOException;
 
 /**
  * Database migration manager.
@@ -109,28 +110,33 @@ class Migrator extends DB
      */
     private function checkControlTable()
     {
-        if ($this->execute('SELECT migration_at FROM ' . $this->controlTable . ' WHERE revision_number = 0')) {
-            return true;
+        try {
+            if ($this->execute('SELECT migration_at FROM ' . $this->controlTable . ' WHERE revision_number = 0')) {
+                return true;
+            }
+        } catch (PDOException $err) {
+            $command = 'CREATE TABLE ' . $this->controlTable . '(' .
+                '  revision_number INT NOT NULL,' .
+                '  script_file VARCHAR(255) NOT NULL,' .
+                '  migration_at DATETIME NOT NULL,' .
+                '  result_message VARCHAR(255),' .
+                '  PRIMARY KEY (revision_number, script_file)' .
+                ')';
         }
 
-        $command = 'CREATE TABLE ' . $this->controlTable . '(' .
-            '  revision_number INT NOT NULL,' .
-            '  script_file VARCHAR(255) NOT NULL,' .
-            '  migration_at DATETIME NOT NULL,' .
-            '  result_message VARCHAR(255),' .
-            '  PRIMARY KEY (revision_number, script_file)' .
-            ')';
-
-        if ($this->execute($command)) {
-            return true;
+        try {
+            if ($this->execute($command)) {
+                return true;
+            }
+        } catch (PDOException $err) {
+            $this->systemAbort(
+                'Can not create control table ('
+                . $this->statmentErrorCode()
+                . ' : '
+                . $this->statmentErrorInfo()[2]
+                . ')'
+            );
         }
-        $this->systemAbort(
-            'Can not create control table ('
-            . $this->statmentErrorCode()
-            . ' : '
-            . $this->statmentErrorInfo()[2]
-            . ')'
-        );
     }
 
     /**

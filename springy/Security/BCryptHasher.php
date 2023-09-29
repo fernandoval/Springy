@@ -8,7 +8,7 @@
  * @author    Allan Marques <allan.marques@ymail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version 1.0.0
+ * @version 1.1.0
  *
  * @depends This class uses the password_compat class of Anthony Ferrara as a dependency.
  */
@@ -56,7 +56,7 @@ class BCryptHasher implements HasherInterface
      *
      * @return bool
      */
-    public function verify($stringToCheck, $hash): bool
+    public function verify(string $stringToCheck, string $hash): bool
     {
         return password_verify($stringToCheck, $hash);
     }

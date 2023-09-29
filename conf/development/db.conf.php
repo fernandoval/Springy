@@ -1,26 +1,12 @@
 <?php
-/** \file
- *  \brief      Database configurations.
- *  \copyright	Copyright (c) 2007-2016 Fernando Val
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido.
- */
 
-/**
- *  \defgroup dbcfg_development Configurações de acesso a banco de dados para o ambiente 'development'
- *  \ingroup dbcfg.
+/*
+ * Springy Framework Configuration File.
  *
- *  As entradas colocadas nesse arquivo serão aplicadas apenas ao ambiente 'development'.
+ * Used for "development" environment.
  *
- *  Seu sistema pode não possuir esse ambiente, então use-o como modelo para criação do arquivo de
- *  parâmetros de configuração para os ambientes que seu sistema possua.
- *
- *  Veja \link dbcfg Configurações de acesso a banco de dados \endlink para entender as entradas de configuração possíveis.
- *
- *  \see dbcfg
+ * If removed, only db.default.conf.php will be used.
  */
-/**@{*/
-
-/// Configurações para o ambiente de Desenvolvimento
 $conf = [
     'round_robin' => [
         'type'        => 'file',
@@ -42,5 +28,3 @@ $conf = [
         'persistent'    => false,
     ],
 ];
-
-/**@}*/

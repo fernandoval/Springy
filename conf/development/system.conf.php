@@ -1,5 +1,12 @@
 <?php
 
+/*
+ * Springy Framework Configuration File.
+ *
+ * Used for "development" environment.
+ *
+ * If removed, only system.default.conf.php will be used.
+ */
 $conf = [
     'debug' => true,
     'maintenance' => false,
