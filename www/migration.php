@@ -7,7 +7,7 @@
  * @copyright 2007 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
  *
- * @version 0.4.1
+ * @version 0.4.2
  */
 
 if (!file_exists('sysconf.php')) {
@@ -25,8 +25,6 @@ if (!defined('STDIN') || empty($argc)) {
     echo 'This script can be executed only in CLI mode.';
     exit(998);
 }
-
-define('BYPASS_CONTROLLERS', true);
 
 $_SERVER['QUERY_STRING'] = '';
 $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
