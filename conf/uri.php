@@ -118,8 +118,8 @@ $conf = [
     // URLs comuns do site
     'common_urls' => [
         'urlAssets' => [['assets'], [], false, 'static', true],
-        'urlHome'   => [[]],
-        'urlLogin'  => [['login'], [], false, 'secure', true],
+        'urlHome' => [[]],
+        'urlLogin' => [['login'], [], false, 'secure', true],
         'urlLogout' => [['logout'], [], false, 'secure', true],
     ],
     'redirect_last_slash' => true,

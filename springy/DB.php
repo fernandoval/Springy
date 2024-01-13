@@ -296,7 +296,7 @@ class DB
             hash('crc32', $msg . $errorInfo[1] . $this->lastQuery), // error id
             $msg . ' (' . $errorInfo[1] . ') ' . $errorInfo[2]
             . ' - ' . $this->lastQuery . ' Values: '
-            . Debug::print_rc($this->lastValues),
+            . Debug::printRc($this->lastValues),
             500,
             new SpringyException($msg, E_USER_ERROR, null, $file, $line)
         );
@@ -510,7 +510,7 @@ class DB
 
             debug(
                 '<pre>' . $this->lastQuery . '</pre><br />Values: ' .
-                Debug::print_rc($this->lastValues) . '<br />' .
+                Debug::printRc($this->lastValues) . '<br />' .
                 'Affected Rows: ' . $this->affectedRows() . '<br />' .
                 'DB: ' . ($conf['database'] ?? 'not set'),
                 'SQL #' . self::$sqlNum,

@@ -6,7 +6,7 @@
  * @copyright 2007 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
  *
- * @version    1.0.13
+ * @version    1.0.14
  */
 
 namespace Springy\Core;
@@ -65,11 +65,18 @@ class Debug
                 continue;
             }
 
-            $linhas = explode('<br />', str_replace('<br /></span>', '</span><br />', highlight_string(file_get_contents($value['file']), true)));
+            $linhas = explode(
+                '<br />',
+                str_replace(
+                    '<br /></span>',
+                    '</span><br />',
+                    highlight_string(file_get_contents($value['file']), true)
+                )
+            );
             $aDados[] = [
-                'file'    => $value['file'],
-                'line'    => $value['line'],
-                'args'    => isset($value['args']) ? $value['args'] : [],
+                'file' => $value['file'],
+                'line' => $value['line'],
+                'args' => isset($value['args']) ? $value['args'] : [],
                 'content' => trim(preg_replace('/^(&nbsp;)+/', '', $linhas[$value['line'] - 1])),
             ];
         }
@@ -85,11 +92,20 @@ class Debug
                 }
 
                 $line = sprintf('[%05d]', $backtrace['line']);
-                $result .= '<li style="margin-bottom: 5px; ' . ($htmlLI + 1 < count($aDados) ? 'border-bottom:1px dotted #000; padding-bottom:5px' : '') . '"><span><b>' . $line . '</b>&nbsp;<b>' . $backtrace['file'] . '</b></span><br />' . $backtrace['content'];
+                $result .= '<li style="margin-bottom: 5px; ' . (
+                    $htmlLI + 1 < count($aDados) ? 'border-bottom:1px dotted #000; padding-bottom:5px' : ''
+                ) . '"><span><b>' . $line . '</b>&nbsp;<b>' . $backtrace['file'] . '</b></span><br />' .
+                $backtrace['content'];
 
                 if (count($backtrace['args'])) {
                     $aid = 'args_' . mt_rand() . str_replace('.', '', current(explode(' ', microtime())));
-                    $result .= '<br /><a href="javascript:;" onClick="var obj=$(\'#' . $aid . '\').toggle()" style="color:#06c; margin:3px 0">arguments passed to function</a>' . (is_array($backtrace['args']) ? '<div id="' . $aid . '" style="display:none;">' . self::print_rc($backtrace['args']) . '</div>' : $backtrace['args']);
+                    $result .= '<br /><a href="javascript:;" onClick="var obj=$(\'#' . $aid .
+                        '\').toggle()" style="color:#06c; margin:3px 0">arguments passed to function</a>' . (
+                            is_array($backtrace['args'])
+                                ? '<div id="' . $aid . '" style="display:none;">' .
+                                    self::printRc($backtrace['args']) . '</div>'
+                                : $backtrace['args']
+                        );
                 }
                 $result .= '      </li>';
                 $htmlLI++;
@@ -116,10 +132,13 @@ class Debug
 
             $return[] = '<div class="Spring-Debug-Info">' .
                         '<p>' . ($debug[1] ? $debug[1] . ' - ' : '') . 'Allocated Memory: ' . $memoria . '</p>' .
-                        '<div> ' . ($debug[2] ? self::print_rc($debug[3]) : $debug[3]) . '</div>' .
+                        '<div> ' . ($debug[2] ? self::printRc($debug[3]) : $debug[3]) . '</div>' .
                         '<div>' .
-                        '<div class="Spring-Debug-Backtrace-Button"><a href="javascript:;" onclick="var obj=$(\'#' . $did . '\').toggle()">open debug backtrace</a></div>' .
-                        '<div class="Spring-Debug-Backtrace-Data" id="' . $did . '" style="display:none;" class="Spring-Debug-Backtrace">' . self::backtrace($debug[4]) . '</div></div>' .
+                        '<div class="Spring-Debug-Backtrace-Button"><a href="javascript:;" onclick="var obj=$(\'#' .
+                        $did . '\').toggle()">open debug backtrace</a></div>' .
+                        '<div class="Spring-Debug-Backtrace-Data" id="' . $did .
+                        '" style="display:none;" class="Spring-Debug-Backtrace">' . self::backtrace($debug[4]) .
+                        '</div></div>' .
                         '</div>';
         }
 
@@ -161,7 +180,39 @@ class Debug
 
             $debugTemplate = dirname(realpath(__FILE__)) . DIRECTORY_SEPARATOR . 'debug_template.html';
             if (file_exists($debugTemplate) && $htmlDebug = file_get_contents($debugTemplate)) {
-                $htmlDebug = preg_replace(['/<!-- DEBUG CONTENT \(.+\) -->/mu', '~<!--.*?-->~s', '!/\*.*?\*/!s', "/\n\s+/", "/\n(\s*\n)+/", "!\n//.*?\n!s", "/\n\}(.+?)\n/", "/\}\s+/", "/,\n/", "/>\n/", "/\{\s*?\n/", "/\}\n/", "/;\n/"], [self::get(), '', '', "\n", "\n", "\n", "}\\1\n", '}', ', ', '>', '{', '} ', ';'], $htmlDebug);
+                $htmlDebug = preg_replace(
+                    [
+                        '/<!-- DEBUG CONTENT \(.+\) -->/mu',
+                        '~<!--.*?-->~s',
+                        '!/\*.*?\*/!s',
+                        "/\n\s+/",
+                        "/\n(\s*\n)+/",
+                        "!\n//.*?\n!s",
+                        "/\n\}(.+?)\n/",
+                        "/\}\s+/",
+                        "/,\n/",
+                        "/>\n/",
+                        "/\{\s*?\n/",
+                        "/\}\n/",
+                        "/;\n/",
+                    ],
+                    [
+                        self::get(),
+                        '',
+                        '',
+                        "\n",
+                        "\n",
+                        "\n",
+                        "}\\1\n",
+                        '}',
+                        ', ',
+                        '>',
+                        '{',
+                        '} ',
+                        ';',
+                    ],
+                    $htmlDebug
+                );
             }
 
             if (preg_match('/<\/body>/', $content)) {
@@ -186,16 +237,34 @@ class Debug
      *
      * @return string Retorna uma string HTML.
      */
-    public static function print_rc($par)
+    public static function printRc($par)
     {
         if (is_object($par)) {
             if (method_exists($par, '__toString')) {
-                return str_replace('&lt;?php&nbsp;', '', str_replace('&nbsp;?&gt;', '', highlight_string('<?php ' . var_export($par->__toString(), true), true)));
+                return str_replace(
+                    '&lt;?php&nbsp;',
+                    '',
+                    str_replace(
+                        '&nbsp;?&gt;',
+                        '',
+                        highlight_string('<?php ' . var_export($par->__toString(), true), true)
+                    )
+                );
             }
 
-            return (PHP_SAPI === 'cli' || defined('STDIN')) ? print_r($par, true) : '<pre>' . print_r($par, true) . '</pre>';
+            return (PHP_SAPI === 'cli' || defined('STDIN'))
+                ? print_r($par, true)
+                : '<pre>' . print_r($par, true) . '</pre>';
         }
 
-        return str_replace('&lt;?php&nbsp;', '', str_replace('&nbsp;?&gt;', '', highlight_string('<?php ' . print_r($par, true), true)));
+        return str_replace(
+            '&lt;?php&nbsp;',
+            '',
+            str_replace(
+                '&nbsp;?&gt;',
+                '',
+                highlight_string('<?php ' . print_r($par, true), true)
+            )
+        );
     }
 }

@@ -10,7 +10,7 @@
 
 return [
     'default_driver' => 'phpmailer-class',
-    'mailers'        => [
+    'mailers' => [
         'phpmailer-class' => [
             'username' => 'you@gmail.com',
             'password' => 'put-your-password-here',

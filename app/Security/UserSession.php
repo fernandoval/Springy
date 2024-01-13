@@ -59,7 +59,7 @@ class UserSession
     }
 
     /**
-     * Gets any user data;
+     * Gets any user data.
      *
      * @param string $name
      *
@@ -154,7 +154,7 @@ class UserSession
     public function getCredentials()
     {
         return [
-            'login'    => User::COL_EMAIL,
+            'login' => User::COL_EMAIL,
             'password' => User::COL_PASSWD,
         ];
     }

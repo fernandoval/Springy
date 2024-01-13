@@ -121,7 +121,7 @@ class User extends Model
             self::COL_UUID => [
                 Validator::V_REQUIRED,
                 Validator::V_REGEX => [
-                    '/^\{?[0-9a-f]{8}\-?[0-9a-f]{4}\-?[0-9a-f]{4}\-?[0-9a-f]{4}\-?[0-9a-f]{12}\}?$/i'
+                    '/^\{?[0-9a-f]{8}\-?[0-9a-f]{4}\-?[0-9a-f]{4}\-?[0-9a-f]{4}\-?[0-9a-f]{12}\}?$/i',
                 ],
             ],
             self::COL_PASSWD => [Validator::V_REQUIRED],
@@ -148,7 +148,7 @@ class User extends Model
             ],
             self::COL_NAME => [
                 Validator::V_REQUIRED => 'O nome é obrigatório.',
-                Validator::V_MAX_LENGTH => 'Nome grande demais.'
+                Validator::V_MAX_LENGTH => 'Nome grande demais.',
             ],
         ];
     }
