@@ -5,17 +5,17 @@
  */
 
 return [
-    'debug'              => true,
-    'ignore_deprecated'  => false,
-    'rewrite_url'        => true,
-    'cache-control'      => 'private, must-revalidate',
-    'authentication'     => [],
-    'developer_user'     => '',
-    'developer_pass'     => '',
-    'dba_user'           => '',
+    'debug' => true,
+    'ignore_deprecated' => false,
+    'rewrite_url' => true,
+    'cache-control' => 'private, must-revalidate',
+    'authentication' => [],
+    'developer_user' => '',
+    'developer_pass' => '',
+    'dba_user' => '',
     'bug_authentication' => [],
     'assets_source_path' => sysconf('APP_PATH') . DS . 'assets',
-    'assets_path'        => sysconf('ROOT_PATH') . DS . 'assets',
+    'assets_path' => sysconf('ROOT_PATH') . DS . 'assets',
 
     /*
      * Session configuration

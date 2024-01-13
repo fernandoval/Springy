@@ -10,22 +10,22 @@
 
 return [
     'round_robin' => [
-        'type'        => 'memcached',
+        'type' => 'memcached',
         'server_addr' => 'youmemcachedserver.localnetwork',
         'server_port' => 11211,
     ],
     'cache' => [
-        'type'        => 'off',
+        'type' => 'off',
         'server_addr' => 'youmemcachedserver.localnetwork',
         'server_port' => 11211,
     ],
     'default' => [
         'database_type' => 'mysql',
-        'host_name'     => '',
-        'user_name'     => '',
-        'password'      => '',
-        'database'      => '',
-        'charset'       => 'utf8',
-        'persistent'    => false,
+        'host_name' => '',
+        'user_name' => '',
+        'password' => '',
+        'database' => '',
+        'charset' => 'utf8',
+        'persistent' => false,
     ],
 ];

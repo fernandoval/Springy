@@ -9,6 +9,6 @@
  */
 
 return [
-    'debug'       => false,
+    'debug' => false,
     'auto_reload' => false,
 ];

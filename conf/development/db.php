@@ -10,22 +10,22 @@
 
 return [
     'round_robin' => [
-        'type'        => 'file',
+        'type' => 'file',
         'server_addr' => sysconf('VAR_PATH'),
         'server_port' => 11211,
     ],
     'cache' => [
-        'type'        => 'off',
+        'type' => 'off',
         'server_addr' => '127.0.0.1',
         'server_port' => 11211,
     ],
     'default' => [
         'database_type' => 'mysql',
-        'host_name'     => '',
-        'user_name'     => '',
-        'password'      => '',
-        'database'      => '',
-        'charset'       => 'utf8',
-        'persistent'    => false,
+        'host_name' => '',
+        'user_name' => '',
+        'password' => '',
+        'database' => '',
+        'charset' => 'utf8',
+        'persistent' => false,
     ],
 ];

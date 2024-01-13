@@ -9,7 +9,7 @@
  */
 
 return [
-    'maintenance'        => false,
+    'maintenance' => false,
     'bug_authentication' => [
         'user' => 'username',
         'pass' => 'password',

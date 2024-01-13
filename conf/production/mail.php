@@ -10,7 +10,7 @@
 
 return [
     'default_driver' => 'sendgrid-api',
-    'mailers'        => [
+    'mailers' => [
         'sendgrid-api' => [
             'apikey' => 'put-the-sendgrid-api-key-here',
         ],

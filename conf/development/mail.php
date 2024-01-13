@@ -14,7 +14,7 @@ return [
         'phpmailer-class' => [
             'username' => 'you@gmail.com',
             'password' => 'put-your-password-here',
-            'debug'    => 0,
+            'debug' => 0,
         ],
     ],
 ];
