@@ -6,13 +6,21 @@
 - Added support to PHP 8.0, 8.1 and 8.2;
 - Droped support to PHP 7.x;
 - Implemented support to execute controllers using PSR-4 autoload;
-- Adjustments in PDO initializing;
 - Enhancements in configuraton and template classes;
+- `sysconf.php` returns an array instead set variable `$GLOBALS['SYSTEM']`;
 - Configuration files can returns an array instead set the variable `$conf`;
 - Changes ACL module definition;
 - Deprecates ACL default module setup;
+- Adjustments in PDO initializing;
 - Adjustments and optimizations;
 - Fixed bugs to `Migrator` an `Errors` class;
+- Added `Kernel::systemConfGlobal()` to get global system configuration data;
+- `Kernel` functions updates to readonly mode:
+  - `Kernel::charset()`;
+  - `Kernel::path()`;
+  - `Kernel::projectCodeName()`;
+  - `Kernel::systemName()`;
+  - `Kernel::systemVersion()`;
 - Support to `PHPMailer` upgraded to v6.x;
 - Added GitHub Actions test case;
 - Deprecated `Controller::_authorizationCheck()`;
@@ -23,6 +31,9 @@
 - Deprecated `Controller::_userSpecialVerifications()`;
 - Deprecated `CreditCardValidation` class;
 - Deprecated `Error::handler()`;
+- Deprecated `Kernel::PATH_CONFIGURATION` constant;
+- Deprecated `Kernel::PATH_SYSTEM` constant;
+- Deprecated `Kernel::PATH_CLASS` constant;
 - Deprecated `Log` class;
 - Deprecated `Container\DIContainer::has()`;
 - Deprecated `Container\DIContainer::resolve()`;
@@ -48,6 +59,8 @@
 - Removed `SOAP` class;
 - Updated error HTML asset files;
 - Removed required suffix '.conf' and '.default.conf' from configuration files;
+- Deprecated `springyAutoload` autoload function;
+- Deprecated `$over_conf` variable in configuration files;
 - Deprecated configuratios:
   - `uri.host_controller_path`;
   - `uri.prevalidate_controller`;

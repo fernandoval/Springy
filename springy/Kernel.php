@@ -8,7 +8,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.8.4
+ * @version   2.9.0
  */
 
 namespace Springy;
@@ -23,27 +23,35 @@ use Springy\Exceptions\SpringyException;
 class Kernel
 {
     // Framework version
-    const VERSION = '4.5.0 beta 1';
+    public const VERSION = '4.5.0';
 
     // Default controller namespace
     public const DEFAULT_NS = 'App\\Web\\';
 
-    /// Path constants
-    const PATH_PROJECT = 'PROJ';
-    const PATH_CONF = 'CONF';
-    const PATH_APPLICATION = 'APP';
-    const PATH_VAR = 'VAR';
-    const PATH_CLASSES = 'CLASSES';
-    const PATH_CONTROLLER = 'CONTROLLER';
-    const PATH_LIBRARY = 'LIB';
-    const PATH_ROOT = 'ROOT';
-    const PATH_WEB_ROOT = 'ROOT';
-    const PATH_VENDOR = 'VENDOR';
-    const PATH_MIGRATION = 'MIGRATION';
-    /// Path constants to back compatibility
-    const PATH_CONFIGURATION = self::PATH_CONF;
-    const PATH_SYSTEM = self::PATH_APPLICATION;
-    const PATH_CLASS = self::PATH_CLASSES;
+    // Path constants
+    public const PATH_PROJECT = 'PROJ';
+    public const PATH_CONF = 'CONF';
+    public const PATH_APPLICATION = 'APP';
+    public const PATH_VAR = 'VAR';
+    public const PATH_CLASSES = 'CLASSES';
+    public const PATH_CONTROLLER = 'CONTROLLER';
+    public const PATH_LIBRARY = 'LIB';
+    public const PATH_ROOT = 'ROOT';
+    public const PATH_WEB_ROOT = 'ROOT';
+    public const PATH_VENDOR = 'VENDOR';
+    public const PATH_MIGRATION = 'MIGRATION';
+    // Path constants to back compatibility
+    // @deprecated 4.5.0
+    public const PATH_CONFIGURATION = self::PATH_CONF;
+    public const PATH_SYSTEM = self::PATH_APPLICATION;
+    public const PATH_CLASS = self::PATH_CLASSES;
+
+    /**
+     * Global system configuration
+     *
+     * @var array
+     */
+    private static array $sysconf;
 
     /// Start time
     private static $startime = null;
@@ -58,16 +66,6 @@ class Kernel
 
     /// System environment
     private static $environment = '';
-    /// System name
-    private static $name = 'System Name';
-    /// System version
-    private static $version = [0, 0, 0];
-    /// Project code name
-    private static $projName = '';
-    /// System path
-    private static $paths = [];
-    /// System charset
-    private static $charset = 'UTF-8';
     /// CGI execution mode
     private static $cgiMode = false;
 
@@ -505,12 +503,23 @@ class Kernel
         $auth = Configuration::get('system', 'authentication');
 
         // HTTP authentication credential not defined?
-        if (defined('STDIN') || !is_array($auth) || !isset($auth['user']) || !isset($auth['pass']) || Cookie::get('__sys_auth__')) {
+        if (
+            defined('STDIN') ||
+            !is_array($auth) ||
+            !isset($auth['user']) ||
+            !isset($auth['pass']) ||
+            Cookie::get('__sys_auth__')
+        ) {
             return;
         }
 
         // HTTP authentication credential received and match?
-        if (isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW']) && $_SERVER['PHP_AUTH_USER'] == $auth['user'] && $_SERVER['PHP_AUTH_PW'] == $auth['pass']) {
+        if (
+            isset($_SERVER['PHP_AUTH_USER']) &&
+            isset($_SERVER['PHP_AUTH_PW']) &&
+            $_SERVER['PHP_AUTH_USER'] == $auth['user'] &&
+            $_SERVER['PHP_AUTH_PW'] == $auth['pass']
+        ) {
             Cookie::set('__sys_auth__', true);
 
             return;
@@ -633,71 +642,26 @@ class Kernel
     /**
      * Starts system environment.
      */
-    public static function initiate($sysconf, $startime = null, $cgiMode = false)
+    public static function run(array $sysconf, float $startime)
     {
-        self::$cgiMode = $cgiMode;
-        ini_set('date.timezone', $sysconf['TIMEZONE']);
+        self::$startime = $startime;
+        self::$sysconf = $sysconf;
 
-        // Define the application properties
-        self::$startime = is_null($startime) ? microtime(true) : $startime;
-        self::systemName($sysconf['SYSTEM_NAME']);
-        self::systemVersion($sysconf['SYSTEM_VERSION']);
-        self::projectCodeName(isset($sysconf['PROJECT_CODE_NAME']) ? $sysconf['PROJECT_CODE_NAME'] : '');
         self::environment(
             $sysconf['ACTIVE_ENVIRONMENT'],
             isset($sysconf['ENVIRONMENT_ALIAS']) ? $sysconf['ENVIRONMENT_ALIAS'] : [],
             isset($sysconf['ENVIRONMENT_VARIABLE']) ? $sysconf['ENVIRONMENT_VARIABLE'] : ''
         );
-        self::charset($sysconf['CHARSET']);
 
-        // Check basic configuration path
-        if (!isset($sysconf['ROOT_PATH'])) {
-            new Errors(500, 'Web server document root configuration not found.');
-        }
-
-        // Define the application paths
-        self::path(self::PATH_WEB_ROOT, $sysconf['ROOT_PATH']);
-        self::path(self::PATH_LIBRARY, $sysconf['SPRINGY_PATH'] ?? realpath(dirname(__FILE__)));
-        self::path(
-            self::PATH_PROJECT,
-            $sysconf['PROJECT_PATH'] ?? realpath(self::path(self::PATH_LIBRARY) . DS . '..')
-        );
-        self::path(
-            self::PATH_CONF,
-            $sysconf['CONFIG_PATH'] ?? realpath(self::path(self::PATH_PROJECT) . DS . 'conf')
-        );
-        self::path(
-            self::PATH_VAR,
-            $sysconf['VAR_PATH'] ?? realpath(self::path(self::PATH_PROJECT) . DS . 'var')
-        );
-        self::path(
-            self::PATH_APPLICATION,
-            $sysconf['APP_PATH'] ?? realpath(self::path(self::PATH_PROJECT) . DS . 'app')
-        );
-        self::path(
-            self::PATH_CONTROLLER,
-            $sysconf['CONTROLER_PATH'] ?? realpath(self::path(self::PATH_APPLICATION) . DS . 'controllers')
-        );
-        self::path(
-            self::PATH_CLASSES,
-            $sysconf['CLASS_PATH'] ?? realpath(self::path(self::PATH_APPLICATION) . DS . 'classes')
-        );
-        self::path(
-            self::PATH_MIGRATION,
-            $sysconf['MIGRATION_PATH'] ?? realpath(self::path(self::PATH_PROJECT) . DS . 'migration')
-        );
-        self::path(
-            self::PATH_VENDOR,
-            $sysconf['VENDOR_PATH'] ?? realpath(self::path(self::PATH_PROJECT) . DS . 'vendor')
-        );
+        ini_set('date.timezone', $sysconf['TIMEZONE']);
+        ini_set('default_charset', self::charset());
+        ini_set('display_errors', Configuration::get('system', 'debug') ? 1 : 0);
+        header('Content-Type: text/html; charset=' . self::charset(), true);
 
         // Pre start check list of application
         self::httpAuthNeeded();
         self::httpStartup();
         self::checkDevAccessDebug();
-
-        // Debug mode?
-        ini_set('display_errors', Configuration::get('system', 'debug') ? 1 : 0);
 
         // System is under maintenance mode?
         if (Configuration::get('system', 'maintenance')) {
@@ -769,102 +733,82 @@ class Kernel
         return self::$environment;
     }
 
+    public static function systemConfGlobal(string $key): mixed
+    {
+        return self::$sysconf[$key] ?? null;
+    }
+
     /**
      * The system name.
      *
-     * @param string $name - if defined, set the system name.
-     *
      * @return string A string containing the system name.
      */
-    public static function systemName($name = null)
+    public static function systemName(): string
     {
-        if (!is_null($name)) {
-            self::$name = $name;
-        }
-
-        return self::$name;
+        return self::$sysconf['SYSTEM_NAME'] ?? '';
     }
 
     /**
      * The system version.
      *
-     * @param mixed $major - if defined, set the major part of the system version. Can be an array with all parts.
-     * @param mixed $minor - if defined, set the minor part of the system version.
-     * @param mixed $build - if defined, set the build part of the system version.
+     * @see https://semver.org
      *
      * @return string A string containing the system version.
      */
-    public static function systemVersion($major = null, $minor = null, $build = null)
+    public static function systemVersion()
     {
-        if (is_array($major) && is_null($minor) && is_null($build)) {
-            return self::systemVersion(isset($major[0]) ? $major[0] : 0, isset($major[1]) ? $major[1] : 0, isset($major[2]) ? $major[2] : 0);
-        }
+        [$major, $minor, $patch] = is_array(self::$sysconf['SYSTEM_VERSION'])
+            ? self::$sysconf['SYSTEM_VERSION']
+            : explode('.', (string) self::$sysconf['SYSTEM_VERSION']);
 
-        if (!is_null($major) && !is_null($minor) && !is_null($build)) {
-            self::$version = [$major, $minor, $build];
-        } elseif (!is_null($major) && !is_null($minor)) {
-            self::$version = [$major, $minor];
-        } elseif (!is_null($major)) {
-            self::$version = [$major];
-        }
-
-        return is_array(self::$version) ? implode('.', self::$version) : self::$version;
+        return implode('.', [$major ?? 0, $minor ?? 0, $patch ?? 0]);
     }
 
     /**
      * The project code name.
      *
-     * @param string $name - if defined, set the project code name.
+     * @see https://en.wikipedia.org/wiki/Code_name#Project_code_name
      *
      * @return string A string containing the project code name.
-     *
-     * @see https://en.wikipedia.org/wiki/Code_name#Project_code_name
      */
-    public static function projectCodeName($name = null)
+    public static function projectCodeName(): string
     {
-        if (!is_null($name)) {
-            self::$projName = $name;
-        }
-
-        return self::$projName;
+        return self::$sysconf['PROJECT_CODE_NAME'] ?? '';
     }
 
     /**
      * The system charset.
      *
-     * Default UTF-8
-     *
-     * @param string $charset - if defined, set the system charset.
-     *
      * @return string A string containing the system charset.
      */
-    public static function charset($charset = null)
+    public static function charset()
     {
-        if (!is_null($charset)) {
-            self::$charset = $charset;
-            ini_set('default_charset', $charset);
-            // Send the content-type and charset header
-            header('Content-Type: text/html; charset=' . $charset, true);
-        }
-
-        return self::$charset;
+        return self::$sysconf['CHARSET'];
     }
 
     /**
      * A path of the system.
      *
      * @param string $component the component constant.
-     * @param string $path      if defined, change the path of the component.
      *
      * @return string A string containing the path of the component.
      */
-    public static function path($component, $path = null)
+    public static function path(string $component): string
     {
-        if (!is_null($path)) {
-            self::$paths[$component] = $path;
-        }
-
-        return isset(self::$paths[$component]) ? self::$paths[$component] : '';
+        return match ($component) {
+            self::PATH_APPLICATION => self::$sysconf['APP_PATH'] ?? self::path(self::PATH_PROJECT) . DS . 'app',
+            self::PATH_CLASSES => self::$sysconf['CLASS_PATH'] ?? self::path(self::PATH_APPLICATION) . DS . 'classes',
+            self::PATH_CONF => self::$sysconf['CONFIG_PATH'] ?? self::path(self::PATH_PROJECT) . DS . 'conf',
+            self::PATH_CONTROLLER => self::$sysconf['CONTROLER_PATH'] ??
+                self::path(self::PATH_APPLICATION) . DS . 'controllers',
+            self::PATH_LIBRARY => self::$sysconf['SPRINGY_PATH'] ?? __DIR__,
+            self::PATH_MIGRATION => self::$sysconf['MIGRATION_PATH'] ??
+                self::path(self::PATH_PROJECT) . DS . 'migration',
+            self::PATH_PROJECT => self::$sysconf['PROJECT_PATH'] ?? realpath(__DIR__ . DS . '..'),
+            self::PATH_VAR => self::$sysconf['VAR_PATH'] ?? self::path(self::PATH_PROJECT) . DS . 'var',
+            self::PATH_VENDOR => self::$sysconf['VENDOR_PATH'] ?? self::path(self::PATH_PROJECT) . DS . 'vendor',
+            self::PATH_WEB_ROOT => self::$sysconf['ROOT_PATH'],
+        };
     }
 
     /**

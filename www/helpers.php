@@ -7,7 +7,7 @@
  * @author     Allan Marques <allan.marques@ymail.com>
  * @author     Fernando Val <fernando.val@gmail.com>
  *
- * @version    4.6.3
+ * @version    4.8.0
  *
  * Let's make the developer happier and more productive.
  */
@@ -77,7 +77,7 @@ function build_url(
  *
  * @return mixed the value of the key.
  */
-function config_get($key)
+function config_get($key): mixed
 {
     return Springy\Configuration::get($key);
 }
@@ -94,15 +94,28 @@ function config_set($key, $val)
 }
 
 /**
+ * An alias for Springy\Cookie::get() method.
+ *
+ * @param string $key the name of the cookie variable.
+ *
+ * @return mixed the value of the cookie.
+ */
+function cookie_get($name): mixed
+{
+    return Springy\Cookie::get($name);
+}
+
+/**
  * Global SYSTEM variable wrapper.
  *
  * @param string $key.
  *
  * @return mixed.
  */
-function sysconf($key)
+function sysconf($key): mixed
 {
-    return $GLOBALS['SYSTEM'][$key] ?? null;
+    // return $GLOBALS['SYSTEM'][$key] ?? null;
+    return Springy\Kernel::systemConfGlobal($key);
 }
 
 /**
@@ -130,9 +143,9 @@ function debug($txt, $name = '', $highlight = true, $revert = true)
  */
 function dd($var, $die = true)
 {
-    if (Springy\Kernel::isCGIMode()) {
-        echo "Status: 200\n\n";
-    }
+    // if (Springy\Kernel::isCGIMode()) {
+    //     echo "Status: 200\n\n";
+    // }
 
     echo '<pre>';
     var_dump($var);
@@ -307,7 +320,11 @@ function with($object)
 /**
  * Framework autoload function.
  *
+ * Will be removed in v4.6.0
+ *
  * @param string $class the class name.
+ *
+ * @deprecated 4.5.0
  *
  * @return void
  */
