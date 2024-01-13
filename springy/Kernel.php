@@ -108,7 +108,7 @@ class Kernel
      *
      * @return void
      */
-    private static function callController()
+    private static function callController(): void
     {
         // Has a controller defined?
         if (is_null(self::$controllerName)) {
@@ -155,7 +155,7 @@ class Kernel
      *
      * @return void
      */
-    private static function callGlobal()
+    private static function callGlobal(): void
     {
         // Bootstrap
         $btPath = self::path(self::PATH_APPLICATION) . DS . 'bootstrap.php';
@@ -188,77 +188,40 @@ class Kernel
      *
      * @return void
      */
-    private static function callSpecialCommands()
+    private static function callSpecialCommands(): void
     {
         if (!is_null(self::$controllerName) || self::$cgiMode) {
             return;
         }
 
-        $about = function () {
-            if (!config_get('system.system_internal_methods.about')) {
-                return false;
-            }
-
-            new Core\Copyright(true);
-
-            return true;
-        };
-        $sysbug = function ($command) {
-            if (!config_get('system.system_internal_methods.system_errors')) {
-                return false;
-            }
-
-            self::systemBugPage($command);
-
-            return true;
-        };
-        $methods = [
-            '_' => $about,
-            '_springy_' => $about,
-            '_pi_' => function () {
-                if (!config_get('system.system_internal_methods.phpinfo')) {
-                    return false;
-                }
-
-                phpinfo();
-                ob_end_flush();
-
-                return true;
-            },
-            '_error_' => function () {
-                if (!config_get('system.system_internal_methods.test_error')) {
-                    return false;
-                }
-
-                self::testError();
-
-                return false;
-            },
-            '__migration__' => function () {
-                // Cli mode only
-                if (!defined('STDIN')) {
-                    echo 'This script can be executed only in CLI mode.';
-
-                    exit(998);
-                }
-
-                $controller = new Migrator();
-                $controller->run();
-
-                return true;
-            },
-            '_system_bug_' => $sysbug,
-            '_system_bug_solved_' => $sysbug,
-        ];
-
-        // The command
         $command = URI::getSegment(0, false);
+        $match = match ($command) {
+            '__migration__' => defined('STDIN'),
+            '_error_' => config_get('system.system_internal_methods.test_error')
+                && URI::getSegment(0)
+                && ctype_digit(URI::getSegment(0)),
+            '_pi_' => config_get('system.system_internal_methods.phpinfo'),
+            '_springy_' => config_get('system.system_internal_methods.about'),
+            '_system_bug_' => config_get('system.system_internal_methods.system_errors') && self::systemBugAccess(),
+            '_system_bug_solved_' => config_get('system.system_internal_methods.system_errors')
+                && self::systemBugAccess()
+                && preg_match('/(^[0-9a-z]{8}(,[0-9a-z]{8})*|all)$/', URI::getSegment(1, false)),
+            default => false,
+        };
 
-        if (($methods[$command] ?? false) && call_user_func($methods[$command], $command)) {
-            return;
-        }
-
-        new Errors(404, 'Page not found');
+        $match ? call_user_func(
+            match ($command) {
+                '__migration__' => fn () => (new Migrator())->run(),
+                '_error_' => fn () => new Errors(intval(URI::getSegment(0)), 'System error'),
+                '_pi_' => function () {
+                    phpinfo();
+                    ob_end_flush();
+                },
+                '_springy_' => fn () => new Core\Copyright(true),
+                '_system_bug_' => fn () => (new Errors())->bugList(),
+                '_system_bug_solved_' => fn () => (new Errors())->bugSolved(URI::getSegment(1, false)),
+            }
+        ) : new Errors(404, 'Page not found');
     }
 
     /**
@@ -289,7 +252,7 @@ class Kernel
      *
      * @return void
      */
-    private static function checkDevAccessDebug()
+    private static function checkDevAccessDebug(): void
     {
         // Has a developer credential?
         $devUser = Configuration::get('system', 'developer_user');
@@ -498,7 +461,7 @@ class Kernel
      *
      * @return void
      */
-    private static function httpAuthNeeded()
+    private static function httpAuthNeeded(): void
     {
         $auth = Configuration::get('system', 'authentication');
 
@@ -535,7 +498,7 @@ class Kernel
      *
      * @return void
      */
-    private static function httpStartup()
+    private static function httpStartup(): void
     {
         if (defined('STDIN')) {
             return;
@@ -564,21 +527,45 @@ class Kernel
     }
 
     /**
+     * Sets system environment.
+     *
+     * @return void
+     */
+    private static function setEnv(): void
+    {
+        $env = self::$sysconf['ACTIVE_ENVIRONMENT'] ?: (
+            self::$sysconf['ENVIRONMENT_VARIABLE']
+                ? getenv(self::$sysconf['ENVIRONMENT_VARIABLE'])
+                : ''
+        );
+
+        if (empty($env)) {
+            $env = URI::getHost() ?: 'unknown';
+
+            // Verify if has an alias for host
+            foreach (self::$sysconf['ENVIRONMENT_ALIAS'] as $host => $alias) {
+                if (preg_match('/^' . $host . '$/', $env)) {
+                    $env = $alias;
+                    break;
+                }
+            }
+        }
+
+        self::$environment = $env;
+    }
+
+    /**
      * Verifies the access to system bug page must be autenticated.
      *
      * @return void
      */
-    private static function systemBugAccess()
+    private static function systemBugAccess(): bool
     {
         // Has a credential to system bug page?
         $auth = Configuration::get('system', 'bug_authentication');
-        if (empty($auth['user']) || empty($auth['pass'])) {
-            return;
-        }
 
-        // Is authenticated?
-        if (Cookie::get('__sys_bug_auth__')) {
-            return;
+        if (empty($auth['user']) || empty($auth['pass'])) {
+            return true;
         }
 
         // Verify the credential
@@ -592,51 +579,7 @@ class Kernel
             new Errors(401, 'Unauthorized');
         }
 
-        Cookie::set('__sys_bug_auth__', true);
-    }
-
-    /**
-     * The system bug pages.
-     *
-     * @param string $page the command.
-     *
-     * @return void
-     */
-    private static function systemBugPage($page)
-    {
-        // Check the access
-        self::systemBugAccess();
-
-        $error = new Errors();
-
-        if ($page == '_system_bug_') {
-            $error->bugList();
-
-            return;
-        }
-
-        if (preg_match('/(^[0-9a-z]{8}(,[0-9a-z]{8})*|all)$/', URI::getSegment(1, false))) {
-            $error->bugSolved(URI::getSegment(1, false));
-
-            return;
-        }
-
-        $error->process(
-            new SpringyException('Page not found', E_USER_ERROR, null, __FILE__, __LINE__),
-            404
-        );
-    }
-
-    /**
-     * Tests a HTTP error.
-     *
-     * @return void
-     */
-    private static function testError()
-    {
-        if ($error = URI::getSegment(0)) {
-            new Errors((int) $error, 'System error');
-        }
+        return true;
     }
 
     /**
@@ -647,11 +590,7 @@ class Kernel
         self::$startime = $startime;
         self::$sysconf = $sysconf;
 
-        self::environment(
-            $sysconf['ACTIVE_ENVIRONMENT'],
-            isset($sysconf['ENVIRONMENT_ALIAS']) ? $sysconf['ENVIRONMENT_ALIAS'] : [],
-            isset($sysconf['ENVIRONMENT_VARIABLE']) ? $sysconf['ENVIRONMENT_VARIABLE'] : ''
-        );
+        self::setEnv();
 
         ini_set('date.timezone', $sysconf['TIMEZONE']);
         ini_set('default_charset', self::charset());
@@ -690,7 +629,7 @@ class Kernel
      *
      * @return string
      */
-    public static function runTime()
+    public static function runTime(): string
     {
         return number_format(microtime(true) - self::$startime, 6);
     }
@@ -698,38 +637,10 @@ class Kernel
     /**
      * The system environment.
      *
-     * @param string $env - if defined, set the system environment.
-     *
-     * @return mixed A string containing the system environment
+     * @return string|null
      */
-    public static function environment($env = null, $alias = [], $envar = '')
+    public static function environment(): ?string
     {
-        if (!is_null($env)) {
-            // Define environment by host?
-            if (empty($env)) {
-                if (!empty($envar)) {
-                    $env = getenv($envar);
-                }
-
-                $env = empty($env) ? URI::getHost() : $env;
-                if (empty($env)) {
-                    $env = 'unknown';
-                }
-
-                // Verify if has an alias for host
-                if (is_array($alias) && count($alias)) {
-                    foreach ($alias as $host => $as) {
-                        if (preg_match('/^' . $host . '$/', $env)) {
-                            $env = $as;
-                            break;
-                        }
-                    }
-                }
-            }
-
-            self::$environment = $env;
-        }
-
         return self::$environment;
     }
 
@@ -755,7 +666,7 @@ class Kernel
      *
      * @return string A string containing the system version.
      */
-    public static function systemVersion()
+    public static function systemVersion(): string
     {
         [$major, $minor, $patch] = is_array(self::$sysconf['SYSTEM_VERSION'])
             ? self::$sysconf['SYSTEM_VERSION']
@@ -781,9 +692,9 @@ class Kernel
      *
      * @return string A string containing the system charset.
      */
-    public static function charset()
+    public static function charset(): string
     {
-        return self::$sysconf['CHARSET'];
+        return self::$sysconf['CHARSET'] ?? 'UTF-8';
     }
 
     /**
@@ -818,7 +729,7 @@ class Kernel
      *
      * @return void
      */
-    public static function addIgnoredError($error)
+    public static function addIgnoredError($error): void
     {
         if (is_array($error)) {
             foreach ($error as $errno) {
@@ -840,7 +751,7 @@ class Kernel
      *
      * @return void
      */
-    public static function delIgnoredError($error)
+    public static function delIgnoredError($error): void
     {
         if (is_array($error)) {
             foreach ($error as $errno) {
@@ -905,7 +816,7 @@ class Kernel
      *
      * @return void
      */
-    public static function setErrorHook($errno, $funcHook)
+    public static function setErrorHook($errno, $funcHook): void
     {
         self::$errorHooks[$errno] = $funcHook;
     }
@@ -953,7 +864,7 @@ class Kernel
      *
      * @return void
      */
-    public static function assignTemplateVar($name, $value)
+    public static function assignTemplateVar($name, $value): void
     {
         self::$templateVars[$name] = $value;
     }

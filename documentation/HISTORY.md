@@ -6,7 +6,7 @@
 - Added support to PHP 8.0, 8.1 and 8.2;
 - Droped support to PHP 7.x;
 - Implemented support to execute controllers using PSR-4 autoload;
-- Enhancements in configuraton and template classes;
+- Enhancements in kernel, configuraton and template classes;
 - `sysconf.php` returns an array instead set variable `$GLOBALS['SYSTEM']`;
 - Configuration files can returns an array instead set the variable `$conf`;
 - Changes ACL module definition;
@@ -17,6 +17,7 @@
 - Added `Kernel::systemConfGlobal()` to get global system configuration data;
 - `Kernel` functions updates to readonly mode:
   - `Kernel::charset()`;
+  - `Kernel::environment()`;
   - `Kernel::path()`;
   - `Kernel::projectCodeName()`;
   - `Kernel::systemName()`;
