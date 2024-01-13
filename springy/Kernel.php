@@ -8,12 +8,10 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.9.1
+ * @version   2.9.2
  */
 
 namespace Springy;
-
-use Springy\Exceptions\SpringyException;
 
 /**
  * Framework kernel class.
