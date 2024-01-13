@@ -3,11 +3,12 @@
 /*
  * Springy Framework Configuration File.
  *
- * Used for "development" environment.
+ * Used for "production" environment.
  *
- * If removed, only soap.default.conf.php will be used.
+ * If removed, only conf/soap.default.conf.php will be used.
  */
-$conf = [
+
+return [
     'useCURL' => false,
     'timeout' => 15,
 ];

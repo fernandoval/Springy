@@ -1,7 +1,7 @@
 # Configurações da classe de templates
 
-O arquivo `\conf\template.default.conf.php` e as variantes para ambientes
-`\conf\${enviroment}\template.conf.php` armazenam as entradas de configuração
+O arquivo `\conf\template.php` e as variantes para ambientes
+`\conf\${enviroment}\template.php` armazenam as entradas de configuração
 para tratamento de templates.
 
 As entradas de configuração dos arquivos *template*, são utilizadas pela classe

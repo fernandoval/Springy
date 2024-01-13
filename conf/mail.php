@@ -3,11 +3,10 @@
 /**
  * Springy Framework Configuration File.
  *
- * As entradas colocadas nesse arquivo serão aplicadas a todos os ambientes do sistema.
- *
  * Do not remove this file.
  */
-$conf = [
+
+return [
     // Mail to notify system errors (used by framework)
     'errors_go_to' => '',
 

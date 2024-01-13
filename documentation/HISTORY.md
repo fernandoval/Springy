@@ -3,9 +3,12 @@
 ## Version 4
 
 ### 4.5.0
-- Implemented support to execute controllers using PSR-4 autoload;
 - Added support to PHP 8.0, 8.1 and 8.2;
 - Droped support to PHP 7.x;
+- Implemented support to execute controllers using PSR-4 autoload;
+- Adjustments in PDO initializing;
+- Enhancements in configuraton and template classes;
+- Configuration files can returns an array instead set the variable `$conf`;
 - Changes ACL module definition;
 - Deprecates ACL default module setup;
 - Adjustments and optimizations;
@@ -44,11 +47,13 @@
 - Removed deprecated function `Cookie::del()`;
 - Removed `SOAP` class;
 - Updated error HTML asset files;
+- Removed required suffix '.conf' and '.default.conf' from configuration files;
 - Deprecated configuratios:
-  - `uri.routes`;
-  - `uri.redirects`;
+  - `uri.host_controller_path`;
   - `uri.prevalidate_controller`;
-  - `uri.host_controller_path`.
+  - `uri.redirects`;
+  - `uri.register_method_set_common_urls`;
+  - `uri.routes`.
 
 ### 4.4.0
 - Added support to `Controller` suffix without underscore to controller names

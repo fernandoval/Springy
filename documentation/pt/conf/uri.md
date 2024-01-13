@@ -1,7 +1,7 @@
 # Configurações da classe de tratamento de URI/URL
 
-O arquivo `\conf\uri.default.conf.php` e as variantes para ambientes
-`\conf\${enviroment}\uri.conf.php` armazenam as entradas de configuração para
+O arquivo `\conf\uri.php` e as variantes para ambientes
+`\conf\${enviroment}\uri.php` armazenam as entradas de configuração para
 tratamento de URL.
 
 As entradas de configuração dos arquivos *uri*, são utilizadas pela classe URI,
@@ -39,8 +39,6 @@ como por exemplo para determinar idioma, localização ou setor.
 Por exemplo: http://www.seusite.com/pt-br/pagina
 -   **'host_controller_path'** - Array de hosts que possuem nível próprio de
 controladoras;
--   **'register_method_set_common_urls'** - Endereço para função responsável por
-inicializar variáveis de template com URLs para o site;
 -   **'dynamic'** - Host do conteúdo dinâmico do site.
 Ex.: 'http://www.seusite.com'
 -   **'static'** - Host do conteúdo estático do site.
@@ -62,12 +60,6 @@ Logo: cada índice do array conterá a seguinte informação, respectivamente:
 -   índice 2 => boleano para o parâmetro forceRewrite;
 -   índice 3 => entrada de configuração host;
 -   índice 4 => booleano para o parânetro include_ignores_segments.
-
-### Entrada 'register_method_set_common_urls';
-
--   **'class'** - String com o nome da classe;
--   **'method'** - String com o nome da função;
--   **'static'** - Buleano informando se é chamada estática.
 
 #### Exemplos:
 

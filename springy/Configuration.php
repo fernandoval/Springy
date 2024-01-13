@@ -1,16 +1,19 @@
 <?php
+
 /**
  * Application configuration handler.
  *
- * @copyright ₢ 2007-2018 Fernando Val
+ * @copyright 2007-2018 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
  * @author    Allan Marques <allan.marques@ymail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version    3.0.21
+ * @version    3.1.0
  */
 
 namespace Springy;
+
+use Springy\Exceptions\SpringyException;
 
 /**
  * Application configuration handler.
@@ -19,14 +22,14 @@ namespace Springy;
  */
 class Configuration
 {
-    /// Configuration array
+    /** @var array the configuration data */
     private static $confs = [];
 
-    const LC_DB = 'db';
-    const LC_MAIL = 'mail';
-    const LC_SYSTEM = 'system';
-    const LC_TEMPLATE = 'template';
-    const LC_URI = 'uri';
+    public const LC_DB = 'db';
+    public const LC_MAIL = 'mail';
+    public const LC_SYSTEM = 'system';
+    public const LC_TEMPLATE = 'template';
+    public const LC_URI = 'uri';
 
     /**
      * Gets the content of a configuration key.
@@ -98,19 +101,22 @@ class Configuration
      *
      * @return void
      */
-    private static function _loadJSON($file, $local)
+    private static function loadJSON($file, $local)
     {
         if (!file_exists($file . '.json')) {
             return;
         }
 
-        if (!$str = file_get_contents($file . '.json')) {
-            new Errors(500, 'Can not open the configuration file ' . $file . '.json');
+        $str = file_get_contents($file . '.json');
+
+        if (!$str) {
+            new SpringyException('Can not open the configuration file ' . $file . '.json');
         }
 
         $conf = json_decode($str, true);
+
         if (json_last_error() != JSON_ERROR_NONE) {
-            new Errors(500, 'Parse error at ' . $file . '.json: ' . json_last_error_msg());
+            new SpringyException('Parse error at ' . $file . '.json: ' . json_last_error_msg());
         }
 
         self::$confs[$local] = array_replace_recursive(self::$confs[$local], $conf);
@@ -124,25 +130,24 @@ class Configuration
      *
      * @return void
      */
-    private static function _loadPHP($file, $local)
+    private static function loadScript($file, $local)
     {
-        if (!file_exists($file . '.conf.php')) {
-            return;
-        }
+        $oldName = $file . '.conf.php';
+        $newName = $file . '.php';
+        $fileName = file_exists($newName) ? $newName : $oldName;
 
-        $conf = [];
-
-        require_once $file . '.conf.php';
-        self::$confs[$local] = array_replace_recursive(self::$confs[$local], $conf);
-
-        // Overwrite the configuration for a specific host
-        if (!isset($over_conf)) {
+        if (!file_exists($fileName)) {
             return;
         }
 
         $host = URI::getHost();
+        $content = require_once $fileName;
+        $conf = $conf ?? (is_array($content) ? $content : []);
 
-        if (!$host || !isset($over_conf[$host])) {
+        self::$confs[$local] = array_replace_recursive(self::$confs[$local], $conf);
+
+        // Overwrite the configuration for a specific host
+        if (!$host || !isset($over_conf) || !isset($over_conf[$host])) {
             return;
         }
 
@@ -157,18 +162,19 @@ class Configuration
      *
      * @return void
      */
-    private static function _load($file, $local)
+    private static function loadAll($file, $local)
     {
-        self::_loadPHP($file, $local);
-        self::_loadJSON($file, $local);
+        $host = URI::getHost();
+        self::loadScript($file, $local);
+        self::loadJSON($file, $local);
 
         // Overwrite the configuration for a specific host, if exists
-        if (!$host = URI::getHost()) {
+        if (!$host) {
             return;
         }
 
-        self::_loadPHP($file . '-' . $host, $local);
-        self::_loadJSON($file . '-' . $host, $local);
+        self::loadScript($file . '-' . $host, $local);
+        self::loadJSON($file . '-' . $host, $local);
     }
 
     /**
@@ -180,17 +186,22 @@ class Configuration
      */
     public static function load($local)
     {
+        $path = Kernel::path(Kernel::PATH_CONF);
+        $environment = Kernel::environment();
         self::$confs[$local] = [];
 
         // Load the default configuration file
-        self::_load(Kernel::path(Kernel::PATH_CONF) . DS . $local . '.default', $local);
+        self::loadAll($path . DS . $local . '.default', $local);
+        self::loadAll($path . DS . $local, $local);
 
         // Load the configuration file for the current environment
-        self::_load(Kernel::path(Kernel::PATH_CONF) . DS . Kernel::environment() . DS . $local, $local);
+        self::loadAll($path . DS . $environment . DS . $local, $local);
 
         // Check if configuration was loaded
         if (empty(self::$confs[$local])) {
-            new Errors(500, 'Settings for "' . $local . '" not found in the environment "' . Kernel::environment() . '".');
+            new SpringyException(
+                'Settings for "' . $local . '" not found in the environment "' . $environment . '".'
+            );
         }
     }
 
@@ -206,7 +217,7 @@ class Configuration
         $fileName = Kernel::path(Kernel::PATH_CONF) . DS . Kernel::environment() . DS . $local . '.json';
 
         if (!file_put_contents($fileName, json_encode(self::$confs[$local]))) {
-            new Errors(500, 'Can not write to ' . $fileName);
+            new SpringyException('Can not write to ' . $fileName);
         }
     }
 }

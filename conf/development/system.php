@@ -5,9 +5,10 @@
  *
  * Used for "development" environment.
  *
- * If removed, only system.default.conf.php will be used.
+ * If removed, only conf/system.php will be used.
  */
-$conf = [
+
+return [
     'debug' => true,
     'maintenance' => false,
     'cache' => false,

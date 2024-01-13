@@ -5,9 +5,10 @@
  *
  * Used for "production" environment.
  *
- * If removed, only db.default.conf.php will be used.
+ * If removed, only conf/db.conf.php will be used.
  */
-$conf = [
+
+return [
     'round_robin' => [
         'type'        => 'memcached',
         'server_addr' => 'youmemcachedserver.localnetwork',

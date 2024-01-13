@@ -5,9 +5,10 @@
  *
  * Used for "production" environment.
  *
- * If removed, only template.default.conf.php will be used.
+ * If removed, only conf/template.php will be used.
  */
-$conf = [
+
+return [
     'debug'       => false,
     'auto_reload' => false,
 ];

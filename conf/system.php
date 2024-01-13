@@ -3,7 +3,8 @@
 /*
  * General system configutations.
  */
-$conf = [
+
+return [
     'debug'              => true,
     'ignore_deprecated'  => false,
     'rewrite_url'        => true,

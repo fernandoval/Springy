@@ -1,6 +1,6 @@
 # Arquivo de Configuração do Sistema (system)
 
-Os arquivos **system.default.conf.php** na pasta /conf e **system.conf.php** nas sub-pastas de configuração por ambiente são usadas pela **Kernel** e outras bibliotecas do framework.
+Os arquivos **system.php** na pasta /conf e **system.php** nas sub-pastas de configuração por ambiente são usadas pela **Kernel** e outras bibliotecas do framework.
 
 ## Entrada de configurações pré-definidas
 

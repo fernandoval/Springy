@@ -8,7 +8,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   4.2.16
+ * @version   4.3.0
  */
 
 namespace Springy;
@@ -47,6 +47,8 @@ class Template
             default:
                 throw_error('500', 'Template engine not implemented');
         }
+
+        $this->addUriCommonUrls();
     }
 
     /**
@@ -55,6 +57,28 @@ class Template
     public function __destruct()
     {
         unset($this->tplObj);
+    }
+
+    private function addUriCommonUrls(): void
+    {
+        $urls = config_get('uri.common_urls');
+
+        if (!is_array($urls)) {
+            return;
+        }
+
+        foreach ($urls as $var => $value) {
+            $this->tplObj->assign(
+                $var,
+                URI::buildURL(
+                    $value[0],
+                    $value[1] ?? [],
+                    $value[2] ?? false,
+                    $value[3] ?? 'dynamic',
+                    $value[4] ?? true
+                )
+            );
+        }
     }
 
     /**

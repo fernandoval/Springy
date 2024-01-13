@@ -9,7 +9,7 @@
  * @author    Allan Marques <allan.marques@ymail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   1.9.4
+ * @version   1.10.0
  */
 
 namespace Springy;
@@ -104,7 +104,13 @@ class DB
             return $this->roundRobinConnect($database, $conf);
         }
 
-        $pdoConf = [];
+        $pdoConf = [
+            \PDO::ATTR_CASE => \PDO::CASE_NATURAL,
+            // \PDO::ATTR_EMULATE_PREPARES => false,
+            \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
+            \PDO::ATTR_ORACLE_NULLS => \PDO::NULL_NATURAL,
+            \PDO::ATTR_STRINGIFY_FETCHES => false,
+        ];
         if ($conf['database_type'] == 'mysql') {
             $pdoConf[\PDO::MYSQL_ATTR_INIT_COMMAND] = 'SET NAMES \'' . ($conf['charset'] ?? 'UTF8') . '\'';
         }

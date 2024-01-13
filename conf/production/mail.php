@@ -5,9 +5,10 @@
  *
  * Used for "production" environment.
  *
- * If removed, only mail.default.conf.php will be used.
+ * If removed, only conf/mail.php will be used.
  */
-$conf = [
+
+return [
     'default_driver' => 'sendgrid-api',
     'mailers'        => [
         'sendgrid-api' => [

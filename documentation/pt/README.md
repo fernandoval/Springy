@@ -93,10 +93,11 @@ não podem ser renomeados ou omitidos.
 Seu sistema poderá possuir arquivos de configuração específicos, bastando
 obedecer o formato e a estrutura de nomes e diretórios.
 
--   **[system](/documentation/pt/system-conf.md)**
--   **[db](/documentation/pt/db-conf.md)**
--   **[uri](/documentation/pt/uri-conf.md)**
--   **[mail](/documentation/pt/mail-conf.md)**
+-   **[system](/documentation/pt/conf/system.md)**
+-   **[db](/documentation/pt/conf/db.md)**
+-   **[uri](/documentation/pt/conf/uri.md)**
+-   **[mail](/documentation/pt/conf/mail.md)**
+-   **[template](/documentation/pt/conf/template.md)**
 
 ## Models
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class driver for Twig template engine.
  *
@@ -10,7 +11,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   0.16.19
+ * @version   0.17.0
  */
 
 namespace Springy\Template;
@@ -28,7 +29,7 @@ use Springy\URI;
  */
 class TwigDriver implements TemplateDriverInterface
 {
-    const TPL_NAME_SUFIX = '.twig.html';
+    public const TPL_NAME_SUFIX = '.twig.html';
 
     /// Internal template object
     private $tplObj = null;
@@ -73,39 +74,6 @@ class TwigDriver implements TemplateDriverInterface
         ]);
 
         $this->setTemplate($tpl);
-
-        // Iniciliza as variáveis com URLs padrão de template
-        if (Configuration::get('uri', 'common_urls')) {
-            if (!Configuration::get('uri', 'register_method_set_common_urls')) {
-                foreach (Configuration::get('uri', 'common_urls') as $var => $value) {
-                    if (isset($value[4])) {
-                        $this->assign($var, URI::buildURL($value[0], $value[1], $value[2], $value[3], $value[4]));
-                    } elseif (isset($value[3])) {
-                        $this->assign($var, URI::buildURL($value[0], $value[1], $value[2], $value[3]));
-                    } elseif (isset($value[2])) {
-                        $this->assign($var, URI::buildURL($value[0], $value[1], $value[2]));
-                    } elseif (isset($value[1])) {
-                        $this->assign($var, URI::buildURL($value[0], $value[1]));
-                    } else {
-                        $this->assign($var, URI::buildURL($value[0]));
-                    }
-                }
-            } elseif (Configuration::get('uri', 'register_method_set_common_urls')) {
-                $toCall = Configuration::get('uri', 'register_method_set_common_urls');
-                if ($toCall['static']) {
-                    if (!isset($toCall['method'])) {
-                        throw new \Exception('You need to determine which method will be executed.', 500);
-                    }
-
-                    //$toCall['class']::$toCall['method'];
-                } else {
-                    $obj = new $toCall['class']();
-                    if (isset($toCall['method']) && $toCall['method']) {
-                        $obj->$toCall['method'];
-                    }
-                }
-            }
-        }
     }
 
     /**

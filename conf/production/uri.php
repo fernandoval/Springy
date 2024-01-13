@@ -5,9 +5,10 @@
  *
  * Used for "production" environment.
  *
- * If removed, only uri.default.conf.php will be used.
+ * If removed, only conf/uri.php will be used.
  */
-$conf = [
+
+return [
     'dynamic' => $_SERVER['HTTP_HOST'],
     'static' => $_SERVER['HTTP_HOST'],
     'secure' => $_SERVER['HTTP_HOST'],

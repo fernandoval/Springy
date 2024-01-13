@@ -11,13 +11,12 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   1.7.20
+ * @version   1.7.21
  */
 
 namespace Springy\Template;
 
-use Springy\Configuration;
-use Springy\Errors;
+use Smarty;
 use Springy\Kernel;
 use Springy\URI;
 
@@ -29,7 +28,7 @@ use Springy\URI;
  */
 class SmartyDriver implements TemplateDriverInterface
 {
-    const TPL_NAME_SUFIX = '.tpl.html';
+    public const TPL_NAME_SUFIX = '.tpl.html';
 
     /// Internal template object
     private $tplObj = null;
@@ -53,57 +52,25 @@ class SmartyDriver implements TemplateDriverInterface
      */
     public function __construct($tpl = null)
     {
-        $this->tplObj = new \Smarty();
+        $this->tplObj = new Smarty();
 
-        if (Configuration::get('template', 'strict_variables')) {
-            $this->tplObj->error_reporting = E_ALL & ~E_NOTICE;
+        if (!config_get('template.strict_variables')) {
+            $this->tplObj->muteUndefinedOrNullWarnings();
         }
-        $this->tplObj->debugging = Configuration::get('template', 'debug');
-        $this->tplObj->debugging_ctrl = Configuration::get('template', 'debugging_ctrl');
-        $this->tplObj->use_sub_dirs = Configuration::get('template', 'use_sub_dirs');
 
-        $this->setCacheDir(Configuration::get('template', 'template_cached_path'));
+        $this->tplObj->debugging = config_get('template.debug');
+        $this->tplObj->debugging_ctrl = config_get('template.debugging_ctrl');
+        $this->tplObj->use_sub_dirs = config_get('template.use_sub_dirs');
+
+        $this->setCacheDir(config_get('template.template_cached_path'));
         $this->setTemplateDir([
-            'main'    => Configuration::get('template', 'template_path'),
-            'default' => Configuration::get('template', 'default_template_path'),
+            'main'    => config_get('template.template_path'),
+            'default' => config_get('template.default_template_path'),
         ]);
-        $this->setCompileDir(Configuration::get('template', 'compiled_template_path'));
-        $this->setConfigDir(Configuration::get('template', 'template_config_path'));
-        $this->tplObj->addPluginsDir(Configuration::get('template', 'template_plugins_path'));
+        $this->setCompileDir(config_get('template.compiled_template_path'));
+        $this->setConfigDir(config_get('template.template_config_path'));
+        $this->tplObj->addPluginsDir(config_get('template.template_plugins_path'));
         $this->setTemplate($tpl);
-
-        // Iniciliza as variáveis com URLs padrão de template
-        if (Configuration::get('uri', 'common_urls')) {
-            if (!Configuration::get('uri', 'register_method_set_common_urls')) {
-                foreach (Configuration::get('uri', 'common_urls') as $var => $value) {
-                    if (isset($value[4])) {
-                        $this->assign($var, URI::buildURL($value[0], $value[1], $value[2], $value[3], $value[4]));
-                    } elseif (isset($value[3])) {
-                        $this->assign($var, URI::buildURL($value[0], $value[1], $value[2], $value[3]));
-                    } elseif (isset($value[2])) {
-                        $this->assign($var, URI::buildURL($value[0], $value[1], $value[2]));
-                    } elseif (isset($value[1])) {
-                        $this->assign($var, URI::buildURL($value[0], $value[1]));
-                    } else {
-                        $this->assign($var, URI::buildURL($value[0]));
-                    }
-                }
-            } elseif (Configuration::get('uri', 'register_method_set_common_urls')) {
-                $toCall = Configuration::get('uri', 'register_method_set_common_urls');
-                if ($toCall['static']) {
-                    if (!isset($toCall['method'])) {
-                        throw new \Exception('You need to determine which method will be executed.', 500);
-                    }
-
-                    //$toCall['class']::$toCall['method'];
-                } else {
-                    $obj = new $toCall['class']();
-                    if (isset($toCall['method']) && $toCall['method']) {
-                        $obj->$toCall['method'];
-                    }
-                }
-            }
-        }
     }
 
     /**
@@ -198,7 +165,7 @@ class SmartyDriver implements TemplateDriverInterface
     public function setCaching($value = 'current')
     {
         $this->tplObj->setCaching(
-            $value != 'current' ? \Smarty::CACHING_LIFETIME_SAVED : \Smarty::CACHING_LIFETIME_CURRENT
+            $value != 'current' ? Smarty::CACHING_LIFETIME_SAVED : Smarty::CACHING_LIFETIME_CURRENT
         );
     }
 
@@ -222,7 +189,7 @@ class SmartyDriver implements TemplateDriverInterface
     public function fetch()
     {
         if (!$this->templateExists($this->templateName)) {
-            new Errors(404, $this->templateName . self::TPL_NAME_SUFIX);
+            throw_error(404, $this->templateName . self::TPL_NAME_SUFIX);
         }
 
         // Alimenta as variáveis CONSTANTES
@@ -289,7 +256,7 @@ class SmartyDriver implements TemplateDriverInterface
             $compile = substr($compile, 0, strrpos(DIRECTORY_SEPARATOR, $compile));
         }
 
-        $this->setCompileDir(Configuration::get('template', 'compiled_template_path') . $compile);
+        $this->setCompileDir(config_get('template.compiled_template_path') . $compile);
     }
 
     /**
@@ -443,9 +410,9 @@ class SmartyDriver implements TemplateDriverInterface
             return '#';
         }
 
-        $srcPath = Configuration::get('system', 'assets_source_path') . DIRECTORY_SEPARATOR . $params['file'];
-        $filePath = Configuration::get('system', 'assets_path') . DIRECTORY_SEPARATOR . $params['file'];
-        $fileURI = Configuration::get('uri', 'assets_dir') . '/' . $params['file'];
+        $srcPath = config_get('system.assets_source_path') . DIRECTORY_SEPARATOR . $params['file'];
+        $filePath = config_get('system.assets_path') . DIRECTORY_SEPARATOR . $params['file'];
+        $fileURI = config_get('uri.assets_dir') . '/' . $params['file'];
         $get = [];
 
         if (file_exists($srcPath) && (!file_exists($filePath) || filemtime($filePath) < filemtime($srcPath))) {

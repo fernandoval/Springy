@@ -5,9 +5,10 @@
  *
  * Used for "production" environment.
  *
- * If removed, only system.default.conf.php will be used.
+ * If removed, only conf/system.php will be used.
  */
-$conf = [
+
+return [
     'maintenance'        => false,
     'bug_authentication' => [
         'user' => 'username',

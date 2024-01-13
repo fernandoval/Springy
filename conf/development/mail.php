@@ -5,9 +5,10 @@
  *
  * Used for "development" environment.
  *
- * If removed, only mail.default.conf.php will be used.
+ * If removed, only conf/mail.php will be used.
  */
-$conf = [
+
+return [
     'default_driver' => 'phpmailer-class',
     'mailers'        => [
         'phpmailer-class' => [

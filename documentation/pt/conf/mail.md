@@ -1,7 +1,7 @@
 # Configurações da classe de envio de email
 
-O arquivo `\conf\mail.default.conf.php` e as variantes para ambientes
-`\conf\${enviroment}\mail.conf.php` armazenam as entradas de configuração para
+O arquivo `\conf\mail.php` e as variantes para ambientes
+`\conf\${enviroment}\mail.php` armazenam as entradas de configuração para
 tratamento de envio de email.
 
 As entradas de configuração dos arquivos *mail*, são utilizadas pela classe

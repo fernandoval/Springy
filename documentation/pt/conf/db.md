@@ -1,7 +1,7 @@
 # Configurações de Banco de Dados
 
-O arquivo `\conf\db.default.conf.php` e as variantes para ambientes
-`\conf\${enviroment}\db.conf.php` armazenam as entradas de configuração para
+O arquivo `\conf\db.php` e as variantes para ambientes
+`\conf\${enviroment}\db.php` armazenam as entradas de configuração para
 acesso a banco de dados.
 
 As entradas de configuração desses arquivos, são utilizadas pela classe DB,

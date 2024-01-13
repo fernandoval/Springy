@@ -115,9 +115,8 @@ $conf = [
         // 'cmd.shell' => ['$command'],
     ],
     'system_root' => '/',
-    'register_method_set_common_urls' => null,
     // URLs comuns do site
-    'common_urls'                     => [
+    'common_urls' => [
         'urlAssets' => [['assets'], [], false, 'static', true],
         'urlHome'   => [[]],
         'urlLogin'  => [['login'], [], false, 'secure', true],
