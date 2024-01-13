@@ -9,7 +9,7 @@
  * @author    Allan Marques <allan.marques@ymail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   1.10.0
+ * @version   1.10.1
  */
 
 namespace Springy;
@@ -213,7 +213,7 @@ class DB
 
         // Tenta conectar ao banco e retorna o resultado
         self::$conectionIds[$database] = [
-            'PDO'    => $this->connect($dbconf['host_name'][$actual]),
+            'PDO' => $this->connect($dbconf['host_name'][$actual]),
             'dbName' => $dbconf['host_name'][$actual],
         ];
 

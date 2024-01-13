@@ -50,6 +50,7 @@
         "components/jquery": "~3.1"
     },
     "autoload": {
+        "files": ["app/helpers.php"],
         "psr-4": {
             "App\\": "app/",
             "Springy\\": "springy/"

@@ -11,7 +11,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   1.7.21
+ * @version   1.7.22
  */
 
 namespace Springy\Template;
@@ -64,7 +64,7 @@ class SmartyDriver implements TemplateDriverInterface
 
         $this->setCacheDir(config_get('template.template_cached_path'));
         $this->setTemplateDir([
-            'main'    => config_get('template.template_path'),
+            'main' => config_get('template.template_path'),
             'default' => config_get('template.default_template_path'),
         ]);
         $this->setCompileDir(config_get('template.compiled_template_path'));

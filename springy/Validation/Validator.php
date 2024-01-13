@@ -8,7 +8,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   0.5.1
+ * @version   0.5.2
  */
 
 namespace Springy\Validation;
@@ -269,7 +269,7 @@ class Validator
             }
 
             $explodedRules[] = [
-                'rule'   => $ruleAndParams[0],
+                'rule' => $ruleAndParams[0],
                 'method' => $this->parseMethod($ruleAndParams[0]),
                 'params' => $params,
             ];

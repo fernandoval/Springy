@@ -6,7 +6,7 @@
  * @copyright 2007 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
  *
- * @version    5.3.0
+ * @version    5.3.1
  */
 
 $springyStartTime = microtime(true); // Memoriza a hora do início do processamento
@@ -14,7 +14,7 @@ $springyStartTime = microtime(true); // Memoriza a hora do início do processame
 // Kill system with internal error 500 if initial setup file does not exists
 if (!file_exists('sysconf.php') || !file_exists('helpers.php')) {
     header('Content-type: text/html; charset=UTF-8', true, 500);
-    echo('Internal System Error on Startup');
+    echo 'Internal System Error on Startup';
     exit(1);
 }
 
@@ -23,7 +23,7 @@ $sysconf = require_once 'sysconf.php';
 
 if (!isset($sysconf['ROOT_PATH'])) {
     header('Content-type: text/html; charset=UTF-8', true, 500);
-    echo('Web server document root configuration not found.');
+    echo 'Web server document root configuration not found.';
     exit(1);
 }
 
@@ -38,7 +38,7 @@ set_error_handler('springyErrorHandler');
 // Load Composer autoload
 $autoloadFile = implode(
     DS,
-    [$sysconf['VENDOR_PATH'] ?? implode(DS, ['..', 'vendor']), 'autoload.php',]
+    [$sysconf['VENDOR_PATH'] ?? implode(DS, ['..', 'vendor']), 'autoload.php']
 );
 if (file_exists($autoloadFile)) {
     require $autoloadFile;

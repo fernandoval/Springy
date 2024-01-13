@@ -8,7 +8,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.9.0
+ * @version   2.9.1
  */
 
 namespace Springy;
@@ -47,7 +47,7 @@ class Kernel
     public const PATH_CLASS = self::PATH_CLASSES;
 
     /**
-     * Global system configuration
+     * Global system configuration.
      *
      * @var array
      */

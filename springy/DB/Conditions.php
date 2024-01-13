@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class to construct database conditions clauses.
  *
@@ -6,7 +7,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   0.5.8
+ * @version   0.6.0
  */
 
 namespace Springy\DB;
@@ -16,41 +17,41 @@ namespace Springy\DB;
  */
 class Conditions
 {
-    /// Conditions array
+    // Conditions array
     private $conditions = [];
-    /// Parameters array
+    // Parameters array
     private $parameters = [];
 
-    /// Conditional constants
-    const COND_AND = 'AND';
-    const COND_OR = 'OR';
+    // Conditional constants
+    public const COND_AND = 'AND';
+    public const COND_OR = 'OR';
 
-    /// Comparison constants
-    const OP_EQUAL = '=';
-    const OP_NOT_EQUAL = '!=';
-    const OP_GREATER = '>';
-    const OP_GREATER_EQUAL = '>=';
-    const OP_LESS = '<';
-    const OP_LESS_EQUAL = '<=';
-    const OP_IN = 'IN';
-    const OP_NOT_IN = 'NOT IN';
-    const OP_IS = 'IS';
-    const OP_IS_NOT = 'IS NOT';
-    const OP_LIKE = 'LIKE';
-    const OP_NOT_LIKE = 'NOT LIKE';
-    const OP_MATCH = 'MATCH';
-    const OP_MATCH_BOOLEAN_MODE = 'MATCH BOOLEAN';
+    // Comparison constants
+    public const OP_EQUAL = '=';
+    public const OP_NOT_EQUAL = '!=';
+    public const OP_GREATER = '>';
+    public const OP_GREATER_EQUAL = '>=';
+    public const OP_LESS = '<';
+    public const OP_LESS_EQUAL = '<=';
+    public const OP_IN = 'IN';
+    public const OP_NOT_IN = 'NOT IN';
+    public const OP_IS = 'IS';
+    public const OP_IS_NOT = 'IS NOT';
+    public const OP_LIKE = 'LIKE';
+    public const OP_NOT_LIKE = 'NOT LIKE';
+    public const OP_MATCH = 'MATCH';
+    public const OP_MATCH_BOOLEAN_MODE = 'MATCH BOOLEAN';
 
-    /// Comparison constants aliases
-    const OP_EQUAL_ALIAS = 'EQ';
-    const OP_NOT_EQUAL_ALIAS = 'NE';
-    const OP_GREATER_ALIAS = 'GT';
-    const OP_GREATER_EQUAL_ALIAS = 'GTE';
-    const OP_LESS_ALIAS = 'LT';
-    const OP_LESS_EQUAL_ALIAS = 'LTE';
+    // Comparison constants aliases
+    public const OP_EQUAL_ALIAS = 'EQ';
+    public const OP_NOT_EQUAL_ALIAS = 'NE';
+    public const OP_GREATER_ALIAS = 'GT';
+    public const OP_GREATER_EQUAL_ALIAS = 'GTE';
+    public const OP_LESS_ALIAS = 'LT';
+    public const OP_LESS_EQUAL_ALIAS = 'LTE';
 
-    const EXPR_SIMPLE = 'exp';
-    const EXPR_SUB = 'sub';
+    public const EXPR_SIMPLE = 'exp';
+    public const EXPR_SUB = 'sub';
 
     /**
      * Constructor.
@@ -125,12 +126,15 @@ class Conditions
             case self::OP_NOT_IN:
                 $this->parameters = array_merge($this->parameters, $condition['value']);
 
-                return $expression . ' ' . $condition['column'] . ($condition['operator'] === self::OP_NOT_IN ? ' NOT' : '') . ' IN (' . trim(str_repeat('?, ', count($condition['value'])), ', ') . ')';
+                return $expression . ' ' . $condition['column'] .
+                    ($condition['operator'] === self::OP_NOT_IN ? ' NOT' : '') .
+                    ' IN (' . trim(str_repeat('?, ', count($condition['value'])), ', ') . ')';
             case self::OP_MATCH:
             case self::OP_MATCH_BOOLEAN_MODE:
                 $this->parameters[] = $condition['value'];
 
-                return $expression . ' MATCH (' . $condition['column'] . ') AGAINST (?' . ($condition['operator'] === self::OP_MATCH_BOOLEAN_MODE ? ' IN BOOLEAN MODE' : '') . ')';
+                return $expression . ' MATCH (' . $condition['column'] . ') AGAINST (?' .
+                    ($condition['operator'] === self::OP_MATCH_BOOLEAN_MODE ? ' IN BOOLEAN MODE' : '') . ')';
         }
 
         throw new \Exception('Unknown condition operator.', 500);
@@ -194,7 +198,7 @@ class Conditions
     {
         if (is_array($column) || is_object($column)) {
             $this->conditions[] = [
-                'type'       => self::EXPR_SUB,
+                'type' => self::EXPR_SUB,
                 'conditions' => is_object($column) ? $column->get() : $column,
                 'expression' => ($value === null ? $expression : $value),
             ];
@@ -203,10 +207,10 @@ class Conditions
         }
 
         $this->conditions[] = [
-            'type'       => self::EXPR_SIMPLE,
-            'column'     => $column,
-            'value'      => $value,
-            'operator'   => strtoupper($operator),
+            'type' => self::EXPR_SIMPLE,
+            'column' => $column,
+            'value' => $value,
+            'operator' => strtoupper($operator),
             'expression' => $expression,
         ];
     }
@@ -229,10 +233,10 @@ class Conditions
      *
      * @return mixed the condition for given column or false if not found.
      */
-    private function _find($column, $conditions)
+    private function find($column, $conditions)
     {
         foreach ($conditions as $condition) {
-            if ($condition['type'] === self::EXPR_SUB && $result = $this->_find($column, $condition['conditions'])) {
+            if ($condition['type'] === self::EXPR_SUB && $result = $this->find($column, $condition['conditions'])) {
                 return $result;
             } elseif ($condition['type'] === self::EXPR_SIMPLE && $condition['column'] == $column) {
                 return $condition;
@@ -255,7 +259,7 @@ class Conditions
             return $this->conditions;
         }
 
-        return $this->_find($column, $this->conditions);
+        return $this->find($column, $this->conditions);
     }
 
     /**
@@ -308,18 +312,18 @@ class Conditions
     public function filter($filter): void
     {
         $operators = [
-            'eq'                    => self::OP_EQUAL,
-            'gt'                    => self::OP_GREATER,
-            'gte'                   => self::OP_GREATER_EQUAL,
-            'lt'                    => self::OP_LESS,
-            'lte'                   => self::OP_LESS_EQUAL,
-            'ne'                    => self::OP_NOT_EQUAL,
-            'in'                    => self::OP_IN,
-            'not in'                => self::OP_NOT_IN,
-            'is'                    => self::OP_IS,
-            'is not'                => self::OP_IS_NOT,
-            'like'                  => self::OP_LIKE,
-            'match'                 => self::OP_MATCH,
+            'eq' => self::OP_EQUAL,
+            'gt' => self::OP_GREATER,
+            'gte' => self::OP_GREATER_EQUAL,
+            'lt' => self::OP_LESS,
+            'lte' => self::OP_LESS_EQUAL,
+            'ne' => self::OP_NOT_EQUAL,
+            'in' => self::OP_IN,
+            'not in' => self::OP_NOT_IN,
+            'is' => self::OP_IS,
+            'is not' => self::OP_IS_NOT,
+            'like' => self::OP_LIKE,
+            'match' => self::OP_MATCH,
             'match in boolean mode' => self::OP_MATCH_BOOLEAN_MODE,
         ];
 

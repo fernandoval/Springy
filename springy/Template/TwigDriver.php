@@ -11,7 +11,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   0.17.0
+ * @version   0.17.1
  */
 
 namespace Springy\Template;
@@ -60,12 +60,12 @@ class TwigDriver implements TemplateDriverInterface
         // Inicializa a classe de template
         // \Twig_Autoloader::register();
         $this->envOptions = [
-            'autoescape'       => Configuration::get('template', 'autoescape'),
+            'autoescape' => Configuration::get('template', 'autoescape'),
             'strict_variables' => Configuration::get('template', 'strict_variables'),
-            'debug'            => Configuration::get('template', 'debug'),
-            'cache'            => Configuration::get('template', 'compiled_template_path'),
-            'auto_reload'      => Configuration::get('template', 'auto_reload'),
-            'optimizations'    => Configuration::get('template', 'optimizations'),
+            'debug' => Configuration::get('template', 'debug'),
+            'cache' => Configuration::get('template', 'compiled_template_path'),
+            'auto_reload' => Configuration::get('template', 'auto_reload'),
+            'optimizations' => Configuration::get('template', 'optimizations'),
         ];
 
         $this->__twigInstance([
@@ -232,11 +232,11 @@ class TwigDriver implements TemplateDriverInterface
 
         // Alimenta as variáveis CONSTANTES
         $vars = [
-            'HOST'               => URI::buildURL(),
-            'CURRENT_PAGE_URI'   => URI::currentPageURI(),
-            'SYSTEM_NAME'        => Kernel::systemName(),
-            'SYSTEM_VERSION'     => Kernel::systemVersion(),
-            'PROJECT_CODE_NAME'  => Kernel::projectCodeName(),
+            'HOST' => URI::buildURL(),
+            'CURRENT_PAGE_URI' => URI::currentPageURI(),
+            'SYSTEM_NAME' => Kernel::systemName(),
+            'SYSTEM_VERSION' => Kernel::systemVersion(),
+            'PROJECT_CODE_NAME' => Kernel::projectCodeName(),
             'ACTIVE_ENVIRONMENT' => Kernel::environment(),
         ];
 

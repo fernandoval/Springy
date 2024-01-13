@@ -7,7 +7,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   0.5.0
+ * @version   0.5.1
  */
 
 namespace Springy;
@@ -409,7 +409,7 @@ class Migrator extends DB
             $target = 0;
         } elseif (!is_numeric($this->target)) {
             $this->systemAbort([
-                'Syntax error!'            => self::MSG_ERROR,
+                'Syntax error!' => self::MSG_ERROR,
                 'Invalid revision number.' => self::MSG_INFORMATION,
             ]);
         } else {

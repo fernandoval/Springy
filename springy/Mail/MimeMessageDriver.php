@@ -9,7 +9,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   1.1.8
+ * @version   1.1.9
  */
 
 namespace Springy\Mail;
@@ -38,15 +38,15 @@ class MimeMessageDriver implements MailDriverInterface
     private $textMessage = '';
     private $alternativeParts = [];
     private $headers = [
-        'Sender'  => '',
+        'Sender' => '',
         'Subject' => '',
     ];
     private $mailHeaders = [
-        'From'   => '',
+        'From' => '',
         'Sender' => '',
-        'To'     => [],
-        'Cc'     => [],
-        'Bcc'    => [],
+        'To' => [],
+        'Cc' => [],
+        'Bcc' => [],
     ];
 
     /**
@@ -174,8 +174,8 @@ class MimeMessageDriver implements MailDriverInterface
     public function addAttachment($path, $name = '', $type = '', $encoding = 'base64')
     {
         $this->mailObj->AddFilePart([
-            'FileName'     => $path,
-            'Name'         => $name,
+            'FileName' => $path,
+            'Name' => $name,
             'Content-Type' => $type,
         ]);
     }

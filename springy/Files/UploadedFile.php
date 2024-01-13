@@ -7,7 +7,7 @@
  * @author    Allan Marques <allan.marques@ymail.com>
  * @author    Fernando Val <fernando.val@gmail.com>
  *
- * @version   0.1.4
+ * @version   0.1.5
  */
 
 namespace Springy\Files;
@@ -118,13 +118,13 @@ class UploadedFile extends File
     public function getErrorMessage()
     {
         static $errors = [
-            UPLOAD_ERR_INI_SIZE   => 'The file "%s" exceeds your upload_max_filesize ini directive (limit is %d kb).',
-            UPLOAD_ERR_FORM_SIZE  => 'The file "%s" exceeds the upload limit defined in your form.',
-            UPLOAD_ERR_PARTIAL    => 'The file "%s" was only partially uploaded.',
-            UPLOAD_ERR_NO_FILE    => 'No file was uploaded.',
+            UPLOAD_ERR_INI_SIZE => 'The file "%s" exceeds your upload_max_filesize ini directive (limit is %d kb).',
+            UPLOAD_ERR_FORM_SIZE => 'The file "%s" exceeds the upload limit defined in your form.',
+            UPLOAD_ERR_PARTIAL => 'The file "%s" was only partially uploaded.',
+            UPLOAD_ERR_NO_FILE => 'No file was uploaded.',
             UPLOAD_ERR_CANT_WRITE => 'The file "%s" could not be written on disk.',
             UPLOAD_ERR_NO_TMP_DIR => 'File could not be uploaded: missing temporary directory.',
-            UPLOAD_ERR_EXTENSION  => 'File upload was stopped by a PHP extension.',
+            UPLOAD_ERR_EXTENSION => 'File upload was stopped by a PHP extension.',
         ];
 
         $errorCode = $this->error;
@@ -243,11 +243,11 @@ class UploadedFile extends File
             $files = [];
             foreach ($keys as $key) {
                 $files[$key] = [
-                    'name'     => $file['name'][$key],
+                    'name' => $file['name'][$key],
                     'tmp_name' => $file['tmp_name'][$key],
-                    'type'     => $file['type'][$key],
-                    'size'     => $file['size'][$key],
-                    'error'    => $file['error'][$key],
+                    'type' => $file['type'][$key],
+                    'size' => $file['size'][$key],
+                    'error' => $file['error'][$key],
                 ];
             }
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Test case for Utils\ArrayUtils class.
  *
@@ -6,8 +7,9 @@
  * @author    Allan Marques <allan.marques@ymail.com>
  * @author    Fernando Val <fernando.val@gmail.com>
  *
- * @version   1.0.0.2
+ * @version   1.0.3
  */
+
 use PHPUnit\Framework\TestCase;
 use Springy\Utils\ArrayUtils;
 
@@ -28,18 +30,18 @@ class ArrayUtilsTest extends TestCase
                 'config' => [
                     'db' => [
                         'mysql' => [
-                            'name'  => 'mysql',
+                            'name' => 'mysql',
                             'login' => 'A login',
-                            'pass'  => 'A password',
+                            'pass' => 'A password',
                         ],
                         'postgre' => [
-                            'name'  => 'postgre',
+                            'name' => 'postgre',
                             'login' => 'A login',
-                            'pass'  => 'A password',
+                            'pass' => 'A password',
                         ],
                     ],
                     'session' => [
-                        'type'    => 'mysql',
+                        'type' => 'mysql',
                         'expires' => 3600,
                     ],
                 ],

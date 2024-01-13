@@ -10,7 +10,7 @@
  * @author    Allan Marques <allan.marques@ymail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.9.1
+ * @version   2.10.0
  */
 
 namespace Springy;
@@ -29,7 +29,7 @@ class Model extends DB
 {
     /** @var string the name of the table */
     protected $tableName = '';
-    /// Relação de colunas da tabela para a consulta (pode ser uma string separada por vírgula ou um array com nos nomes das colunas)
+    /** @var string|array list of columns in select query */
     protected $tableColumns = '*';
     /// Relação de colunas calculadas pela classe
     protected $calculatedColumns = null;
@@ -37,7 +37,7 @@ class Model extends DB
     protected $primaryKey = 'id';
     /// Nome da coluna que armazena a data de inclusão do registro (será utilizada pelo método save)
     protected $insertDateColumn = null;
-    /// Nome da coluna usada para definir que o registro foi excluído
+    /** @var string|null column used as logical delete */
     protected $deletedColumn = null;
     /** @var array list of columns that can be changed */
     protected $writableColumns = [];
@@ -97,7 +97,7 @@ class Model extends DB
      *
      * @return Where
      */
-    private function _fFilter($filter)
+    private function getObjectWhere($filter): Where
     {
         // Filter is a Where object?
         if ($filter instanceof Where) {
@@ -122,12 +122,15 @@ class Model extends DB
      *
      * @return Where
      */
-    private function _filter($filter)
+    private function getCompleteWhere($filter): Where
     {
-        $where = $this->_fFilter($filter);
+        $where = $this->getObjectWhere($filter);
 
-        if ($this->deletedColumn && !$where->get($this->deletedColumn)
-            && !$where->get($this->tableName . '.' . $this->deletedColumn)) {
+        if (
+            $this->deletedColumn &&
+            !$where->get($this->deletedColumn) &&
+            !$where->get($this->tableName . '.' . $this->deletedColumn)
+        ) {
             $where->condition($this->tableName . '.' . $this->deletedColumn, 0);
         }
 
@@ -139,12 +142,13 @@ class Model extends DB
      *
      * @return string
      */
-    private function _getColumns()
+    private function getColumnsConcatenated(): string
     {
-        $columns = [$this->_parseColumns($this->tableName, $this->tableColumns)];
+        $columns = [$this->getColumnsStringList($this->tableName, $this->tableColumns)];
+
         foreach ($this->join as $table => $join) {
             if (!empty($join['columns'])) {
-                $columns[] = $this->_parseColumns($table, $join['columns']);
+                $columns[] = $this->getColumnsStringList($table, $join['columns']);
             }
         }
 
@@ -156,9 +160,10 @@ class Model extends DB
      *
      * @return string
      */
-    private function _getFrom()
+    private function getFromString(): string
     {
         $from = ' FROM ' . $this->tableName;
+
         foreach ($this->join as $table => $join) {
             $from .= ' ' . $join['type'] . ' JOIN ' . $table . ' ON ' . $join['on'];
         }
@@ -174,7 +179,7 @@ class Model extends DB
      *
      * @return bool
      */
-    private function _conditionalWhen($row, $attr)
+    private function hasWhen($row, $attr): bool
     {
         if (!isset($attr['when']) || !is_array($attr['when'])) {
             return true;
@@ -241,7 +246,7 @@ class Model extends DB
      *
      * @return void
      */
-    private function _queryEmbbed($embbed)
+    private function runEmbedQuery($embbed): void
     {
         if (!is_int($embbed) || $embbed == 0 || !count($this->embeddedObj) || !count($this->rows)) {
             return;
@@ -261,7 +266,7 @@ class Model extends DB
             foreach ($this->rows as $idx => $row) {
                 $this->rows[$idx][$attrName] = [];
 
-                if (!$this->_conditionalWhen($row, $attr)) {
+                if (!$this->hasWhen($row, $attr)) {
                     continue;
                 }
 
@@ -301,7 +306,7 @@ class Model extends DB
                 foreach ($this->rows as $idx => $row) {
                     if (
                         $erow[$foundBy] == (is_callable($relCol) ? call_user_func($relCol, $row) : $row[$relCol])
-                        && $this->_conditionalWhen($row, $attr)
+                        && $this->hasWhen($row, $attr)
                     ) {
                         $embed = $erow;
 
@@ -337,25 +342,19 @@ class Model extends DB
      *
      * @return string
      */
-    private function _parseColumns($tableName, $columns)
+    private function getColumnsStringList($tableName, $columns): string
     {
         if (!is_array($columns)) {
             $columns = explode(',', $columns);
         }
 
         $line = '';
+
         foreach ($columns as $column) {
             $line .= ((!strpos($column, '.') && !strpos($column, '(')) ? $tableName . '.' . $column : $column) . ', ';
         }
 
         return trim($line, ', ');
-
-        // Old code preserved to future reference. Must be removed before end version.
-        // if (is_array($this->tableColumns)) {
-        //     return $this->tableName.'.'.implode(', '.$this->tableName.'.', $this->tableColumns);
-        // }
-
-        // return (!strpos($this->tableColumns, '.') && !strpos($this->tableColumns, '(')) ? $this->tableName.'.'.$this->tableColumns : $this->tableColumns;
     }
 
     /**
@@ -650,9 +649,10 @@ class Model extends DB
      *
      * @return array
      */
-    private function _values()
+    private function changedColumnValues(): array
     {
         $values = [];
+
         foreach ($this->changedColumns() as $column) {
             $values[] = $this->get($column);
         }
@@ -665,7 +665,7 @@ class Model extends DB
      *
      * @return bool true if any record was inserted.
      */
-    private function _insert()
+    private function wasInsertExecuted(): bool
     {
         // Call before insert trigger
         if (!$this->triggerBeforeInsert()) {
@@ -673,78 +673,55 @@ class Model extends DB
         }
 
         // Database function to populate created at column
-        switch ($this->driverName()) {
-            case 'oci':
-            case 'oracle':
-            case 'mysql':
-            case 'pgsql':
-                $cdtFunc = 'NOW()';
-                break;
-            case 'mssql':
-            case 'sqlsrv':
-                $cdtFunc = 'GETDATE()';
-                break;
-            case 'db2':
-            case 'ibm':
-            case 'ibm-db2':
-            case 'firebird':
-                $cdtFunc = 'CURRENT_TIMESTAMP';
-                break;
-            case 'informix':
-                $cdtFunc = 'CURRENT';
-                break;
-            case 'sqlite':
-                $cdtFunc = 'datetime(\'now\')';
-                break;
-            default:
-                $cdtFunc = '\'' . date('Y-m-d H:i:s') . '\'';
-        }
+        $cdtFunc = match ($this->driverName()) {
+            'oci', 'oracle', 'mysql', 'pgsql' => 'NOW()',
+            'mssql', 'sqlsrv' => 'GETDATE()',
+            'db2', 'ibm', 'ibm-db2', 'firebird' => 'CURRENT_TIMESTAMP',
+            'informix' => 'CURRENT',
+            'sqlite' => 'datetime(\'now\')',
+            default => '\'' . date('Y-m-d H:i:s') . '\'',
+        };
+        $values = $this->changedColumnValues();
+        $hasIDC = $this->insertDateColumn && !in_array($this->insertDateColumn, $this->changedColumns());
 
-        $values = $this->_values();
-
-        $command = 'INSERT INTO ' . $this->tableName
-            . ' (' . implode(', ', $this->changedColumns());
-
-        if (
-            $this->insertDateColumn
-            && !in_array($this->insertDateColumn, $this->changedColumns())
-        ) {
-            $command .= ', ' . $this->insertDateColumn;
-        }
-
-        $command .= ') VALUES (' . rtrim(str_repeat('?,', count($values)), ',');
-
-        if (
-            $this->insertDateColumn
-            && !in_array($this->insertDateColumn, $this->changedColumns())
-        ) {
-            $command .= ', ' . $cdtFunc;
-        }
-
-        $command .= ')';
-
-        $this->execute($command, $values);
+        $this->execute(
+            sprintf(
+                'INSERT INTO %s (%s%s) VALUES (%s%s)',
+                $this->tableName,
+                implode(', ', $this->changedColumns()),
+                $hasIDC ? ', ' . $this->insertDateColumn : '',
+                rtrim(str_repeat('?,', count($values)), ','),
+                $hasIDC ? ', ' . $cdtFunc : ''
+            ),
+            $values
+        );
+        $inserted = $this->affectedRows() > 0;
 
         // Load the inserted row
         if ($this->affectedRows() == 1) {
-            if ($this->lastInsertedId() && !empty($this->primaryKey) && !strpos($this->primaryKey, ',') && !$this->get($this->primaryKey)) {
+            if (
+                $this->lastInsertedId() &&
+                !empty($this->primaryKey) &&
+                !strpos($this->primaryKey, ',') &&
+                !$this->get($this->primaryKey)
+            ) {
                 $this->load([$this->primaryKey => $this->lastInsertedId()]);
             } elseif ($this->isPrimaryKeyDefined()) {
                 $where = new Where();
+
                 foreach ($this->getPKColumns() as $column) {
                     $where->condition($column, $this->get($column));
                 }
+
                 $this->load($where);
             }
         }
 
-        // Call after insert trigger
         $this->triggerAfterInsert();
-
         $this->clearChangedColumns();
         $this->calculeteColumnsRow();
 
-        return $this->affectedRows() > 0;
+        return $inserted;
     }
 
     /**
@@ -752,7 +729,7 @@ class Model extends DB
      *
      * @return bool true if any record was updated.
      */
-    private function _update()
+    private function wasUpdateExecuted(): bool
     {
         // There is no primary key to build condition, do nothing.
         if (!$this->isPrimaryKeyDefined()) {
@@ -765,24 +742,27 @@ class Model extends DB
         }
 
         $where = new Where();
+
         foreach ($this->getPKColumns() as $column) {
             $where->condition($column, $this->get($column));
         }
 
         $this->execute(
-            'UPDATE ' . $this->tableName . ' SET ' .
-            implode(' = ?,', $this->changedColumns()) .
-            ' = ?' . $where,
-            array_merge($this->_values(), $where->params())
+            sprintf(
+                'UPDATE %s SET %s = ? %s',
+                $this->tableName,
+                implode(' = ?,', $this->changedColumns()),
+                $where->__toString()
+            ),
+            array_merge($this->changedColumnValues(), $where->params())
         );
+        $updated = $this->affectedRows() > 0;
 
-        // Call after update trigger
         $this->triggerAfterUpdate();
-
         $this->clearChangedColumns();
         $this->calculeteColumnsRow();
 
-        return $this->affectedRows() > 0;
+        return $updated;
     }
 
     /**
@@ -812,28 +792,28 @@ class Model extends DB
         }
 
         if (!isset($this->rows[key($this->rows)][self::NEW_ROW])) {
-            return $this->_update();
+            return $this->wasUpdateExecuted();
         }
 
-        return $this->_insert();
+        return $this->wasInsertExecuted();
     }
 
     /**
-     *  \brief Delete one or more rows.
+     * Delete one or more rows.
      *
-     *  This method deletes the curret row or many rows if the $filter is given.
+     * This method deletes the curret row or many rows if the $filter is given.
      *
-     *  \param $filter is an array or Where object with a match criteria.
-     *      If ommited (null) deletes the current row selected.
-     *  \return Returns the number of affected rows or false.
+     * @param Where $filter match criteria. If null deletes the current row selected.
+     *
+     * @return int|false the number of affected rows or false.
      */
     public function delete($filter = null)
     {
         if (!is_null($filter) || $this->where->count()) {
             /*
-             *  Delete rows with a filter.
+             * Delete rows with a filter.
              *
-             *  In this method triggers will not be called.
+             * In this method triggers will not be called.
              */
 
             // Build the condition
@@ -849,17 +829,28 @@ class Model extends DB
             if (!empty($this->deletedColumn)) {
                 // If table has a deleted column flag, update the rows
                 $where->condition($this->deletedColumn, 0);
-                $this->execute('UPDATE ' . $this->tableName . ' SET ' . $this->deletedColumn . ' = 1' . $where, $where->params());
+                $this->execute(
+                    sprintf(
+                        'UPDATE %s SET %s = 1 %s',
+                        $this->tableName,
+                        $this->deletedColumn,
+                        $where->__toString()
+                    ),
+                    $where->params()
+                );
             } else {
                 // Otherwise delete the row
-                $this->execute('DELETE FROM ' . $this->tableName . $where, $where->params());
+                $this->execute(
+                    sprintf('DELETE FROM %s %s', $this->tableName, $where->__toString()),
+                    $where->params()
+                );
             }
 
             // Clear any conditions
             $this->where->clear();
         } elseif ($this->valid()) {
             /*
-             *  Delete de current row.
+             * Delete the current row.
              */
 
             // Do nothing if there is no primary key defined
@@ -881,10 +872,21 @@ class Model extends DB
             if (!empty($this->deletedColumn)) {
                 // If table has a deleted column flag, update the row
                 $where->condition($this->deletedColumn, 0);
-                $this->execute('UPDATE ' . $this->tableName . ' SET ' . $this->deletedColumn . ' = 1' . $where, $where->params());
+                $this->execute(
+                    sprintf(
+                        'UPDATE %s SET %s = 1 %s',
+                        $this->tableName,
+                        $this->deletedColumn,
+                        $where->__toString()
+                    ),
+                    $where->params()
+                );
             } else {
                 // Otherwise delete the row
-                $this->execute('DELETE FROM ' . $this->tableName . $where, $where->params());
+                $this->execute(
+                    sprintf('DELETE FROM %s %s', $this->tableName, $where->__toString()),
+                    $where->params()
+                );
             }
             // Call after delete trigger
             $this->triggerAfterDelete();
@@ -899,11 +901,11 @@ class Model extends DB
     }
 
     /**
-     *  \brief Faz alteração em lote.
+     * Faz alteração em lote.
      *
-     *  EXPERIMENTAL!
+     * EXPERIMENTAL!
      *
-     *  Permite fazer atualização de registros em lote (UPDATE)
+     * Permite fazer atualização de registros em lote (UPDATE)
      */
     public function update(array $values, $conditions = null)
     {
@@ -918,7 +920,10 @@ class Model extends DB
             if (in_array($column, $this->writableColumns)) {
                 if (is_callable($value)) {
                     if (isset($this->hookedColumns[$column]) && method_exists($this, $this->hookedColumns[$column])) {
-                        $data[] = $column . ' = ' . call_user_func_array([$this, $this->hookedColumns[$column]], [$value()]);
+                        $data[] = $column . ' = ' . call_user_func_array(
+                            [$this, $this->hookedColumns[$column]],
+                            [$value()]
+                        );
                     } else {
                         $data[] = $column . ' = ' . $value();
                     }
@@ -946,7 +951,10 @@ class Model extends DB
         if (!empty($this->deletedColumn) && !$where->get($this->deletedColumn)) {
             $where->condition($this->deletedColumn, 0);
         }
-        $this->execute('UPDATE ' . $this->tableName . ' SET ' . implode(', ', $data) . $where, array_merge($params, $where->params()));
+        $this->execute(
+            'UPDATE ' . $this->tableName . ' SET ' . implode(', ', $data) . $where,
+            array_merge($params, $where->params())
+        );
 
         // Clear conditions avoid bug
         $this->where->clear();
@@ -1085,33 +1093,47 @@ class Model extends DB
     }
 
     /**
-     *  \brief Define o array de objetos embutidos.
+     * Define o array de objetos embutidos.
      *
-     *  O array de objetos embutidos é uma estrutura que permite a consulta a execução de consultas em outros objetos e embutir
-     *  seu resultado dentro de um atributo do registro.
+     * O array de objetos embutidos é uma estrutura que permite a consulta a
+     * execução de consultas em outros objetos e embutir seu resultado dentro de
+     * um atributo do registro.
      *
-     *  O índice de cada item do array de objetos embutidos será inserido no registro como uma coluna que pode ser um array de
-     *  registros ou a estrutura de dados da Model embutida.
+     * O índice de cada item do array de objetos embutidos será inserido no
+     * registro como uma coluna que pode ser um array de registros ou a
+     * estrutura de dados da Model embutida.
      *
-     *  O valor de cada item do array deve ser um array com a seguinte extrutura:
+     * O valor de cada item do array deve ser um array com a seguinte extrutura:
      *
-     *  'model' => (string) nome do atributo a ser criado no registro
-     *  'type' => (constant)'list'|'data' determina como o atributo deve ser.
-     *      - 'list' (default) define que o atributo é uma lista (array) de registros;
-     *      - 'data' define que o atributo é um único registro do objeto embutido (array de colunas).
-     *  'found_by' => (string) nome da coluna do objeto embutido que será usada como chave de busca.
-     *  'column' => (string) nome da coluna que será usada para relacionamento com o objeto embutido.
-     *  'columns' => (array) um array de colunas, opcional, a serem aplicados ao objeto embutido, no mesmo formato usados no método setColumns.
-     *  'filter' => (array) um array de filtros, opcional, a serem aplicados ao objeto embutido, no mesmo formato usados no método query.
-     *  'group_by' => (array) um array de agrupamento, opcional, a serem aplicados ao objeto embutido, no mesmo formato usados no método groupBy.
-     *  'order' => (array) um array de ordenação, opcional, a ser aplicado ao objeto embutido, no mesmo formato usados no método query.
-     *  'offset' => (int) o offset de registros, opcional, a ser aplicado ao objeto embutido, no mesmo formato usados no método query.
-     *  'limit' => (int) o limite de registros, opcional, a ser aplicado ao objeto embutido, no mesmo formato usados no método query.
-     *  'embbeded_obj' => (array) um array estrutura, opcional, para embutir outro objeto no objeto embutido.
+     * 'model' => (string) nome do atributo a ser criado no registro
+     * 'type' => (constant)'list'|'data' determina como o atributo deve ser.
+     *     - 'list' (default) define que o atributo é uma lista (array) de
+     *          registros;
+     *     - 'data' define que o atributo é um único registro do objeto embutido
+     *          (array de colunas).
+     * 'found_by' => (string) nome da coluna do objeto embutido que será usada
+     *      como chave de busca.
+     * 'column' => (string) nome da coluna que será usada para relacionamento
+     *      com o objeto embutido.
+     * 'columns' => (array) um array de colunas, opcional, a serem aplicados ao
+     *      objeto embutido, no mesmo formato usados no método setColumns.
+     * 'filter' => (array) um array de filtros, opcional, a serem aplicados ao
+     *      objeto embutido, no mesmo formato usados no método query.
+     * 'group_by' => (array) um array de agrupamento, opcional, a serem
+     *      aplicados ao objeto embutido, no mesmo formato usados no método
+     *      groupBy.
+     * 'order' => (array) um array de ordenação, opcional, a ser aplicado ao
+     *      objeto embutido, no mesmo formato usados no método query.
+     * 'offset' => (int) o offset de registros, opcional, a ser aplicado ao
+     *      objeto embutido, no mesmo formato usados no método query.
+     * 'limit' => (int) o limite de registros, opcional, a ser aplicado ao
+     *      objeto embutido, no mesmo formato usados no método query.
+     * 'embbeded_obj' => (array) um array estrutura, opcional, para embutir
+     *      outro objeto no objeto embutido.
      *
-     *  Exemplo de array aceito:
+     * Exemplo de array aceito:
      *
-     *  array('parent' => array('model' => 'Parent_Table', 'type' => 'data', 'found_by' => 'id', 'column' => 'parent_id'))
+     * ['parent' => ['model' => 'ParentTable', 'type' => 'data', 'found_by' => 'id', 'column' => 'parent_id']]
      */
     public function setEmbeddedObj(array $embeddedObj)
     {
@@ -1169,20 +1191,21 @@ class Model extends DB
             }
 
             $this->join[$table] = [
-                'columns' => isset($meta['columns']) ? $meta['columns'] : (isset($meta['fields']) ? $meta['fields'] : ''),
-                'type'    => isset($meta['join']) ? $meta['join'] : (isset($meta['type']) ? $meta['type'] : 'INNER'),
-                'on'      => $meta['on'],
+                'columns' => $meta['columns'] ?? ($meta['fields'] ?? ''),
+                'type' => $meta['join'] ?? ($meta['type'] ?? 'INNER'),
+                'on' => $meta['on'],
             ];
         }
     }
 
     /**
-     *  \brief Define colunas para agrupamento do resultado.
+     * Define colunas para agrupamento do resultado.
      *
-     *  Este método permite definir a relação de colunas para a cláusula GROUP BY da consulta com o método query
+     * Este método permite definir a relação de colunas para a cláusula GROUP BY da consulta com o método query
      *
-     *  \params (array)$columns - array contendo a relação de colunas para a cláusula GROUP BY
-     *  \note ESTE MÉTODO AINDA É EXPERIMENTAL
+     * ESTE MÉTODO AINDA É EXPERIMENTAL
+     *
+     * @params array $columns array contendo a relação de colunas para a cláusula GROUP BY
      */
     public function groupBy(array $columns)
     {
@@ -1198,12 +1221,13 @@ class Model extends DB
     }
 
     /**
-     *  \brief Define atributos para a cláusula HAVING.
+     * Define atributos para a cláusula HAVING.
      *
-     *  Este método permite definir a cláusula HAVING para agrupamento
+     * Este método permite definir a cláusula HAVING para agrupamento
      *
-     *  \params (array)$columns - array contendo a relação de colunas para a cláusula GROUP BY
-     *  \note ESTE MÉTODO AINDA É EXPERIMENTAL
+     * ESTE MÉTODO AINDA É EXPERIMENTAL
+     *
+     * @params array $columns array contendo a relação de colunas para a cláusula GROUP BY
      */
     public function having(array $conditions)
     {
@@ -1231,7 +1255,7 @@ class Model extends DB
      */
     public function query($filter = null, array $orderby = [], $offset = 0, $limit = 0, $embbed = null)
     {
-        $where = $this->_filter($filter);
+        $where = $this->getCompleteWhere($filter);
         if ($this->abortOnEmptyFilter && !$where->count()) {
             return false;
         }
@@ -1245,12 +1269,12 @@ class Model extends DB
                 $this->driverName() == 'mysql' && $limit > 0
                     ? 'SQL_CALC_FOUND_ROWS '
                     : ''
-            ) . $this->_getColumns() . $this->_getFrom();
+            ) . $this->getColumnsConcatenated() . $this->getFromString();
 
         $sql = $select . $where .
             (
                 count($this->groupBy)
-                    ? ' GROUP BY ' . $this->_parseColumns($this->tableName, $this->groupBy)
+                    ? ' GROUP BY ' . $this->getColumnsStringList($this->tableName, $this->groupBy)
                     : ''
             );
         $params = $where->params();
@@ -1302,7 +1326,7 @@ class Model extends DB
         }
         unset($where, $params);
 
-        $this->_queryEmbbed($embbed);
+        $this->runEmbedQuery($embbed);
 
         // Set the values of the calculated columns
         $this->calculateColumns();
@@ -1402,7 +1426,7 @@ class Model extends DB
      */
     public function count($filter = null, ?array $distinct = null)
     {
-        $where = $this->_filter($filter);
+        $where = $this->getCompleteWhere($filter);
         $columns = '0';
 
         if (is_array($distinct) && count($distinct)) {
@@ -1410,7 +1434,7 @@ class Model extends DB
         }
 
         $this->execute(
-            'SELECT COUNT(' . $columns . ') AS rowscount' . $this->_getFrom() . $where,
+            sprintf('SELECT COUNT(%s) AS rowscount %s %s', $columns, $this->getFromString(), $where->__toString()),
             $where->params()
         );
         $row = $this->fetchNext();
