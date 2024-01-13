@@ -20,7 +20,7 @@ return [
     /*
      * Session configuration
      */
-    'session'            => [
+    'session' => [
         /*
          * Defines the session engine type.
          *
@@ -30,27 +30,27 @@ return [
          * 'memcached' : uses MemcacheD service;
          * 'database'  : uses database table.
          */
-        'type'      => 'file',
+        'type' => 'file',
 
         /*
          * The session cookie name.
          */
-        'name'      => 'SPRINGYSID',
+        'name' => 'SPRINGYSID',
 
         /*
          * Session cookie domain.
          */
-        'domain'    => '',
+        'domain' => '',
 
         /*
          * Session expiration time in seconds.
          */
-        'expires'   => 120,
+        'expires' => 120,
 
         /*
          * Uses secure cookie for sessions.
          */
-        'secure'    => true,
+        'secure' => true,
 
         /*
          * MemcacheD service configurations.
@@ -58,7 +58,7 @@ return [
          */
         'memcached' => [
             'address' => '127.0.0.1',
-            'port'    => 11211,
+            'port' => 11211,
         ],
 
         /*
@@ -67,7 +67,7 @@ return [
          */
         'database' => [
             'server' => 'default',
-            'table'  => '_sessions',
+            'table' => '_sessions',
         ],
     ],
 
@@ -78,7 +78,7 @@ return [
         /*
          * HTTP response code that will be reported as system errors.
          */
-        'reported_errors'  => [
+        'reported_errors' => [
             405,
             406,
             408,
