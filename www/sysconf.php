@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  * Springy Framework general configuration file.
  *
  * @copyright 2007 Fernando Val

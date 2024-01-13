@@ -1,7 +1,7 @@
 #!/usr/bin/php
 <?php
 
-/**
+/*
  * Command line launcher.
  *
  * @copyright 2007 Fernando Val

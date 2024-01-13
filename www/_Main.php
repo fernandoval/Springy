@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  * Springy web launcher script.
  *
  * @copyright 2007 Fernando Val
