@@ -15,12 +15,12 @@ use Springy\URI;
 /**
  * Initiates all application dependecies.
  *
- * This method starts all application dependencies, used by some framework libraries and you application.
+ * This method starts all application dependencies, used by some framework libraries and your application.
  * You can change its content, but try no remove our code.
  */
 function bindDefaultDependencies(): void
 {
-    // Load the application helper.
+    /** @var Springy\Core\Application Load the application helper. */
     $app = app();
 
     // Start the security hasher for user passwords. We like BCrypt, but you can use another you prefer.
