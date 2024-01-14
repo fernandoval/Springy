@@ -1,31 +1,26 @@
 <?php
-/**	\file
- *	Springy.
+
+/**
+ * Email sender.
  *
- *	\brief      Classe para envio de email.
- *  \copyright  ₢ 2007-2016 Fernando Val
- *  \author     Fernando Val - fernando.val@gmail.com
- *	\version    3.1.0.21
- *	\ingroup    framework
+ * @copyright 2007-2016 Fernando Val
+ * @author    Fernando Val <fernando.val@gmail.com>
+ * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
+ *
+ * @version   3.1.24
  */
 
 namespace Springy;
 
-/**
- *  \brief Classe para envio de email.
- */
 class Mail
 {
-    const MAIL_ENGINE_PHPMAILER = 'phpmailer';
-    const MAIL_ENGINE_SWIFTMAILER = 'swiftmailer';
-    const MAIL_ENGINE_SENDGRID = 'sendgrid';
-    const MAIL_ENGINE_MIMEMESSAGE = 'mimemessage';
+    public const MAIL_ENGINE_PHPMAILER = 'phpmailer';
+    public const MAIL_ENGINE_SWIFTMAILER = 'swiftmailer';
+    public const MAIL_ENGINE_SENDGRID = 'sendgrid';
+    public const MAIL_ENGINE_MIMEMESSAGE = 'mimemessage';
 
     private $mailObj = null;
 
-    /**
-     *	\brief Construtor da classe.
-     */
     public function __construct($mailer = null)
     {
         if (is_null($mailer)) {
@@ -61,20 +56,15 @@ class Mail
             default:
                 throw new \Exception('Mail driver invalid');
         }
-
-        return true;
     }
 
-    /**
-     *  \brief Destrói o objeto.
-     */
     public function __destruct()
     {
         unset($this->mailObj);
     }
 
     /**
-     *  \brief Add a standard email message header.
+     * Adds a standard email message header.
      */
     public function addHeader($header, $value)
     {
@@ -82,7 +72,7 @@ class Mail
     }
 
     /**
-     *	\brief Define o valor de um item de cabeçalho.
+     * Define o valor de um item de cabeçalho.
      */
     public function setHeader($header, $value)
     {
@@ -90,7 +80,7 @@ class Mail
     }
 
     /**
-     *  \brief Set a template for the email.
+     * Sets a template for the email.
      */
     public function setTemplate($name)
     {
@@ -98,7 +88,7 @@ class Mail
     }
 
     /**
-     *  \brief Add value to a template variable.
+     * Adds value to a template variable.
      */
     public function addTemplateVar($name, $value)
     {
@@ -106,13 +96,16 @@ class Mail
     }
 
     /**
-     *	\brief Define o valor do campo To.
+     * Define o valor do campo To.
      *
-     *	@param[in] $email - string contendo o endereço de email do destinatário ou um array contendo a lista de destinatários, no seguinte formato:
-     *		['email1@dominio.com' => 'Nome 1', 'email2@dominio.com' => 'Nome 2']
-     *	@param[in] $name - string contendo o nome do destinatário
+     * @param string $email o endereço de email do destinatário ou um array
+     *                      contendo a lista de destinatários, no seguinte
+     *                      formato: ['email1@dominio.com' => 'Nome 1',
+     *                      'email2@dominio.com' => 'Nome 2']
+     * @param string $name  o nome do destinatário.
      *
-     *	Obs.: Caso seja passado um array de emails para $email, o valor de $name será ignorado.
+     * Obs.: Caso seja passado um array de emails para $email, o valor de
+     * $name será ignorado.
      */
     public function to($email, $name = '')
     {
@@ -134,7 +127,7 @@ class Mail
     }
 
     /**
-     *	\brief Define o valor do campo Cc.
+     * Define o valor do campo Cc.
      */
     public function cc($email, $name = '')
     {
@@ -150,7 +143,7 @@ class Mail
     }
 
     /**
-     *	\brief Define o valor do campo Bcc.
+     * Define o valor do campo Bcc.
      */
     public function bcc($email, $name = '')
     {
@@ -166,7 +159,7 @@ class Mail
     }
 
     /**
-     *	\brief Define o valor do campo From.
+     * Define o valor do campo From.
      */
     public function from($email, $name = '')
     {
@@ -176,7 +169,7 @@ class Mail
     }
 
     /**
-     *	\brief Define o valor do campo Subject.
+     * Define o valor do campo Subject.
      */
     public function subject($subject)
     {
@@ -186,7 +179,7 @@ class Mail
     }
 
     /**
-     *	\brief Monta o corpo da mensagem.
+     * Monta o corpo da mensagem.
      */
     public function body($html = '', $text = '')
     {
@@ -199,7 +192,7 @@ class Mail
     }
 
     /**
-     *	\brief Adiciona um anexo ao e-mail.
+     * Adiciona um anexo ao e-mail.
      */
     public function addAttach($path, $name = '', $type = '', $encoding = 'base64')
     {
@@ -213,9 +206,9 @@ class Mail
     }
 
     /**
-     *  \brief Add a category to the e-mail.
+     * Adds a category to the e-mail.
      *
-     *  \param $category - the category
+     * @param string $category
      */
     public function addCategory($category)
     {
@@ -223,7 +216,9 @@ class Mail
     }
 
     /**
-     *	\brief Envia a mensagem.
+     * Sends the message.
+     *
+     * @return mixed
      */
     public function send()
     {
@@ -231,17 +226,17 @@ class Mail
     }
 
     /**
-     *	\brief Envia a mensagem.
+     * Sends a menssage.
      *
-     *	@param[in] (string) $from - endereço de email do remetente da mensagem
-     *	@param[in] (string) $from_name - nome do remetente da mensagem
-     *	@param[in] (string) $mailto - endereço de email do destinatário da mensagem
-     *	@param[in] (string) $to_name - nome do destinatário da mensagem
-     *	@param[in] (string) $subject - assunto da mensagem
-     *	@param[in] (string) $htmlmessage - mensagem em formato HTML
-     *	@param[in] (string) $textmessage - mensagem em formato texto puro
+     * @param string $from        email from address.
+     * @param string $from_name   email from name.
+     * @param string $mailto      email to address.
+     * @param string $to_name     email to name.
+     * @param string $subject     subject.
+     * @param string $htmlmessage HTML formated body.
+     * @param string $textmessage plain text body.
      *
-     *	@return Retorna true se a mensagem foi enviada com sucesso ou a mensagem de erro
+     * @return mixed
      */
     public function sendMessage($from, $from_name, $mailto, $to_name, $subject, $htmlmessage, $textmessage)
     {

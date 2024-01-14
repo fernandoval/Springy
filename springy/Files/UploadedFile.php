@@ -1,64 +1,69 @@
 <?php
-/** \file
- *  Springy.
+
+/**
+ * Handler of files that have been uploaded to the file system.
  *
- *  \brief      Classe para manipulação de arquivos que foram criados por upload no sistema de arquivos.
+ * @copyright 2014 Fernando Val
+ * @author    Allan Marques <allan.marques@ymail.com>
+ * @author    Fernando Val <fernando.val@gmail.com>
  *
- *  \copyright  Copyright (c) 2007-2018 Fernando Val
- *  \author     Allan Marques - allan.marques@ymail.com
- *
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.1.2.3
- *  \ingroup    framework
+ * @version   0.1.5
  */
 
 namespace Springy\Files;
 
 use RuntimeException;
 
-/**
- * \brief Classe para manipulação de arquivos que foram criados por upload no sistema de arquivos.
- */
 class UploadedFile extends File
 {
-    /// Nome original do arquivo
+    /** @var string Original file name */
     protected $originalName;
-    /// MimeType do arquivo trazido pelos dados do upload PHP
+    /** @var string MimeType of file fetched by PHP upload data */
     protected $mimeType;
-    /// Tamanho do arquivo trazido pelos dados do upload PHP
+    /** @var int File size fetched by PHP upload data */
     protected $size;
-    /// Código do erro de upload, se houve algum
+    /** @var int Upload error code, if any */
     protected $error;
 
     /**
-     * \brief Construtor da classe.
+     * Constructor.
      *
-     * \param [in] (string) $filename - Caminho atual do arquivo
-     * \param [in] (string) $originalName - Nome original do arquivo
-     * \param [in] (string) $mimeType - MimeType do arquivo
-     * \param [in] (integer) $size - Tamanho do arquivo em bytes
-     * \param [in] (integer) $error - Código do erro
+     * @param string $filename
+     * @param string $originalName
+     * @param string $mimeType
+     * @param int    $size
+     * @param int    $error
      *
-     * \throws RuntimeException.
+     * @throws RuntimeException
      */
-    public function __construct($filename, $originalName, $mimeType = null, $size = null, $error = null)
-    {
+    public function __construct(
+        string $filename,
+        string $originalName,
+        ?string $mimeType = null,
+        ?int $size = null,
+        ?int $error = null
+    ) {
         if (!ini_get('file_uploads')) {
-            throw new RuntimeException(sprintf('Unable to create UploadedFile because "file_uploads" is disabled in your php.ini file (%s)', get_cfg_var('cfg_file_path')));
+            throw new RuntimeException(
+                sprintf(
+                    'Unable to create UploadedFile because "file_uploads" is disabled in your php.ini file (%s)',
+                    get_cfg_var('cfg_file_path')
+                )
+            );
         }
 
         $this->originalName = $this->getName($originalName);
         $this->mimeType = $mimeType ?: 'application/octet-stream';
         $this->size = $size;
-        $this->error = $error ?: UPLOAD_ERR_OK;
+        $this->error = $error ?? UPLOAD_ERR_OK;
 
         parent::__construct($filename, UPLOAD_ERR_OK === $this->error);
     }
 
     /**
-     * \brief Retorna o nome original do arquivo enviado.
+     * Returns the original name of the uploaded file.
      *
-     * \return (string).
+     * @return string
      */
     public function getOriginalName()
     {
@@ -66,9 +71,9 @@ class UploadedFile extends File
     }
 
     /**
-     * \brief Retorna a extensão original do arquivo enviado.
+     * Returns the original extension of the uploaded file.
      *
-     * \return (string).
+     * @return string
      */
     public function getOriginalExtension()
     {
@@ -76,9 +81,9 @@ class UploadedFile extends File
     }
 
     /**
-     * \brief Retorna o mimeType original do arquivo enviado.
+     * Returns the original MIME type of the uploaded file.
      *
-     * \return (string).
+     * @return string
      */
     public function getOriginalMimeType()
     {
@@ -86,9 +91,9 @@ class UploadedFile extends File
     }
 
     /**
-     * \brief Retorna o tamanho original do arquivo enviado.
+     * Returns the original size of the uploaded file.
      *
-     * \return (integer).
+     * @return void
      */
     public function getOriginalSize()
     {
@@ -96,9 +101,9 @@ class UploadedFile extends File
     }
 
     /**
-     * \brief Retorna o código do erro do upload se houve algum.
+     * Returns the upload error code, if any.
      *
-     * \return (integer).
+     * @return int
      */
     public function getErrorCode()
     {
@@ -106,35 +111,36 @@ class UploadedFile extends File
     }
 
     /**
-     * \brief Retorna a mensagem de erro do upload.
+     * Returns the upload error message.
      *
-     * \staticvar array $errors
-     *
-     * \return type.
+     * @return string
      */
     public function getErrorMessage()
     {
         static $errors = [
-            UPLOAD_ERR_INI_SIZE   => 'The file "%s" exceeds your upload_max_filesize ini directive (limit is %d kb).',
-            UPLOAD_ERR_FORM_SIZE  => 'The file "%s" exceeds the upload limit defined in your form.',
-            UPLOAD_ERR_PARTIAL    => 'The file "%s" was only partially uploaded.',
-            UPLOAD_ERR_NO_FILE    => 'No file was uploaded.',
+            UPLOAD_ERR_INI_SIZE => 'The file "%s" exceeds your upload_max_filesize ini directive (limit is %d kb).',
+            UPLOAD_ERR_FORM_SIZE => 'The file "%s" exceeds the upload limit defined in your form.',
+            UPLOAD_ERR_PARTIAL => 'The file "%s" was only partially uploaded.',
+            UPLOAD_ERR_NO_FILE => 'No file was uploaded.',
             UPLOAD_ERR_CANT_WRITE => 'The file "%s" could not be written on disk.',
             UPLOAD_ERR_NO_TMP_DIR => 'File could not be uploaded: missing temporary directory.',
-            UPLOAD_ERR_EXTENSION  => 'File upload was stopped by a PHP extension.',
+            UPLOAD_ERR_EXTENSION => 'File upload was stopped by a PHP extension.',
         ];
 
         $errorCode = $this->error;
         $maxFilesize = $errorCode === UPLOAD_ERR_INI_SIZE ? self::getMaxFilesize() / 1024 : 0;
-        $message = isset($errors[$errorCode]) ? $errors[$errorCode] : 'The file "%s" was not uploaded due to an unknown error.';
 
-        return sprintf($message, $this->getOriginalName(), $maxFilesize);
+        return sprintf(
+            $errors[$errorCode] ?? 'The file "%s" was not uploaded due to an unknown error.',
+            $this->getOriginalName(),
+            $maxFilesize
+        );
     }
 
     /**
-     * \brief Retorna se o arquivo enviado é válido.
+     * Returns if the uploaded file is valid.
      *
-     * \return (bool).
+     * @return bool
      */
     public function isValid()
     {
@@ -142,14 +148,14 @@ class UploadedFile extends File
     }
 
     /**
-     * \brief Move o arquivo enviado para o diretório indicado.
+     * Moves the uploaded file to the indicated directory.
      *
-     * \param [in] (string) $directory - Caminho do diretório
-     * \param [in] (string) $name - Novo nome do arquivo
+     * @param string      $directory
+     * @param string|null $name
      *
-     * \return Springy\Files\File
+     * @throws RuntimeException
      *
-     * \throws RuntimeException.
+     * @return \Springy\Files\File
      */
     public function moveTo($directory, $name = null)
     {
@@ -159,10 +165,17 @@ class UploadedFile extends File
             if (!@move_uploaded_file($this->getPathname(), $target)) {
                 $error = error_get_last();
 
-                throw new RuntimeException(sprintf('Could not move the file "%s" to "%s" (%s)', $this->getPathname(), $target, strip_tags($error['message'])));
+                throw new RuntimeException(
+                    sprintf(
+                        'Could not move the file "%s" to "%s" (%s)',
+                        $this->getPathname(),
+                        $target,
+                        strip_tags($error['message'])
+                    )
+                );
             }
 
-            @chmod($target, 0666 & ~umask());
+            chmod($target, 0666 & ~umask());
 
             return $target;
         }
@@ -171,9 +184,9 @@ class UploadedFile extends File
     }
 
     /**
-     * \brief Retorna o tamanho máximo do arquivo que pode ser enviado por upload.
+     * Returns the maximum file size that can be uploaded.
      *
-     * \return int.
+     * @return int
      */
     public static function getMaxFilesize()
     {
@@ -192,23 +205,18 @@ class UploadedFile extends File
             $max = intval($max);
         }
 
-        switch (substr($iniMax, -1)) {
-            case 't': $max *= 1024;
-            case 'g': $max *= 1024;
-            case 'm': $max *= 1024;
-            case 'k': $max *= 1024;
-        }
+        $pos = strpos('kmgt', substr($iniMax, -1));
 
-        return $max;
+        return $max * pow(1024, $pos === false ? 0 : $pos + 1);
     }
 
     /**
-     * \brief Transforma o array superglobal de arquivos $_FILES em uma
-     *        coleção de objetos Springy\Files\UploadedFile para manipulação facilitada.
+     * Turns the $_FILES superglobal array of files into a collection of
+     * Springy\Files\UploadedFile objects for easy manipulation.
      *
-     * \param [in] (array) $files - $_FILES superglobal
+     * @param array $files $_FILES superglobal
      *
-     * \return (array).
+     * @return array
      */
     public static function convertPHPUploadedFiles($files)
     {
@@ -222,11 +230,11 @@ class UploadedFile extends File
     }
 
     /**
-     * \brief Transforma um item unico do arrey superglobal $_FILES em um objeto Springy\Files\UploadedFile.
+     * Turn a single item from the $_FILES superglobal array into a Springy\Files\UploadedFile object.
      *
-     * \param [in] (array) $file
+     * @param array $file
      *
-     * \return \Springy\Files\UploadedFile.
+     * @return \Springy\Files\UploadedFile
      */
     protected static function convertPHPSinglePHPUploadedFile($file)
     {
@@ -235,17 +243,17 @@ class UploadedFile extends File
             $files = [];
             foreach ($keys as $key) {
                 $files[$key] = [
-                    'name'     => $file['name'][$key],
+                    'name' => $file['name'][$key],
                     'tmp_name' => $file['tmp_name'][$key],
-                    'type'     => $file['type'][$key],
-                    'size'     => $file['size'][$key],
-                    'error'    => $file['error'][$key],
+                    'type' => $file['type'][$key],
+                    'size' => $file['size'][$key],
+                    'error' => $file['error'][$key],
                 ];
             }
 
             return self::convertPHPUploadedFiles($files);
-        } else {
-            return new self($file['tmp_name'], $file['name'], $file['type'], $file['size'], $file['error']);
         }
+
+        return new self($file['tmp_name'], $file['name'], $file['type'], $file['size'], $file['error']);
     }
 }

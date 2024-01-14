@@ -8,7 +8,7 @@
  * @author    Allan Marques <allan.marques@ymail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version 1.0.0
+ * @version 1.1.0
  */
 
 namespace Springy\Security;
@@ -116,7 +116,7 @@ class DBAuthDriver implements AuthDriverInterface
      *
      * @return bool
      */
-    public function isValid($login, $password): bool
+    public function isValid(string $login, string $password): bool
     {
         $appInstance = Application::sharedInstance();
         $appInstance->fire('auth.attempt', [$login, $password]);
@@ -125,7 +125,7 @@ class DBAuthDriver implements AuthDriverInterface
         $this->identity->loadByCredentials([$credentials['login'] => $login]);
         $validPassword = $this->identity->{$credentials['password']};
 
-        if ($this->hasher->verify($password, $validPassword)) {
+        if (!is_null($validPassword) && $this->hasher->verify($password, $validPassword)) {
             $this->lastValidIdentity = clone $this->identity;
 
             $appInstance->fire('auth.success', [$this->lastValidIdentity]);

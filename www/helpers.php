@@ -7,7 +7,7 @@
  * @author     Allan Marques <allan.marques@ymail.com>
  * @author     Fernando Val <fernando.val@gmail.com>
  *
- * @version    4.4.1
+ * @version    4.8.0
  *
  * Let's make the developer happier and more productive.
  */
@@ -31,7 +31,7 @@ if (!defined('DS')) {
 function app($service = null)
 {
     if ($service) {
-        return app()->resolve($service);
+        return app()->offsetGet($service);
     }
 
     return Springy\Core\Application::sharedInstance();
@@ -77,7 +77,7 @@ function build_url(
  *
  * @return mixed the value of the key.
  */
-function config_get($key)
+function config_get($key): mixed
 {
     return Springy\Configuration::get($key);
 }
@@ -94,15 +94,28 @@ function config_set($key, $val)
 }
 
 /**
+ * An alias for Springy\Cookie::get() method.
+ *
+ * @param string $key the name of the cookie variable.
+ *
+ * @return mixed the value of the cookie.
+ */
+function cookie_get($name): mixed
+{
+    return Springy\Cookie::get($name);
+}
+
+/**
  * Global SYSTEM variable wrapper.
  *
  * @param string $key.
  *
  * @return mixed.
  */
-function sysconf($key)
+function sysconf($key): mixed
 {
-    return $GLOBALS['SYSTEM'][$key] ?? null;
+    // return $GLOBALS['SYSTEM'][$key] ?? null;
+    return Springy\Kernel::systemConfGlobal($key);
 }
 
 /**
@@ -130,9 +143,9 @@ function debug($txt, $name = '', $highlight = true, $revert = true)
  */
 function dd($var, $die = true)
 {
-    if (Springy\Kernel::isCGIMode()) {
-        echo "Status: 200\n\n";
-    }
+    // if (Springy\Kernel::isCGIMode()) {
+    //     echo "Status: 200\n\n";
+    // }
 
     echo '<pre>';
     var_dump($var);
@@ -203,15 +216,15 @@ function mkdir_recursive(string $dirpath, $mode): bool
 }
 
 /**
- *  @brief Minify a CSS or JS file.
+ * @brief Minify a CSS or JS file.
  *
- *  @note Is recommend the use of the Minify class by Matthias Mullie.
- *      https://github.com/matthiasmullie/minify
+ * @note Is recommend the use of the Minify class by Matthias Mullie.
+ *       https://github.com/matthiasmullie/minify
  *
- *  @param string $name the source file name.
- *  @param string $destiny the destination file name.
+ * @param string $name    the source file name.
+ * @param string $destiny the destination file name.
  *
- *  @return void
+ * @return void
  */
 function minify($source, $destiny)
 {
@@ -219,7 +232,7 @@ function minify($source, $destiny)
     $path = pathinfo($destiny, PATHINFO_DIRNAME);
 
     // Check the destination directory exists or create if not
-    mkdir_recursive($path, 0775, true);
+    mkdir_recursive($path, 0775);
 
     $buffer = file_get_contents($source);
 
@@ -260,6 +273,24 @@ function minify($source, $destiny)
 }
 
 /**
+ * Returns a string in StudlyCaps format.
+ *
+ * @param string $value
+ *
+ * @return string
+ */
+function studly_caps(string $value): string
+{
+    $normalized = [];
+    $segments = explode('-', $value);
+    foreach ($segments as $value) {
+        $normalized[] = $value ? ucwords($value, '_') : '-';
+    }
+
+    return implode('', $normalized);
+}
+
+/**
  * Throws a Springy error.
  *
  * @param int    $status
@@ -289,7 +320,11 @@ function with($object)
 /**
  * Framework autoload function.
  *
+ * Will be removed in v4.6.0
+ *
  * @param string $class the class name.
+ *
+ * @deprecated 4.5.0
  *
  * @return void
  */
@@ -341,59 +376,22 @@ function springyAutoload($class)
 /**
  * Exception error handler.
  *
- * @param Error $error the error object.
+ * @param Throwable $error
  *
  * @return void
  */
-function springyExceptionHandler($error)
+function springyExceptionHandler(Throwable $error)
 {
-    $errors = new Springy\Errors();
-    $errors->handler(
-        $error->getCode(),
-        $error->getMessage(),
-        $error->getFile(),
-        $error->getLine(),
-        (
-            method_exists($error, 'getContext')
-                ? call_user_func([$error, 'getContext'])
-                : null
-        )
-    );
+    (new Springy\Errors())->process($error, 500);
 }
 
 /**
  * Error handler.
  */
-function springyErrorHandler($errno, $errstr, $errfile, $errline, $errContext)
+function springyErrorHandler($errno, $errstr, $errfile, $errline)
 {
-    $errors = new Springy\Errors();
-    $errors->handler($errno, $errstr, $errfile, $errline, $errContext);
-}
-
-/**
- * Framework Exception class.
- */
-class SpringyException extends Exception
-{
-    /// Contexto do erro
-    private $context = null;
-
-    /**
-     *  \brief Constructor method.
-     */
-    public function __construct($code, $message, $file, $line, $context = null)
-    {
-        parent::__construct($message, $code);
-        $this->file = $file;
-        $this->line = $line;
-        $this->context = $context;
-    }
-
-    /**
-     *  \brief Return the errot context.
-     */
-    public function getContext()
-    {
-        return $this->context;
-    }
+    (new Springy\Errors())->process(
+        new Springy\Exceptions\SpringyException($errstr, $errno, null, $errfile, $errline),
+        500
+    );
 }

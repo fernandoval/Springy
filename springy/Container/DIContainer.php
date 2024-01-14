@@ -1,32 +1,13 @@
 <?php
-/** \file
- *  Springy.
+
+/**
+ * Dependecy Injection container.
  *
- *  \brief      Classe de container para inversão de controle (Dependecy Injection)
- *  \copyright  Copyright (c) 2007-2016 Fernando Val
- *  \author     Allan Marques - allan.marques@ymail.com
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.1.1
- *  \ingroup    framework
+ * @copyright 2015 Fernando Val
+ * @author    Fernando Val <fernando.val@gmail.com>
+ * @author    Allan Marques <allan.marques@ymail.com>
  *
- *  \b Exemplos:
- *
- *  \code
- *  //Configurando
- *    $di = new DIContainer;
- *  $di['db.connectionString'] = 'mysql:host=localhost;dbname=db;charset=utf8';
- *  $di['db.user'] = 'root';
- *  $di['db.password'] = '';
- *  $di['db'] = function($c) {
- *      return new PDO( $c['db.conectionString', $c['db.user'], $c['db.password'] );
- *  };
- *
- * //Utilização - Nova instância
- *  $DB = $di['db'];
- *
- * //Equivalente à
- *  $DB = new PDO('mysql:host=localhost;dbname=db;charset=utf8', 'root', ''); *
- *  \endcode
+ * @version   0.2.2
  */
 
 namespace Springy\Container;
@@ -36,34 +17,29 @@ use Closure;
 use InvalidArgumentException;
 
 /**
- * \brief Classe de container para inversão de controle (Dependecy Injection).
+ * DIContainer class.
  */
 class DIContainer implements ArrayAccess
 {
-    /// Constante que indica o tipo do elemento como uma factory
-    const TYPE_FACTORY = 'factory';
-    /// Constante que indica o tipo do elemento como um parâmetro
-    const TYPE_PARAM = 'param';
-    /// Constante que indica o tipo do elemento como uma instância compartilhada
-    const TYPE_SHARED = 'shared';
+    // Type constants
+    public const TYPE_FACTORY = 'factory';
+    public const TYPE_PARAM = 'param';
+    public const TYPE_SHARED = 'shared';
 
-    /// Array que armazena as chaves de todos os elemntos registrados no container
+    /** @var array saves keys of all elements in container */
     protected $registeredKeys;
 
-    /// Array que armazena os parâmetros registrados no container
+    /** @var array saves all parameters */
     protected $params;
-    /// Array que armazena as factories registradas no container
+    /** @var array saves all factories */
     protected $factories;
-    /// Array que armazena as extensões de factories registradas no container
+    /** @var array saves all factory extensions */
     protected $factoriesExtensions;
-    /// Array que armazena as instâncias compartilhadas registradas no container
+    /** @var arry saves all shared instances */
     protected $sharedInstances;
-    /// Array que armazena os factories que se tornarão instâncias  compartilhadas quando chamadas (lazy load)
+    /** @var array saves factories that will be shared instances (lazy load) */
     protected $sharedInstancesFactories;
 
-    /**
-     * \brief Inicializa a classe e seus atributos.
-     */
     public function __construct()
     {
         $this->registeredKeys = [];
@@ -75,42 +51,46 @@ class DIContainer implements ArrayAccess
     }
 
     /**
-     * \brief Registra um parâmetro de tipo simples no container. O parametro pode ser qualquer numerico, booleanos,
-     *        strings ou arrays.
+     * Registers a parameter.
      *
-     * \param {in} (string|\Closure) $key - chave identificadora do parâmetro registrado ou uma função de tratamento.
-     * \param [in] (variant) $value - (Optional) Parâmetro ou função de tratamento retornando o parâmetro.
-     * \return Retorna o parâmetro registrado.
-     * \throws \InvalidArgumentException
+     * @param string|Closure $key
+     * @param mixed          $value any type except object.
+     *
+     * @return mixed
      */
-    public function raw($key, $value = null)
+    public function raw($key, $value = null): mixed
     {
-        //Se a chave for uma closure então retornar resultado dessa closure (útil para utilizar no modo array)
+        // If key is a closure returns its result (useful in array mode)
         if ($key instanceof Closure) {
             return call_user_func($key, $this);
         }
 
-        //Se valor for uma closure, então o parâmetro é o retorno dessa closure.
+        // If value is a closure saves its result in parameter
         if ($value instanceof Closure) {
             $value = call_user_func($value, $this);
-        } elseif (is_object($value)) { //Objetos não são permitidos, exceção disparada
-            throw new InvalidArgumentException("The param passed may not be an instance of an object. Use the 'instance' method instead.");
+        } elseif (is_object($value)) {
+            // Deny object
+            throw new InvalidArgumentException(
+                'The param passed may not be an instance of an object. Use the "instance" method instead.'
+            );
         }
 
-        $this->registeredKeys[$key] = static::TYPE_PARAM;
+        $this->registeredKeys[$key] = self::TYPE_PARAM;
         $this->params[$key] = $value;
 
         return $value;
     }
 
     /**
-     * \brief Retorna um pârametro registrado com esta chave identificadora, se existir.
+     * Returns the param registered with given key.
      *
-     * \param {in} (string) $key - chave identificadora do parâmetro registrado.
-     * \return Retorna o parâmetro registrado.
-     * \throws \InvalidArgumentException
+     * @param mixed $key
+     *
+     * @throws InvalidArgumentException if parameter $key not exists in container.
+     *
+     * @return mixed
      */
-    public function param($key)
+    public function param($key): mixed
     {
         if (isset($this->params[$key])) {
             return $this->params[$key];
@@ -120,41 +100,46 @@ class DIContainer implements ArrayAccess
     }
 
     /**
-     * \brief Registra um serviço factory (Closures) no container, útil para guardar rotinas
-     *        de criação de objetos complexos.
+     * Registers a factory (Closure).
      *
-     * \param {in} (string) $key - chave identificadora do serviço factory registrado.
-     * \param [in] (\Closure) $factory - Closure que será usada para execução de um serviço.
+     * Useful to save complex objects creator functions.
+     *
+     * @param string  $key
+     * @param Closure $factory
+     *
+     * @return void
      */
-    public function bind($key, Closure $factory)
+    public function bind(string $key, Closure $factory): void
     {
-        $this->registeredKeys[$key] = static::TYPE_FACTORY;
+        $this->registeredKeys[$key] = self::TYPE_FACTORY;
         $this->factories[$key] = $factory;
     }
 
     /**
-     * \brief Executa um serviço e retorna o resultado desta factory e suas extensões.
+     * Executes a factory and returs its result.
      *
-     * \param {in} (string) $key - chave identificadora da factory registrada no container.
-     * \param [in] (array) $params - (Optional) Parâmetros que serão passados para a factory na sua execução.
-     * \return Retorna o resultado gerado pela factory e suas extensões.
-     * \throws \InvalidArgumentException
+     * @param string $key
+     * @param array  $params
+     *
+     * @throws InvalidArgumentException if factory not exists.
+     *
+     * @return mixed
      */
-    public function make($key, array $params = [])
+    public function make(string $key, array $params = []): mixed
     {
         if (!isset($this->factories[$key])) {
             throw new InvalidArgumentException("The '{$key}' key was not registered as a factory.");
         }
 
-        if (!empty($params)) {//Se houver parâmetros passá-los para a closure do serviço
-            $result = call_user_func_array($this->factories[$key], $params);
-        } else {//Caso contrário, passar esta instância de container como parâmetro para a closure
-            $result = call_user_func($this->factories[$key], $this);
-        }
+        // Send $params to closure if not empty, else sends this container instance
+        $result = empty($params)
+            ? call_user_func($this->factories[$key], $this)
+            : call_user_func_array($this->factories[$key], $params);
 
-        //Se houver extensões registradas para esta chave identificadora
+        // If factory has extensions, invokes all
         if (isset($this->factoriesExtensions[$key])) {
-            foreach ($this->factoriesExtensions[$key] as $extension) {//Executar todas passando o próprio resultado e esta instância de container como parâmeetro
+            // Calls every extension sending $result and the container instance as parameters
+            foreach ($this->factoriesExtensions[$key] as $extension) {
                 $result = call_user_func($extension, $result, $this);
             }
         }
@@ -163,13 +148,16 @@ class DIContainer implements ArrayAccess
     }
 
     /**
-     * \brief Registra uma extênsão de serviço no container.
+     * Registers an extension into a factory.
      *
-     * \param {in} (string) $key - chave identificadora do serviço já registrado no container.
-     * \param [in] (\Closure) $extension - Closure de extensão que será executada toda vez que um serviço for chamado.
-     * \throws \InvalidArgumentException
+     * @param string  $key
+     * @param Closure $extension
+     *
+     * @throws InvalidArgumentException if factory $key not exists.
+     *
+     * @return void
      */
-    public function extend($key, Closure $extension)
+    public function extend(string $key, Closure $extension): void
     {
         if (!isset($this->factories[$key])) {
             throw new InvalidArgumentException("The '{$key}' key was not registered as a factory.");
@@ -179,27 +167,30 @@ class DIContainer implements ArrayAccess
     }
 
     /**
-     * \brief Registra uma instância de classe no container para ser compartilhada pelos consumidores do container.
+     * Registers an instance of a class to be shared.
      *
-     * \param {in} (string|\Closure) $key - chave identificadora da instância registrada ou uma função de tratamento.
-     * \param [in] (variant) $value - (Optional) Instância ou função de tratamento retornando a instância.
-     * \return Retorna a instância registrada.
-     * \throws \InvalidArgumentException
+     * @param string|Closure $key
+     * @param Closure|object $instance
+     *
+     * @throws InvalidArgumentException if $instance if not a closure or object.
+     *
+     * @return mixed
      */
-    public function instance($key, $instance = null)
+    public function instance($key, $instance = null): mixed
     {
-        //Se chave for uma closure, esta é executada e seu resultado é retornado (útil para ser usado com o modo array do container)
+        // If key is a closure executes it and returns the result (useful in array mode)
         if ($key instanceof Closure) {
             return call_user_func($key, $this);
         }
 
         $this->registeredKeys[$key] = static::TYPE_SHARED;
 
-        if ($instance instanceof Closure) { //Se instância for uma closure, então a instância a ser registrada será o resutado dessa closure.
+        // If $instance is a closure saves it as a lazy load.
+        if ($instance instanceof Closure) {
             $this->sharedInstancesFactories[$key] = $instance;
 
-            return;
-        } elseif (!is_object($instance)) { //Somente instâncias de classes são permitidas, exceção é disparada
+            return null;
+        } elseif (!is_object($instance)) {
             throw new InvalidArgumentException('The argument passed is not an instance of an object.');
         }
 
@@ -209,17 +200,19 @@ class DIContainer implements ArrayAccess
     }
 
     /**
-     * \brief Retorna uma instância compartilhada registrada com esta chave identificadora, se existir.
+     * Returns a shared instance identified by $key.
      *
-     * \param {in} (string) $key - chave identificadora da instância compartilhada registrada.
-     * \return Retorna a instância registrada.
-     * \throws \InvalidArgumentException
+     * @param string $key
+     *
+     * @throws InvalidArgumentException if instance not exists.
+     *
+     * @return object
      */
-    public function shared($key)
+    public function shared(string $key)
     {
-        if (isset($this->sharedInstancesFactories[$key])) { //Lazy loading as instancias compartilhadas.
+        // If has a lazy load executes it.
+        if (isset($this->sharedInstancesFactories[$key])) {
             $this->sharedInstances[$key] = call_user_func($this->sharedInstancesFactories[$key], $this);
-
             unset($this->sharedInstancesFactories[$key]);
         }
 
@@ -231,130 +224,112 @@ class DIContainer implements ArrayAccess
     }
 
     /**
-     * \brief Retorna se o container tem determinada chava registrada.
+     * Same as offsetExists (deprecated).
      *
-     * \param {in} (string) $key - chave identificadora.
-     * \return true para sim, false para não.
+     * @param string $key
+     *
+     * @return bool
+     *
+     * @deprecated 4.5.0
      */
-    public function has($key)
+    public function has(string $key): bool
     {
         return $this->offsetExists($key);
     }
 
     /**
-     *  \brief Retorna a dependencia independente do seu tipo.
+     * Same as offsetGet (deprecated).
      *
-     *  \param [in] (string) $key - Chave identificadora da dependencia
-     *  \return Dependencia equivalente a chave
-     *  \throws InvalidArgumentException
+     * @param string $key
+     *
+     * @return mixed
+     *
+     * @deprecated 4.5.0
      */
-    public function resolve($key)
+    public function resolve(string $key)
     {
-        if (!isset($this->registeredKeys[$key])) {
-            throw new InvalidArgumentException("The '{$key}' key was not registered as a dependency.");
-        }
-
-        switch ($this->registeredKeys[$key]) {
-            case static::TYPE_FACTORY:
-                return $this->make($key);
-
-            case static::TYPE_SHARED:
-                return $this->shared($key);
-
-            case static::TYPE_PARAM:
-            default:
-                return $this->param($key);
-        }
+        return $this->offsetGet($key);
     }
 
     /**
-     * \brief Remove um elemento registrado no container.
+     * Same as offsetUnset (deprecated).
      *
-     * \param {in} (string) $key - chave identificadora do elemento registrado.
+     * @param string $key
+     *
+     * @return void
      */
-    public function forget($key)
+    public function forget(string $key): void
     {
-        unset($this[$key]);
+        $this->offsetUnset($key);
     }
 
-    /**
-     * \brief (PHP 5 &gt;= 5.0.0) Whether a offset exists
-     * \link http://php.net/manual/en/arrayaccess.offsetexists.php
-     * \param [in] (variant) $offset - An offset to check for.
-     * \return boolean true on success or false on failure.
-     *         The return value will be casted to boolean if non-boolean was returned.
-     */
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return isset($this->registeredKeys[$offset]);
     }
 
-    /**
-     * \brief (PHP 5 &gt;= 5.0.0) Offset to retrieve
-     * \link http://php.net/manual/en/arrayaccess.offsetget.php
-     * \param [in] (variant) $offset - The offset to retrieve.
-     * \return mixed Can return all value types.
-     */
-    public function offsetGet($offset)
+    public function offsetGet($offset): mixed
     {
-        return $this->resolve($offset);
-    }
-
-    /**
-     * \brief (PHP 5 &gt;= 5.0.0) Offset to set
-     * \link http://php.net/manual/en/arrayaccess.offsetset.php
-     * \param [in] (variant) $offset - The offset to assign the value to.
-     * \param [in] (variant) $value - The value to set.
-     */
-    public function offsetSet($offset, $value)
-    {
-        if ($this->has($offset)) { //Se elemento já existe, é substituido.
-            $this->forget($offset);
+        if (!isset($this->registeredKeys[$offset])) {
+            throw new InvalidArgumentException("The '{$offset}' key was not registered as a dependency.");
         }
 
-        if ($value instanceof Closure) { //Se for uma closure, faz o bind
+        $getter = [
+            self::TYPE_FACTORY => fn ($key) => $this->make($key),
+            self::TYPE_SHARED => fn ($key) => $this->shared($key),
+            self::TYPE_PARAM => fn ($key) => $this->param($key),
+        ];
+
+        return call_user_func($getter[$this->registeredKeys[$offset]], $offset);
+    }
+
+    public function offsetSet($offset, $value): void
+    {
+        // Replaces offset if exists.
+        if ($this->offsetExists($offset)) {
+            $this->offsetUnset($offset);
+        }
+
+        // Registers as factory if $value is a closure
+        if ($value instanceof Closure) {
             $this->bind($offset, $value);
 
             return;
         }
 
-        if (is_object($value)) { //Se é uma instância
-            $this->instance($offset, $value);
-
-            return;
-        }
-
-        //Parâmetro
-        $this->raw($offset, $value);
+        is_object($value)
+            ? $this->instance($offset, $value)
+            : $this->raw($offset, $value);
     }
 
-    /**
-     * \brief (PHP 5 &gt;= 5.0.0) Offset to unset
-     * \link http://php.net/manual/en/arrayaccess.offsetunset.php
-     * \param [in] (variant) $offset - The offset to unset.
-     */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
-        switch ($this->registeredKeys[$offset]) {
-            case static::TYPE_FACTORY:
-                unset($this->factories[$offset]);
-                unset($this->factoriesExtensions[$offset]);
-                break;
-            case static::TYPE_SHARED:
-                unset($this->sharedInstances[$offset]);
-                break;
-            case static::TYPE_PARAM:
-                unset($this->params[$offset]);
+        $unset = [
+            self::TYPE_FACTORY => function ($key) {
+                unset($this->factories[$key]);
+                unset($this->factoriesExtensions[$key]);
+            },
+            self::TYPE_SHARED => function ($key) {
+                unset($this->sharedInstances[$key]);
+            },
+            self::TYPE_PARAM => function ($key) {
+                unset($this->params[$key]);
+            },
+        ];
+
+        if (isset($unset[$this->registeredKeys[$offset] ?? ''])) {
+            call_user_func($unset[$this->registeredKeys[$offset]], $offset);
         }
 
         unset($this->registeredKeys[$offset]);
     }
 
     /**
-     * \brief Cria e retorna uma nova instância de classe
-     * \return DIContainer.
+     * Returns a new instance of this class.
+     *
+     * @return self
      */
-    public static function newInstance()
+    public static function newInstance(): self
     {
         return new static();
     }

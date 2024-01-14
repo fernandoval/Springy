@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ACL (Access Control List) Authorization class for the application.
  *
@@ -7,7 +8,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   0.3.0.4
+ * @version   1.1.1
  */
 
 namespace Springy\Security;
@@ -52,22 +53,33 @@ class AclManager
      *
      * @return void
      */
-    public function setupCurrentAclObject()
+    public function setupCurrentAclObject(): void
     {
-        $this->module = substr(Kernel::controllerNamespace(), strlen($this->modulePrefix)) or $this->defaultModule;
+        $prefix = explode(
+            '/',
+            substr(
+                implode(
+                    '/',
+                    array_slice(
+                        URI::getAllSegments(),
+                        count(URI::getAllIgnoredSegments()),
+                        URI::getSegmentPage()
+                    )
+                ),
+                strlen(Kernel::controllerNamespace())
+            )
+        );
+        array_unshift($prefix, $this->modulePrefix ?: Kernel::controllerNamespace());
+
+        $this->module = implode($this->separator, array_filter($prefix));
         $this->controller = URI::getControllerClass();
-        // $this->action = URI::getSegment(0);
-
-        $segments = [];
-        $ind = 0;
-        do {
-            $segment = URI::getSegment($ind++);
-            if ($segment !== false) {
-                $segments[] = $segment;
-            }
-        } while ($segment !== false);
-
-        $this->action = implode($this->separator, $segments);
+        $this->action = implode(
+            $this->separator,
+            array_slice(
+                URI::getAllSegments(),
+                URI::getSegmentPage() + 1
+            )
+        );
     }
 
     /**
@@ -127,7 +139,7 @@ class AclManager
      *
      * @param string $separator
      *
-     * @return string
+     * @return void
      */
     public function setSeparator($separator)
     {
@@ -150,6 +162,8 @@ class AclManager
      * @param string $module
      *
      * @return void
+     *
+     * @deprecated
      */
     public function setDefaultModule($module)
     {
@@ -160,6 +174,8 @@ class AclManager
      * Gets the default module name.
      *
      * @return string
+     *
+     * @deprecated
      */
     public function getDefaultModule()
     {

@@ -2,15 +2,83 @@
 
 ## Version 4
 
-## 4.4.0
+### 4.5.0
+- Added support to PHP 8.0, 8.1 and 8.2;
+- Droped support to PHP 7.x;
+- Implemented support to execute controllers using PSR-4 autoload;
+- Enhancements in kernel, configuraton and template classes;
+- `sysconf.php` returns an array instead set variable `$GLOBALS['SYSTEM']`;
+- Configuration files can returns an array instead set the variable `$conf`;
+- Changes ACL module definition;
+- Deprecates ACL default module setup;
+- Adjustments in PDO initializing;
+- Adjustments and optimizations;
+- Fixed bugs to `Migrator` an `Errors` class;
+- Added `Kernel::systemConfGlobal()` to get global system configuration data;
+- `Kernel` functions updates to readonly mode:
+  - `Kernel::charset()`;
+  - `Kernel::environment()`;
+  - `Kernel::path()`;
+  - `Kernel::projectCodeName()`;
+  - `Kernel::systemName()`;
+  - `Kernel::systemVersion()`;
+- Support to `PHPMailer` upgraded to v6.x;
+- Added GitHub Actions test case;
+- Deprecated `Controller::_authorizationCheck()`;
+- Deprecated `Controller::_forbidden()`;
+- Deprecated `Controller::_pageNotFound()`;
+- Deprecated `Controller::_redirect()`;
+- Deprecated `Controller::_template()`;
+- Deprecated `Controller::_userSpecialVerifications()`;
+- Deprecated `CreditCardValidation` class;
+- Deprecated `Error::handler()`;
+- Deprecated `Kernel::PATH_CONFIGURATION` constant;
+- Deprecated `Kernel::PATH_SYSTEM` constant;
+- Deprecated `Kernel::PATH_CLASS` constant;
+- Deprecated `Log` class;
+- Deprecated `Container\DIContainer::has()`;
+- Deprecated `Container\DIContainer::resolve()`;
+- Deprecated `DB::castDateBrToDb()`;
+- Deprecated `DB::castDateDbToBr()`;
+- Deprecated `DB::longBrazilianDate()`;
+- Deprecated `Events\Mediator::on()`;
+- Deprecated `Events\Mediator::off()`;
+- Deprecated `Security\AclManager::setDefaultModule()`;
+- Deprecated `Security\AclManager::getDefaultModule()`;
+- Deprecated `Strings::cep()`;
+- Deprecated `Strings::data()`;
+- Deprecated `Strings::guid()`;
+- Deprecated `Strings::hora()`;
+- Deprecated `Strings::numero()`;
+- Deprecated `Strings::sizeMatch()`;
+- Deprecated `Strings::telefone()`;
+- Deprecated `Utils\Excel class`;
+- Deprecated `Utils\ZipFile class`;
+- Removed deprecated function `URI::_GET()`;
+- Removed deprecated function `URI::getHost()`;
+- Removed deprecated function `Cookie::del()`;
+- Removed `SOAP` class;
+- Updated error HTML asset files;
+- Removed required suffix '.conf' and '.default.conf' from configuration files;
+- Deprecated `springyAutoload` autoload function;
+- Deprecated `$over_conf` variable in configuration files;
+- Deprecated configuratios:
+  - `uri.host_controller_path`;
+  - `uri.prevalidate_controller`;
+  - `uri.redirects`;
+  - `uri.register_method_set_common_urls`;
+  - `uri.routes`.
+
+### 4.4.0
 - Added support to `Controller` suffix without underscore to controller names
   to help in convertion to new namespace method;
 - Added support to `App\Controller` namespace without `Controller` or
   `_Controller` name suffix to controllers;
-- Deprecates `.class` suffix for application classes;
-- Deprecates `.static` suffix for application classes;
-- Deprecates application classes with hiphen in its name;
-- Deprecates `with()` helper function;
+- Deprecated `.class` suffix for application classes;
+- Deprecated `.static` suffix for application classes;
+- Deprecated application classes with hiphen in its name;
+- Deprecated `with()` helper function;
+- Deprecated `URI::_GET()` function;
 - Adds functions without underscore prefix to deprecate old standard functions;
 - Adds support to bootstrap application script as an alternative to deprecated
   `_global` controller;
@@ -23,44 +91,56 @@
 - Fixed bug in `Configuration::set()` function;
 - Hook controllers signed as deprecated;
 - Empty function `_ignore_global` to ignore Global pre-controller deprecated;
-- Deleted the following classes: `DBDelete`, `DBExpression`, `DBFiltro`,
-  `DBInsert`, `DBSelect`, `DBUpdate` and `DBWhere`;
-- `Pagination` class deprecated and deleted;
+- Removed the following classes:
+  - `DBDelete`;
+  - `DBExpression`;
+  - `DBFiltro`;
+  - `DBInsert`;
+  - `DBSelect`;
+  - `DBUpdate`;
+  - `DBWhere`;
+- Removed `Pagination` class;
 - Deleted Doxygen documentation.
 
-## 4.3.1
+### 4.3.1
 - Adds Model column getter methods;
 - Adds helper functions;
 - Adds composer.lock file;
 - Implements secure cookie for session;
 - Implements column getter methods for Model;
-- Adjustments in Cookie;
-- Adjustments in Model;
-- Enhances in URI;
-- Enhances in Validator;
-- Fixes in Model;
-- Fixes in Session;
-- Fixes file not found Kernel panic;
-- Removed deprecated SUPERVAR query strig.
+- Adjustments in `Cookie`;
+- Adjustments in `Model`;
+- Enhances in `URI`;
+- Enhances in `Validator`;
+- Fixes in `Model`;
+- Fixes in `Session`;
+- Fixes file not found `Kernel` panic;
+- Removed "SUPERVAR" query strig.
 
-## 4.3
+### 4.3.0
 - Implements CGI mode;
 - Breaks compatibility with PHP 7.2 or older;
 - Small adjustments and enhancements.
 
-## 4.2.2
-- Deprecated css_dir, js_dir, images_dir and swf_dir entries from uri
-  configuration;
-- Removed urlJS, urlCSS, urlIMG e urlSWF template variables.
+### 4.2.2
+- Deprecated configurations:
+  - `template.urlJS`,
+  - `template.urlCSS`;
+  - `template.urlIMG`;
+  - `template.urlSWF`;
+  - `uri.css_dir`;
+  - `uri.js_dir`;
+  - `uri.images_dir`;
+  - `uri.swf_dir`.
 
-## 4.2.1
+### 4.2.1
 - Fixed SendGrid SDK version;
 - Other enhancements and adjustments.
 
-## 4.2.0
-- Fixed bug in Kernel::delIgnoredError;
+### 4.2.0
+- Fixed bug in `Kernel::delIgnoredError`;
 - PSR fixes in URI class;
-- Method URI::http_host renamed to camel case format URI::httpHost
+- Method `URI::http_host()` renamed to camel case format `URI::httpHost()`.
 
 ### 4.1.0
 - New method templateObject in Template;
@@ -129,6 +209,7 @@
 - Removed support to HHVM.
 
 ## Version 3
+
 ### 3.6.3
 - Added a method to remove a column from the conditions in DB\Condition class;
 - Added support to configuration files in JSON format;
@@ -459,6 +540,7 @@
   (deprecated).
 
 ## Version 2
+
 ### 2.2.1
 - Script da controladora Default renomeado para _default.php;
 - Eliminação da classe FILO;
@@ -492,6 +574,7 @@
 - Criação do namespace FW.
 
 ## Version 1
+
 ### 1.4.0
 - Criação da classe Configuration;
 - Removidos métodos de configuração do sistema do Kernel;

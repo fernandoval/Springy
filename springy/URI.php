@@ -6,13 +6,13 @@
  * @copyright 2007 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
- * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.3.4
+ * @version   2.7.0
  */
 
 namespace Springy;
 
+use Springy\Exceptions\SpringyException;
 use Springy\Utils\Strings_ANSI;
 use Springy\Utils\Strings_UTF8;
 
@@ -23,6 +23,8 @@ use Springy\Utils\Strings_UTF8;
  */
 class URI
 {
+    /** @var string HTTP host */
+    private static $httpHost = '';
     /** @var string The URI string */
     private static $uri_string = '';
     /** @var array The path segments */
@@ -64,9 +66,9 @@ class URI
      */
     private static function checkHostControllerRoot(): void
     {
-        if ($url = (isset($_SERVER) && isset($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : '') {
+        if (self::$httpHost) {
             foreach (Configuration::get('uri', 'host_controller_path') as $host => $root) {
-                if ($url == $host) {
+                if ($host === self::$httpHost) {
                     Kernel::controllerRoot($root);
                     break;
                 }
@@ -163,7 +165,7 @@ class URI
      *
      * @return string
      */
-    private static function fetchURItring(): string
+    private static function fetchURI(): string
     {
         // The is REQUEST_URI?
         if (!empty($_SERVER['REQUEST_URI'])) {
@@ -314,13 +316,47 @@ class URI
     }
 
     /**
+     * Parses the $_SERVER['HTTP_HOST] variable.
+     *
+     * @return void
+     */
+    private static function parseHost(): void
+    {
+        if (php_sapi_name() === 'cli') {
+            self::$httpHost = 'cmd.shell';
+
+            return;
+        }
+
+        self::$httpHost = preg_replace(
+            '/([^:]+)(:\\d+)?/',
+            '$1',
+            $_SERVER['HTTP_HOST'] ?? ''
+        ) . (
+            ($_SERVER['SERVER_PORT'] ?? 80) != 80
+            ? ':' . $_SERVER['SERVER_PORT']
+            : ''
+        );
+    }
+
+    /**
      * Defines the name of the controller class.
      *
      * @return void
      */
-    private static function setClassController($classname)
+    public static function setClassController($classname)
     {
         self::$class_controller = $classname;
+    }
+
+    /**
+     * Returns the current host with port number but without protocol.
+     *
+     * @return string
+     */
+    public static function getHost(): string
+    {
+        return self::$httpHost;
     }
 
     /**
@@ -334,7 +370,8 @@ class URI
     public static function parseURI()
     {
         self::checkHeadMethod();
-        self::$uri_string = self::fetchURItring();
+        self::parseHost();
+        self::$uri_string = self::fetchURI();
         self::checkHostControllerRoot();
         $uriString = trim(self::$uri_string, '/');
         $segments = self::getSegmentsFromURI($uriString);
@@ -365,6 +402,14 @@ class URI
         if (!$pctlr = Configuration::get('uri', 'prevalidate_controller')) {
             return;
         }
+
+        throw new SpringyException(
+            'uri.prevalidate_controller are deprecated',
+            E_DEPRECATED,
+            null,
+            __FILE__,
+            __LINE__
+        );
 
         $ctrl = trim(
             str_replace(
@@ -400,17 +445,13 @@ class URI
             }
         }
 
-        switch ($action) {
-            case 301:
-            case 302:
-                while (count(self::$segments) - self::$segment_page - 1 > $pctlr[$ctrl]['segments']) {
-                    array_pop(self::$segments);
-                }
-                self::redirect(self::buildURL(self::$segments, empty($_GET) ? [] : $_GET), $action);
-            case 404:
-            case 500:
-            case 503:
-                new Errors($action);
+        if ($action >= 300 && $action < 400) {
+            while (count(self::$segments) - self::$segment_page - 1 > $pctlr[$ctrl]['segments']) {
+                array_pop(self::$segments);
+            }
+            self::redirect(self::buildURL(self::$segments, empty($_GET) ? [] : $_GET), $action);
+        } elseif ($action >= 400) {
+            new Errors($action);
         }
     }
 
@@ -422,6 +463,16 @@ class URI
     public static function getControllerClass()
     {
         return self::$class_controller;
+    }
+
+    /**
+     * Returns the index of the current page controller.
+     *
+     * @return int
+     */
+    public static function getSegmentPage(): int
+    {
+        return self::$segment_page;
     }
 
     /**
@@ -594,22 +645,6 @@ class URI
     /**
      * Returns the value of a query string variable.
      *
-     * Is an alias for URI::getParam().
-     *
-     * @param string $var is the name of the query string variable desired.
-     *
-     * @return mixed the value of the variable or false if it does not exists.
-     *
-     * @deprecated 4.4.0
-     */
-    public static function _GET($var)
-    {
-        return self::getParam($var);
-    }
-
-    /**
-     * Returns the value of a query string variable.
-     *
      * @param string $var     is the name of the query string variable desired.
      * @param bool   $numeric true if parameter needs to be integer.
      *
@@ -651,7 +686,7 @@ class URI
      *
      * @param string $var the name of the query string variable to be deleted.
      *
-     * @return voit
+     * @return void
      */
     public static function removeParam($var)
     {
@@ -714,24 +749,7 @@ class URI
         // Monta os parâmetros a serem passados por GET
         self::encodeParam($query, '', $param);
 
-        return self::_host($host) . $url . $param;
-    }
-
-    /**
-     * Returns the current host with protocol.
-     *
-     * @return string
-     */
-    public static function httpHost()
-    {
-        return trim(
-            preg_replace(
-                '/([^:]+)(:\\d+)?/',
-                '$1' . ((sysconf('CONSIDER_PORT_NUMBER') !== null && sysconf('CONSIDER_PORT_NUMBER')) ? '$2' : ''),
-                $_SERVER['HTTP_HOST'] ?? ''
-            ),
-            ' ..@'
-        );
+        return self::host($host) . $url . $param;
     }
 
     /**
@@ -741,7 +759,7 @@ class URI
      *
      * @return string
      */
-    private static function _host($host = 'dynamic')
+    private static function host($host = 'dynamic')
     {
         if (preg_match('|^(.+):\/\/(.+)|i', $host)) {
             return $host;
@@ -777,7 +795,8 @@ class URI
     /**
      * Sets a redirect status header and finish the application.
      *
-     * This method sends the status header with a URI redirection to the user browser and finish the application execution.
+     * This method sends the status header with a URI redirection to the user
+     * browser and finish the application execution.
      *
      * @param string $url    the URI.
      * @param int    $header the redirection code (default = 302).

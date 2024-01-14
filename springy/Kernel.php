@@ -8,7 +8,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.6.0
+ * @version   2.9.2
  */
 
 namespace Springy;
@@ -21,24 +21,35 @@ namespace Springy;
 class Kernel
 {
     // Framework version
-    const VERSION = '4.4.0';
+    public const VERSION = '4.5.0';
 
-    /// Path constants
-    const PATH_PROJECT = 'PROJ';
-    const PATH_CONF = 'CONF';
-    const PATH_APPLICATION = 'APP';
-    const PATH_VAR = 'VAR';
-    const PATH_CLASSES = 'CLASSES';
-    const PATH_CONTROLLER = 'CONTROLLER';
-    const PATH_LIBRARY = 'LIB';
-    const PATH_ROOT = 'ROOT';
-    const PATH_WEB_ROOT = 'ROOT';
-    const PATH_VENDOR = 'VENDOR';
-    const PATH_MIGRATION = 'MIGRATION';
-    /// Path constants to back compatibility
-    const PATH_CONFIGURATION = self::PATH_CONF;
-    const PATH_SYSTEM = self::PATH_APPLICATION;
-    const PATH_CLASS = self::PATH_CLASSES;
+    // Default controller namespace
+    public const DEFAULT_NS = 'App\\Web\\';
+
+    // Path constants
+    public const PATH_PROJECT = 'PROJ';
+    public const PATH_CONF = 'CONF';
+    public const PATH_APPLICATION = 'APP';
+    public const PATH_VAR = 'VAR';
+    public const PATH_CLASSES = 'CLASSES';
+    public const PATH_CONTROLLER = 'CONTROLLER';
+    public const PATH_LIBRARY = 'LIB';
+    public const PATH_ROOT = 'ROOT';
+    public const PATH_WEB_ROOT = 'ROOT';
+    public const PATH_VENDOR = 'VENDOR';
+    public const PATH_MIGRATION = 'MIGRATION';
+    // Path constants to back compatibility
+    // @deprecated 4.5.0
+    public const PATH_CONFIGURATION = self::PATH_CONF;
+    public const PATH_SYSTEM = self::PATH_APPLICATION;
+    public const PATH_CLASS = self::PATH_CLASSES;
+
+    /**
+     * Global system configuration.
+     *
+     * @var array
+     */
+    private static array $sysconf;
 
     /// Start time
     private static $startime = null;
@@ -53,16 +64,6 @@ class Kernel
 
     /// System environment
     private static $environment = '';
-    /// System name
-    private static $name = 'System Name';
-    /// System version
-    private static $version = [0, 0, 0];
-    /// Project code name
-    private static $projName = '';
-    /// System path
-    private static $paths = [];
-    /// System charset
-    private static $charset = 'UTF-8';
     /// CGI execution mode
     private static $cgiMode = false;
 
@@ -77,11 +78,35 @@ class Kernel
     private static $templateFuncs = [];
 
     /**
+     * Builds controller name seeking routes configuration.
+     *
+     * @param string $namespace
+     * @param array  $arguments
+     * @param bool   $routing
+     *
+     * @return string
+     */
+    private static function buildControllerName(string $namespace, array $arguments, bool $routing): string
+    {
+        if ($routing) {
+            $path = implode('/', $arguments);
+
+            foreach ((Configuration::get('uri', 'routing.routes.' . $namespace) ?: []) as $route => $controller) {
+                if (preg_match('#' . $route . '#', $path)) {
+                    return $namespace . $controller;
+                }
+            }
+        }
+
+        return $namespace . self::normalizeNamePath($arguments);
+    }
+
+    /**
      * Calls the application controller if defined.
      *
      * @return void
      */
-    private static function callController()
+    private static function callController(): void
     {
         // Has a controller defined?
         if (is_null(self::$controllerName)) {
@@ -128,7 +153,7 @@ class Kernel
      *
      * @return void
      */
-    private static function callGlobal()
+    private static function callGlobal(): void
     {
         // Bootstrap
         $btPath = self::path(self::PATH_APPLICATION) . DS . 'bootstrap.php';
@@ -161,77 +186,63 @@ class Kernel
      *
      * @return void
      */
-    private static function callSpecialCommands()
+    private static function callSpecialCommands(): void
     {
         if (!is_null(self::$controllerName) || self::$cgiMode) {
             return;
         }
 
-        $about = function () {
-            if (!config_get('system.system_internal_methods.about')) {
-                return false;
-            }
-
-            new Core\Copyright(true);
-
-            return true;
-        };
-        $sysbug = function ($command) {
-            if (!config_get('system.system_internal_methods.system_errors')) {
-                return false;
-            }
-
-            self::systemBugPage($command);
-
-            return true;
-        };
-        $methods = [
-            '_' => $about,
-            '_springy_' => $about,
-            '_pi_' => function () {
-                if (!config_get('system.system_internal_methods.phpinfo')) {
-                    return false;
-                }
-
-                phpinfo();
-                ob_end_flush();
-
-                return true;
-            },
-            '_error_' => function () {
-                if (!config_get('system.system_internal_methods.test_error')) {
-                    return false;
-                }
-
-                self::testError();
-
-                return false;
-            },
-            '__migration__' => function () {
-                // Cli mode only
-                if (!defined('STDIN')) {
-                    echo 'This script can be executed only in CLI mode.';
-
-                    exit(998);
-                }
-
-                $controller = new Migrator();
-                $controller->run();
-
-                return true;
-            },
-            '_system_bug_' => $sysbug,
-            '_system_bug_solved_' => $sysbug,
-        ];
-
-        // The command
         $command = URI::getSegment(0, false);
+        $match = match ($command) {
+            '__migration__' => defined('STDIN'),
+            '_error_' => config_get('system.system_internal_methods.test_error')
+                && URI::getSegment(0)
+                && ctype_digit(URI::getSegment(0)),
+            '_pi_' => config_get('system.system_internal_methods.phpinfo'),
+            '_springy_' => config_get('system.system_internal_methods.about'),
+            '_system_bug_' => config_get('system.system_internal_methods.system_errors') && self::systemBugAccess(),
+            '_system_bug_solved_' => config_get('system.system_internal_methods.system_errors')
+                && self::systemBugAccess()
+                && preg_match('/(^[0-9a-z]{8}(,[0-9a-z]{8})*|all)$/', URI::getSegment(1, false)),
+            default => false,
+        };
 
-        if (($methods[$command] ?? false) && call_user_func($methods[$command], $command)) {
-            return;
+        $match ? call_user_func(
+            match ($command) {
+                '__migration__' => fn () => (new Migrator())->run(),
+                '_error_' => fn () => new Errors(intval(URI::getSegment(0)), 'System error'),
+                '_pi_' => function () {
+                    phpinfo();
+                    ob_end_flush();
+                },
+                '_springy_' => fn () => new Core\Copyright(true),
+                '_system_bug_' => fn () => (new Errors())->bugList(),
+                '_system_bug_solved_' => fn () => (new Errors())->bugSolved(URI::getSegment(1, false)),
+            }
+        ) : new Errors(404, 'Page not found');
+    }
+
+    /**
+     * Tryes to load a full qualified name controller class.
+     *
+     * @param string $name
+     * @param array  $arguments
+     *
+     * @return bool
+     */
+    private static function checkController(string $name, array $arguments): bool
+    {
+        if (!class_exists($name)) {
+            return false;
         }
 
-        new Errors(404, 'Page not found');
+        self::$controllerName = $name;
+        $namespace = explode('/', self::$controller_namespace);
+        array_shift($namespace);
+        URI::setCurrentPage(count($namespace) + count($arguments) - 1);
+        URI::setClassController(URI::currentPage());
+
+        return true;
     }
 
     /**
@@ -239,7 +250,7 @@ class Kernel
      *
      * @return void
      */
-    private static function checkDevAccessDebug()
+    private static function checkDevAccessDebug(): void
     {
         // Has a developer credential?
         $devUser = Configuration::get('system', 'developer_user');
@@ -293,6 +304,8 @@ class Kernel
         self::$controllerFile = URI::parseURI();
 
         if (is_null(self::$controllerFile) || !file_exists(self::$controllerFile)) {
+            self::findControllerByNamespace();
+
             return;
         }
 
@@ -329,27 +342,151 @@ class Kernel
     }
 
     /**
+     * Tries to find a web controller from the URI segments using new namespace
+     * qualifying PSR-4.
+     *
+     * @return bool
+     */
+    private static function findControllerByNamespace(): void
+    {
+        $arguments = array_filter(URI::getAllSegments());
+        $namespace = self::getNamespace($arguments);
+
+        if (self::hasController($namespace, $arguments, false)) {
+            return;
+        }
+
+        self::hasController($namespace, $arguments, true);
+    }
+
+    /**
+     * Gets the controller namespace.
+     *
+     * @param array $segments
+     *
+     * @return string
+     */
+    private static function getNamespace(array &$segments): string
+    {
+        $config = self::getRouteConfiguration();
+        $uri = '/' . implode('/', $segments);
+        $matches = [];
+
+        foreach ($config['segments'] as $route => $namespace) {
+            $pattern = sprintf('#^\/%s(\/(.+))?$#', $route);
+
+            if (preg_match_all($pattern, $uri, $matches, PREG_PATTERN_ORDER)) {
+                $segments = explode('/', trim($matches[1][0], '/'));
+                self::$controller_namespace = $config['module'] . '/' . $route;
+
+                return trim($namespace, " \t\0\x0B\\") . '\\';
+            }
+        }
+
+        self::$controller_namespace = $config['module'];
+
+        return trim($config['namespace'] ?? self::DEFAULT_NS, " \t\0\x0B\\") . '\\';
+    }
+
+    /**
+     * Gets the configuration array for routing.
+     *
+     * @return array
+     */
+    private static function getRouteConfiguration(): array
+    {
+        $host = URI::getHost();
+
+        foreach ((Configuration::get('uri', 'routing.hosts') ?: []) as $route => $data) {
+            $pattern = sprintf('#^%s$#', $route);
+            if (preg_match_all($pattern, $host)) {
+                self::$controller_root = $data['template'] ?? [];
+
+                return [
+                    'module' => $data['module'] ?? '',
+                    'namespace' => $data['namespace'] ?? self::DEFAULT_NS,
+                    'segments' => $data['segments'] ?? [],
+                ];
+            }
+        }
+
+        return [
+            'module' => Configuration::get('uri', 'routing.module') ?: '',
+            'namespace' => Configuration::get('uri', 'routing.namespace') ?: self::DEFAULT_NS,
+            'segments' => Configuration::get('uri', 'routing.segments') ?: [],
+        ];
+    }
+
+    /**
+     * Looking for the controller walking through the arguments.
+     *
+     * @param string $namespace
+     * @param array  $arguments
+     * @param bool   $routing
+     *
+     * @return bool
+     */
+    private static function hasController(string $namespace, array $arguments, bool $routing): bool
+    {
+        do {
+            if (
+                // Adds and finds an Index controller in current $arguments path
+                self::checkController(
+                    $namespace . self::normalizeNamePath(array_merge($arguments, ['Index'])),
+                    $arguments
+                )
+                ||
+                // Removes Index and finds the full qualified name controller
+                (
+                    count($arguments)
+                    && self::checkController(
+                        self::buildControllerName($namespace, $arguments, $routing),
+                        $arguments
+                    )
+                )
+            ) {
+                return true;
+            }
+
+            array_pop($arguments);
+        } while (count($arguments));
+
+        return false;
+    }
+
+    /**
      * Verifies if HTTP authentication is required.
      *
      * @return void
      */
-    private static function httpAuthNeeded()
+    private static function httpAuthNeeded(): void
     {
         $auth = Configuration::get('system', 'authentication');
 
         // HTTP authentication credential not defined?
-        if (defined('STDIN') || !is_array($auth) || !isset($auth['user']) || !isset($auth['pass']) || Cookie::get('__sys_auth__')) {
+        if (
+            defined('STDIN') ||
+            !is_array($auth) ||
+            !isset($auth['user']) ||
+            !isset($auth['pass']) ||
+            Cookie::get('__sys_auth__')
+        ) {
             return;
         }
 
         // HTTP authentication credential received and match?
-        if (isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW']) && $_SERVER['PHP_AUTH_USER'] == $auth['user'] && $_SERVER['PHP_AUTH_PW'] == $auth['pass']) {
+        if (
+            isset($_SERVER['PHP_AUTH_USER']) &&
+            isset($_SERVER['PHP_AUTH_PW']) &&
+            $_SERVER['PHP_AUTH_USER'] == $auth['user'] &&
+            $_SERVER['PHP_AUTH_PW'] == $auth['pass']
+        ) {
             Cookie::set('__sys_auth__', true);
 
             return;
         }
 
-        header('WWW-Authenticate: Basic realm="' . utf8_decode('What are you doing here?') . '"');
+        header('WWW-Authenticate: Basic realm="What are you doing here?"');
         header('HTTP/1.0 401 Unauthorized');
         exit('Unauthorized!');
     }
@@ -359,7 +496,7 @@ class Kernel
      *
      * @return void
      */
-    private static function httpStartup()
+    private static function httpStartup(): void
     {
         if (defined('STDIN')) {
             return;
@@ -370,21 +507,63 @@ class Kernel
     }
 
     /**
+     * Normalizes the array of segments to a class namespace.
+     *
+     * @param array $segments
+     *
+     * @return string
+     */
+    private static function normalizeNamePath(array $segments): string
+    {
+        $normalized = [];
+
+        foreach ($segments as $value) {
+            $normalized[] = studly_caps($value);
+        }
+
+        return implode('\\', $normalized);
+    }
+
+    /**
+     * Sets system environment.
+     *
+     * @return void
+     */
+    private static function setEnv(): void
+    {
+        $env = self::$sysconf['ACTIVE_ENVIRONMENT'] ?: (
+            self::$sysconf['ENVIRONMENT_VARIABLE']
+                ? getenv(self::$sysconf['ENVIRONMENT_VARIABLE'])
+                : ''
+        );
+
+        if (empty($env)) {
+            $env = URI::getHost() ?: 'unknown';
+
+            // Verify if has an alias for host
+            foreach (self::$sysconf['ENVIRONMENT_ALIAS'] as $host => $alias) {
+                if (preg_match('/^' . $host . '$/', $env)) {
+                    $env = $alias;
+                    break;
+                }
+            }
+        }
+
+        self::$environment = $env;
+    }
+
+    /**
      * Verifies the access to system bug page must be autenticated.
      *
      * @return void
      */
-    private static function systemBugAccess()
+    private static function systemBugAccess(): bool
     {
         // Has a credential to system bug page?
         $auth = Configuration::get('system', 'bug_authentication');
-        if (empty($auth['user']) || empty($auth['pass'])) {
-            return;
-        }
 
-        // Is authenticated?
-        if (Cookie::get('__sys_bug_auth__')) {
-            return;
+        if (empty($auth['user']) || empty($auth['pass'])) {
+            return true;
         }
 
         // Verify the credential
@@ -394,122 +573,32 @@ class Kernel
             || $_SERVER['PHP_AUTH_USER'] != $auth['user']
             || $_SERVER['PHP_AUTH_PW'] != $auth['pass']
         ) {
-            header('WWW-Authenticate: Basic realm="' . utf8_decode('What r u doing here?') . '"');
+            header('WWW-Authenticate: Basic realm="What r u doing here?"');
             new Errors(401, 'Unauthorized');
         }
 
-        Cookie::set('__sys_bug_auth__', true);
-    }
-
-    /**
-     * The system bug pages.
-     *
-     * @param string $page the command.
-     *
-     * @return void
-     */
-    private static function systemBugPage($page)
-    {
-        // Check the access
-        self::systemBugAccess();
-
-        $error = new Errors();
-
-        if ($page == '_system_bug_') {
-            $error->bugList();
-
-            return;
-        }
-
-        if (preg_match('/^[0-9a-z]{8}|all$/', URI::getSegment(1, false))) {
-            $error->bugSolved(URI::getSegment(1, false));
-
-            return;
-        }
-
-        $error->handler(E_USER_ERROR, 'Page not found', __FILE__, __LINE__, '', 404);
-    }
-
-    /**
-     * Tests a HTTP error.
-     *
-     * @return void
-     */
-    private static function testError()
-    {
-        if ($error = URI::getSegment(0)) {
-            new Errors((int) $error, 'System error');
-        }
+        return true;
     }
 
     /**
      * Starts system environment.
      */
-    public static function initiate($sysconf, $startime = null, $cgiMode = false)
+    public static function run(array $sysconf, float $startime)
     {
-        self::$cgiMode = $cgiMode;
+        self::$startime = $startime;
+        self::$sysconf = $sysconf;
+
+        self::setEnv();
+
         ini_set('date.timezone', $sysconf['TIMEZONE']);
-
-        // Define the application properties
-        self::$startime = is_null($startime) ? microtime(true) : $startime;
-        self::systemName($sysconf['SYSTEM_NAME']);
-        self::systemVersion($sysconf['SYSTEM_VERSION']);
-        self::projectCodeName(isset($sysconf['PROJECT_CODE_NAME']) ? $sysconf['PROJECT_CODE_NAME'] : '');
-        self::environment(
-            $sysconf['ACTIVE_ENVIRONMENT'],
-            isset($sysconf['ENVIRONMENT_ALIAS']) ? $sysconf['ENVIRONMENT_ALIAS'] : [],
-            isset($sysconf['ENVIRONMENT_VARIABLE']) ? $sysconf['ENVIRONMENT_VARIABLE'] : ''
-        );
-        self::charset($sysconf['CHARSET']);
-
-        // Check basic configuration path
-        if (!isset($sysconf['ROOT_PATH'])) {
-            new Errors(500, 'Web server document root configuration not found.');
-        }
-
-        // Define the application paths
-        self::path(self::PATH_WEB_ROOT, $sysconf['ROOT_PATH']);
-        self::path(self::PATH_LIBRARY, $sysconf['SPRINGY_PATH'] ?? realpath(dirname(__FILE__)));
-        self::path(
-            self::PATH_PROJECT,
-            $sysconf['PROJECT_PATH'] ?? realpath(self::path(self::PATH_LIBRARY) . DS . '..')
-        );
-        self::path(
-            self::PATH_CONF,
-            $sysconf['CONFIG_PATH'] ?? realpath(self::path(self::PATH_PROJECT) . DS . 'conf')
-        );
-        self::path(
-            self::PATH_VAR,
-            $sysconf['VAR_PATH'] ?? realpath(self::path(self::PATH_PROJECT) . DS . 'var')
-        );
-        self::path(
-            self::PATH_APPLICATION,
-            $sysconf['APP_PATH'] ?? realpath(self::path(self::PATH_PROJECT) . DS . 'app')
-        );
-        self::path(
-            self::PATH_CONTROLLER,
-            $sysconf['CONTROLER_PATH'] ?? realpath(self::path(self::PATH_APPLICATION) . DS . 'controllers')
-        );
-        self::path(
-            self::PATH_CLASSES,
-            $sysconf['CLASS_PATH'] ?? realpath(self::path(self::PATH_APPLICATION) . DS . 'classes')
-        );
-        self::path(
-            self::PATH_MIGRATION,
-            $sysconf['MIGRATION_PATH'] ?? realpath(self::path(self::PATH_PROJECT) . DS . 'migration')
-        );
-        self::path(
-            self::PATH_VENDOR,
-            $sysconf['VENDOR_PATH'] ?? realpath(self::path(self::PATH_PROJECT) . DS . 'vendor')
-        );
+        ini_set('default_charset', self::charset());
+        ini_set('display_errors', Configuration::get('system', 'debug') ? 1 : 0);
+        header('Content-Type: text/html; charset=' . self::charset(), true);
 
         // Pre start check list of application
         self::httpAuthNeeded();
         self::httpStartup();
         self::checkDevAccessDebug();
-
-        // Debug mode?
-        ini_set('display_errors', Configuration::get('system', 'debug') ? 1 : 0);
 
         // System is under maintenance mode?
         if (Configuration::get('system', 'maintenance')) {
@@ -538,7 +627,7 @@ class Kernel
      *
      * @return string
      */
-    public static function runTime()
+    public static function runTime(): string
     {
         return number_format(microtime(true) - self::$startime, 6);
     }
@@ -546,137 +635,89 @@ class Kernel
     /**
      * The system environment.
      *
-     * @param string $env - if defined, set the system environment.
-     *
-     * @return A string containing the system environment
+     * @return string|null
      */
-    public static function environment($env = null, $alias = [], $envar = '')
+    public static function environment(): ?string
     {
-        if (!is_null($env)) {
-            // Define environment by host?
-            if (empty($env)) {
-                if (!empty($envar)) {
-                    $env = getenv($envar);
-                }
-
-                $env = empty($env) ? URI::httpHost() : $env;
-                if (empty($env)) {
-                    $env = 'unknown';
-                }
-
-                // Verify if has an alias for host
-                if (is_array($alias) && count($alias)) {
-                    foreach ($alias as $host => $as) {
-                        if (preg_match('/^' . $host . '$/', $env)) {
-                            $env = $as;
-                            break;
-                        }
-                    }
-                }
-            }
-
-            self::$environment = $env;
-        }
-
         return self::$environment;
+    }
+
+    public static function systemConfGlobal(string $key): mixed
+    {
+        return self::$sysconf[$key] ?? null;
     }
 
     /**
      * The system name.
      *
-     * @param string $name - if defined, set the system name.
-     *
      * @return string A string containing the system name.
      */
-    public static function systemName($name = null)
+    public static function systemName(): string
     {
-        if (!is_null($name)) {
-            self::$name = $name;
-        }
-
-        return self::$name;
+        return self::$sysconf['SYSTEM_NAME'] ?? '';
     }
 
     /**
      * The system version.
      *
-     * @param mixed $major - if defined, set the major part of the system version. Can be an array with all parts.
-     * @param mixed $minor - if defined, set the minor part of the system version.
-     * @param mixed $build - if defined, set the build part of the system version.
+     * @see https://semver.org
      *
      * @return string A string containing the system version.
      */
-    public static function systemVersion($major = null, $minor = null, $build = null)
+    public static function systemVersion(): string
     {
-        if (is_array($major) && is_null($minor) && is_null($build)) {
-            return self::systemVersion(isset($major[0]) ? $major[0] : 0, isset($major[1]) ? $major[1] : 0, isset($major[2]) ? $major[2] : 0);
-        }
+        [$major, $minor, $patch] = is_array(self::$sysconf['SYSTEM_VERSION'])
+            ? self::$sysconf['SYSTEM_VERSION']
+            : explode('.', (string) self::$sysconf['SYSTEM_VERSION']);
 
-        if (!is_null($major) && !is_null($minor) && !is_null($build)) {
-            self::$version = [$major, $minor, $build];
-        } elseif (!is_null($major) && !is_null($minor)) {
-            self::$version = [$major, $minor];
-        } elseif (!is_null($major)) {
-            self::$version = [$major];
-        }
-
-        return is_array(self::$version) ? implode('.', self::$version) : self::$version;
+        return implode('.', [$major ?? 0, $minor ?? 0, $patch ?? 0]);
     }
 
     /**
      * The project code name.
      *
-     * @param string $name - if defined, set the project code name.
+     * @see https://en.wikipedia.org/wiki/Code_name#Project_code_name
      *
      * @return string A string containing the project code name.
-     *
-     * @see https://en.wikipedia.org/wiki/Code_name#Project_code_name
      */
-    public static function projectCodeName($name = null)
+    public static function projectCodeName(): string
     {
-        if (!is_null($name)) {
-            self::$projName = $name;
-        }
-
-        return self::$projName;
+        return self::$sysconf['PROJECT_CODE_NAME'] ?? '';
     }
 
     /**
      * The system charset.
      *
-     * Default UTF-8
-     *
-     * @param string $charset - if defined, set the system charset.
-     *
      * @return string A string containing the system charset.
      */
-    public static function charset($charset = null)
+    public static function charset(): string
     {
-        if (!is_null($charset)) {
-            self::$charset = $charset;
-            ini_set('default_charset', $charset);
-            // Send the content-type and charset header
-            header('Content-Type: text/html; charset=' . $charset, true);
-        }
-
-        return self::$charset;
+        return self::$sysconf['CHARSET'] ?? 'UTF-8';
     }
 
     /**
      * A path of the system.
      *
      * @param string $component the component constant.
-     * @param string $path      if defined, change the path of the component.
      *
      * @return string A string containing the path of the component.
      */
-    public static function path($component, $path = null)
+    public static function path(string $component): string
     {
-        if (!is_null($path)) {
-            self::$paths[$component] = $path;
-        }
-
-        return isset(self::$paths[$component]) ? self::$paths[$component] : '';
+        return match ($component) {
+            self::PATH_APPLICATION => self::$sysconf['APP_PATH'] ?? self::path(self::PATH_PROJECT) . DS . 'app',
+            self::PATH_CLASSES => self::$sysconf['CLASS_PATH'] ?? self::path(self::PATH_APPLICATION) . DS . 'classes',
+            self::PATH_CONF => self::$sysconf['CONFIG_PATH'] ?? self::path(self::PATH_PROJECT) . DS . 'conf',
+            self::PATH_CONTROLLER => self::$sysconf['CONTROLER_PATH'] ??
+                self::path(self::PATH_APPLICATION) . DS . 'controllers',
+            self::PATH_LIBRARY => self::$sysconf['SPRINGY_PATH'] ?? __DIR__,
+            self::PATH_MIGRATION => self::$sysconf['MIGRATION_PATH'] ??
+                self::path(self::PATH_PROJECT) . DS . 'migration',
+            self::PATH_PROJECT => self::$sysconf['PROJECT_PATH'] ?? realpath(__DIR__ . DS . '..'),
+            self::PATH_VAR => self::$sysconf['VAR_PATH'] ?? self::path(self::PATH_PROJECT) . DS . 'var',
+            self::PATH_VENDOR => self::$sysconf['VENDOR_PATH'] ?? self::path(self::PATH_PROJECT) . DS . 'vendor',
+            self::PATH_WEB_ROOT => self::$sysconf['ROOT_PATH'],
+        };
     }
 
     /**
@@ -686,7 +727,7 @@ class Kernel
      *
      * @return void
      */
-    public static function addIgnoredError($error)
+    public static function addIgnoredError($error): void
     {
         if (is_array($error)) {
             foreach ($error as $errno) {
@@ -708,7 +749,7 @@ class Kernel
      *
      * @return void
      */
-    public static function delIgnoredError($error)
+    public static function delIgnoredError($error): void
     {
         if (is_array($error)) {
             foreach ($error as $errno) {
@@ -773,7 +814,7 @@ class Kernel
      *
      * @return void
      */
-    public static function setErrorHook($errno, $funcHook)
+    public static function setErrorHook($errno, $funcHook): void
     {
         self::$errorHooks[$errno] = $funcHook;
     }
@@ -821,7 +862,7 @@ class Kernel
      *
      * @return void
      */
-    public static function assignTemplateVar($name, $value)
+    public static function assignTemplateVar($name, $value): void
     {
         self::$templateVars[$name] = $value;
     }
@@ -889,7 +930,7 @@ class Kernel
      *
      * @param mixed $array the array to be converted.
      *
-     * @return stdClass
+     * @return object|bool
      */
     public static function arrayToObject($array)
     {

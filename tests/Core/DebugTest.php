@@ -31,6 +31,6 @@ class DebugTest extends TestCase
 
     public function testPrintRC()
     {
-        $this->assertRegExp('/^(.+)echo(.+)"teste"(.+)$/m', Debug::print_rc('echo "teste"'));
+        $this->assertMatchesRegularExpression('/^(.+)echo(.+)"teste"(.+)$/m', Debug::printRc('echo "teste"'));
     }
 }

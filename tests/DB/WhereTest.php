@@ -14,7 +14,7 @@ class WhereTest extends TestCase
 {
     protected $where;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->where = new Where();
         $this->where->condition('column_a', 0);

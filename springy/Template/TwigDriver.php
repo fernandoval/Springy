@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class driver for Twig template engine.
  *
@@ -10,7 +11,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   0.16.2.18
+ * @version   0.17.1
  */
 
 namespace Springy\Template;
@@ -28,7 +29,7 @@ use Springy\URI;
  */
 class TwigDriver implements TemplateDriverInterface
 {
-    const TPL_NAME_SUFIX = '.twig.html';
+    public const TPL_NAME_SUFIX = '.twig.html';
 
     /// Internal template object
     private $tplObj = null;
@@ -59,12 +60,12 @@ class TwigDriver implements TemplateDriverInterface
         // Inicializa a classe de template
         // \Twig_Autoloader::register();
         $this->envOptions = [
-            'autoescape'       => Configuration::get('template', 'autoescape'),
+            'autoescape' => Configuration::get('template', 'autoescape'),
             'strict_variables' => Configuration::get('template', 'strict_variables'),
-            'debug'            => Configuration::get('template', 'debug'),
-            'cache'            => Configuration::get('template', 'compiled_template_path'),
-            'auto_reload'      => Configuration::get('template', 'auto_reload'),
-            'optimizations'    => Configuration::get('template', 'optimizations'),
+            'debug' => Configuration::get('template', 'debug'),
+            'cache' => Configuration::get('template', 'compiled_template_path'),
+            'auto_reload' => Configuration::get('template', 'auto_reload'),
+            'optimizations' => Configuration::get('template', 'optimizations'),
         ];
 
         $this->__twigInstance([
@@ -73,41 +74,6 @@ class TwigDriver implements TemplateDriverInterface
         ]);
 
         $this->setTemplate($tpl);
-
-        // Iniciliza as variáveis com URLs padrão de template
-        if (Configuration::get('uri', 'common_urls')) {
-            if (!Configuration::get('uri', 'register_method_set_common_urls')) {
-                foreach (Configuration::get('uri', 'common_urls') as $var => $value) {
-                    if (isset($value[4])) {
-                        $this->assign($var, URI::buildURL($value[0], $value[1], $value[2], $value[3], $value[4]));
-                    } elseif (isset($value[3])) {
-                        $this->assign($var, URI::buildURL($value[0], $value[1], $value[2], $value[3]));
-                    } elseif (isset($value[2])) {
-                        $this->assign($var, URI::buildURL($value[0], $value[1], $value[2]));
-                    } elseif (isset($value[1])) {
-                        $this->assign($var, URI::buildURL($value[0], $value[1]));
-                    } else {
-                        $this->assign($var, URI::buildURL($value[0]));
-                    }
-                }
-            } elseif (Configuration::get('uri', 'register_method_set_common_urls')) {
-                $toCall = Configuration::get('uri', 'register_method_set_common_urls');
-                if ($toCall['static']) {
-                    if (!isset($toCall['method'])) {
-                        throw new \Exception('You need to determine which method will be executed.', 500);
-                    }
-
-                    //$toCall['class']::$toCall['method'];
-                } else {
-                    $obj = new $toCall['class']();
-                    if (isset($toCall['method']) && $toCall['method']) {
-                        $obj->$toCall['method'];
-                    }
-                }
-            }
-        }
-
-        return true;
     }
 
     /**
@@ -266,11 +232,11 @@ class TwigDriver implements TemplateDriverInterface
 
         // Alimenta as variáveis CONSTANTES
         $vars = [
-            'HOST'               => URI::buildURL(),
-            'CURRENT_PAGE_URI'   => URI::currentPageURI(),
-            'SYSTEM_NAME'        => Kernel::systemName(),
-            'SYSTEM_VERSION'     => Kernel::systemVersion(),
-            'PROJECT_CODE_NAME'  => Kernel::projectCodeName(),
+            'HOST' => URI::buildURL(),
+            'CURRENT_PAGE_URI' => URI::currentPageURI(),
+            'SYSTEM_NAME' => Kernel::systemName(),
+            'SYSTEM_VERSION' => Kernel::systemVersion(),
+            'PROJECT_CODE_NAME' => Kernel::projectCodeName(),
             'ACTIVE_ENVIRONMENT' => Kernel::environment(),
         ];
 
@@ -379,7 +345,7 @@ class TwigDriver implements TemplateDriverInterface
      * Registers custom functions or methods as template plugins.
      *
      * @param mixed        $type        defines the type of the plugin.
-     * @param strin        $name        defines the name of the plugin.
+     * @param string       $name        defines the name of the plugin.
      * @param string|array $callback    defines the callback.
      * @param mixed        $cacheable
      * @param mixed        $cache_attrs
@@ -400,7 +366,7 @@ class TwigDriver implements TemplateDriverInterface
      */
     public function clearAssign($var)
     {
-        unset($this->tplVars[$var]);
+        unset($this->templateVars[$var]);
     }
 
     /**

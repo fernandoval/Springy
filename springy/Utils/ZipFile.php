@@ -1,30 +1,32 @@
 <?php
-/**	\file
- *  Springy.
+
+/**
+ * Classe para geração de arquivos ZIP.
  *
- *  \brief		Classe para geração de arquivos ZIP.
- *  \copyright	Copyright (c) 2007-2016 Fernando Val
- *  \author		(c) 2003 by Pascal Rehfeldt - Pascal@Pascal-Rehfeldt.com, under license GNU General Public License (Version 2, June 1991)
- *  \author		Fernando Val - fernando.val@gmail.com
- *  \warning	Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version	0.3.0.11
- *  \ingroup	framework
+ * Classe baseada no trabalho de Pascal Rehfeldt
+ * under license GNU General Public License (Version 2, June 1991)
+ *
+ * @copyright 2003 Pascal Rehfeldt
+ * @copyright 2016 Fernando Val
+ * @author    Pascal Rehfeldt <Pascal@Pascal-Rehfeldt.com>
+ * @author    Fernando Val <fernando.val@gmail.com>
+ *
+ * @version   0.3.12
+ *
+ * @deprecated 4.5.0
  */
 
 namespace Springy\Utils;
 
+use Springy\DeepDir;
+
 /**
- *  \brief Classe para geração de arquivos ZIP.
+ * Classe para geração de arquivos ZIP.
  *
- *  Esta classe foi baseada no excelente trabalho de Pascal Rehfeldt.\n
- *  Conversão para PHP 5, melhorias, documentação e adaptação por Fernando Val.
+ * Esta classe foi baseada no excelente trabalho de Pascal Rehfeldt.
+ * Conversão para PHP 5, melhorias, documentação e adaptação por Fernando Val.
  *
- *  \copyright (c) 2003 by Pascal Rehfeldt with changes by Fernando Val
- *  \copyright Under license GNU General Public License (Version 2, June 1991)
- *  \author Pascal@Pascal-Rehfeldt.com
- *  \author Fernando Val - fernando.val@gmail.com
- *
- *  You can use ZIPlib to add different resources to a ZIP file.
+ * You can use ZIPlib to add different resources to a ZIP file.
  */
 class ZipFile
 {
@@ -37,9 +39,6 @@ class ZipFile
     private $pathToFPDF = null;
     private $root_path = '';
 
-    /**
-     *	\brief Construtor da classe.
-     */
     public function __construct($output_filename = 'archive.zip', $root_path = '')
     {
         $this->output_filename = $output_filename;
@@ -48,7 +47,7 @@ class ZipFile
     }
 
     /**
-     *	\brief Troca a estensão de um arquivo.
+     * Troca a estensão de um arquivo.
      */
     private function replaceSuffix($file, $suffix = 'pdf')
     {
@@ -64,7 +63,7 @@ class ZipFile
     }
 
     /**
-     *	\brief Converte uma data/hora no formato UNIX para o formato DOS.
+     * Converte uma data/hora no formato UNIX para o formato DOS.
      */
     private function unix2DosTime($unixtime = 0)
     {
@@ -84,7 +83,7 @@ class ZipFile
     }
 
     /**
-     *	\brief Pega o conteúdo de um diretório.
+     * Pega o conteúdo de um diretório.
      */
     private function getDirContent($dirName = './')
     {
@@ -102,14 +101,14 @@ class ZipFile
             // $dir = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($dirName), \RecursiveIteratorIterator::LEAVES_ONLY);
             // $arr = array();
             // foreach($dir as $name => $object){
-                // $arr[] = $name;
+            //     $arr[] = $name;
             // }
             // return $arr;
         }
     }
 
     /**
-     *	\brief Lê o conteúdo de um arquivo.
+     * Lê o conteúdo de um arquivo.
      */
     private function readFile($file)
     {
@@ -126,12 +125,12 @@ class ZipFile
     }
 
     /**
-     *	\brief Monta o conteúdo do ZIP.
+     * Monta o conteúdo do ZIP.
      */
     private function zipContent()
     {
-        $data = implode(null, $this->datasec);
-        $ctrldir = implode(null, $this->ctrl_dir);
+        $data = implode('', $this->datasec);
+        $ctrldir = implode('', $this->ctrl_dir);
 
         return $data .
                $ctrldir .
@@ -140,37 +139,37 @@ class ZipFile
                pack('v', count($this->ctrl_dir)) . // total # of entries overall
                pack('V', strlen($ctrldir)) . // size of central dir
                pack('V', strlen($data)) . // offset to start of central dir
-               "\x00\x00";                             // .zip file comment length
+               "\x00\x00"; // .zip file comment length
     }
 
     /**
-     *	\brief Adiciona o conteúdo de um diretório.
+     * Adiciona o conteúdo de um diretório.
      *
-     *	void addDirContent( \c resource dir_handle )
+     * void addDirContent(resource dir_handle)
      *
-     *	Para adicionar um diretório completo ao ZIP você pode usar esta função.
-     *	Não importa se há arquivos texto ou binários no diretório.
-     *	Esta função faz uso da classe DeepDir já adicionada a este framework.
+     * Para adicionar um diretório completo ao ZIP você pode usar esta função.
+     * Não importa se há arquivos texto ou binários no diretório.
+     * Esta função faz uso da classe DeepDir já adicionada a este framework.
      */
     public function addDirContent($dir = './')
     {
         foreach ($this->getDirContent($dir) as $input) {
-            $this->addFile(str_replace('.//', null, $input));
+            $this->addFile(str_replace('.//', '', $input));
         }
     }
 
     /**
-     *	\brief Adiciona um conteúdo como arquivo.
+     * Adiciona um conteúdo como arquivo.
      *
-     *	void addContentAsFile( \c string Content, \c string Filename [, \c int Time] )
+     * void addContentAsFile(string Content, string Filename [,int Time])
      *
-     *	Use addContentAsFile() para adicionar o conteúdo de um arquivo para seu ZIP.
-     *	O conteúdo do arquivo precisa estar em um \c string.
+     * Use addContentAsFile() para adicionar o conteúdo de um arquivo para seu ZIP.
+     * O conteúdo do arquivo precisa estar em um \c string.
      *
-     *	Esta funcão é muito útil para adicionar conteúdo oriundo de um campo BLOB de uma
-     *	base de dados.
+     * Esta funcão é muito útil para adicionar conteúdo oriundo de um campo BLOB de uma
+     * base de dados.
      *
-     *	Para adicionar um arquivo completo, você deve usar a função addFile().
+     * Para adicionar um arquivo completo, você deve usar a função addFile().
      */
     public function addContentAsFile($data, $name, $time = 0)
     {
@@ -251,12 +250,12 @@ class ZipFile
     }
 
     /**
-     *	\brief Adiciona o conteúdo de um arquivo.
+     * Adiciona o conteúdo de um arquivo.
      *
-     *	void addFile( \c resource Filename )
+     * void addFile(resource Filename)
      *
-     *	addFile() pega um arquivo, lê seu conteúdo e o adiciona ao seu ZIP.
-     *	Esta função pode ler arquivos texto e binários.
+     * addFile() pega um arquivo, lê seu conteúdo e o adiciona ao seu ZIP.
+     * Esta função pode ler arquivos texto e binários.
      */
     public function addFile($file)
     {
@@ -266,16 +265,16 @@ class ZipFile
     }
 
     /**
-     *	\brief Adiciona um arquivo convertendo seu conteúdo para PDF.
+     * Adiciona um arquivo convertendo seu conteúdo para PDF.
      *
-     *	\note Esta função foi omitira propositadamente até que a classe FPDF que é utilizada por ela
-     *	seja adicionada ao framework
+     * Esta função foi omitira propositadamente até que a classe FPDF que é utilizada por ela
+     * seja adicionada ao framework
      *
-     *	void addFileAsPDF( \c resource file_handle[, \c string title[, \c string autor]] )
+     * void addFileAsPDF(resource file_handle[, string title[, string autor]])
      *
-     *	Esta função adiciona um arquivo texto (ASCII) como um PDF ao ZIP.
+     * Esta função adiciona um arquivo texto (ASCII) como um PDF ao ZIP.
      *
-     *	\note Arquivos binários não são suportados por esta função.
+     * Arquivos binários não são suportados por esta função.
      */
     public function addFileAsPDF($file, $title = 'PDF File', $author = 'Anonymous')
     {
@@ -298,7 +297,7 @@ class ZipFile
 
             $this->addContentAsFile($pdf->getBuffer(), $this->replaceSuffix($file));
         } else {
-            $filecontent = implode(null, file($file));
+            $filecontent = implode('', file($file));
 
             $content .= '********************************************' . "\n";
             $content .= '*                                          *' . "\n";
@@ -320,7 +319,7 @@ class ZipFile
     }
 
     /**
-     *	\brief Salva o arquivo ZIP.
+     * Salva o arquivo ZIP.
      */
     public function save($path = '')
     {
@@ -341,7 +340,7 @@ class ZipFile
     }
 
     /**
-     *	\brief Envia o arquivo para o browser do usuário sem salvá-lo no disco.
+     * Envia o arquivo para o browser do usuário sem salvá-lo no disco.
      */
     public function download()
     {

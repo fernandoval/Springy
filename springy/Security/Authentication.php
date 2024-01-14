@@ -102,7 +102,7 @@ class Authentication
      *
      * @return bool
      */
-    public function attempt($login, $password, $remember = false, $saveSession = true): bool
+    public function attempt(string $login, string $password, bool $remember = false, bool $saveSession = true): bool
     {
         if ($this->driver->isValid($login, $password)) {
             if ($saveSession) {

@@ -1,43 +1,46 @@
 <?php
-/** \file
- *  Springy.
+
+/**
+ * Standard hasher interface.
  *
- *  \brief      Interface para padronizar os geradores de hashes.
- *  \copyright  Copyright (c) 2007-2016 Fernando Val
- *  \author     Allan Marques - allan.marques@ymail.com
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.1.1
- *  \ingroup    framework
+ * @copyright 2016 Fernando Val
+ * @author    Allan Marques <allan.marques@ymail.com>
+ * @author    Fernando Val <fernando.val@gmail.com>
+ *
+ * @version   0.2.0
  */
 
 namespace Springy\Security;
 
-/**
- * \brief Interface para padronizar o gerador de hashes.
- */
 interface HasherInterface
 {
     /**
-     *  \brief Cria e retorna a string com o hash gerado da string passada por parâmetro.
-     *  \param [in] (string) $stringToHash - string para gerar o hash.
-     *  \param [in] (string) $times - numero de vezes para rodar o algorítmo.
-     *  \return (string).
+     * Makes and returns the hash string.
+     *
+     * @param string $stringToHash
+     * @param int    $times
+     *
+     * @return string
      */
     public function make($stringToHash, $times);
 
     /**
-     *  \brief Verifica se a string equivale ao hash.
-     *  \param [in] (string) $stringToCHeck - String para comparar.
-     *  \param [in] (string) $hash - Hash para comparação.
-     *  \return (bool).
+     * Checks the string against the hash.
+     *
+     * @param string $stringToCheck
+     * @param string $hash
+     *
+     * @return bool
      */
-    public function verify($stringToCheck, $hash);
+    public function verify(string $stringToCheck, string $hash);
 
     /**
-     *  \brief Verifica se a string necessita ser criptografada novamente.
-     *  \param [in] (string) $hash - String para verificar.
-     *  \param [in] (string) $times - Quantas vezes o hash deveria ter sido rodado.
-     *  \return (bool).
+     * Checks if the string needs to be re-encrypted.
+     *
+     * @param string $hash
+     * @param int    $times
+     *
+     * @return bool
      */
     public function needsRehash($hash, $times);
 }

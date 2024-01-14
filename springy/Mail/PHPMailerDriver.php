@@ -1,33 +1,36 @@
 <?php
-/**	\file
- *  Springy.
+
+/**
+ * Driver for use with PHPMaier class.
  *
- *  \brief      Class driver for use with PHPMailer class.
- *  \copyright  ₢ 2007-2016 Fernando Val
- *  \author     Fernando Val - fernando.val@gmail.com
- *  \see        https://github.com/PHPMailer/PHPMailer
- *  \version    1.1.0.7
- *  \ingroup    framework
+ * @copyright 2016 Fernando Val
+ * @author    Fernando Val <fernando.val@gmail.com>
+ *
+ * @see       https://github.com/PHPMailer/PHPMailer
+ *
+ * @version    1.2.1
  */
 
 namespace Springy\Mail;
 
+use PHPMailer\PHPMailer\PHPMailer;
 use Springy\Configuration;
 use Springy\Kernel;
 
 /**
- *  \brief Driver class for sent mail using PHPMailer class.
+ * Driver class for use with PHPMaier.
  *
- *  \note This classe is a driver used by Springy\Mail classe.
- *        Do not use it directly.
+ * Note: This classe is a driver used by Springy\Mail classe.
+ *       Do not use it directly.
  */
 class PHPMailerDriver implements MailDriverInterface
 {
     private $mailObj = null;
 
     /**
-     *  \brief Constructor method
-     *  \param $cfg - array with de configuration.
+     * Constructor method.
+     *
+     * @param array $cfg configurations array.
      */
     public function __construct($cfg)
     {
@@ -35,7 +38,7 @@ class PHPMailerDriver implements MailDriverInterface
             throw new \Exception('Mail configuration \'protocol\' undefined');
         }
 
-        $this->mailObj = new \PHPMailer();
+        $this->mailObj = new PHPMailer();
         $this->mailObj->CharSet = Kernel::charset();
 
         if ($cfg['protocol'] == 'smtp') {
@@ -61,13 +64,19 @@ class PHPMailerDriver implements MailDriverInterface
         }
 
         if (Configuration::get('mail', 'errors_go_to')) {
-            $this->Sender = Configuration::get('mail', 'errors_go_to');
+            $this->mailObj->Sender = Configuration::get('mail', 'errors_go_to');
         }
+
         $this->mailObj->addCustomHeader('Errors-To', Configuration::get('mail', 'errors_go_to'));
     }
 
     /**
-     *  \brief Add a standard email message header.
+     * Adds a standard email message header.
+     *
+     * @param string $header
+     * @param string $value
+     *
+     * @return void
      */
     public function addHeader($header, $value)
     {
@@ -75,10 +84,12 @@ class PHPMailerDriver implements MailDriverInterface
     }
 
     /**
-     *  \brief Add an address to 'To' field.
+     * Adds an address to 'To' field.
      *
-     *  \param $email - the email address
-     *  \param $name - the name of the person (optional)
+     * @param string $email the email address.
+     * @param string $name  the name of the person (optional)
+     *
+     * @return void
      */
     public function addTo($email, $name = '')
     {
@@ -86,10 +97,12 @@ class PHPMailerDriver implements MailDriverInterface
     }
 
     /**
-     *  \brief Add an address to 'BCC' field.
+     * Adds an address to 'BCC' field.
      *
-     *  \param $email - the email address
-     *  \param $name - the name of the person (optional)
+     * @param string $email the email address.
+     * @param string $name  the name of the person (optional).
+     *
+     * @return void
      */
     public function addBCC($email, $name = '')
     {
@@ -97,10 +110,12 @@ class PHPMailerDriver implements MailDriverInterface
     }
 
     /**
-     *  \brief Add an address to 'CC' field.
+     * Adds an address to 'CC' field.
      *
-     *  \param $email - the email address
-     *  \param $name - the name of the person (optional)
+     * @param string $email the email address.
+     * @param string $name  the name of the person (optional).
+     *
+     * @return void
      */
     public function addCC($email, $name = '')
     {
@@ -108,12 +123,14 @@ class PHPMailerDriver implements MailDriverInterface
     }
 
     /**
-     *  \brief Add a file to be attached to the e-mail.
+     * Adds a file to be attached to the e-mail.
      *
-     *  \param $path - full pathname to the attachment
-     *  \param $name - override the attachment name (optional)
-     *  \param $type - MIME type/file extension type (optional)
-     *  \param $encoding - file enconding (optional)
+     * @param string $path     full pathname to the attachment.
+     * @param string $name     override the attachment name (optional).
+     * @param string $type     MIME type/file extension type (optional).
+     * @param string $encoding file enconding (unused).
+     *
+     * @return void
      */
     public function addAttachment($path, $name = '', $type = '', $encoding = 'base64')
     {
@@ -121,9 +138,13 @@ class PHPMailerDriver implements MailDriverInterface
     }
 
     /**
-     *  \brief Add a category to the e-mail.
+     * Throws Exception because this method is not supported by PHPMailer.
      *
-     *  \param $category - the category
+     * @param string $category the category.
+     *
+     * @throws Exception
+     *
+     * @return void
      */
     public function addCategory($category)
     {
@@ -131,20 +152,12 @@ class PHPMailerDriver implements MailDriverInterface
     }
 
     /**
-     *  \brief Set the mail subject.
+     * Sets the 'From' field.
      *
-     *  \param $subject - the subject text
-     */
-    public function setSubject($subject)
-    {
-        $this->mailObj->Subject = $subject;
-    }
-
-    /**
-     *  \brief Set the 'From' field.
+     * @param string $email the email address.
+     * @param string $name  the name of the person (optional).
      *
-     *  \param $email - the email address
-     *  \param $name - the name of the person (optional)
+     * @return void
      */
     public function setFrom($email, $name = '')
     {
@@ -152,10 +165,24 @@ class PHPMailerDriver implements MailDriverInterface
     }
 
     /**
-     *  \brief Set the message bo.
+     * Sets the mail subject.
      *
-     *  \param $body - HTML ou text message body
-     *  \param $html - set true if body is HTML ou false if plain text
+     * @param string $subject the subject text.
+     *
+     * @return void
+     */
+    public function setSubject($subject)
+    {
+        $this->mailObj->Subject = $subject;
+    }
+
+    /**
+     * Adds message content body.
+     *
+     * @param string $body HTML ou text message body.
+     * @param bool   $html set true if body is HTML ou false if plain text.
+     *
+     * @return void
      */
     public function setBody($body, $html = true)
     {
@@ -164,7 +191,11 @@ class PHPMailerDriver implements MailDriverInterface
     }
 
     /**
-     *	\brief Set the alternative plain-text message body for old message readers.
+     * Sets the alternative plain-text message body for old message readers.
+     *
+     * @param string $text
+     *
+     * @return void
      */
     public function setAlternativeBody($text)
     {
@@ -172,7 +203,13 @@ class PHPMailerDriver implements MailDriverInterface
     }
 
     /**
-     *  \brief Set a template for this email.
+     * Throws Exception because this method is not supported by PHPMailer.
+     *
+     * @param string $name the id of the template.
+     *
+     * @throws Exception
+     *
+     * @return void
      */
     public function setTemplate($name)
     {
@@ -180,7 +217,14 @@ class PHPMailerDriver implements MailDriverInterface
     }
 
     /**
-     *  \brief Add value to a template variable.
+     * Throws Exception because this method is not supported by PHPMailer.
+     *
+     * @param string $name  name of the template variable.
+     * @param string $value the value.
+     *
+     * @throws Exception
+     *
+     * @return void
      */
     public function addTemplateVar($name, $value)
     {
@@ -188,8 +232,9 @@ class PHPMailerDriver implements MailDriverInterface
     }
 
     /**
-     *  \brief Send the mail message
-     *  \return The error message or a empty string if success.
+     * Sends the mail message.
+     *
+     * @return string The error message or a empty string if success.
      */
     public function send()
     {

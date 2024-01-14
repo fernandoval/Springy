@@ -2,12 +2,12 @@
 /**
  * Container class for text messages.
  *
- * @copyright 2014-2018 Fernando Val
+ * @copyright 2014 Fernando Val
  * @author    Allan Marques <allan.marques@ymail.com>
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   0.2.0.4
+ * @version   0.2.5
  */
 
 namespace Springy\Utils;
@@ -115,7 +115,7 @@ class MessageContainer implements ArrayAccess
      * @param string $key identification key.
      * @param string $msg the message.
      *
-     * @return Springy\Utils\MessageContainer
+     * @return self
      */
     public function add($key, $msg)
     {
@@ -232,46 +232,22 @@ class MessageContainer implements ArrayAccess
         return $format;
     }
 
-    /**
-     * An alias for 'has()'.
-     *
-     * @see has
-     * @deprecated 0.3
-     */
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return $this->has($offset);
     }
 
-    /**
-     * An alias for 'get()'.
-     *
-     * @see get
-     * @deprecated 0.3
-     */
-    public function offsetGet($offset)
+    public function offsetGet($offset): mixed
     {
         return $this->get($offset);
     }
 
-    /**
-     * An alias for 'add()'.
-     *
-     * @see add
-     * @deprecated 0.3
-     */
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         $this->add($offset, $value);
     }
 
-    /**
-     * An alias for 'forget()'.
-     *
-     * @see forget
-     * @deprecated 0.3
-     */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         $this->forget($offset);
     }

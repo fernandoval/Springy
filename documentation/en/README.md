@@ -60,7 +60,7 @@ The Springy Framework uses some pre-defined configuration files like **db**, **m
 
 All other configuration files are used only by your application.
 
-- **[system](/documentation/en/system-conf.md)**
+- **[system](/documentation/en/conf/system.md)**
 
 ## Models
 

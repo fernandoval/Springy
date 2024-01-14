@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Relational database access class.
  *
@@ -8,12 +9,14 @@
  * @author    Allan Marques <allan.marques@ymail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   1.9.0.33
+ * @version   1.10.1
  */
 
 namespace Springy;
 
+use Exception;
 use Springy\Core\Debug;
+use Springy\Exceptions\SpringyException;
 
 /**
  * Relational database access class.
@@ -101,7 +104,13 @@ class DB
             return $this->roundRobinConnect($database, $conf);
         }
 
-        $pdoConf = [];
+        $pdoConf = [
+            \PDO::ATTR_CASE => \PDO::CASE_NATURAL,
+            // \PDO::ATTR_EMULATE_PREPARES => false,
+            \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
+            \PDO::ATTR_ORACLE_NULLS => \PDO::NULL_NATURAL,
+            \PDO::ATTR_STRINGIFY_FETCHES => false,
+        ];
         if ($conf['database_type'] == 'mysql') {
             $pdoConf[\PDO::MYSQL_ATTR_INIT_COMMAND] = 'SET NAMES \'' . ($conf['charset'] ?? 'UTF8') . '\'';
         }
@@ -111,13 +120,14 @@ class DB
         }
 
         /*
-         * A variável abaixo é setada pois caso a conexão com o banco falhe, o callback de erro será chamado e a variável já estará setada.
+         * A variável abaixo é setada pois caso a conexão com o banco falhe, o callback de erro será chamado e a
+         * variável já estará setada.
          * Caso a conexão seja feita com sucesso, a variavel é removida.
          */
         self::$conErrors[$database] = true;
 
         if (!$conf['host_name'] || !$conf['database']) {
-            $this->reportError('Hostname / Database not defined.');
+            $this->reportError('Hostname or database not defined.');
         }
 
         $retries = $conf['retries'] ?? 3;
@@ -144,9 +154,12 @@ class DB
                 }
 
                 $callers = debug_backtrace();
-                if (!isset($callers[1]) || $callers[1]['class'] != 'Springy\Errors' || $callers[1]['function'] != 'sendReport') {
-                    $errors = new Errors();
-                    $errors->handler((int) $error->getCode(), $error->getMessage(), $error->getFile(), $error->getLine(), null);
+                if (
+                    !isset($callers[1])
+                    || $callers[1]['class'] != 'Springy\Errors'
+                    || $callers[1]['function'] != 'sendReport'
+                ) {
+                    (new Errors())->process($error);
                 }
             }
         } while (!isset(self::$conectionIds[$database]));
@@ -169,8 +182,8 @@ class DB
         // Lê as configurações de controle de round robin
         $roundRobin = Configuration::get('db', 'round_robin');
 
-        // Efetua controle de round robin por Memcached
         if ($roundRobin['type'] == 'memcached') {
+            // Efetua controle de round robin por Memcached
             $memCached = new \Memcached();
             $memCached->addServer($roundRobin['server_addr'], $roundRobin['server_port']);
 
@@ -183,13 +196,12 @@ class DB
             }
 
             $memCached->set('dbrr_' . $database, $actual, 0);
-        }
-        // Efetua controle de round robin em arquivo
-        elseif ($roundRobin['type'] == 'file') {
-            // Define o próximo servidor do pool
-            if ((!file_exists($roundRobin['server_addr'] . DIRECTORY_SEPARATOR . 'dbrr_' . $database)) || !($actual = (int) file_get_contents($roundRobin['server_addr'] . DIRECTORY_SEPARATOR . 'dbrr_' . $database))) {
-                $actual = 0;
-            }
+        } elseif ($roundRobin['type'] == 'file') {
+            // Efetua controle de round robin em arquivo
+            $actual = file_exists($roundRobin['server_addr'] . DS . 'dbrr_' . $database)
+                ? (int) file_get_contents($roundRobin['server_addr'] . DS . 'dbrr_' . $database)
+                : 0;
+
             if (++$actual >= count($dbconf['host_name'])) {
                 $actual = 0;
             }
@@ -201,7 +213,7 @@ class DB
 
         // Tenta conectar ao banco e retorna o resultado
         self::$conectionIds[$database] = [
-            'PDO'    => $this->connect($dbconf['host_name'][$actual]),
+            'PDO' => $this->connect($dbconf['host_name'][$actual]),
             'dbName' => $dbconf['host_name'][$actual],
         ];
 
@@ -217,7 +229,9 @@ class DB
      */
     public static function connected($database = 'default')
     {
-        return !isset(self::$conErrors[$database]) && isset(self::$conectionIds[$database]) && self::$conectionIds[$database]['PDO'];
+        return !isset(self::$conErrors[$database])
+            && isset(self::$conectionIds[$database])
+            && self::$conectionIds[$database]['PDO'];
     }
 
     /**
@@ -228,7 +242,7 @@ class DB
     public function disconnect()
     {
         if (static::connected($this->database)) {
-            ///	a instância de conexão é estática, para não criar uma nova a cada nova instância da classe
+            // a instância de conexão é estática, para não criar uma nova a cada nova instância da classe
             unset(self::$conectionIds[$this->database]['PDO']);
             $this->dataConnect = false;
         }
@@ -253,101 +267,38 @@ class DB
     }
 
     /**
-     * Disables the error report.
-     *
-     * @deprecated 1.9.0.33
-     *
-     * @return void
-     */
-    public function disableReportError()
-    {
-        throw new \Exception('Deprecated method');
-    }
-
-    /**
-     * Enables the error report.
-     *
-     * @deprecated 1.9.0.33
-     *
-     * @return void
-     */
-    public function enableReportError()
-    {
-        throw new \Exception('Deprecated method');
-    }
-
-    /**
      * Sends the error occurrency to the webmaster.
      *
-     * @param string       $msg
-     * @param PDOException $exception
+     * @param string $msg
      *
      * @return void
      */
-    private function reportError($msg, \PDOException $exception = null)
+    private function reportError($msg)
     {
         if (!$this->reportError) {
             return;
         }
 
-        // Read the database access configurations
-        $conf = Configuration::get('db', $this->database);
-
-        $sqlError = 'Still this connection was not executed some instruction SQL using.';
-        if (isset($this->lastQuery)) {
-            if (PHP_SAPI === 'cli' || defined('STDIN')) {
-                $sqlError = htmlentities((is_object($this->lastQuery) ? $this->lastQuery->__toString() : $this->lastQuery)) . "\n" . 'Parametros: ' . Debug::print_rc($this->lastValues);
-            } else {
-                $sqlError = '<pre>' . htmlentities((is_object($this->lastQuery) ? $this->lastQuery->__toString() : $this->lastQuery)) . '</pre><br /> Parametros:<br />' . Debug::print_rc($this->lastValues);
-            }
-        }
-
         $errorInfo = [0, 0, 'Unknown error'];
+
         if ($this->resSQL) {
             $errorInfo = $this->resSQL->errorInfo();
         } elseif ($this->dataConnect) {
             $errorInfo = $this->dataConnect->errorInfo();
         }
 
-        $htmlError = '<tr>'
-            . '  <td style="background-color:#66C; color:#FFF; font-weight:bold; padding-left:10px; padding:3px 2px" colspan="2">DBMS informations</td>'
-            . '</tr>'
-            . '<tr>'
-            . '  <td valign="top"><label style="font-weight:bold">Host:</label></td>'
-            . '  <td>' . $conf['host_name'] . '</td>'
-            . '</tr>'
-            . '<tr style="background:#efefef">'
-            . '  <td valign="top"><label style="font-weight:bold">User:</label></td>'
-            . '  <td><span style="background:#efefef">' . ($conf['user_name'] ?? 'not set') . '</span></td>'
-            . '</tr>'
-            . '<tr>'
-            . '  <td valign="top"><label style="font-weight:bold">Password:</label></td>'
-            . '  <td>' . ($conf['password'] ?? 'not set') . '</td>'
-            . '</tr>'
-            . '<tr>'
-            . '  <td valign="top"><label style="font-weight:bold">DB:</label></td>'
-            . '  <td><span style="background:#efefef">' . ($conf['database'] ?? 'not set') . '</span></td>'
-            . '</tr>';
-        if (PHP_SAPI === 'cli' || defined('STDIN')) {
-            $htmlError = 'DBMS informations' . "\n"
-                . 'Host: ' . $conf['host_name'] . "\n"
-                . 'Login: ' . ($conf['user_name'] ?? 'not set') . "\n"
-                . 'Senha: ' . ($conf['password'] ?? 'not set') . "\n"
-                . 'DB: ' . ($conf['database'] ?? 'not set') . "\n";
-        }
-        unset($sqlError);
+        $dbt = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 1);
+        $file = $dbt[0]['file'];
+        $line = $dbt[0]['line'];
 
         // Send the report of error and kill the application
-        $errors = new Errors();
-        $errors->sendReport(
-            '<span style="color:#FF0000">' . $msg . '</span> - ' .
-            '(' . $errorInfo[1] . ') ' . $errorInfo[2] .
-            ($exception ? '<br />' . $exception->getMessage() : '') .
-            '<br /><pre>' . $this->lastQuery . '</pre><br />Values: ' .
-            Debug::print_rc($this->lastValues),
-            500,
+        (new Errors())->sendReport(
             hash('crc32', $msg . $errorInfo[1] . $this->lastQuery), // error id
-            $htmlError
+            $msg . ' (' . $errorInfo[1] . ') ' . $errorInfo[2]
+            . ' - ' . $this->lastQuery . ' Values: '
+            . Debug::printRc($this->lastValues),
+            500,
+            new SpringyException($msg, E_USER_ERROR, null, $file, $line)
         );
     }
 
@@ -414,18 +365,6 @@ class DB
     }
 
     /**
-     * Rolls back all transactions.
-     *
-     * @deprecated 1.9.0.33
-     *
-     * @return void
-     */
-    public static function transactionAllRollBack()
-    {
-        throw new \Exception('Deprecated method');
-    }
-
-    /**
      * Executes a query.
      *
      * @param string   $sql
@@ -440,11 +379,18 @@ class DB
         $this->sqlErrorInfo = null;
         self::$sqlNum++;
 
-        // Verifica se está sendo usado o recurso de contagem de linhas encontrados da última consulta do MySQL e cria um comando único
-        if ((is_int($this->cacheExpires) || is_int($cacheLifeTime))
+        /*
+         * Verifica se está sendo usado o recurso de contagem de linhas
+         * encontrados da última consulta do MySQL e cria um comando único
+         */
+        if (
+            (is_int($this->cacheExpires) || is_int($cacheLifeTime))
             && strtoupper(substr(ltrim($sql), 0, 19)) == 'SELECT FOUND_ROWS()'
-            && strtoupper(substr(ltrim($this->lastQuery), 0, 7)) == 'SELECT ') {
-            $this->lastQuery = $sql . '; /* ' . md5(implode('//', array_merge([$this->lastQuery], $this->lastValues))) . ' */';
+            && strtoupper(substr(ltrim($this->lastQuery), 0, 7)) == 'SELECT '
+        ) {
+            $this->lastQuery = $sql . '; /* ' . md5(
+                implode('//', array_merge([$this->lastQuery], $this->lastValues))
+            ) . ' */';
         } else {
             $this->lastQuery = $sql;
         }
@@ -453,15 +399,23 @@ class DB
         $sql = null;
 
         // Recupera a configuração de cache
-        $dbcache = (Configuration::get('db', 'cache'));
+        $dbcache = Configuration::get('db', 'cache');
         // Limpa o que estiver em memória e tiver sido carregado de cache
         $this->cacheStatement = null;
         // Configuração de cache está ligada?
-        if (is_array($this->lastValues) && is_array($dbcache) && isset($dbcache['type']) && $dbcache['type'] == 'memcached') {
+        if (
+            is_array($this->lastValues)
+            && is_array($dbcache)
+            && isset($dbcache['type'])
+            && $dbcache['type'] == 'memcached'
+        ) {
             $cacheKey = md5(implode('//', array_merge([$this->lastQuery], $this->lastValues)));
             $this->resSQL = null;
             // O comando é um SELECT e é para guardar em cache?
-            if ((is_int($this->cacheExpires) || is_int($cacheLifeTime)) && strtoupper(substr(ltrim($this->lastQuery), 0, 7)) == 'SELECT ') {
+            if (
+                (is_int($this->cacheExpires) || is_int($cacheLifeTime))
+                && strtoupper(substr(ltrim($this->lastQuery), 0, 7)) == 'SELECT '
+            ) {
                 try {
                     $mc = new \Memcached();
                     $mc->addServer($dbcache['server_addr'], $dbcache['server_port']);
@@ -480,7 +434,7 @@ class DB
             if (($this->resSQL = $this->dataConnect->prepare($this->lastQuery)) === false) {
                 $this->sqlErrorCode = $this->resSQL->errorCode();
                 $this->sqlErrorInfo = $this->resSQL->errorInfo();
-                $this->reportError('Can\'t prepare query.');
+                $this->reportError('Error preparing query.');
 
                 return false;
             }
@@ -492,16 +446,16 @@ class DB
                     switch (gettype($where)) {
                         case 'boolean':
                             $param = \PDO::PARAM_BOOL;
-                        break;
+                            break;
                         case 'integer':
                             $param = \PDO::PARAM_INT;
-                        break;
+                            break;
                         case 'NULL':
                             $param = \PDO::PARAM_NULL;
-                        break;
+                            break;
                         default:
                             $param = \PDO::PARAM_STR;
-                        break;
+                            break;
                     }
 
                     if (is_numeric($key)) {
@@ -517,7 +471,7 @@ class DB
             if ($this->resSQL->execute() === false) {
                 $this->sqlErrorCode = $this->resSQL->errorCode();
                 $this->sqlErrorInfo = $this->resSQL->errorInfo();
-                $this->reportError('Can\'t execute query.');
+                $this->reportError('Error executing query.');
 
                 return false;
             }
@@ -525,12 +479,22 @@ class DB
             // Configuração de cache está ligada?
             if (is_array($dbcache) && isset($dbcache['type']) && $dbcache['type'] == 'memcached') {
                 // O comando é um SELECT e é para guardar em cache?
-                if ((is_int($this->cacheExpires) || is_int($cacheLifeTime)) && strtoupper(substr(ltrim($this->lastQuery), 0, 7)) == 'SELECT ') {
+                if (
+                    (is_int($this->cacheExpires) || is_int($cacheLifeTime))
+                    && strtoupper(substr(ltrim($this->lastQuery), 0, 7)) == 'SELECT '
+                ) {
                     try {
                         $mc = new \Memcached();
                         $mc->addServer($dbcache['server_addr'], $dbcache['server_port']);
                         $this->cacheStatement = $this->fetchAll();
-                        $mc->set('cacheDB_' . $cacheKey, $this->cacheStatement, min(is_int($cacheLifeTime) ? $cacheLifeTime : 86400, is_int($this->cacheExpires) ? $this->cacheExpires : 86400));
+                        $mc->set(
+                            'cacheDB_' . $cacheKey,
+                            $this->cacheStatement,
+                            min(
+                                is_int($cacheLifeTime) ? $cacheLifeTime : 86400,
+                                is_int($this->cacheExpires) ? $this->cacheExpires : 86400
+                            )
+                        );
                         unset($mc);
                         $this->resSQL->closeCursor();
                         $this->resSQL = null;
@@ -546,7 +510,7 @@ class DB
 
             debug(
                 '<pre>' . $this->lastQuery . '</pre><br />Values: ' .
-                Debug::print_rc($this->lastValues) . '<br />' .
+                Debug::printRc($this->lastValues) . '<br />' .
                 'Affected Rows: ' . $this->affectedRows() . '<br />' .
                 'DB: ' . ($conf['database'] ?? 'not set'),
                 'SQL #' . self::$sqlNum,
@@ -658,16 +622,6 @@ class DB
     }
 
     /**
-     * @deprecated 1.9.0.33
-     *
-     * @return void
-     */
-    public function num_rows()
-    {
-        throw new \Exception('Deprecated method');
-    }
-
-    /**
      * Returns all rows of the resultset.
      *
      * @param int $resultType
@@ -683,18 +637,6 @@ class DB
         }
 
         return false;
-    }
-
-    /**
-     * @deprecated 1.9.0.33
-     *
-     * @param int $resultType
-     *
-     * @return void
-     */
-    public function get_all($resultType = \PDO::FETCH_ASSOC)
-    {
-        throw new \Exception('Deprecated method');
     }
 
     /**
@@ -800,6 +742,8 @@ class DB
      * @param string $datetime Date and time in brazilian format (d/m/Y H:i:s)
      * @param bool   $flgtime
      *
+     * @deprecated 4.6.0
+     *
      * @return string
      */
     public static function castDateBrToDb($datetime, $flgtime = false)
@@ -815,6 +759,8 @@ class DB
      * @param string $datetime
      * @param bool   $flgtime
      * @param bool   $sec
+     *
+     * @deprecated 4.6.0
      *
      * @return string
      */
@@ -846,34 +792,33 @@ class DB
     }
 
     /**
-     * @deprecated 1.9.0.33
-     */
-    public static function dateToTime($dateTime)
-    {
-        throw new \Exception('Deprecated method');
-    }
-
-    /**
      * Converts a date string in DBMS ISO format to a long date string in brazilian portuguese.
      *
      * @param string $dataTimeStamp
+     *
+     * @deprecated 4.6.0
      *
      * @return string
      */
     public static function longBrazilianDate($dataTimeStamp)
     {
         $dateTime = static::makeDbDateTime($dataTimeStamp);
-        $mes = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+        $mes = [
+            'Janeiro',
+            'Fevereiro',
+            'Março',
+            'Abril',
+            'Maio',
+            'Junho',
+            'Julho',
+            'Agosto',
+            'Setembro',
+            'Outubro',
+            'Novembro',
+            'Dezembro',
+        ];
         $numMes = (int) date('m', $dateTime);
 
         return date('d', $dateTime) . ' de ' . $mes[--$numMes] . ' de ' . date('Y', $dateTime);
-    }
-
-    /**
-     * @deprecated 1.9.0.33
-     */
-    public static function dateToStr($dataTimeStamp)
-    {
-        throw new \Exception('Deprecated method');
     }
 }

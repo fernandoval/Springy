@@ -18,7 +18,7 @@ class DIContainerTest extends TestCase
 {
     private $data;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->data = [
             'key1' => 'value1',
@@ -57,6 +57,7 @@ class DIContainerTest extends TestCase
 
         //Forgeting
         $DI->forget('key4');
+        $this->expectException(InvalidArgumentException::class);
         $DI->param('key4');
     }
 
@@ -88,7 +89,8 @@ class DIContainerTest extends TestCase
 
         //With params
         $objectWithParam = $DI->make('object1', ['name', 'Jack']);
-        $this->assertObjectHasAttribute('name', $objectWithParam);
+        $this->assertIsObject($objectWithParam);
+        $this->assertTrue(property_exists($objectWithParam, 'name'));
         $this->assertEquals('Jack', $objectWithParam->name);
 
         //Array like
@@ -105,6 +107,7 @@ class DIContainerTest extends TestCase
 
         //Unbinding
         $DI->forget('object2');
+        $this->expectException(InvalidArgumentException::class);
         $DI->make('object2');
     }
 
@@ -122,7 +125,8 @@ class DIContainerTest extends TestCase
             return $someService;
         });
 
-        $this->assertObjectHasAttribute('someAttribute', $DI['some.service']);
+        $this->assertIsObject($DI['some.service']);
+        $this->assertTrue(property_exists($DI['some.service'], 'someAttribute'));
         $this->assertEquals('someValue', $DI['some.service']->someAttribute);
 
         $extended1 = $DI['some.service'];
@@ -164,6 +168,7 @@ class DIContainerTest extends TestCase
 
         //Forgeting
         $DI->forget('object4');
+        $this->expectException(InvalidArgumentException::class);
         $DI->shared('object4');
     }
 }

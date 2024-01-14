@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="System error">
+    <title>{systemName} v{sistemVersion} - Occurrence Errors</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+  </head>
+  <body>
+    <header class="navbar sticky-top navbar-expand-lg bg-body-tertiary">
+      <nav class="container-xxl bd-gutter flex-wrap flex-lg-nowrap" aria-label="Main navigation">
+        <a class="navbar-brand" href="">{systemName}</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a id="delete-selected" class="btn btn-sm btn-outline-dark d-none" href="">Delete selected</a>
+            </li>
+          </ul>
+          <a id="delete-all" class="btn btn-sm btn-outline-danger disabled" href="/_system_bug_solved_/all">Delete all</a>
+        </div>
+      </nav>
+    </header>
+
+    <div class="container-xxl">
+      <h1 class="text-center">System Errors</h1>
+
+      <table id="errors-list" class="table table-striped table-hover">
+        <thead>
+          <tr>
+            <th scope="col"></th>
+            <th scope="col">#</th>
+            <th scope="col">Error</th>
+            <th scope="col">Description</th>
+            <th scope="col">File</th>
+            <th scope="col">Line</th>
+            <th scope="col">Occurrences</th>
+          </tr>
+        </thead>
+        <tbody id="errors-table" role="button">
+          <template id="error-row">
+            <td><input type="checkbox"></td>
+            <td>{{error_code}}</td>
+            <td>{{description.name}}</td>
+            <td>{{description.message}}</td>
+            <td>{{description.file}}</td>
+            <td class="text-end">{{description.line}}</td>
+            <td class="text-end">{{occurrences}}</td>
+          </template>
+        </tbody>
+      </table>
+
+      <div id="error-viewer" class="d-none">
+        <template id="error-tpl">
+          <div class="card">
+            <div class="card-header">
+              <span class="badge text-bg-warning"> #{{error_code}} </span>
+              <span class="text-danger">{{description.name}}</span> - {{description.message}}
+              <button type="button" class="btn-close float-end" aria-label="Close"></button>
+            </div>
+            <div class="card-body">
+              <h5 class="card-title">
+                <a href="/_system_bug_solved_/{{error_code}}" class="btn btn-sm btn-danger float-end">Delete</a>
+              </h5>
+              <p class="card-text">
+                <span class="fw-bold">Error code:</span> <span class="text-secondary">{{details.error.code}}</span>
+              </p>
+              <p class="card-text">
+                <span class="fw-bold">Error message:</span> <span class="text-secondary">{{details.error.message}}</span>
+              </p>
+              <p class="card-text">
+                <span class="fw-bold">File:</span> <span class="text-secondary">{{details.error.file}}</span>
+              </p>
+              <p class="card-text">
+                <span class="fw-bold">Line:</span> <span class="text-secondary">{{details.error.line}}</span>
+              </p>
+              <p class="card-text">
+                <span class="fw-bold">Occurrences:</span> <span class="text-secondary">{{occurrences}}</span>
+              </p>
+            </div>
+          </div>
+
+          <div class="card mt-3">
+            <div class="card-header">System Information</div>
+            <div class="card-body">
+              <div class="row"><div class="col-2 fw-bold border-end">System:</div><div class="col">{{details.system.name}}</div></div>
+              <div class="row"><div class="col-2 fw-bold border-end">Date:</div><div class="col">{{details.system.timestamp}}</div></div>
+              <div class="row"><div class="col-2 fw-bold border-end">Execution time:</div><div class="col">{{details.system.exec_time}} secs</div></div>
+            </div>
+          </div>
+
+          <div class="card mt-3">
+            <div class="card-header">Request</div>
+            <div class="card-body">
+              <div class="row"><div class="col-2 fw-bold border-end">Host:</div><div class="col">{{details.request.host}}</div></div>
+              <div class="row"><div class="col-2 fw-bold border-end">URI:</div><div class="col">{{details.request.uri}}</div></div>
+              <div class="row"><div class="col-2 fw-bold border-end">Method:</div><div class="col">{{details.request.method}}</div></div>
+              <div class="row"><div class="col-2 fw-bold border-end">Query String:</div><div class="col">{{details.request.query_string}}</div></div>
+              <div class="row"><div class="col-2 fw-bold border-end">Protocol:</div><div class="col">{{details.request.protocol}}</div></div>
+              <div class="row"><div class="col-2 fw-bold border-end">Content-Type:</div><div class="col">{{details.request.content_type}}</div></div>
+            </div>
+          </div>
+
+          <div class="card mt-3">
+            <div class="card-header">Client Information</div>
+            <div class="card-body">
+              <div class="row"><div class="col-2 fw-bold border-end">Referrer:</div><div class="col">{{details.client.referer}}</div></div>
+              <div class="row"><div class="col-2 fw-bold border-end">Client IP:</div><div class="col">{{details.client.ip}}</div></div>
+              <div class="row"><div class="col-2 fw-bold border-end">Reverse:</div><div class="col">{{details.client.reverse}}</div></div>
+              <div class="row"><div class="col-2 fw-bold border-end">User agent:</div><div class="col">{{details.client.user_agent}}</div></div>
+            </div>
+          </div>
+
+          <div class="card mt-3">
+            <div class="card-header">Backtrace</div>
+            <ul class="list-group list-group-flush">
+              {{#each details.backtrace}}
+                <li class="list-group-item text-break">
+                  {{#if file}}
+                    <em class="font-monospace text-secondary">{{file}}</em>: <strong>{{line}}</strong><br>
+                  {{/if}}
+                  <span class="font-monospace">{{class}}{{type}}{{function}}()</span>
+                </li>
+              {{/each}}
+            </ul>
+          </div>
+
+          <div class="card mb-4 mt-3">
+            <div class="card-header">Additional Information</div>
+            <div class="card-body">
+              {{{details.additional}}}
+            </div>
+          </div>
+        </template>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+    <script type="module">
+      import Handlebars from 'https://cdn.jsdelivr.net/npm/handlebars@4.7.7/+esm';
+
+      const delAll = document.getElementById('delete-all');
+      const delSel = document.getElementById('delete-selected');
+      const tblBody = document.getElementById('errors-table');
+      const tblRow = Handlebars.compile(document.getElementById('error-row').innerHTML);
+      const errTpl = Handlebars.compile(document.getElementById('error-tpl').innerHTML);
+      const range = document.createRange();
+      const listing = document.getElementById('errors-list');
+      const viewer = document.getElementById('error-viewer');
+      const errorList = {errorsList};
+
+      function decodeOldDesc(error)
+      {
+        const el = range.createContextualFragment(error.description);
+        const typ = el.children[0] || null;
+        const msg = el.children[1] || error.description;
+        const fil = el.children[2] || null;
+        const lin = el.children[3] || null;
+
+        return {
+          name: typ.innerHTML,
+          message: msg.innerHTML,
+          file: fil.innerHTML,
+          line: lin.innerHTML,
+        };
+      }
+
+      function findError(id) {
+        return errorList.find(error => error.id == id);
+      }
+
+      function getDesc(error) {
+        if (typeof error.details === 'string') {
+          return decodeOldDesc(error);
+        }
+
+        return error.details.error;
+      }
+
+      function getDetails(error) {
+        if (typeof error.details === 'string') {
+          return {
+            additional: error.details.replaceAll(' collapse', '')
+          };
+        }
+
+        return error.details;
+      }
+
+      function showError(id) {
+        const error = errorList.find(err => err.id == id);
+
+        if (error === undefined) {
+          return;
+        }
+
+        delAll.classList.add('d-none');
+        delSel.classList.add('d-none');
+        listing.classList.add('d-none');
+        viewer.innerHTML = errTpl({
+          id: error.id,
+          error_code: error.error_code,
+          description: getDesc(error),
+          occurrences: error.occurrences,
+          details: getDetails(error),
+        });
+        viewer.classList.remove('d-none');
+      };
+
+      function showList() {
+        viewer.classList.add('d-none');
+        delAll.classList.remove('d-none');
+        delSel.classList.toggle('d-none', [...tblBody.querySelectorAll('input:checked')].length === 0);
+        listing.classList.remove('d-none');
+      }
+
+      tblBody.innerHTML = '';
+      errorList.forEach(error => {
+        const el = tblRow({
+          id: error.id,
+          error_code: error.error_code,
+          description: getDesc(error),
+          occurrences: error.occurrences,
+          details: error.details,
+        });
+        const row = document.createElement('tr');
+
+        row.innerHTML = el;
+        row.dataset.id = error.id;
+        tblBody.append(row);
+
+        delAll.classList.remove('disabled');
+      });
+
+      document.getElementsByClassName('navbar-brand')[0].addEventListener('click', evt => {
+        evt.preventDefault();
+        showList();
+      });
+
+      delSel.addEventListener('click', evt => {
+        const codes = [];
+
+        evt.preventDefault();
+
+        [...tblBody.querySelectorAll('input:checked')].forEach(
+          inp => codes.push(findError(inp.closest('tr').dataset.id).error_code)
+        );
+
+        location.href = '/_system_bug_solved_/' + codes.join(',');
+      });
+
+      tblBody.addEventListener('click', evt => {
+        if (evt.target.tagName === 'INPUT') {
+          delSel.classList.toggle('d-none', [...tblBody.querySelectorAll('input:checked')].length === 0);
+
+          return;
+        }
+
+        const id = evt.target.parentElement.dataset.id;
+
+        showError(id);
+      });
+
+      viewer.addEventListener('click', evt => {
+        if (evt.target.classList.contains('btn-close')) {
+          evt.preventDefault();
+          showList();
+        }
+      });
+    </script>
+    </body>
+</html>

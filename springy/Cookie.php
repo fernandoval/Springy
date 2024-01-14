@@ -8,7 +8,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   1.3.4
+ * @version   1.4.0
  */
 
 namespace Springy;
@@ -78,17 +78,6 @@ class Cookie
         setcookie($key, false, time() - 86400);
         // Unset key
         unset($_COOKIE[$key]);
-    }
-
-    /**
-     * Alias for delete() function.
-     *
-     * @deprecated
-     * @see delete.
-     */
-    public static function del($key)
-    {
-        self::delete($key);
     }
 
     /**
@@ -177,15 +166,17 @@ class Cookie
             $key = self::_scrubKey($key, true);
 
             // Store the cookie
-            return setcookie(
+            setcookie(
                 $key,
                 $value,
-                ($expire ? time() + $expire : 0),
+                $expire ? time() + $expire : 0,
                 $path,
                 $domain,
                 $secure,
                 $httponly
             );
+
+            return;
         }
 
         // Otherwise, throw an error

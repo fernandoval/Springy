@@ -42,8 +42,7 @@ The class has no properties you can access directly.
 |**getAllIgnoredSegments()**|*public static*|Return the array of ignored segments.|
 |**addSegment()**|*public static*|Add a segment to the end of segments array.|
 |**insertSegment()**|*public static*|Insert a segment in any position of the segments array.|
-|**_GET()**|*public static*|Return the value of a query string variable.|
-|**getParam()**|*public static*|An alias to _GET() method.|
+|**getParam()**|*public static*|Return the value of a query string variable.|
 |**getParams()**|*public static*|Return the array of query string variables.|
 |**requestMethod()**|*public static*|Return the request method string.|
 |**removeParam()**|*public static*|Remove a variable from the array of query string variables.|
@@ -221,24 +220,16 @@ The `$segment` parameter is an string with segment to be inserted.
     Springy\URI::insertSegment(0, 'test');
 ```
 
-### _GET()
-Return the value of a query string variable.
-```php
-    public static function _GET($var)
-```
-The `$var` parameter is the name of the query string variable desired.
-
-Returns the value of the variable or *false* if it does not exists.
-
 **Sample:**
 ```php
-    $var = Springy\URI::_GET('test');
+    $var = Springy\URI::getParam('test');
 ```
 
 ### getParam()
 Return the value of a query string variable.
 
-Is an alias to _GET() method.
+The `$var` parameter is the name of the query string variable desired.
+
 ```php
     public static function getParam($var)
 ```

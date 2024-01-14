@@ -1,15 +1,15 @@
 <?php
 
-/** \file
- *  Springy.
+/**
+ * Credit Card Validation.
  *
- *  \brief      Classe de validação de número de cartão de crédito.
- *  \copyright  Copyright (c) 2007-2016 Fernando Val
- *  \author     Daniel Convissor <danielc@analysisandsolutions.com>
- *  \author     Fernando Val <fernando.val@gmail.com>
- *  \author     Mauricio Bastos <mbastos@gmail.com>
- *  \version    1.1.2.1
- *  \ingroup    framework
+ * @copyright 2003 The Analysis and Solutions Company
+ * @copyright 2007 Fernando Val
+ * @author Daniel Convissor <danielc@analysisandsolutions.com>
+ * @author Fernando Val <fernando.val@gmail.com>
+ * @author Mauricio Bastos <mbastos@gmail.com>
+ *
+ * @deprecated 4.5.0
  */
 
 namespace Springy;
@@ -320,7 +320,7 @@ class CreditCardValidation
         } elseif (($this->CCVSNumberLeft >= 6360) && ($this->CCVSNumberLeft <= 6369)) {
             $this->CCVSType = 'ELO';
             $ShouldLength = 16;
-        } elseif (($this->CCVSNumberLeft == 5067)) {
+        } elseif ($this->CCVSNumberLeft == 5067) {
             $this->CCVSType = 'ELO';
             $ShouldLength = 16;
         } elseif (($this->CCVSNumberLeft6 == 438935) || ($this->CCVSNumberLeft6 == 451416) ||

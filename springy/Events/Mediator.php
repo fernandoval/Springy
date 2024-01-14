@@ -1,66 +1,82 @@
 <?php
-/** \file
- *  Springy.
+
+/**
+ * Event mediator.
  *
- *  \brief      Classe de intermediadora de administração de eventos.
- *  \copyright  Copyright (c) 2007-2016 Fernando Val
- *  \author     Allan Marques - allan.marques@ymail.com
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.2.2
- *  \ingroup    framework
+ * @copyright 2015 Fernando Val
+ * @author    Fernando Val <fernando.val@gmail.com>
+ * @author    Allan Marques <allan.marques@ymail.com>
+ *
+ * @version 0.3.1
  */
 
 namespace Springy\Events;
 
+use Closure;
 use Springy\Container\DIContainer;
 
 /**
- * \brief Classe de intermediadora de administração de eventos.
+ * Mediator classe.
  */
 class Mediator
 {
-    ///Container para injeção de dependência de objetos
+    /** @var DIContainer */
     protected $container;
 
-    ///Array que armazena os handlers registrados
+    /** @var array registered handlers */
     protected $handlers;
-    ///Array que armazena os handlers masters (wildcards)
+    /** @var array handlers masters (wildcards) */
     protected $masterHandlers;
-    ///Array que armazena todos os handlers ordenados por ordem de prioridade
+    /** @var array handlers ordered by priority */
     protected $orderedHandlers;
-    ///Armazena o valor do evento atualmente sendo disparado
+    /** @var string|null event name been fired */
     protected $currentEvent;
 
     /**
-     * \brief Construtor da classe
-     * \param {in} (DIContainer) $container - container que fará o gerenciamento das dependências.
+     * Constructor.
+     *
+     * @param DIContainer|null $container
      */
-    public function __construct(DIContainer $container = null)
+    public function __construct(?DIContainer $container = null)
     {
-        $this->container = $container ?: new DIContainer();
+        $this->container = $container ?? new DIContainer();
         $this->handlers = [];
         $this->masterHandlers = [];
         $this->orderedHandlers = [];
     }
 
-    public function setContainer(DIContainer $container)
+    /**
+     * Sets container.
+     *
+     * @param DIContainer $container
+     *
+     * @return void
+     */
+    public function setContainer(DIContainer $container): void
     {
         $this->container = $container;
     }
 
-    public function getContainer()
+    /**
+     * Gets the container.
+     *
+     * @return DIContainer
+     */
+    public function getContainer(): DIContainer
     {
         return $this->container;
     }
 
     /**
-     * \brief Registra um handler para tratamento de um evento.
+     * Register a handler for events.
      *
-     * \param [in] (string|array) $events - nome ou conjunto de nomes que representam o evento
-     * \param [in] (variant) $handler - objeto, closure ou nome de depenência que irá tratar o evento
-     * \param [in] (int) $priority - prioridade do handler na pilha de execução, maior, mais importante
+     * @param array|string   $events   nome ou conjunto de nomes que representam o evento.
+     * @param Closure|string $handler  objeto, closure ou nome de depenência que irá tratar o evento.
+     * @param int            $priority prioridade do handler na pilha de execução, maior, mais importante.
+     *
+     * @return void
      */
-    public function registerHandlerFor($events, $handler, $priority = 0)
+    public function registerHandlerFor($events, $handler, int $priority = 0): void
     {
         foreach ((array) $events as $event) { //Para cada nom de evento
             if (strpos($event, '.*') !== false) {//Se houver '*' é um masterHandler
@@ -68,16 +84,17 @@ class Mediator
                 continue; //Registra-o e reoturn
             }
 
-            $this->handlers[$event][$priority][] = $this->resolveHandler($handler); //Registra o handler de acordo com sua prioridade
+            //Registra o handler de acordo com sua prioridade
+            $this->handlers[$event][$priority][] = $this->resolveHandler($handler);
 
             unset($this->orderedHandlers[$event]); //Reseta a ordem de prioridade dos handlers
         }
     }
 
     /**
-     * \brief Alias of registerHandlerFor().
+     * Alias of registerHandlerFor().
      *
-     * \see registerHandlerFor()
+     * @deprecated 4.5.0
      */
     public function on($event, $handler, $priority = 0)
     {
@@ -85,31 +102,34 @@ class Mediator
     }
 
     /**
-     * \brief Se existe handlers para este evento.
+     * Checks whether event identified by $evet exists.
      *
-     * \param [in] (string) $event - Nome identificador do evento
-     * \return true se sim, false se não
+     * @param string $event
+     *
+     * @return bool
      */
-    public function hasHandlersFor($event)
+    public function hasHandlersFor(string $event): bool
     {
         return isset($this->handlers[$event]);
     }
 
     /**
-     * \brief Remove todos os handlers de um evento.
+     * Removes all handlers for the event identified by $event.
      *
-     * \param [in] (string) $event - Nome identificador do evento
+     * @param string $event
+     *
+     * @return void
      */
-    public function forget($event)
+    public function forget(string $event): void
     {
         unset($this->handlers[$event]);
         unset($this->orderedHandlers[$event]);
     }
 
     /**
-     * \brief Alias of forget().
+     * Alias of forget().
      *
-     * \see forget()
+     * @deprecated 4.5.0
      */
     public function off($event)
     {
@@ -117,68 +137,70 @@ class Mediator
     }
 
     /**
-     * \brief Dispara um evento.
+     * Fires the event identified by $event.
      *
-     * \param [in] string $event - Nome identificador do evento
-     * \param [in] array $data - Dados à serem passados para os handlers
-     * \return Resultados de todos os handlers disparados
+     * @param string $event
+     * @param array  $data
+     *
+     * @return array with result for all event handlers.
      */
-    public function fire($event, $data = [])
+    public function fire(string $event, array $data = []): array
     {
-        //Transforma dados em array se não for (para trabalhar com call_user_func_array() facilmente
-        if (!is_array($data)) {
-            $data = [$data];
+        if (!$this->hasHandlersFor($event)) {
+            return [];
         }
 
-        if ($this->hasHandlersFor($event)) {
-            $responses = [];
+        $responses = [];
+        $this->currentEvent = $event;
 
-            $this->currentEvent = $event;
+        foreach ($this->getHandlersFor($event) as $handler) {
+            $res = call_user_func_array($handler, $data);
 
-            foreach ($this->getHandlersFor($event) as $handler) {
-                $res = call_user_func_array($handler, $data);
-
-                //Se retorno da execução do handler for exatamente igual a falso, interrompe a corrente de handlers
-                if ($res === false) {
-                    break;
-                }
-
-                $responses[] = $res;
+            if ($res === false) {
+                // Stop the process if the handler returns false.
+                break;
             }
 
-            $this->currentEvent = null;
-
-            return $responses;
+            $responses[] = $res;
         }
+
+        $this->currentEvent = null;
+
+        return $responses;
     }
 
     /**
-     * \brief O evento sendo disparado no momento.
+     * Returns the event been fired.
      *
-     * \return nome do evento sendo disparado
+     * @return string|null
      */
-    public function current()
+    public function current(): ?string
     {
         return $this->currentEvent;
     }
 
     /**
-     * \brief Registra uma classe handler como subscriber     *
-     * \param [in] (variant) $param - O objeto handler que irá subscrever à eventos.
+     * Register a handler class as subscriber.
+     *
+     * @param object $handler
+     *
+     * @return void
      */
-    public function subscribe($handler)
+    public function subscribe($handler): void
     {
-        if (is_string($handler)) { //Se string, nome de dependencia
-            $handler = $this->container[$handler]; //resolver dependencia
+        if (is_string($handler)) { // Se string, nome de dependencia
+            $handler = $this->container[$handler]; // resolver dependencia
         }
 
         $handler->subscribes($this);
     }
 
     /**
-     * \brief Resolve o tipo do handler
-     * \param [in] (variant) $handler - Handler para ser resolvido
-     * \return O handler resolvido.
+     * Resolve o tipo do handler.
+     *
+     * @param mixed $handler Handler para ser resolvido
+     *
+     * @return mixed O handler resolvido.
      */
     protected function resolveHandler($handler)
     {
@@ -190,12 +212,14 @@ class Mediator
     }
 
     /**
-     * \brief Cria um handler de acordo com o nome do objeto e ação passado por parâmetro,
-     *        resolvido pelo container de aplicação (Ex. cache@store)
-     * \param [in] (variant) $handler - Handler para ser criado
-     * \return \Closure.
+     * Cria um handler de acordo com o nome do objeto e ação passado por parâmetro,
+     * resolvido pelo container de aplicação (Ex. cache@store).
+     *
+     * @param mixed $handler Handler para ser criado
+     *
+     * @return Closure.
      */
-    protected function createHandler($handler)
+    protected function createHandler($handler): Closure
     {
         $container = $this->container;
 
@@ -211,10 +235,12 @@ class Mediator
     }
 
     /**
-     * \brief Registra um handler 'master' simbolizado por um '*' em sua composição.
-     *        Este handler terá prioridade sobre todas os 'sub-handlers'
-     * \param [in] (string) $event - Nome do evento
-     * \param [in] (variant) $handler - Master Handler.
+     * Registra um handler 'master' simbolizado por um '*' em sua composição.
+     *
+     * Este handler terá prioridade sobre todas os 'sub-handlers'.
+     *
+     * @param string $event   Nome do evento
+     * @param mixed  $handler Master Handler.
      */
     protected function registerMasterHandler($event, $handler)
     {
@@ -222,9 +248,11 @@ class Mediator
     }
 
     /**
-     * \brief Extrai o nome do evento no qual o master handler irá ficar 'escutando'
-     * \param [in] (string) $event - Nome do evento
-     * \return (string).
+     * Extrai o nome do evento no qual o master handler irá ficar 'escutando'.
+     *
+     * @param string $event Nome do evento
+     *
+     * @return string
      */
     protected function getMasterHandlerKey($event)
     {
@@ -234,9 +262,11 @@ class Mediator
     }
 
     /**
-     * \brief Retorna os handlers para o evento requisitado
-     * \param [in] (string) $event - Nome do evento
-     * \return (array).
+     * Retorna os handlers para o evento requisitado.
+     *
+     * @param string $event Nome do evento
+     *
+     * @return array
      */
     protected function getHandlersFor($event)
     {
@@ -251,16 +281,19 @@ class Mediator
     }
 
     /**
-     * \brief Retorna os masters handlers para o evento indicado
-     * \param [in] (string) $event - Nome do evento
-     * \return (array).
+     * Retorna os masters handlers para o evento indicado.
+     *
+     * @param string $event Nome do evento
+     *
+     * @return array
      */
     protected function getMasterHandlersFor($event)
     {
         $masterHandlers = [];
 
         foreach ($this->masterHandlers as $masterKey => $handlers) {
-            if (strpos($event, $masterKey) === 0) { //Se nome do master handler estiver contido no nomedo do evento
+            //Se nome do master handler estiver contido no nome do do evento
+            if (strpos($event, $masterKey) === 0) {
                 $masterHandlers = array_merge($masterHandlers, $handlers);
             }
         }
@@ -269,8 +302,9 @@ class Mediator
     }
 
     /**
-     * \brief Ordena os handlers de acordo com suas prioridades
-     * \param [in] (string) $event - Nome do evento.
+     * Ordena os handlers de acordo com suas prioridades.
+     *
+     * @param string $event Nome do evento.
      */
     protected function orderHandlersFor($event)
     {
@@ -282,9 +316,11 @@ class Mediator
     }
 
     /**
-     * \brief Cria e retorna uma nova instancia desta classe
-     * \param \Springy\Container\DIContainer $container
-     * \return \static.
+     * Cria e retorna uma nova instancia desta classe.
+     *
+     * @param \Springy\Container\DIContainer $container
+     *
+     * @return static
      */
     public static function newInstance(DIContainer $container = null)
     {

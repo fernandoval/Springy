@@ -1,15 +1,15 @@
 <?php
-/** \file
- *  Springy.
+
+/**
+ * Class driver for use with Manuel Lemos' MIME e-mail message class.
  *
- *  \brief      Class driver for use with Manuel Lemos' MIME e-mail message class.
+ * http://www.phpclasses.org/package/9-PHP-PHP-mailer-to-compose-and-send-MIME-messages.html
  *
- *  \copyright  ₢ 2007-2018 Fernando Val
- *  \author     Fernando Val - fernando.val@gmail.com
+ * @copyright 2007 Fernando Val
+ * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
+ * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- *  \see        http://www.phpclasses.org/package/9-PHP-PHP-mailer-to-compose-and-send-MIME-messages.html
- *  \version    1.1.0.6
- *  \ingroup    framework
+ * @version   1.1.9
  */
 
 namespace Springy\Mail;
@@ -18,14 +18,18 @@ use Springy\Configuration;
 use Springy\Kernel;
 
 /**
- *  \brief Driver class for sent mail using MIME e-mail message class developed by Manuel Lemos.
+ * Driver class for sent mail using MIME e-mail message class developed by
+ * Manuel Lemos.
  *
- *  \warning This class was not tested yet. Because MIME e-mail message classes are not into Packagist repository
- *    we can not install it via Composer. Then you will need download and install it by yourself and create an
- *    autoload to it. There are commented lines in __construct method with require_once for each file needed.
+ * WARNING! This class was not tested yet. Because MIME e-mail message classes
+ * are not into Packagist repository we can not install it via Composer. Then
+ * you will need download and install it by yourself and create an autoload to
+ * it. There are commented lines in __construct method with require_once for
+ * each file needed.
  *
- *  \note This classe is a driver used by Springy\Mail classe.
- *        Do not use it directly.
+ * This classe is a driver used by Springy\Mail classe.
+ *
+ * Do not use it directly.
  */
 class MimeMessageDriver implements MailDriverInterface
 {
@@ -34,20 +38,21 @@ class MimeMessageDriver implements MailDriverInterface
     private $textMessage = '';
     private $alternativeParts = [];
     private $headers = [
-        'Sender'  => '',
+        'Sender' => '',
         'Subject' => '',
     ];
     private $mailHeaders = [
-        'From'   => '',
+        'From' => '',
         'Sender' => '',
-        'To'     => [],
-        'Cc'     => [],
-        'Bcc'    => [],
+        'To' => [],
+        'Cc' => [],
+        'Bcc' => [],
     ];
 
     /**
-     *  \brief Constructor method
-     *  \param $cfg - array with de configuration.
+     * Constructor method.
+     *
+     * @param array $cfg array with de configuration.
      */
     public function __construct($cfg)
     {
@@ -56,11 +61,11 @@ class MimeMessageDriver implements MailDriverInterface
         }
 
         if ($cfg['protocol'] == 'smtp') {
-            // require_once Kernel::path(Kernel::PATH_VENDOR) . DIRECTORY_SEPARATOR . 'MimeMessage' . DIRECTORY_SEPARATOR . 'email_message.php';
-            // require_once Kernel::path(Kernel::PATH_VENDOR) . DIRECTORY_SEPARATOR . 'MimeMessage' . DIRECTORY_SEPARATOR . 'smtp_message.php';
-            // require_once Kernel::path(Kernel::PATH_VENDOR) . DIRECTORY_SEPARATOR . 'Smtp' . DIRECTORY_SEPARATOR . 'smtp.php';
+            // require_once Kernel::path(Kernel::PATH_VENDOR) . DS . 'MimeMessage' . DS . 'email_message.php';
+            // require_once Kernel::path(Kernel::PATH_VENDOR) . DS . 'MimeMessage' . DS . 'smtp_message.php';
+            // require_once Kernel::path(Kernel::PATH_VENDOR) . DS . 'Smtp' . DS . 'smtp.php';
             // if (Configuration::get('mail', 'ssl') || Configuration::get('mail', 'starttls')) {
-            //     require_once Kernel::path(Kernel::PATH_VENDOR) . DIRECTORY_SEPARATOR . 'Sasl' . DIRECTORY_SEPARATOR . 'sasl.php';
+            //     require_once Kernel::path(Kernel::PATH_VENDOR) . DS . 'Sasl' . DS . 'sasl.php';
             // }
             $this->mailObj = new \smtp_message_class();
 
@@ -83,8 +88,8 @@ class MimeMessageDriver implements MailDriverInterface
                 $this->mailObj->smtp_http_proxy_host_port = $cfg['proxyport'];
             }
         } elseif ($cfg['protocol'] == 'sendmail') {
-            // require_once Kernel::path(Kernel::PATH_VENDOR) . DIRECTORY_SEPARATOR . 'MimeMessage' . DIRECTORY_SEPARATOR . 'email_message.php';
-            // require_once Kernel::path(Kernel::PATH_VENDOR) . DIRECTORY_SEPARATOR . 'MimeMessage' . DIRECTORY_SEPARATOR . 'sendmail_message.php';
+            // require_once Kernel::path(Kernel::PATH_VENDOR) . DS . 'MimeMessage' . DS . 'email_message.php';
+            // require_once Kernel::path(Kernel::PATH_VENDOR) . DS . 'MimeMessage' . DS . 'sendmail_message.php';
             $this->mailObj = new \sendmail_message_class();
 
             $this->mailObj->delivery_mode = \SENDMAIL_DELIVERY_DEFAULT;
@@ -93,8 +98,8 @@ class MimeMessageDriver implements MailDriverInterface
 
             $this->sendmail = true;
         } else {
-            // require_once Kernel::path(Kernel::PATH_VENDOR) . DIRECTORY_SEPARATOR . 'MimeMessage' . DIRECTORY_SEPARATOR . 'email_message.php';
-            // require_once Kernel::path(Kernel::PATH_VENDOR) . DIRECTORY_SEPARATOR . 'MimeMessage' . DIRECTORY_SEPARATOR . 'sendmail_message.php';
+            // require_once Kernel::path(Kernel::PATH_VENDOR) . DS . 'MimeMessage' . DS . 'email_message.php';
+            // require_once Kernel::path(Kernel::PATH_VENDOR) . DS . 'MimeMessage' . DS . 'sendmail_message.php';
             $this->mailObj = new \email_message_class();
 
             $this->mailObj->smtp_workstation = isset($cfg['workstation']) ? $cfg['workstation'] : '';
@@ -106,7 +111,7 @@ class MimeMessageDriver implements MailDriverInterface
     }
 
     /**
-     *  \brief Add a standard email message header.
+     * Add a standard email message header.
      */
     public function addHeader($header, $value)
     {
@@ -114,7 +119,7 @@ class MimeMessageDriver implements MailDriverInterface
     }
 
     /**
-     *  \brief Set the value of an header that is meant to represent the e-mail address.
+     * Set the value of an header that is meant to represent the e-mail address.
      */
     public function setEmailHeader($header, $email, $name = '')
     {
@@ -126,10 +131,10 @@ class MimeMessageDriver implements MailDriverInterface
     }
 
     /**
-     *  \brief Add an address to 'To' field.
+     * Add an address to 'To' field.
      *
-     *  \param $email - the email address
-     *  \param $name - the name of the person (optional)
+     * @param string $email the email address
+     * @param string $name  the name of the person (optional)
      */
     public function addTo($email, $name = '')
     {
@@ -137,10 +142,10 @@ class MimeMessageDriver implements MailDriverInterface
     }
 
     /**
-     *  \brief Add an address to 'BCC' field.
+     * Add an address to 'BCC' field.
      *
-     *  \param $email - the email address
-     *  \param $name - the name of the person (optional)
+     * @param string $email the email address
+     * @param string $name  the name of the person (optional)
      */
     public function addBCC($email, $name = '')
     {
@@ -148,10 +153,10 @@ class MimeMessageDriver implements MailDriverInterface
     }
 
     /**
-     *  \brief Add an address to 'CC' field.
+     * Add an address to 'CC' field.
      *
-     *  \param $email - the email address
-     *  \param $name - the name of the person (optional)
+     * @param string $email the email address
+     * @param string $name  the name of the person (optional)
      */
     public function addCC($email, $name = '')
     {
@@ -159,26 +164,26 @@ class MimeMessageDriver implements MailDriverInterface
     }
 
     /**
-     *  \brief Add a file to be attached to the e-mail.
+     * Add a file to be attached to the e-mail.
      *
-     *  \param $path - full pathname to the attachment
-     *  \param $name - override the attachment name (optional)
-     *  \param $type - MIME type/file extension type (optional)
-     *  \param $encoding - file enconding (optional)
+     * @param string $path     full pathname to the attachment
+     * @param string $name     override the attachment name (optional)
+     * @param string $type     MIME type/file extension type (optional)
+     * @param string $encoding file enconding (optional)
      */
     public function addAttachment($path, $name = '', $type = '', $encoding = 'base64')
     {
         $this->mailObj->AddFilePart([
-            'FileName'     => $path,
-            'Name'         => $name,
+            'FileName' => $path,
+            'Name' => $name,
             'Content-Type' => $type,
         ]);
     }
 
     /**
-     *  \brief Add a category to the e-mail.
+     * Add a category to the e-mail.
      *
-     *  \param $category - the category
+     * @param string $category the category
      */
     public function addCategory($category)
     {
@@ -186,10 +191,10 @@ class MimeMessageDriver implements MailDriverInterface
     }
 
     /**
-     *  \brief Set the 'From' field.
+     * Set the 'From' field.
      *
-     *  \param $email - the email address
-     *  \param $name - the name of the person (optional)
+     * @param string $email the email address
+     * @param string $name  the name of the person (optional)
      */
     public function setFrom($email, $name = '')
     {
@@ -198,9 +203,9 @@ class MimeMessageDriver implements MailDriverInterface
     }
 
     /**
-     *  \brief Set the mail subject.
+     * Set the mail subject.
      *
-     *  \param $subject - the subject text
+     * @param string $subject the subject text
      */
     public function setSubject($subject)
     {
@@ -208,10 +213,10 @@ class MimeMessageDriver implements MailDriverInterface
     }
 
     /**
-     *  \brief Set the message bo.
+     * Set the message bo.
      *
-     *  \param $body - HTML ou text message body
-     *  \param $html - set true if body is HTML ou false if plain text
+     * @param string $body HTML ou text message body
+     * @param string $html set true if body is HTML ou false if plain text
      */
     public function setBody($body, $html = true)
     {
@@ -226,7 +231,7 @@ class MimeMessageDriver implements MailDriverInterface
     }
 
     /**
-     *  \brief Set the alternative plain-text message body for old message readers.
+     * Set the alternative plain-text message body for old message readers.
      */
     public function setAlternativeBody($text)
     {
@@ -234,7 +239,7 @@ class MimeMessageDriver implements MailDriverInterface
     }
 
     /**
-     *  \brief Set a template for this email.
+     * Set a template for this email.
      */
     public function setTemplate($name)
     {
@@ -242,7 +247,7 @@ class MimeMessageDriver implements MailDriverInterface
     }
 
     /**
-     *  \brief Add value to a template variable.
+     * Add value to a template variable.
      */
     public function addTemplateVar($name, $value)
     {
@@ -250,8 +255,9 @@ class MimeMessageDriver implements MailDriverInterface
     }
 
     /**
-     *  \brief Send the mail message
-     *  \return The error message or a empty string if success.
+     * Send the mail message.
+     *
+     * @return mixed The error message or a empty string if success.
      */
     public function send()
     {
@@ -269,7 +275,13 @@ class MimeMessageDriver implements MailDriverInterface
         }
 
         if ($this->sendmail) {
-            $error = $this->mailObj->Mail(key($this->mailHeaders['To']), $this->headers['Subject'], $this->textMessage, '', '');
+            $error = $this->mailObj->Mail(
+                key($this->mailHeaders['To']),
+                $this->headers['Subject'],
+                $this->textMessage,
+                '',
+                ''
+            );
         } else {
             $this->mailObj->AddAlternativeMultipart($this->alternativeParts);
             $error = $this->mailObj->Send();

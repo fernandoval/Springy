@@ -7,7 +7,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   1.1.1.10
+ * @version   1.1.11
  */
 
 namespace Springy\Utils;
@@ -44,11 +44,11 @@ class JSON
     /**
      * Adds data to JSON array.
      *
-     * @param string $data
+     * @param array $data
      *
      * @return void
      */
-    public function add($data)
+    public function add(array $data)
     {
         $this->data = array_merge($this->data, $data);
     }

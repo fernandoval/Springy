@@ -8,7 +8,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   0.5.0
+ * @version   0.5.2
  */
 
 namespace Springy\Validation;
@@ -171,7 +171,7 @@ class Validator
     /**
      * Gets the generated errors.
      *
-     * @return Springy\Utils\MessageContainer
+     * @return \Springy\Utils\MessageContainer
      */
     public function errors()
     {
@@ -269,7 +269,7 @@ class Validator
             }
 
             $explodedRules[] = [
-                'rule'   => $ruleAndParams[0],
+                'rule' => $ruleAndParams[0],
                 'method' => $this->parseMethod($ruleAndParams[0]),
                 'params' => $params,
             ];
@@ -312,7 +312,7 @@ class Validator
      * @param string $field  the name of the field.
      * @param array  $params an array with parameters.
      *
-     * @return boolan
+     * @return bool
      */
     public function validateRequired($field, $params)
     {
@@ -325,7 +325,7 @@ class Validator
      * @param string $field  the name of the field.
      * @param array  $params an array with parameters.
      *
-     * @return boolan
+     * @return bool
      */
     public function validateMin($field, $params)
     {
@@ -342,7 +342,7 @@ class Validator
      * @param string $field  the name of the field.
      * @param array  $params an array with parameters.
      *
-     * @return boolan
+     * @return bool
      */
     public function validateMax($field, $params)
     {
@@ -359,7 +359,7 @@ class Validator
      * @param string $field  the name of the field.
      * @param array  $params an array with parameters.
      *
-     * @return boolan
+     * @return bool
      */
     public function validateBetween($field, $params)
     {
@@ -393,7 +393,7 @@ class Validator
      * @param string $field  the name of the field.
      * @param array  $params an array with parameters.
      *
-     * @return boolan
+     * @return bool
      */
     public function validateMaxLength($field, $params)
     {
@@ -410,7 +410,7 @@ class Validator
      * @param string $field  the name of the field.
      * @param array  $params an array with parameters.
      *
-     * @return boolan
+     * @return bool
      */
     public function validateLengthBetween($field, $params)
     {
@@ -429,7 +429,7 @@ class Validator
      * @param string $field  the name of the field.
      * @param array  $params an array with parameters.
      *
-     * @return boolan
+     * @return bool
      */
     public function validateNumeric($field, $params)
     {
@@ -446,7 +446,7 @@ class Validator
      * @param string $field  the name of the field.
      * @param array  $params an array with parameters.
      *
-     * @return boolan
+     * @return bool
      */
     public function validateEmail($field, $params)
     {
@@ -463,7 +463,7 @@ class Validator
      * @param string $field  the name of the field.
      * @param array  $params an array with parameters.
      *
-     * @return boolan
+     * @return bool
      */
     public function validateAlpha($field, $params)
     {
@@ -480,7 +480,7 @@ class Validator
      * @param string $field  the name of the field.
      * @param array  $params an array with parameters.
      *
-     * @return boolan
+     * @return bool
      */
     public function validateAlphaNum($field, $params)
     {
@@ -497,7 +497,7 @@ class Validator
      * @param string $field  the name of the field.
      * @param array  $params an array with parameters.
      *
-     * @return boolan
+     * @return bool
      */
     public function validateSame($field, $params)
     {
@@ -514,7 +514,7 @@ class Validator
      * @param string $field  the name of the field.
      * @param array  $params an array with parameters.
      *
-     * @return boolan
+     * @return bool
      */
     public function validateDifferent($field, $params)
     {
@@ -531,7 +531,7 @@ class Validator
      * @param string $field  the name of the field.
      * @param array  $params an array with parameters.
      *
-     * @return boolan
+     * @return bool
      */
     public function validateDate($field, $params)
     {
@@ -550,7 +550,7 @@ class Validator
      * @param string $field  the name of the field.
      * @param array  $params an array with parameters.
      *
-     * @return boolan
+     * @return bool
      */
     public function validateInteger($field, $params)
     {
@@ -567,7 +567,7 @@ class Validator
      * @param string $field  the name of the field.
      * @param array  $params an array with parameters.
      *
-     * @return boolan
+     * @return bool
      */
     public function validateRegex($field, $params)
     {
@@ -584,7 +584,7 @@ class Validator
      * @param string $field  the name of the field.
      * @param array  $params an array with parameters.
      *
-     * @return boolan
+     * @return bool
      */
     public function validateUrl($field, $params)
     {
@@ -601,7 +601,7 @@ class Validator
      * @param string $field  the name of the field.
      * @param array  $params an array with parameters.
      *
-     * @return boolan
+     * @return bool
      */
     public function validateIn($field, $params)
     {
@@ -618,7 +618,7 @@ class Validator
      * @param string $field  the name of the field.
      * @param array  $params an array with parameters.
      *
-     * @return boolan
+     * @return bool
      */
     public function validateNotIn($field, $params)
     {
@@ -635,7 +635,7 @@ class Validator
      * @param string $field  the name of the field.
      * @param array  $params an array with parameters.
      *
-     * @return boolan
+     * @return bool
      */
     public function validateIp($field, $params)
     {

@@ -1,20 +1,24 @@
 #!/usr/bin/php
 <?php
-/**
+
+/*
  * Command line launcher.
  *
  * @copyright 2007 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
  *
- * @version 2.0.1.11
+ * @version 2.1.0
  */
+
 if (!file_exists('sysconf.php')) {
     echo 'Internal System Error on Startup.',"\n";
     echo 'Required file "sysconf.php" missing.',"\n";
+    exit(999);
 }
 if (!file_exists('_Main.php')) {
     echo 'Internal System Error on Startup.',"\n";
     echo 'Required file "_Main.php" missing.',"\n";
+    exit(999);
 }
 
 if (!defined('STDIN') || empty($argc)) {
