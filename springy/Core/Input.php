@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Classe para gerenciamento de dados de input de usuário (GET e POST)
+ * Classe para gerenciamento de dados de input de usuário (GET e POST).
  *
  * @copyright 2015 Fernando Val
  * @author    Allan Marques <allan.marques@ymail.com>

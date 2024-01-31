@@ -661,7 +661,6 @@ class Kernel
      * The project code name.
      *
      * @see https://en.wikipedia.org/wiki/Code_name#Project_code_name
-     *
      * @deprecated 4.6.0
      *
      * @uses app_codename()
