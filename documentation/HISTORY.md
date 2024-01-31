@@ -100,6 +100,11 @@
     *   `Kernel::PATH_CLASS`;
 *   Removed `springyAutoload` autoload function;
 *   Removed `with()` helper function;
+*   Removed classes:
+    *   `CreditCardValidation`;
+    *   `Log`;
+    *   `Utils\Excel`;
+    *   `Utils\ZipFile`;
 *   Removed configuratios:
     *   `uri.host_controller_path`;
     *   `uri.redirects`;
