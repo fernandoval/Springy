@@ -10,7 +10,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   3.2.0
+ * @version   3.2.1
  */
 
 namespace Springy;
@@ -377,8 +377,8 @@ class Errors
     protected function sendEmail(string $errorId, $errorType, Throwable $error): void
     {
         $html = file_get_contents($this->getTplPath('system-error-email.html'));
-        $html = str_replace('{systemName}', Kernel::systemName(), $html);
-        $html = str_replace('{sistemVersion}', Kernel::systemVersion(), $html);
+        $html = str_replace('{systemName}', app_name(), $html);
+        $html = str_replace('{sistemVersion}', app_version(), $html);
         $html = str_replace('{errorId}', $errorId, $html);
         $html = str_replace('{errorCode}', $errorType, $html);
         $html = str_replace('{errorName}', $this->getErrorName($error), $html);
@@ -390,11 +390,11 @@ class Errors
         $email->to(config_get('mail.errors_go_to'), 'System Admin');
         $email->from(
             config_get('mail.system_adm_mail'),
-            Kernel::systemName() . ' - System Error Report'
+            app_name() . ' - System Error Report'
         );
         $email->subject(
-            'Error on ' . Kernel::systemName() .
-            ' v' . Kernel::systemVersion() .
+            'Error on ' . app_name() .
+            ' v' . app_version() .
             ' [' . Kernel::environment() .
             '] at ' . URI::getHost()
         );
@@ -514,8 +514,8 @@ class Errors
         );
 
         $output = file_get_contents($template);
-        $output = str_replace('{systemName}', Kernel::systemName(), $output);
-        $output = str_replace('{sistemVersion}', Kernel::systemVersion(), $output);
+        $output = str_replace('{systemName}', app_name(), $output);
+        $output = str_replace('{sistemVersion}', app_version(), $output);
         $output = str_replace('{errorsList}', json_encode($errList), $output);
 
         header('Content-type: text/html; charset=UTF-8', true, 200);
@@ -570,8 +570,8 @@ class Errors
         }
 
         $output = file_get_contents($this->getTplPath('system-error.html'));
-        $output = str_replace('{systemName}', Kernel::systemName(), $output);
-        $output = str_replace('{sistemVersion}', Kernel::systemVersion(), $output);
+        $output = str_replace('{systemName}', app_name(), $output);
+        $output = str_replace('{sistemVersion}', app_version(), $output);
         $output = str_replace('{errorId}', $errorId, $output);
         $output = str_replace('{errorCode}', $errorType, $output);
         echo $output;

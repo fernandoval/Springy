@@ -14,8 +14,14 @@ return [
     'developer_pass' => '',
     'dba_user' => '',
     'bug_authentication' => [],
-    'assets_source_path' => sysconf('APP_PATH') . DS . 'assets',
-    'assets_path' => sysconf('ROOT_PATH') . DS . 'assets',
+    'assets_source_path' => app_path() . DS . 'assets',
+    'assets_path' => web_root() . DS . 'assets',
+
+    'environment_by_host' => [
+        'localhost' => 'development',
+        '127\.0\.0\.1' => 'development',
+        '(www\.)?mydomain\.com' => 'production',
+    ],
 
     /*
      * Session configuration

@@ -7,7 +7,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   1.1.11
+ * @version   1.1.12
  */
 
 namespace Springy\Utils;
@@ -118,7 +118,7 @@ class JSON
         }
 
         // Send the header
-        header('Content-type: application/json; charset=' . Kernel::charset(), true, $this->statusCode);
+        header('Content-type: application/json; charset=' . charset(), true, $this->statusCode);
         header('Expires: Sat, 26 Jul 1997 05:00:00 GMT');
         header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
         header('Cache-Control: no-store, no-cache, must-revalidate');
@@ -128,7 +128,7 @@ class JSON
         if (Kernel::isCGIMode()) {
             $lineFeed = "\n";
             echo 'Status: ' . $this->statusCode . $lineFeed;
-            echo 'Content-type: application/json; charset=' . Kernel::charset() . $lineFeed;
+            echo 'Content-type: application/json; charset=' . charset() . $lineFeed;
             echo 'Expires: Sat, 26 Jul 1997 05:00:00 GMT' . $lineFeed;
             echo 'Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT' . $lineFeed;
             echo 'Cache-Control: no-store, no-cache, must-revalidate' . $lineFeed;

@@ -6,23 +6,14 @@
  * @copyright 2015 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
  *
- * @version   1.0.5
+ * @version   1.1.0
  */
 
-// Edit the two lines above and set the relative path to sysconf.php e helpers.php scripts
-define('SYSCONF', 'www/sysconf.php');
-define('HELPERS', 'www/helpers.php');
+define('SPRINGY_START', microtime(true));
 
-require SYSCONF;
-require HELPERS;
-if (!spl_autoload_register('springyAutoload')) {
-    exit('Internal System Error on Startup');
-}
-
-// Load the Composer autoload script
-if (file_exists(sysconf('VENDOR_PATH') . DIRECTORY_SEPARATOR . 'autoload.php')) {
-    require sysconf('VENDOR_PATH') . DIRECTORY_SEPARATOR . 'autoload.php';
-}
+require __DIR__ . '/../consts';
+// Loads the Composer autoload
+require __DIR__ . '/../vendor/autoload.php';
 
 restore_exception_handler();
 restore_error_handler();

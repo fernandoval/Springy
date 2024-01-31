@@ -7,7 +7,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   0.5.1
+ * @version   0.5.2
  */
 
 namespace Springy;
@@ -48,7 +48,7 @@ class Migrator extends DB
      */
     public function __construct()
     {
-        $this->revPath = Kernel::path(Kernel::PATH_MIGRATION) . DS;
+        $this->revPath = migration_dir() . DS;
 
         $this->errorReportStatus(false);
 
@@ -72,7 +72,7 @@ class Migrator extends DB
         $this->output('Database Migration Tool v' . self::VERSION, self::MSG_INFORMATION);
         $this->output('--------------------------------', self::MSG_INFORMATION);
         $this->output('', self::MSG_INFORMATION);
-        $this->output('Application: ' . Kernel::systemName() . ' v' . Kernel::systemVersion(), self::MSG_INFORMATION);
+        $this->output('Application: ' . app_name() . ' v' . app_version(), self::MSG_INFORMATION);
         $this->output('', self::MSG_INFORMATION);
 
         // Checks the configuration
@@ -284,7 +284,7 @@ class Migrator extends DB
     private function showHelp()
     {
         $this->output('');
-        $this->output('Usage: migration.php COMMAND [OPTIONS]');
+        $this->output('Usage: php migrate COMMAND [OPTIONS]');
         $this->output('');
         $this->output('List of commands:');
         $this->output('  -h, --help     show this help instructions. D\'oh!');

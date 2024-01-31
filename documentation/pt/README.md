@@ -66,7 +66,7 @@ diretórios da aplicação, charset e timezone. Mais detalhes
 [aqui](/documentation/pt/sysconf.md).
 
 As demais configurações da aplicação deverão estar no diretório e sub-diretórios
-definidos pela entrada `'CONFIG_PATH'`.
+definidos pela constante `CONFIG_DIR`.
 
 #### Arquivos de configuração
 

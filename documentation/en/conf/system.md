@@ -8,50 +8,54 @@ entries and change pre-defined sets, but can not delete it.
 
 ## Pre-defined configurations
 
-- **'debug'** - (boolean) Turns on/off the system debug.
-- **'ignore_deprecated'** - (boolean) Sets the error handler system to ignores
+*   **'debug'** - (boolean) Turns on/off the system debug.
+*   **'ignore_deprecated'** - (boolean) Sets the error handler system to ignores
     or catches the deprecated funcion warnings.
-- **'rewrite_url'** - (boolean) Turns URL rewrite on/off.
-- **'cache-control'** - (string) The value to header HTTP/1.1 Cache-Control.
-- **'authentication'** - (array) A key pair user/pass to HTTP authentication
+*   **'rewrite_url'** - (boolean) Turns URL rewrite on/off.
+*   **'cache-control'** - (string) The value to header HTTP/1.1 Cache-Control.
+*   **'authentication'** - (array) A key pair user/pass to HTTP authentication
     simple access control. The array must be define is the following format
     `['user' => 'username', 'pass' => 'password']`. Leave it empty to turns off
     simple HTTP autentication access.
-- **'developer_user'** - Query string variable name to turns
+*   **'developer_user'** - Query string variable name to turns
     [developer mode](#developer-mode) on/off.
-- **'developer_pass'** - Value to enable developer/dba mode.
-- **'dba_user'** - Query string variable name to turns on/off the
+*   **'developer_pass'** - Value to enable developer/dba mode.
+*   **'dba_user'** - Query string variable name to turns on/off the
     [DBA mode](#dba-mode).
-- **'bug_authentication'** - Turns on the HTTP simple authentication to system
+*   **'bug_authentication'** - Turns on the HTTP simple authentication to system
     errors log. Must by an array in following format: `['user' => 'username',
     'pass' => 'password']`. Leave it empty to turns off simple HTTP
     autentication access to error log system.
-- **'assets_source_path'** - Folder path for source of the asset files.
-- **'assets_path'** - Folder path for minified asset files.
-- **'maintenance'** - Puts the system under maintenance mode and all requests
+*   **'assets_source_path'** - Folder path for source of the asset files.
+*   **'assets_path'** - Folder path for minified asset files.
+*   **'environment_by_host'** - An array with a key pair where the key is a
+    regular expression to search the host and the value is the environment. This
+    configuration will replace the environment definition if the site host
+    exists in.
+*   **'maintenance'** - Puts the system under maintenance mode and all requests
     will reply with a HTTP 503 error.
-- **'session'** - [Session configurations](#session-configurations).
+*   **'session'** - [Session configurations](#session-configurations).
 
 ### Session configurations
 
 The `'session'` entry is an array containing other entries that configure the
 framework session system.
 
-- **'type'** - String with the type of
+*   **'type'** - String with the type of
     [session storage](#session-storage-types). Possible values are `'file'`,
     `'memcached'` and `'database'`.
-- **'name'** - The name of the session cookie.
-- **'domain'** - The session master domain cookie.
-- **'expires'** - Session expiration time in minutes.
+*   **'name'** - The name of the session cookie.
+*   **'domain'** - The session master domain cookie.
+*   **'expires'** - Session expiration time in minutes.
 
 ## Session storage types
 
 The framework natively supports the following types of user session control:
 
-- **'file'** - Storage on file. This is the default format supported by PHP.
-- **'memcached'** - Memcache service storage. Requires an external Memcache
+*   **'file'** - Storage on file. This is the default format supported by PHP.
+*   **'memcached'** - Memcache service storage. Requires an external Memcache
     server or the MemcacheD service running on the computer.
-- **'database'** - Relational database table storage. It is recommended to use
+*   **'database'** - Relational database table storage. It is recommended to use
     memory-type tables. If your DBMS does not support this type of table, its
     use is discouraged.
 

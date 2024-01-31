@@ -12,13 +12,6 @@ Você poderá adicionar entradas personalizadas de sua aplicação.
 
 ## Entradas de configuração:
 
--   **'routes'** - Array contendo rotas de controladoras. Útil para utilizar
-mais de uma URL apontando para mesma controladora. Este modelo está
-descontinuado na versão 4.5.0 do framework. Use o novo sistema de rotas;
--   **'redirects'** - Array de redirecionamentos. Útil para configurar
-redirecionamentos a acessos que possam causar erro de página não encontrada.
-Este modelo está descontinuado na versão 4.5.0 do framework. Use o novo sistema
-de rotas;
 -   **'prevalidate_controller'** - Validação prévia de formatação de URI para
 determinadas controladoras. Este modelo está descontinuado na versão 4.5.0 do
 framework. Use o novo sistema de rotas;
@@ -37,8 +30,6 @@ ignorados na descoberta da controladora. Útil para sites onde alguns dos
 segmentos iniciais servem para algum parâmetro a ser passado para a aplicação,
 como por exemplo para determinar idioma, localização ou setor.
 Por exemplo: http://www.seusite.com/pt-br/pagina
--   **'host_controller_path'** - Array de hosts que possuem nível próprio de
-controladoras;
 -   **'dynamic'** - Host do conteúdo dinâmico do site.
 Ex.: 'http://www.seusite.com'
 -   **'static'** - Host do conteúdo estático do site.

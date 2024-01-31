@@ -8,10 +8,12 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.9.2
+ * @version   3.0.0
  */
 
 namespace Springy;
+
+use Dotenv\Dotenv;
 
 /**
  * Framework kernel class.
@@ -21,61 +23,58 @@ namespace Springy;
 class Kernel
 {
     // Framework version
-    public const VERSION = '4.5.0';
+    public const VERSION = '4.6.0-dev';
 
     // Default controller namespace
     public const DEFAULT_NS = 'App\\Web\\';
 
     // Path constants
-    public const PATH_PROJECT = 'PROJ';
-    public const PATH_CONF = 'CONF';
-    public const PATH_APPLICATION = 'APP';
-    public const PATH_VAR = 'VAR';
-    public const PATH_CLASSES = 'CLASSES';
-    public const PATH_CONTROLLER = 'CONTROLLER';
-    public const PATH_LIBRARY = 'LIB';
-    public const PATH_ROOT = 'ROOT';
-    public const PATH_WEB_ROOT = 'ROOT';
-    public const PATH_VENDOR = 'VENDOR';
-    public const PATH_MIGRATION = 'MIGRATION';
-    // Path constants to back compatibility
-    // @deprecated 4.5.0
-    public const PATH_CONFIGURATION = self::PATH_CONF;
-    public const PATH_SYSTEM = self::PATH_APPLICATION;
-    public const PATH_CLASS = self::PATH_CLASSES;
+    public const PATH_PROJECT = 'PROJ';             // @deprecated 4.6.0
+    public const PATH_CONF = 'CONF';                // @deprecated 4.6.0
+    public const PATH_APPLICATION = 'APP';          // @deprecated 4.6.0
+    public const PATH_VAR = 'VAR';                  // @deprecated 4.6.0
+    public const PATH_CLASSES = 'CLASSES';          // @deprecated 4.6.0
+    public const PATH_CONTROLLER = 'CONTROLLER';    // @deprecated 4.6.0
+    public const PATH_LIBRARY = 'LIB';              // @deprecated 4.6.0
+    public const PATH_WEB_ROOT = 'ROOT';            // @deprecated 4.6.0
+    public const PATH_VENDOR = 'VENDOR';            // @deprecated 4.6.0
+    public const PATH_MIGRATION = 'MIGRATION';      // @deprecated 4.6.0
 
-    /**
-     * Global system configuration.
-     *
-     * @var array
-     */
-    private static array $sysconf;
-
-    /// Start time
-    private static $startime = null;
-    /// Determina o root de controladoras
-    private static $controller_root = [];
-    /// Caminho do namespace do controller
-    private static $controller_namespace = null;
-    /** @var string|null The controller file path name */
-    private static $controllerFile = null;
-    /// The controller file class name
+    // Determina o root de controladoras
+    private static $ctrlRoot = [];
+    // The namespace of the controller
+    private static $ctrlNameSpace = null;
+    // The controller file class name
     private static $controllerName = null;
 
-    /// System environment
+    // System environment
     private static $environment = '';
-    /// CGI execution mode
+    // CGI execution mode
     private static $cgiMode = false;
 
-    /// List of ignored errors
+    // List of ignored errors
     private static $ignoredErrors = [];
-    /// List of error hook functions
+    // List of error hook functions
     private static $errorHooks = [];
 
-    /// Default template vars
+    // Default template vars
     private static $templateVars = [];
-    /// Default template functions
+    // Default template functions
     private static $templateFuncs = [];
+
+    /**
+     * Bootstrap the application.
+     *
+     * @return void
+     */
+    private static function bootstrap(): void
+    {
+        $btPath = app_path() . DS . 'bootstrap.php';
+
+        if (file_exists($btPath)) {
+            require_once $btPath;
+        }
+    }
 
     /**
      * Builds controller name seeking routes configuration.
@@ -149,39 +148,6 @@ class Kernel
     }
 
     /**
-     * Starts the global pre-controller hook.
-     *
-     * @return void
-     */
-    private static function callGlobal(): void
-    {
-        // Bootstrap
-        $btPath = self::path(self::PATH_APPLICATION) . DS . 'bootstrap.php';
-
-        // The global pre-controller exists?
-        if (file_exists($btPath)) {
-            require_once $btPath;
-
-            return;
-        }
-
-        // Global pre-controller file path name
-        $globalPath = self::path(self::PATH_CONTROLLER) . DS . '_global.php';
-
-        // The global pre-controller exists?
-        if (!file_exists($globalPath)) {
-            return;
-        }
-
-        $controllerName = 'Global_Controller';
-        require_once $globalPath;
-
-        if (class_exists($controllerName)) {
-            new $controllerName();
-        }
-    }
-
-    /**
      * Executes a framework special command.
      *
      * @return void
@@ -237,7 +203,7 @@ class Kernel
         }
 
         self::$controllerName = $name;
-        $namespace = explode('/', self::$controller_namespace);
+        $namespace = explode('/', self::$ctrlNameSpace);
         array_shift($namespace);
         URI::setCurrentPage(count($namespace) + count($arguments) - 1);
         URI::setClassController(URI::currentPage());
@@ -294,54 +260,6 @@ class Kernel
     }
 
     /**
-     * Defines the application controller.
-     *
-     * @return void
-     */
-    private static function defineController(): void
-    {
-        // Get controller file name
-        self::$controllerFile = URI::parseURI();
-
-        if (is_null(self::$controllerFile) || !file_exists(self::$controllerFile)) {
-            self::findControllerByNamespace();
-
-            return;
-        }
-
-        // Validate the URI and load the controller.
-        URI::validateURI();
-        self::defineControllerName();
-    }
-
-    /**
-     * Defines controller class name.
-     *
-     * @return void
-     */
-    private static function defineControllerName(): void
-    {
-        // Load the controller file
-        require_once self::$controllerFile;
-
-        $class = URI::getControllerClass();
-        $name = str_replace('-', '', ucwords($class, '-'));
-        $classNames = [
-            'App\\Controller\\' . $name,
-            $name . 'Controller', // @deprecated v4.5.0
-            str_replace('-', '_', URI::getControllerClass()) . '_Controller', // @deprecated v4.5.0
-        ];
-
-        foreach ($classNames as $className) {
-            if (class_exists($className)) {
-                self::$controllerName = $className;
-
-                return;
-            }
-        }
-    }
-
-    /**
      * Tries to find a web controller from the URI segments using new namespace
      * qualifying PSR-4.
      *
@@ -377,13 +295,13 @@ class Kernel
 
             if (preg_match_all($pattern, $uri, $matches, PREG_PATTERN_ORDER)) {
                 $segments = explode('/', trim($matches[1][0], '/'));
-                self::$controller_namespace = $config['module'] . '/' . $route;
+                self::$ctrlNameSpace = $config['module'] . '/' . $route;
 
                 return trim($namespace, " \t\0\x0B\\") . '\\';
             }
         }
 
-        self::$controller_namespace = $config['module'];
+        self::$ctrlNameSpace = $config['module'];
 
         return trim($config['namespace'] ?? self::DEFAULT_NS, " \t\0\x0B\\") . '\\';
     }
@@ -400,7 +318,7 @@ class Kernel
         foreach ((Configuration::get('uri', 'routing.hosts') ?: []) as $route => $data) {
             $pattern = sprintf('#^%s$#', $route);
             if (preg_match_all($pattern, $host)) {
-                self::$controller_root = $data['template'] ?? [];
+                self::$ctrlRoot = $data['template'] ?? [];
 
                 return [
                     'module' => $data['module'] ?? '',
@@ -507,6 +425,39 @@ class Kernel
     }
 
     /**
+     * Loads the .env file and merges to Kernel::$sysconf properties.
+     *
+     * The parameter $sysconf will be removed in v4.7.
+     *
+     * @param array $sysconf configuration loaded from sysconf.php file.
+     *
+     * @return void
+     */
+    private static function loadEnvFile(array $sysconf): void
+    {
+        $envcache = cache_dir() . DS . '.env.php';
+        $envfile = project_path() . DS . '.env';
+
+        // Put legacy sysconf.php array into env
+        array_walk($sysconf, fn ($value, $key) => putenv(sprintf('%s=%s', $key, $value)));
+
+        if (
+            file_exists($envfile) &&
+            (
+                !file_exists($envcache) ||
+                filemtime($envfile) > filemtime($envcache)
+            )
+        ) {
+            $dotenv = Dotenv::createUnsafeImmutable(project_path());
+            $dotenv->safeLoad();
+            file_put_contents($envcache, serialize($_ENV));
+        } elseif (file_exists($envcache)) {
+            $envser = unserialize(file_get_contents($envcache));
+            array_walk($envser, fn ($value, $key) => putenv(sprintf('%s=%s', $key, $value)));
+        }
+    }
+
+    /**
      * Normalizes the array of segments to a class namespace.
      *
      * @param array $segments
@@ -531,18 +482,15 @@ class Kernel
      */
     private static function setEnv(): void
     {
-        $env = self::$sysconf['ACTIVE_ENVIRONMENT'] ?: (
-            self::$sysconf['ENVIRONMENT_VARIABLE']
-                ? getenv(self::$sysconf['ENVIRONMENT_VARIABLE'])
-                : ''
-        );
+        $env = env('SPRINGY_ENVIRONMENT');
+        $byHosts = Configuration::get('system.environment_by_host');
 
-        if (empty($env)) {
-            $env = URI::getHost() ?: 'unknown';
+        if (is_array($byHosts) && count($byHosts)) {
+            $host = URI::getHost() ?: 'localhost';
 
             // Verify if has an alias for host
-            foreach (self::$sysconf['ENVIRONMENT_ALIAS'] as $host => $alias) {
-                if (preg_match('/^' . $host . '$/', $env)) {
+            foreach ($byHosts as $host => $alias) {
+                if (preg_match('/^' . $host . '$/', $host)) {
                     $env = $alias;
                     break;
                 }
@@ -581,19 +529,24 @@ class Kernel
     }
 
     /**
-     * Starts system environment.
+     * Starts the application.
+     *
+     * The initialization parameter $sysconf will be removed in v4.7.
+     *
+     * @param array $sysconf configuration loaded from sysconf.php file.
+     *
+     * @return void
      */
-    public static function run(array $sysconf, float $startime)
+    public static function run(array $sysconf)
     {
-        self::$startime = $startime;
-        self::$sysconf = $sysconf;
+        self::loadEnvFile($sysconf);
 
         self::setEnv();
 
-        ini_set('date.timezone', $sysconf['TIMEZONE']);
-        ini_set('default_charset', self::charset());
+        ini_set('date.timezone', env('TIMEZONE') ?: 'UTC');
+        ini_set('default_charset', charset());
         ini_set('display_errors', Configuration::get('system', 'debug') ? 1 : 0);
-        header('Content-Type: text/html; charset=' . self::charset(), true);
+        header('Content-Type: text/html; charset=' . charset(), true);
 
         // Pre start check list of application
         self::httpAuthNeeded();
@@ -606,8 +559,9 @@ class Kernel
         }
 
         // Start the application
-        self::defineController();
-        self::callGlobal();
+        URI::parseURI();
+        self::findControllerByNamespace();
+        self::bootstrap();
         self::callController();
         self::callSpecialCommands();
     }
@@ -629,7 +583,7 @@ class Kernel
      */
     public static function runTime(): string
     {
-        return number_format(microtime(true) - self::$startime, 6);
+        return number_format(microtime(true) - SPRINGY_START, 6);
     }
 
     /**
@@ -642,23 +596,43 @@ class Kernel
         return self::$environment;
     }
 
+    /**
+     * Returns environment data.
+     *
+     * @param string $key
+     *
+     * @deprecated 4.6.0
+     * @uses env()
+     *
+     * @return mixed
+     */
     public static function systemConfGlobal(string $key): mixed
     {
-        return self::$sysconf[$key] ?? null;
+        return env($key, null);
     }
 
     /**
      * The system name.
      *
+     * Warning! This function will be removed in the future.
+     *
+     * @deprecated 4.6.0
+     * @uses app_name()
+     *
      * @return string A string containing the system name.
      */
     public static function systemName(): string
     {
-        return self::$sysconf['SYSTEM_NAME'] ?? '';
+        return app_name();
     }
 
     /**
      * The system version.
+     *
+     * Warning! This function will be removed in the future.
+     *
+     * @deprecated 4.6.0
+     * @uses app_version()
      *
      * @see https://semver.org
      *
@@ -666,9 +640,16 @@ class Kernel
      */
     public static function systemVersion(): string
     {
-        [$major, $minor, $patch] = is_array(self::$sysconf['SYSTEM_VERSION'])
-            ? self::$sysconf['SYSTEM_VERSION']
-            : explode('.', (string) self::$sysconf['SYSTEM_VERSION']);
+        if (defined('APP_VERSION')) {
+            return app_version();
+        }
+
+        [$major, $minor, $patch] = is_array(env('SYSTEM_VERSION', null))
+            ? env('SYSTEM_VERSION')
+            : explode(
+                '.',
+                (string) env('SYSTEM_VERSION', '0.0.0')
+            );
 
         return implode('.', [$major ?? 0, $minor ?? 0, $patch ?? 0]);
     }
@@ -678,21 +659,27 @@ class Kernel
      *
      * @see https://en.wikipedia.org/wiki/Code_name#Project_code_name
      *
+     * @deprecated 4.6.0
+     * @uses app_codename()
+     *
      * @return string A string containing the project code name.
      */
     public static function projectCodeName(): string
     {
-        return self::$sysconf['PROJECT_CODE_NAME'] ?? '';
+        return app_codename();
     }
 
     /**
      * The system charset.
      *
+     * @deprecated 4.6.0
+     * @uses env('CHARSET')
+     *
      * @return string A string containing the system charset.
      */
     public static function charset(): string
     {
-        return self::$sysconf['CHARSET'] ?? 'UTF-8';
+        return env('CHARSET') ?? 'UTF-8';
     }
 
     /**
@@ -700,23 +687,18 @@ class Kernel
      *
      * @param string $component the component constant.
      *
+     * @deprecated 4.6.0
+     *
      * @return string A string containing the path of the component.
      */
     public static function path(string $component): string
     {
         return match ($component) {
-            self::PATH_APPLICATION => self::$sysconf['APP_PATH'] ?? self::path(self::PATH_PROJECT) . DS . 'app',
-            self::PATH_CLASSES => self::$sysconf['CLASS_PATH'] ?? self::path(self::PATH_APPLICATION) . DS . 'classes',
-            self::PATH_CONF => self::$sysconf['CONFIG_PATH'] ?? self::path(self::PATH_PROJECT) . DS . 'conf',
-            self::PATH_CONTROLLER => self::$sysconf['CONTROLER_PATH'] ??
-                self::path(self::PATH_APPLICATION) . DS . 'controllers',
-            self::PATH_LIBRARY => self::$sysconf['SPRINGY_PATH'] ?? __DIR__,
-            self::PATH_MIGRATION => self::$sysconf['MIGRATION_PATH'] ??
-                self::path(self::PATH_PROJECT) . DS . 'migration',
-            self::PATH_PROJECT => self::$sysconf['PROJECT_PATH'] ?? realpath(__DIR__ . DS . '..'),
-            self::PATH_VAR => self::$sysconf['VAR_PATH'] ?? self::path(self::PATH_PROJECT) . DS . 'var',
-            self::PATH_VENDOR => self::$sysconf['VENDOR_PATH'] ?? self::path(self::PATH_PROJECT) . DS . 'vendor',
-            self::PATH_WEB_ROOT => self::$sysconf['ROOT_PATH'],
+            self::PATH_APPLICATION => app_path(),
+            self::PATH_CONF => config_dir(),
+            self::PATH_MIGRATION => migration_dir(),
+            self::PATH_PROJECT => project_path(),
+            self::PATH_VAR => var_dir(),
         };
     }
 
@@ -829,29 +811,20 @@ class Kernel
     public static function controllerRoot($cRoot = null)
     {
         if (!is_null($cRoot)) {
-            self::$controller_root = $cRoot;
+            self::$ctrlRoot = $cRoot;
         }
 
-        return self::$controller_root;
+        return self::$ctrlRoot;
     }
 
     /**
-     * Gets and/or sets the controller namespace.
-     *
-     * @param string $controller if defined sets the new controller namespace.
+     * Gets the controller namespace.
      *
      * @return string
      */
-    public static function controllerNamespace($controller = null)
+    public static function controllerNamespace(): string
     {
-        if (!is_null($controller) && file_exists($controller)) {
-            $controller = pathinfo($controller);
-            $controller = str_replace(self::path(self::PATH_CONTROLLER), '', $controller['dirname']);
-            $controller = str_replace(DIRECTORY_SEPARATOR, '/', $controller);
-            self::$controller_namespace = trim($controller, '/');
-        }
-
-        return self::$controller_namespace;
+        return self::$ctrlNameSpace ?? '';
     }
 
     /**

@@ -7,20 +7,14 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  *
- * @version   2.7.0
+ * @version   3.0.0
  */
 
 namespace Springy;
 
-use Springy\Exceptions\SpringyException;
 use Springy\Utils\Strings_ANSI;
 use Springy\Utils\Strings_UTF8;
 
-/**
- * Classe para tratamento de URI.
- *
- * Esta classe é estática e invocada automaticamente pelo framework.
- */
 class URI
 {
     /** @var string HTTP host */
@@ -56,23 +50,6 @@ class URI
             header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
             header('Cache-Control: private', false);
             exit(md5(microtime()));
-        }
-    }
-
-    /**
-     * Checks whether to chanck root controller path for current host.
-     *
-     * @return void
-     */
-    private static function checkHostControllerRoot(): void
-    {
-        if (self::$httpHost) {
-            foreach (Configuration::get('uri', 'host_controller_path') as $host => $root) {
-                if ($host === self::$httpHost) {
-                    Kernel::controllerRoot($root);
-                    break;
-                }
-            }
         }
     }
 
@@ -183,105 +160,6 @@ class URI
     }
 
     /**
-     * Finds the controller file.
-     *
-     * @return string|null
-     */
-    private static function findController(): ?string
-    {
-        $controller = null;
-        $base = Kernel::path(Kernel::PATH_CONTROLLER) . (
-            count(Kernel::controllerRoot())
-                ? DS . implode(DS, Kernel::controllerRoot())
-                : ''
-        );
-        $segments = [];
-        $segment = 0;
-
-        do {
-            $sgm = self::getSegment($segment++, false);
-
-            if ($sgm) {
-                $segments[] = $sgm;
-            }
-        } while ($sgm !== false);
-
-        while (count($segments) > 0) {
-            $path = $base . DS . implode(DS, $segments);
-            $file = $path . '.page.php';
-            $indx = $path . DS . 'index.page.php';
-
-            if (file_exists($file)) {
-                // Found the controller file
-                $controller = $file;
-                self::setCurrentPage(count($segments) - 1);
-                self::setClassController(self::currentPage());
-
-                break;
-            } elseif (file_exists($indx)) {
-                // Found an index controller
-                $segment = count($segments);
-                $controller = $indx;
-
-                if (!self::getSegment($segment, false)) {
-                    self::$segments[] = '';
-                } else {
-                    array_splice(self::$segments, $segment, 0, ['']);
-                }
-
-                self::setCurrentPage($segment);
-                self::setClassController(self::currentPage());
-
-                break;
-            }
-
-            array_pop($segments);
-        }
-
-        return $controller;
-    }
-
-    /**
-     * Finds a controller in uri.routes configuration.
-     *
-     * @param string $uriString
-     *
-     * @return string|null
-     */
-    private static function findRoutedController(string $uriString): ?string
-    {
-        $controller = null;
-        $routes = Configuration::get('uri', 'routes');
-
-        if (is_array($routes)) {
-            foreach ($routes as $key => $data) {
-                if (!preg_match('/^' . $key . '$/', $uriString, $matches)) {
-                    continue;
-                } elseif (isset($data['root_controller'])) {
-                    Kernel::controllerRoot($data['root_controller']);
-                }
-
-                if (substr($data['controller'], 0, 1) == '$') {
-                    $data['controller'] = $matches[(int) substr($data['controller'], 1)];
-                }
-
-                $controller = Kernel::path(Kernel::PATH_CONTROLLER)
-                    . (
-                        count(Kernel::controllerRoot())
-                            ? DS . implode(DS, Kernel::controllerRoot())
-                            : ''
-                    ) . DS . $data['controller'] . '.page.php';
-                self::setClassController($data['controller']);
-                self::setCurrentPage($data['segment']);
-
-                break;
-            }
-        }
-
-        return $controller;
-    }
-
-    /**
      * Converts the URI string into an array.
      *
      * @param string $uriString
@@ -365,14 +243,13 @@ class URI
      * Translate the URI in segments and query string variables.
      * This method is used by the framework starter to determine the controller which is be called.
      *
-     * @return string|null.
+     * @return void.
      */
-    public static function parseURI()
+    public static function parseURI(): void
     {
         self::checkHeadMethod();
         self::parseHost();
         self::$uri_string = self::fetchURI();
-        self::checkHostControllerRoot();
         $uriString = trim(self::$uri_string, '/');
         $segments = self::getSegmentsFromURI($uriString);
         self::checkRedirEndingBar($segments);
@@ -385,74 +262,6 @@ class URI
         self::$segments = $segments;
         self::$get_params = $_GET;
         $_GET = [];
-        $controller = self::findController() ?? self::findRoutedController($uriString);
-        Kernel::controllerNamespace($controller);
-        self::checkRedirect($controller, $uriString);
-
-        return $controller;
-    }
-
-    /**
-     * Validates the segments quantity for the current controller.
-     *
-     * @return void
-     */
-    public static function validateURI()
-    {
-        if (!$pctlr = Configuration::get('uri', 'prevalidate_controller')) {
-            return;
-        }
-
-        throw new SpringyException(
-            'uri.prevalidate_controller are deprecated',
-            E_DEPRECATED,
-            null,
-            __FILE__,
-            __LINE__
-        );
-
-        $ctrl = trim(
-            str_replace(
-                DS,
-                '/',
-                Kernel::controllerRoot()
-                    ? implode(DS, Kernel::controllerRoot())
-                    : ''
-            ) . '/' . self::getControllerClass(),
-            '/'
-        );
-
-        if (isset($pctlr[$ctrl . '/' . self::getSegment(0)])) {
-            $ctrl .= '/' . self::getSegment(0);
-        }
-
-        if (!isset($pctlr[$ctrl]) && !isset($pctlr[$ctrl]['command'])) {
-            return;
-        }
-
-        $action = 200;
-        if (
-            isset($pctlr[$ctrl]['segments'])
-            && count(self::$segments) - self::$segment_page - 1 > $pctlr[$ctrl]['segments']
-        ) {
-            $action = $pctlr[$ctrl]['command'];
-        }
-        if (isset($pctlr[$ctrl]['validate'])) {
-            foreach ($pctlr[$ctrl]['validate'] as $idx => $expression) {
-                if (!preg_match($expression, self::getSegment($idx))) {
-                    $action = $pctlr[$ctrl]['command'];
-                }
-            }
-        }
-
-        if ($action >= 300 && $action < 400) {
-            while (count(self::$segments) - self::$segment_page - 1 > $pctlr[$ctrl]['segments']) {
-                array_pop(self::$segments);
-            }
-            self::redirect(self::buildURL(self::$segments, empty($_GET) ? [] : $_GET), $action);
-        } elseif ($action >= 400) {
-            new Errors($action);
-        }
     }
 
     /**

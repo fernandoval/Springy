@@ -8,14 +8,13 @@
  *
  * @see       https://github.com/PHPMailer/PHPMailer
  *
- * @version    1.2.1
+ * @version    1.2.2
  */
 
 namespace Springy\Mail;
 
 use PHPMailer\PHPMailer\PHPMailer;
 use Springy\Configuration;
-use Springy\Kernel;
 
 /**
  * Driver class for use with PHPMaier.
@@ -39,7 +38,7 @@ class PHPMailerDriver implements MailDriverInterface
         }
 
         $this->mailObj = new PHPMailer();
-        $this->mailObj->CharSet = Kernel::charset();
+        $this->mailObj->CharSet = charset();
 
         if ($cfg['protocol'] == 'smtp') {
             if (!isset($cfg['host'])) {
