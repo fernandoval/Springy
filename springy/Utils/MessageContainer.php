@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Container class for text messages.
  *

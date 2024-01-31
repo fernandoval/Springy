@@ -1,4 +1,4 @@
-<?php // phpcs:ignore
+<?php
 
 /*
  * Springy web launcher script.
@@ -7,6 +7,8 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  *
  * @version   6.0.0
+ *
+ * @codingStandardsIgnoreFile
  */
 
 define('SPRINGY_START', microtime(true));

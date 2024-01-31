@@ -8,7 +8,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   1.4.0
+ * @version   1.4.1
  */
 
 namespace Springy;
@@ -23,7 +23,7 @@ namespace Springy;
 class Cookie
 {
     // Reserved session keys
-    private static $_reserved = [];
+    private static $reserved = [];
 
     /**
      * Deletes a cookie.
@@ -35,7 +35,7 @@ class Cookie
     public static function delete($key)
     {
         // Change string representation array to key/value array
-        $key = self::_scrubKey($key);
+        $key = self::scrubKey($key);
 
         // Make sure the cookie exists
         if (!self::exists($key)) {
@@ -90,7 +90,7 @@ class Cookie
     public static function exists($key)
     {
         // Change string representation array to key/value array
-        $key = self::_scrubKey($key);
+        $key = self::scrubKey($key);
 
         // Check for array
         if (is_array($key)) {
@@ -114,7 +114,7 @@ class Cookie
     public static function get($key)
     {
         // Change string representation array to key/value array
-        $key = self::_scrubKey($key);
+        $key = self::scrubKey($key);
 
         // Check for array
         if (is_array($key)) {
@@ -144,10 +144,14 @@ class Cookie
      * @param string $key      the cookie name.
      * @param mixed  $value    value for the cookie.
      * @param int    $expire   the time the cookie expires.
-     * @param string $path     the path on the server in which the cookie will be available on.
+     * @param string $path     the path on the server in which the cookie will
+     *                         be available on.
      * @param string $domain   the (sub)domain that the cookie is available to.
-     * @param bool   $secure   indicates that the cookie should only be transmitted over a secure HTTPS connection from the client.
-     * @param bool   $httponly when TRUE the cookie will be made accessible only through the HTTP protocol.
+     * @param bool   $secure   indicates that the cookie should only be
+     *                         transmitted over a secure HTTPS connection from
+     *                         the client.
+     * @param bool   $httponly when TRUE the cookie will be made accessible only
+     *                         through the HTTP protocol.
      *
      * @return void
      */
@@ -161,9 +165,9 @@ class Cookie
         $httponly = true
     ) {
         // Make sure they aren't trying to set a reserved word
-        if (!in_array($key, self::$_reserved)) {
+        if (!in_array($key, self::$reserved)) {
             // If $key is in array format, change it to string representation
-            $key = self::_scrubKey($key, true);
+            $key = self::scrubKey($key, true);
 
             // Store the cookie
             setcookie(
@@ -186,7 +190,7 @@ class Cookie
     /**
      * Converts strings to arrays (or vice versa if toString = true).
      */
-    private static function _scrubKey($key, $toString = false)
+    private static function scrubKey($key, $toString = false)
     {
         // Converting from array to string
         if ($toString) {

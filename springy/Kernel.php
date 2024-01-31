@@ -602,6 +602,7 @@ class Kernel
      * @param string $key
      *
      * @deprecated 4.6.0
+     *
      * @uses env()
      *
      * @return mixed
@@ -617,6 +618,7 @@ class Kernel
      * Warning! This function will be removed in the future.
      *
      * @deprecated 4.6.0
+     *
      * @uses app_name()
      *
      * @return string A string containing the system name.
@@ -632,6 +634,7 @@ class Kernel
      * Warning! This function will be removed in the future.
      *
      * @deprecated 4.6.0
+     *
      * @uses app_version()
      *
      * @see https://semver.org
@@ -660,6 +663,7 @@ class Kernel
      * @see https://en.wikipedia.org/wiki/Code_name#Project_code_name
      *
      * @deprecated 4.6.0
+     *
      * @uses app_codename()
      *
      * @return string A string containing the project code name.
@@ -673,6 +677,7 @@ class Kernel
      * The system charset.
      *
      * @deprecated 4.6.0
+     *
      * @uses env('CHARSET')
      *
      * @return string A string containing the system charset.

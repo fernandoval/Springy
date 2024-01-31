@@ -39,7 +39,7 @@ if (!defined('USER_AUTH_MANAGER')) {
  * or a registered service with the name passed by parameter.
  *
  * @param string|Closure $service Name of the service (optional).
- *                       If null, returnos Springy\Core\Application instance.
+ *                                If null, returnos Springy\Core\Application instance.
  *
  * @return mixed
  */
@@ -419,6 +419,7 @@ function studly_caps(string $value): string
  * @param string $key.
  *
  * @deprecated 4.6.0
+ *
  * @uses env()
  *
  * @return mixed.

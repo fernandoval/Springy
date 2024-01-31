@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  * Autoload initialization script for PHPUnit.
  *
  * @copyright 2015 Fernando Val
