@@ -1,18 +1,19 @@
 <?php
+
 /**
  * Test case for the class Springy\Core\Debug.
  *
  * @copyright 2016 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
  *
- * @version   1.0.0.3
+ * @version   1.0.4
+ *
+ * @codingStandardsIgnoreFile
  */
+
 use PHPUnit\Framework\TestCase;
 use Springy\Core\Debug;
 
-/**
- * Test case for the class Springy\Core\Debug.
- */
 class DebugTest extends TestCase
 {
     public function testAddAndGet()

@@ -279,6 +279,30 @@ function make_slug(
 }
 
 /**
+ * Gets a string of memory usage representation.
+ *
+ * @param int $memory
+ *
+ * @return string
+ */
+function memory_string(int $memory): string
+{
+    $unit = [
+        'B',
+        'KiB',
+        'MiB',
+        'GiB',
+        'TiB',
+        'PiB',
+    ];
+
+    return round(
+        $memory / pow(1024, ($idx = floor(log($memory, 1024)))),
+        2
+    ) . ' ' . $unit[$idx];
+}
+
+/**
  * Returns directory path for the migration scripts.
  *
  * @return string

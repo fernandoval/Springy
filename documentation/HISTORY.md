@@ -55,6 +55,7 @@
     `cmd`;
 *   `Kernel::controllerNamespace()` function now is readonly;
 *   `URI::parseURI()` function now returns void;
+*   `Core\Debug` class
 *   Deprecated `sysconf.php` configuration file on web root directory. Use
     `consts` and `.env` files in project root.
 *   Deprecated controllers loading without namespace and with '.page.php'

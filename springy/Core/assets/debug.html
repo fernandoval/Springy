@@ -1,0 +1,635 @@
+<style type="text/css">
+    .springy-debug-box {
+        background-color: #fff;
+        z-index: 99999;
+        margin: 0;
+        display: block;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        text-decoration: none;
+        text-align: center;
+        border: 0;
+    }
+    .springy-debug-box.closed {
+        border: 2px solid #06C;
+        opacity: 0.3;
+    }
+    .springy-debug-box.closed:hover,
+    .springy-debug-box.closed.has-data {
+        opacity: 1;
+    }
+    .springy-debug-box.opened {
+        width: 100%;
+        height: 95%;
+        border-top: 2px solid rgb(204, 116, 0);
+    }
+    .springy-debug-box * {
+        margin: 0;
+        border: 0;
+        padding: 0;
+        color: #000;
+        font-weight: normal;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 12px;
+        text-align: left;
+    }
+
+    .springy-debug-button {
+        cursor: pointer;
+        padding: 0 5px;
+        color: #06C;
+        font-weight: bold;
+        font-size: 12px;
+        text-align: center;
+        line-height: 30px;
+        text-decoration: none;
+    }
+    .springy-debug-button.in-alert {
+        border-radius: 0;
+        background-color: rgb(255, 72, 0);
+        color: rgb(255, 251, 0);
+    }
+    .springy-debug-button > span {
+        display: none;
+        padding-left: 6px;
+        color: inherit;
+        font: inherit
+    }
+    .springy-debug-button:hover > span {
+        display: inline;
+    }
+    .springy-debug-button > svg {
+        height: 20px;
+        /* margin-right: 10px; */
+        vertical-align: middle;
+        fill: #f00;
+    }
+    .springy-debug-button.in-alert > svg {
+        fill: rgb(255, 251, 0);
+    }
+    .springy-debug-box.opened .springy-debug-button {
+        display: none;
+    }
+    .springy-debug-box.closed .springy-debug-button {
+        display: block;
+    }
+
+    .springy-debug-box.opened .springy-debug-content {
+        display: block;
+        height: 100%;
+        width: 100%;
+        overflow: auto;
+    }
+    .springy-debug-box.closed .springy-debug-content {
+        display: none;
+    }
+
+    .springy-debug-toolbar {
+        position: absolute;
+        top: 0;
+        right: 0;
+        left: 0;
+        height: 32px;
+        border-bottom: 1px solid #666;
+        padding-left: 16px;
+        background-color: #e2e2e2;
+        line-height: 32px;
+        font-weight: bold;
+        font-size: 16px;
+        vertical-align: middle;
+    }
+
+    .springy-tool-btn {
+        float: right;
+        height: 32px;
+        min-width: 70px;
+        border-left: 1px solid #666;
+        padding: 0 10px;
+        color: #000;
+        line-height: 30px;
+        font-size: 12px;
+        vertical-align: middle;
+        text-align: center;
+        text-decoration: none;
+    }
+    .springy-tool-btn > svg {
+        height: 20px;
+        width: 20px;
+        margin-right: 8px;
+        vertical-align: middle;
+        fill: #333;
+    }
+    .springy-tool-btn:hover {
+        color: #fff;
+        background-color: #333;
+        text-decoration: none;
+    }
+    .springy-tool-btn:hover > svg {
+        fill: #fff;
+    }
+
+    .springy-debug-data {
+        position: absolute;
+        top: 33px;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        overflow: auto;
+    }
+    .springy-debug-data strong {
+        font-weight: bold;
+    }
+
+    .springy-arrow {
+        margin-left: 5px;
+        border: solid black;
+        border-width: 0 2px 2px 0;
+        display: inline-block;
+        padding: 2px;
+        vertical-align: 2px;
+    }
+    .springy-arrow.down {
+        transform: rotate(45deg);
+        -webkit-transform: rotate(45deg);
+    }
+    .springy-arrow.up {
+        transform: rotate(-135deg);
+        -webkit-transform: rotate(-135deg);
+    }
+
+    .springy-debug-data > .springy-debug-info {
+        position: relative;
+        border-bottom: 1px solid #e2e2e2;
+    }
+    .springy-debug-data > .springy-debug-info:hover {
+        background-color: rgb(243, 243, 243);
+    }
+
+    .springy-debug-time {
+        margin-bottom: 2px;
+        border-bottom: 1px dashed #999;
+        padding: 4px 8px;
+        background-image: linear-gradient(to right, rgba(255, 255, 255, 0) , #e7e7e7);
+        text-align: right;
+    }
+
+    .springy-debug-remove {
+        float: left;
+    }
+    .springy-debug-remove::before {
+        display: inline-block;
+        width: 14px;
+        content: url("data:image/svg+xml; utf8, <svg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' x='0px' y='0px' viewBox='0 0 387.113 387.113' style='fill:rgb(200,0,0);enable-background:new 0 0 387.113 387.113;' xml:space='preserve'><g><path d='M232.055,321.716L387.11,166.661L220.455,0L0.003,220.452l166.661,166.661l2.47-2.47h151.218 v-11.934H181.062L232.055,321.716z M370.235,166.655L232.055,304.835l-149.78-149.78L220.455,16.874L370.235,166.655z'/></g></svg>");
+    }
+
+    .springy-debug-value {
+        padding: 8px;
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    .spring-debug-backtrace-btn {
+        position: absolute;
+        top: 28px;
+        right: 8px;
+        display: inline-block;
+        border: 1px solid #ccc;
+        padding: 3px 8px;
+        color: #000;
+        background: #eee;
+        cursor: pointer;
+    }
+    .spring-debug-backtrace-btn:hover {
+        background: #666;
+        color: #fff;
+    }
+
+    .spring-debug-backtrace-data {
+        display: none;
+        border: 1px solid #999;
+        background: #fff;
+    }
+    .spring-debug-backtrace-data.shown {
+        display: block;
+        margin: 0 32px 8px 32px;
+    }
+    .spring-debug-backtrace-data * {
+        line-height: 1.4;
+    }
+
+    .spring-debug-backtrace-data > ul {
+        background-color: #fff;
+        list-style: none;
+    }
+    .spring-debug-backtrace-data > ul > li {
+        border-bottom: 1px dashed #ccc;
+        padding: 8px 6px;
+    }
+    .spring-debug-backtrace-data > ul > li:hover {
+        background: #ccc;
+    }
+    .spring-debug-backtrace-data > ul > li:last-child {
+        border-bottom: none;
+    }
+
+    .springy-debug-backtrace-content {
+        padding: 4px 0;
+    }
+
+    .springy-debug-backtrace-args {
+        margin: 4px 0 0 20px;
+        list-style: none;
+    }
+    .springy-debug-backtrace-args * {
+        background-color: #eee;
+    }
+    .springy-debug-backtrace-args > li {
+        margin: 1px 0;
+        padding: 2px 4px;
+        background-color: #eee;
+    }
+
+    .spring-debug-backtrace-data.ajax * {
+        color: #fff;
+    }
+    .spring-debug-backtrace-data.ajax > pre {
+        padding: 6px;
+        max-height: 150px;
+        overflow: auto;
+        background-color: #1C2529;
+        color: #fff;
+    }
+
+    /* Still in develop */
+    .springy-debug-content .ErrorTitle{
+        background-color: #66C;
+        color: #FFF;
+        font-weight: bold;
+        padding-left: 10px;
+    }
+    .springy-debug-content .errorzebra{ background: #efefef; }
+    .springy-debug-content .errorlabel{ font-weight: bold; }
+    .springy-debug-backtrace {
+        padding-left: 20px;
+    }
+</style>
+<div class="springy-debug-box closed" id="springyDebugBox">
+    <div class="springy-debug-content">
+        <div class="springy-debug-toolbar">
+            Springy Debug Informations
+            <a class="springy-tool-btn" href="javascript:;" id="springyDebugClose">
+                <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                    viewBox="0 0 93.934 93.934" style="enable-background:new 0 0 93.934 93.934;"
+                    xml:space="preserve">
+                    <g>
+                        <path d="M80.178,13.757c-18.341-18.342-48.08-18.342-66.421,0c-18.342,18.341-18.342,48.08,0,66.421
+                    c18.341,18.342,48.08,18.342,66.421,0C98.52,61.836,98.52,32.098,80.178,13.757z M71.576,61.737l-9.838,9.838l-14.771-14.77
+                    l-14.771,14.77l-9.838-9.838l14.77-14.771l-14.77-14.771l9.838-9.838l14.771,14.771l14.771-14.771l9.838,9.838l-14.77,14.772
+                    L71.576,61.737z"/>
+                    </g>
+                </svg>
+                Close
+            </a>
+            <a class="springy-tool-btn" href="javascript:;" id="springyDebugClear">
+                <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                    viewBox="0 0 387.113 387.113" style="enable-background:new 0 0 387.113 387.113;" xml:space="preserve">
+                    <g>
+                        <path d="M232.055,321.716L387.11,166.661L220.455,0L0.003,220.452l166.661,166.661l2.47-2.47h151.218
+                            v-11.934H181.062L232.055,321.716z M370.235,166.655L232.055,304.835l-149.78-149.78L220.455,16.874L370.235,166.655z"/>
+                    </g>
+                </svg>
+                Clear
+            </a>
+        </div>
+        <div id="springyDebugData" class="springy-debug-data">
+            <!-- DEBUG CONTENT (do not remove or change this line) -->
+        </div>
+    </div>
+    <a class="springy-debug-button" href="javascript:;" id="springyDebugOpen">
+        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+    viewBox="0 0 512 512" xml:space="preserve">
+            <g>
+                <g>
+                    <path d="M410.22,314.947h86.358c8.516,0,15.422-6.906,15.422-15.422s-6.906-15.422-15.422-15.422h-86.361
+                        c0,0-0.042-42.903-0.103-44.683h13.577c41.89,0,75.972-34.082,75.972-75.973v-57.464c0-8.516-6.906-15.422-15.422-15.422
+                        s-15.422,6.906-15.422,15.422v57.466c0,24.884-20.244,45.13-45.128,45.13h-17.777c-10.465-43.338-39.279-79.59-77.73-100.044
+                        c30.52-17.206,51.189-49.911,51.189-87.372c0-8.516-6.906-15.422-15.422-15.422c-8.516,0-15.422,6.906-15.422,15.422
+                        c0,38.266-31.132,69.398-69.398,69.398h-46.265c-38.266,0-69.398-31.132-69.398-69.398c0-8.516-6.906-15.422-15.422-15.422
+                        s-15.422,6.906-15.422,15.422c0,37.461,20.67,70.167,51.189,87.37c-38.451,20.454-67.265,56.706-77.73,100.044H88.309
+                        c-24.884,0-45.128-20.246-45.128-45.13v-57.464c0-8.516-6.906-15.422-15.422-15.422c-8.516,0-15.422,6.906-15.422,15.422v57.466
+                        c0,41.891,34.082,75.973,75.972,75.973h13.577c-0.062,1.778-0.103,44.681-0.103,44.681H15.422C6.906,284.104,0,291.01,0,299.525
+                        s6.906,15.422,15.422,15.422h86.361v22.361c0,6.807,0.449,13.512,1.308,20.088H88.309c-41.89,0-75.972,34.082-75.972,75.972
+                        v57.467c0,8.516,6.906,15.422,15.422,15.422c8.516,0,15.422-6.906,15.422-15.422v-57.467c0-24.884,20.244-45.128,45.128-45.128
+                        h22.129c21.085,60.083,78.368,103.285,145.564,103.285c67.195,0,124.479-43.202,145.564-103.285h22.129
+                        c24.884,0,45.128,20.244,45.128,45.128v57.467c0,8.516,6.906,15.422,15.422,15.422s15.422-6.906,15.422-15.422v-57.467
+                        c0-41.89-34.082-75.972-75.972-75.972h-14.782c0.859-6.577,1.308-13.281,1.308-20.088V314.947z M240.578,459.683
+                        c-60.771-7.617-107.952-59.572-107.952-122.374c0,0,0.06-96.11,0.136-97.888h107.816V459.683z M138.055,208.577
+                        c15.507-50.418,62.509-87.173,117.945-87.173s102.439,36.756,117.945,87.173H138.055z M271.422,459.683V239.421h107.816
+                        c0.077,1.778,0.136,97.888,0.136,97.888C379.373,400.11,332.192,452.066,271.422,459.683z"/>
+                </g>
+            </g>
+        </svg>
+        <span>DEBUG</span>
+    </a>
+</div>
+<template id="springyDebutTemplate">
+    <div class="springy-debug-info">
+        <div class="springy-debug-time">
+            <a href="javascript:;" class="springy-debug-remove" title="Delete"></a>
+        </div>
+        <div class="springy-debug-value"></div>
+        <a class="spring-debug-backtrace-btn">Details <em class="springy-arrow down"></em></a>
+        <div class="spring-debug-backtrace-data ajax"></div>
+    </div>
+</template>
+<script type="text/javascript">
+    (function (d, script) {
+        // Creates parents() function
+        Element.prototype.parents = function (selector) {
+            const ishaveselector = selector !== undefined;
+            let parents = [];
+            let el = this;
+
+            while ((el = el.parentElement) !== null) {
+                if (el.nodeType !== Node.ELEMENT_NODE) {
+                    continue;
+                }
+
+                if (!ishaveselector || el.matches(selector)) {
+                    parents.push(el);
+                }
+            }
+
+            return parents;
+        };
+
+        // The debug class
+        const SpringyDebug = {
+            pi: null,
+            pp: 0,
+        };
+
+        // Clears debug informations
+        const clearDebug = () => {
+            document.getElementById('springyDebugData').innerHTML = '';
+            document.getElementById('springyDebugBox').classList.remove('has-data');
+        };
+
+        // Closes the debug box
+        const debugClose = () => {
+            document.getElementById('springyDebugBox').classList.remove('opened');
+            document.getElementById('springyDebugBox').classList.add('closed');
+            document.getElementById('springyDebugOpen').classList.remove('in-alert');
+        };
+
+        // Opens the debug box
+        const debugOpen = () => {
+            document.getElementById('springyDebugBox').classList.remove('closed');
+            document.getElementById('springyDebugBox').classList.add('opened');
+
+            try {
+                clearInterval(SpringyDebug.pi);
+                SpringyDebug.pp = 0;
+                SpringyDebug.pi = null;
+            } catch (e) {}
+        };
+
+        // Fade in
+        const fadeIn = (el, callback) => {
+            el.style.opacity = 0;
+            el.style.display = '';
+
+            (function fade() {
+                var val = parseFloat(el.style.opacity);
+                if (!((val += .1) > 1)) {
+                    el.style.opacity = val;
+                    requestAnimationFrame(fade);
+                } else {
+                    el.style.opacity = '';
+                    callback();
+                }
+            })();
+        };
+
+        // Fade out
+        const fadeOut = (el, callback) => {
+            el.style.opacity = 1;
+
+            (function fade() {
+                if ((el.style.opacity -= .1) < 0) {
+                    el.style.display = 'none';
+                    callback();
+                } else {
+                    requestAnimationFrame(fade);
+                }
+            })();
+        };
+
+        // Creates an element from HTML string
+        const htmlToElement = html => {
+            let template = document.createElement('template');
+
+            html = html.trim();
+            template.innerHTML = html;
+
+            return template.content.firstChild;
+        };
+
+        // Adds Ajax results to debug log
+        const printAjaxResults = (description, infos, txt) => {
+            const debugBox = document.getElementById('springyDebugBox');
+            const d = debugBox.querySelector('.springy-debug-data');
+
+            if (d === null) {
+                return;
+            }
+
+            const template = htmlToElement(
+                document.getElementById('springyDebutTemplate').innerHTML
+            );
+            const now = new Date();
+            const time = document.createElement('strong');
+            const content = document.createElement('span');
+
+            let title = 'AJAX result';
+
+            time.innerHTML = 'Time: ' +
+                (now.getHours() < 10 ? '0' : '') + now.getHours() + ':' +
+                (now.getMinutes() < 10 ? '0' : '') + now.getMinutes() + ':' +
+                (now.getSeconds() < 10 ? '0' : '') + now.getSeconds() + '';
+            content.innerHTML = `<br />${description}`;
+
+            template.querySelector('.springy-debug-time')
+                .insertBefore(
+                    time,
+                    template.querySelector('.springy-debug-remove')
+                );
+
+            if (window.parent.document.location !== self.document.location) {
+                title += `in [i]?frame ${window.name} `;
+            }
+
+            if (infos.url) {
+                content.innerHTML += `<br />URL: ${infos.url}`;
+            }
+
+            // Query string parameters
+            if (infos.param) {
+                let param = '';
+
+                infos.param.split('&').forEach(element => {
+                    param += (param ? ', ' : '') + '[' + element + ']';
+                });
+
+                content.appendChild(document.createElement('br'));
+                content.append(`Parameters: ${param}`);
+            }
+
+            template.querySelector('.springy-debug-value').innerHTML = title;
+            template.querySelector('.springy-debug-value').appendChild(content);
+
+            // Content
+            if (txt) {
+                if (typeof txt === 'object') {
+                    const data = document.createElement('pre');
+
+                    data.innerHTML = JSON.stringify(txt, null, '\t');
+                    template.querySelector('.spring-debug-backtrace-data')
+                        .append(data);
+
+                    if (txt.debug) {
+                        printAjaxResults('AJAX JSON Debug', infos, txt.debug);
+                    }
+                } else {
+                    template.querySelector('.spring-debug-backtrace-data')
+                        .innerHTML = txt;
+                }
+            }
+
+            d.insertBefore(template, d.firtChild);
+
+            if (!debugBox.classList.contains('opened')) {
+                pulseButton();
+            }
+        };
+
+        // Pulses the debug button
+        const pulseButton = () => {
+            const debugButton = document.getElementById('springyDebugOpen');
+
+            if (SpringyDebug.pp > 0) {
+                return;
+            }
+
+            SpringyDebug.pp = 1;
+            clearInterval(SpringyDebug.pi);
+            SpringyDebug.pi = null;
+            document.getElementById('springyDebugBox').classList.add('has-data');
+            debugButton.classList.add('in-alert');
+            fadeOut(debugButton, function () {
+                fadeIn(debugButton, function () {
+                    fadeOut(debugButton, function () {
+                        fadeIn(debugButton, function () {});
+                        SpringyDebug.pp = 0;
+                        SpringyDebug.pi = setInterval(pulseButton, 5000);
+                    });
+                });
+            });
+        };
+
+        // Startup the debug class
+        springyDebugStart = () => {
+            const debugBox = document.getElementById('springyDebugBox');
+
+            document.getElementById('springyDebugOpen').addEventListener('click', debugOpen);
+            document.getElementById('springyDebugClose').addEventListener('click', debugClose);
+            document.getElementById('springyDebugClear').addEventListener('click', clearDebug);
+            if (debugBox.querySelectorAll('.springy-debug-info').length > 1) {
+                pulseButton();
+            }
+            // Delete & Backtrace buttons
+            debugBox.addEventListener('click', function (e) {
+                if (e.target) {
+                    if (e.target.classList.contains('springy-debug-remove')) {
+                        e.target.parents('.springy-debug-info')[0].remove();
+                    } else if (e.target.classList.contains('spring-debug-backtrace-btn')) {
+                        e.target.querySelector('.springy-arrow').classList.toggle('down');
+                        e.target.querySelector('.springy-arrow').classList.toggle('up');
+                        e.target.nextElementSibling.classList.toggle('shown');
+                    }
+                }
+            });
+
+            // Observe all AJAX requests (jQuery)
+            $(window).bind('ajaxComplete', function (e, XMLHttpRequest, ajaxOptions) {
+                const p = {
+                    url: ajaxOptions.url,
+                    params: decodeURI(ajaxOptions.data)
+                };
+                let json;
+
+                if (e.type === 'ajaxError') {
+                    printAjaxResults('Error', p, XMLHttpRequest.responseText);
+                } else if ($.isPlainObject(XMLHttpRequest.responseJSON)) {
+                    json = XMLHttpRequest.responseJSON;
+                } else {
+                    try {
+                        json = $.parseJSON(XMLHttpRequest.responseText);
+                    } catch (e) {
+                        printAjaxResults('AJAX Result', p, XMLHttpRequest.responseText);
+
+                        return;
+                    }
+                }
+
+                printAjaxResults('AJAX JSON Result', p, json);
+            });
+
+            // Observe all XMLHttpRequest requests
+            const send = XMLHttpRequest.prototype.send;
+            XMLHttpRequest.prototype.send = function (e) {
+                this.addEventListener('load', function () {
+                    const p = {
+                        url: this.responseURL,
+                    };
+                    let json;
+
+                    try {
+                        json = $.parseJSON(this.responseText);
+                    } catch (e) {
+                        printAjaxResults('XMLHttpRequest Result', p, this.responseText);
+
+                        return;
+                    }
+
+                    printAjaxResults('XMLHttpRequest JSON Result', p, json);
+                })
+
+                return send.apply(this, arguments);
+            };
+        };
+
+        // jQuery loader
+        const springyAddJquery = () => {
+            const script = d.createElement('script');
+
+            script.type = 'text/javascript';
+            script.async = true;
+            script.onload = function(){
+                jQuery(springyDebugStart);
+            };
+            script.src = 'https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js';
+
+            document.getElementsByTagName('head')[0].appendChild(script);
+        };
+
+        if (typeof jQuery === 'undefined') {
+            springyAddJquery();
+
+            return;
+        }
+
+        jQuery(springyDebugStart);
+    } (document));
+</script>
