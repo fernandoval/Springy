@@ -341,9 +341,9 @@ class Debug
             }
 
             $translated[] = [
-                'file'    => $file,
-                'line'    => $line,
-                'args'    => $value['args'] ?? [],
+                'file' => $file,
+                'line' => $line,
+                'args' => $value['args'] ?? [],
                 'content' => (is_null($file) || is_null($line))
                     ? 'unknown file'
                     : trim(preg_replace('/^(&nbsp;)+/', '', $lines[$line - 1])),
