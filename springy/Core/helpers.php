@@ -297,7 +297,7 @@ function memory_string(int $memory): string
     ];
 
     return round(
-        $memory / pow(1024, ($idx = floor(log($memory, 1024)))),
+        $memory / pow(1024, $idx = floor(log($memory, 1024))),
         2
     ) . ' ' . $unit[$idx];
 }
