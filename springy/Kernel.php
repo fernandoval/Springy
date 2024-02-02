@@ -483,7 +483,7 @@ class Kernel
     private static function setEnv(): void
     {
         $env = env('SPRINGY_ENVIRONMENT');
-        $byHosts = Configuration::get('system.environment_by_host');
+        $byHosts = Configuration::get('env_by_host');
 
         if (is_array($byHosts) && count($byHosts)) {
             $host = URI::getHost() ?: 'localhost';

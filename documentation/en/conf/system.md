@@ -1,6 +1,6 @@
 # System Configuration File (system)
 
-The files **system.php** in /conf directory and **system.php** in environment
+The files **system.php** in `/conf` directory and **system.php** in environment
 subdirectories is used by **Kernel** and other core libraries.
 
 Like other configuration files of the framework you can add configuration
@@ -28,10 +28,6 @@ entries and change pre-defined sets, but can not delete it.
     autentication access to error log system.
 *   **'assets_source_path'** - Folder path for source of the asset files.
 *   **'assets_path'** - Folder path for minified asset files.
-*   **'environment_by_host'** - An array with a key pair where the key is a
-    regular expression to search the host and the value is the environment. This
-    configuration will replace the environment definition if the site host
-    exists in.
 *   **'maintenance'** - Puts the system under maintenance mode and all requests
     will reply with a HTTP 503 error.
 *   **'session'** - [Session configurations](#session-configurations).

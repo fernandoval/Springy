@@ -43,7 +43,7 @@
         instead of `Kernel::path(Kernel::PATH_PROJECT)`;
     *   `var_dir()` - returns the var files path. Use this function
         instead of `Kernel::path(Kernel::VAR_PATH)`.
-*   Added `system.environment_by_host` configuration to replace removed
+*   Added `env_by_host` configuration file to replace removed
     'ENVIRONMENT_ALIAS' key from `sysconf.php`.
 *   Added optional second parameters to `config_get()` helper function to
     defines a default value;

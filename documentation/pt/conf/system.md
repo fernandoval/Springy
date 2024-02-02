@@ -1,6 +1,6 @@
 # Arquivo de Configuração do Sistema (system)
 
-Os arquivos **system.php** na pasta /conf e **system.php** nas sub-pastas de
+Os arquivos **system.php** na pasta `/conf` e **system.php** nas sub-pastas de
 configuração por ambiente são usadas pela **Kernel** e outras bibliotecas do
 framework.
 
@@ -27,11 +27,6 @@ framework.
     complementares do website (assets).
 *   **'assets_path'** - Caminho das pasta dos minificados dos arquivos
     complementares (acessível via web).
-*   **'environment_by_host'** - Array contendo um conjunto `chave => valor`,
-    onde a chave representa um apelido para o ambiente e valor define o
-    ambiente. A chave pode ser uma expressão regular. Esta entrada de
-    configuração fará o sistema substituir a configuração do ambiente se o host
-    do site for encontrado nela.
 *   **'maintenance'** - Coloca o sistema em modo de manutenção e todas as
     requisições serão respondidas com erro HTTP 503.
 *   **'session'** - Configurações de Sessão.

@@ -87,6 +87,7 @@ The Springy Framework uses some pre-defined configuration files like **db**,
 
 Any other configuration file can be used by your application.
 
+- **[env_by_host](/documentation/en/conf/env_by_host.md)**
 - **[system](/documentation/en/conf/system.md)**
 
 ## Models

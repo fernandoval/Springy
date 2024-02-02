@@ -93,6 +93,7 @@ não podem ser renomeados ou omitidos.
 Seu sistema poderá possuir arquivos de configuração específicos, bastando
 obedecer o formato e a estrutura de nomes e diretórios.
 
+-   **[env_by_host](/documentation/pt/conf/env_by_host.md)**
 -   **[system](/documentation/pt/conf/system.md)**
 -   **[db](/documentation/pt/conf/db.md)**
 -   **[uri](/documentation/pt/conf/uri.md)**
