@@ -163,7 +163,7 @@ class SoapClient extends GlobalSoapClient
                     $wsse['username'],
                     $wsse['password'],
                     null
-                )
+                ),
             ]);
         }
     }

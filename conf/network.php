@@ -9,5 +9,5 @@ return [
             'password' => '',
         ],
         'timeout' => 15,
-    ]
+    ],
 ];
