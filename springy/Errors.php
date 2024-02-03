@@ -10,7 +10,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   3.2.1
+ * @version   3.2.2
  */
 
 namespace Springy;
@@ -217,7 +217,7 @@ class Errors
     protected function isRecoverableDeprecated(Throwable $error): bool
     {
         return ($error->getCode() === E_DEPRECATED || $error->getCode() === E_USER_DEPRECATED)
-            && Configuration::get('system', 'ignore_deprecated');
+            && Configuration::get('system.ignore_deprecated');
     }
 
     /**
@@ -233,7 +233,7 @@ class Errors
             return false;
         }
 
-        $tplPath = Configuration::get('template', 'compiled_template_path');
+        $tplPath = Configuration::get('template.compiled_template_path');
 
         return substr($error->getFile(), 0, strlen($tplPath)) === $tplPath;
     }
@@ -265,7 +265,7 @@ class Errors
             return true;
         }
 
-        $tplPath = Configuration::get('template', 'compiled_template_path');
+        $tplPath = Configuration::get('template.compiled_template_path');
 
         return substr($error->getFile(), 0, strlen($tplPath)) === $tplPath;
     }

@@ -19,6 +19,10 @@
         variable files are saved to replaces 'VAR_PATH' configuration key;
     *   `WEB_ROOT` constant with web server root path to replaces 'ROOT_PATH'
         configuration key;
+*   Added `network` configuration file (`conf/network.php`);
+*   Added:
+    *   `Springy\Utils\SoapClient` class;
+    *   `Springy\Utils\WsseAuthHeader` class;
 *   New helper functions:
     *   `app_codename()` - returns the value from `APP_CODE_NAME` constant
         defined in `consts` or the value in old configuration
@@ -55,12 +59,13 @@
     `cmd`;
 *   `Kernel::controllerNamespace()` function now is readonly;
 *   `URI::parseURI()` function now returns void;
-*   `Core\Debug` class
+*   Rafactored `Core\Debug` class;
 *   Deprecated `sysconf.php` configuration file on web root directory. Use
     `consts` and `.env` files in project root.
 *   Deprecated controllers loading without namespace and with '.page.php'
     extension for previously routing discovery;
 *   Deprecated `_global.php` pre-controller load;
+*   Deprecated `Soap_Client` class. Uses `Springy\Utils\SoapClient`;
 *   Deprecated constants:
     *   `Kernel::PATH_APPLICATION` (see `app_path()` helper function);
     *   `Kernel::PATH_CLASSES`;
@@ -94,6 +99,11 @@
     *   'SPRINGY_PATH';
     *   'TIMEZONE' - moved to .env file;
     *   'VENDOR_PATH';
+*   Deprecated configurations:
+    *   `conf/soap.php` - see above:
+        * `soap.timeout` moved to `network.soap.timeout`;
+*   Deprecated support to suffix '.conf' and '.default.conf' on configuration
+    files;
 *   Removed constants:
     *   `Kernel::PATH_CONFIGURATION`;
     *   `Kernel::PATH_ROOT`;

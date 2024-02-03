@@ -76,7 +76,7 @@ class Migrator extends DB
         $this->output('', self::MSG_INFORMATION);
 
         // Checks the configuration
-        $this->controlTable = Configuration::get('db', '_migration.table_name') ?: '_database_version_control';
+        $this->controlTable = Configuration::get('db._migration.table_name') ?: '_database_version_control';
 
         // Checks existence of the control table
         $this->checkControlTable();

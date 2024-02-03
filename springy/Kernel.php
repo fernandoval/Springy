@@ -90,7 +90,7 @@ class Kernel
         if ($routing) {
             $path = implode('/', $arguments);
 
-            foreach ((Configuration::get('uri', 'routing.routes.' . $namespace) ?: []) as $route => $controller) {
+            foreach ((Configuration::get('uri.routing.routes.' . $namespace) ?: []) as $route => $controller) {
                 if (preg_match('#' . $route . '#', $path)) {
                     return $namespace . $controller;
                 }
@@ -219,8 +219,8 @@ class Kernel
     private static function checkDevAccessDebug(): void
     {
         // Has a developer credential?
-        $devUser = Configuration::get('system', 'developer_user');
-        $devPass = Configuration::get('system', 'developer_pass');
+        $devUser = Configuration::get('system.developer_user');
+        $devPass = Configuration::get('system.developer_pass');
         if (!$devUser || !$devPass) {
             return;
         }
@@ -240,8 +240,8 @@ class Kernel
         }
 
         // Has a DBA credential?
-        $dbaUser = Configuration::get('system', 'dba_user');
-        if (!Configuration::get('system', 'debug') || !$dbaUser) {
+        $dbaUser = Configuration::get('system.dba_user');
+        if (!Configuration::get('system.debug') || !$dbaUser) {
             return;
         }
 
@@ -315,7 +315,7 @@ class Kernel
     {
         $host = URI::getHost();
 
-        foreach ((Configuration::get('uri', 'routing.hosts') ?: []) as $route => $data) {
+        foreach ((Configuration::get('uri.routing.hosts') ?: []) as $route => $data) {
             $pattern = sprintf('#^%s$#', $route);
             if (preg_match_all($pattern, $host)) {
                 self::$ctrlRoot = $data['template'] ?? [];
@@ -329,9 +329,9 @@ class Kernel
         }
 
         return [
-            'module' => Configuration::get('uri', 'routing.module') ?: '',
-            'namespace' => Configuration::get('uri', 'routing.namespace') ?: self::DEFAULT_NS,
-            'segments' => Configuration::get('uri', 'routing.segments') ?: [],
+            'module' => Configuration::get('uri.routing.module') ?: '',
+            'namespace' => Configuration::get('uri.routing.namespace') ?: self::DEFAULT_NS,
+            'segments' => Configuration::get('uri.routing.segments') ?: [],
         ];
     }
 
@@ -379,7 +379,7 @@ class Kernel
      */
     private static function httpAuthNeeded(): void
     {
-        $auth = Configuration::get('system', 'authentication');
+        $auth = Configuration::get('system.authentication');
 
         // HTTP authentication credential not defined?
         if (
@@ -421,7 +421,7 @@ class Kernel
         }
 
         // Send Cache-Control header
-        header('Cache-Control: ' . Configuration::get('system', 'cache-control'), true);
+        header('Cache-Control: ' . Configuration::get('system.cache-control'), true);
     }
 
     /**
@@ -508,7 +508,7 @@ class Kernel
     private static function systemBugAccess(): bool
     {
         // Has a credential to system bug page?
-        $auth = Configuration::get('system', 'bug_authentication');
+        $auth = Configuration::get('system.bug_authentication');
 
         if (empty($auth['user']) || empty($auth['pass'])) {
             return true;
@@ -545,7 +545,7 @@ class Kernel
 
         ini_set('date.timezone', env('TIMEZONE') ?: 'UTC');
         ini_set('default_charset', charset());
-        ini_set('display_errors', Configuration::get('system', 'debug') ? 1 : 0);
+        ini_set('display_errors', Configuration::get('system.debug') ? 1 : 0);
         header('Content-Type: text/html; charset=' . charset(), true);
 
         // Pre start check list of application
@@ -554,7 +554,7 @@ class Kernel
         self::checkDevAccessDebug();
 
         // System is under maintenance mode?
-        if (Configuration::get('system', 'maintenance')) {
+        if (Configuration::get('system.maintenance')) {
             new Errors(503, 'The system is under maintenance');
         }
 
@@ -779,8 +779,8 @@ class Kernel
             $hook = self::$errorHooks['default'];
         } elseif (isset(self::$errorHooks['all'])) {
             $hook = self::$errorHooks['all'];
-        } elseif (!$hook = Configuration::get('system', 'system_error.hook.' . $errno)) {
-            $hook = Configuration::get('system', 'system_error.hook.default');
+        } elseif (!$hook = Configuration::get('system.system_error.hook.' . $errno)) {
+            $hook = Configuration::get('system.system_error.hook.default');
         }
 
         if ($hook) {
