@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Interface for template plugin drivers.
  *
@@ -9,18 +10,13 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   1.1.6
+ * @version   1.1.7
  */
 
 namespace Springy\Template;
 
-/**
- * Interface for template plugin drivers.
- */
 interface TemplateDriverInterface
 {
-    // const TPL_NAME_SUFIX = '.tpl.html';
-
     /**
      * Adds an alternate path to the templates folder.
      *
@@ -130,7 +126,8 @@ interface TemplateDriverInterface
      *
      * @param string $var     the name of the variable.
      * @param mixed  $value   the value of the variable.
-     * @param bool   $nocache (optional) if true, the variable is assigned as nocache variable.
+     * @param bool   $nocache (optional) if true, the variable is assigned as
+     *                        nocache variable.
      *
      * @return void
      */
@@ -161,14 +158,16 @@ interface TemplateDriverInterface
     /**
      * Clears the entire template cache.
      *
-     * As an optional parameter, you can supply a minimum age in seconds the cache files must be before they will get cleared.
+     * As an optional parameter, you can supply a minimum age in seconds the
+     * cache files must be before they will get cleared.
      */
     public function clearAllCache($expire_time);
 
     /**
      * Clears the cache of the template.
      *
-     * @param int $expireTime only compiled templates older than exp_time seconds are cleared.
+     * @param int $expireTime only compiled templates older than exp_time
+     *                        seconds are cleared.
      *
      * @todo Implement cache and compiled identifiers.
      */
@@ -177,7 +176,8 @@ interface TemplateDriverInterface
     /**
      * Clears the compiled version of the template.
      *
-     * @param int $expTime only compiled templates older than exp_time seconds are cleared.
+     * @param int $expTime only compiled templates older than exp_time seconds
+     *                     are cleared.
      *
      * @todo Implement compiled identifier.
      */
