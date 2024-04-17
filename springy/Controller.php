@@ -9,7 +9,7 @@
  * @author    Allan Marques <allan.marques@ymail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   1.0.0
+ * @version   1.1.0
  */
 
 namespace Springy;
@@ -87,16 +87,6 @@ class Controller extends AclManager
     }
 
     /**
-     * Back compatibility function.
-     *
-     * @deprecated 4.5.0
-     */
-    protected function _authorizationCheck()
-    {
-        $this->authorizationCheck();
-    }
-
-    /**
      * Template initialization method.
      *
      * This method can be used to start your controller's view template.
@@ -127,26 +117,23 @@ class Controller extends AclManager
     protected function forbidden()
     {
         if ($this->redirectUnsigned) {
-            if (is_array($this->redirectUnsigned) && isset($this->redirectUnsigned['segments']) && isset($this->redirectUnsigned['query']) && isset($this->redirectUnsigned['forceRewrite']) && isset($this->redirectUnsigned['host'])) {
-                $url = URI::buildURL($this->redirectUnsigned['segments'], $this->redirectUnsigned['query'], $this->redirectUnsigned['forceRewrite'], $this->redirectUnsigned['host']);
-            } else {
-                $url = URI::buildURL($this->redirectUnsigned);
-            }
-
-            $this->redirect($url);
+            $this->redirect(
+                (
+                    is_array($this->redirectUnsigned)
+                    && isset($this->redirectUnsigned['segments'])
+                    && isset($this->redirectUnsigned['query'])
+                    && isset($this->redirectUnsigned['forceRewrite'])
+                    && isset($this->redirectUnsigned['host'])
+                ) ? URI::buildURL(
+                    $this->redirectUnsigned['segments'],
+                    $this->redirectUnsigned['query'],
+                    $this->redirectUnsigned['forceRewrite'],
+                    $this->redirectUnsigned['host']
+                ) : URI::buildURL($this->redirectUnsigned)
+            );
         }
 
         new Errors(403, 'Forbidden');
-    }
-
-    /**
-     * Back compatibility function.
-     *
-     * @deprecated 4.5.0
-     */
-    protected function _forbidden(): void
-    {
-        $this->forbidden();
     }
 
     /**
@@ -158,45 +145,11 @@ class Controller extends AclManager
     }
 
     /**
-     * Back compatibility function.
-     *
-     * @deprecated 4.5.0
-     */
-    protected function _pageNotFound()
-    {
-        $this->pageNotFound();
-    }
-
-    /**
      * Sends a URL redirect to the user browser and kill the application.
      */
     protected function redirect($url): void
     {
         URI::redirect($url);
-    }
-
-    /**
-     * Back compatibility function.
-     *
-     * @deprecated 4.5.0
-     */
-    protected function _redirect($url)
-    {
-        $this->redirect($url);
-    }
-
-    /**
-     * Template initialization method to back compatibility.
-     *
-     * @return Template Returns the template object.
-     *
-     * @deprecated 4.5.0
-     */
-    protected function _template($template = null)
-    {
-        $this->createTemplate($template);
-
-        return $this->template;
     }
 
     /**
@@ -212,15 +165,5 @@ class Controller extends AclManager
     protected function userSpecialVerifications(): bool
     {
         return true;
-    }
-
-    /**
-     * Back compatibility function.
-     *
-     * @deprecated 4.5.0
-     */
-    protected function _userSpecialVerifications()
-    {
-        return $this->userSpecialVerifications();
     }
 }
