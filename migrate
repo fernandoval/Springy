@@ -7,7 +7,7 @@
  * @copyright 2007 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
  *
- * @version 0.5.0
+ * @version 0.5.1
  *
  * @codingStandardsIgnoreFile
  */
@@ -20,6 +20,11 @@ require __DIR__ . '/vendor/autoload.php';
 
 // Load framework configuration
 $sysconf = file_exists(web_root() . '/sysconf.php') ? require_once web_root() . '/sysconf.php' : [];
+
+// Define error handlers
+error_reporting(E_ALL);
+set_exception_handler('springyExceptionHandler');
+set_error_handler('springyErrorHandler');
 
 // Starts required super globals
 $_SERVER['QUERY_STRING'] = '';

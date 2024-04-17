@@ -7,7 +7,7 @@
  * @copyright 2007 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
  *
- * @version 3.0.0
+ * @version 3.0.1
  *
  * @codingStandardsIgnoreFile
  */
@@ -31,6 +31,11 @@ if ($argc < 2) {
 
 // Load framework configuration
 $sysconf = file_exists(web_root() . '/sysconf.php') ? require_once web_root() . '/sysconf.php' : [];
+
+// Define error handlers
+error_reporting(E_ALL);
+set_exception_handler('springyExceptionHandler');
+set_error_handler('springyErrorHandler');
 
 $_SERVER['QUERY_STRING'] = '';
 $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
