@@ -99,8 +99,7 @@ class Debug
     {
         ob_start();
         var_dump($data);
-        $xpto = ob_get_clean();
-        $export = $xpto;
+        $export = ob_get_clean();
         $export = preg_replace('/\s*\bNULL\b/m', 'null', $export); // Cleanup NULL
         $export = preg_replace('/\s*\bbool\((true|false)\)/m', '$1', $export); // Cleanup booleans
         $export = preg_replace('/\s*\bint\((\d+)\)/m', '$1', $export); // Cleanup integers
@@ -282,33 +281,7 @@ class Debug
      */
     public static function printRc($par)
     {
-        if (is_object($par)) {
-            if (method_exists($par, '__toString')) {
-                return str_replace(
-                    '&lt;?php&nbsp;',
-                    '',
-                    str_replace(
-                        '&nbsp;?&gt;',
-                        '',
-                        highlight_string('<?php ' . var_export($par->__toString(), true), true)
-                    )
-                );
-            }
-
-            return (PHP_SAPI === 'cli' || defined('STDIN'))
-                ? print_r($par, true)
-                : '<pre>' . print_r($par, true) . '</pre>';
-        }
-
-        return str_replace(
-            '&lt;?php&nbsp;',
-            '',
-            str_replace(
-                '&nbsp;?&gt;',
-                '',
-                highlight_string('<?php ' . print_r($par, true), true)
-            )
-        );
+        return self::highligh($par);
     }
 
     /**
