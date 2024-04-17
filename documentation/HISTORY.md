@@ -21,6 +21,8 @@
         configuration key;
 *   Added `network` configuration file (`conf/network.php`);
 *   Added:
+    *   `Springy\Session::saveToDB()` function;
+    *   `Springy\Session::saveToMC()` function;
     *   `Springy\Utils\SoapClient` class;
     *   `Springy\Utils\WsseAuthHeader` class;
 *   New helper functions:
@@ -65,7 +67,10 @@
 *   Deprecated controllers loading without namespace and with '.page.php'
     extension for previously routing discovery;
 *   Deprecated `_global.php` pre-controller load;
-*   Deprecated `Soap_Client` class. Uses `Springy\Utils\SoapClient`;
+*   Deprecated classes:
+    *   `DeepDir`;
+    *   `Soap_Client` - uses `Springy\Utils\SoapClient`;
+    *   `Springy\Security\AclUserInterface`;
 *   Deprecated constants:
     *   `Kernel::PATH_APPLICATION` (see `app_path()` helper function);
     *   `Kernel::PATH_CLASSES`;
@@ -85,6 +90,8 @@
     *   `Kernel::systemName()` - use `app_name()` helper function;
     *   `Kernel::systemConfGlobal()` - use `env()` helper function;
     *   `Kernel::systemVersion()` - use `app_version()` helper function;
+    *   `Session::_saveDbSession()` - use `Session::saveToDB()`;
+    *   `Session::_saveMcSession()` - use `Session::saveToMC()`;
 *   Removed configuration keys from `sysconf.php` (will be ignored if exists):
     *   'ACTIVE_ENVIRONMENT' - set the value in SPRINGY_ENVIRONMENT key at the
         .env file;
@@ -109,8 +116,15 @@
     *   `Kernel::PATH_ROOT`;
     *   `Kernel::PATH_SYSTEM`;
     *   `Kernel::PATH_CLASS`;
-*   Removed `springyAutoload` autoload function;
-*   Removed `with()` helper function;
+*   Removed functions and methods:
+    *   `springyAutoload` autoload function;
+    *   `Controller::_authorizationCheck()` deprecated at version 4.5;
+    *   `Controller::_forbidden()` deprecated at version 4.5;
+    *   `Controller::_pageNotFound()` deprecated at version 4.5;
+    *   `Controller::_redirect()` deprecated at version 4.5;
+    *   `Controller::_template()` deprecated at version 4.5;
+    *   `Controller::_userSpecialVerifications()` deprecated at version 4.5;
+    *   `with()` helper function;
 *   Removed classes:
     *   `CreditCardValidation`;
     *   `Log`;
@@ -135,7 +149,7 @@
 *   Adjustments and optimizations;
 *   Fixed bugs to `Migrator` an `Errors` class;
 *   Added `Kernel::systemConfGlobal()` to get global system configuration data;
-*   `Kernel` functions updates to readonly mode:
+*   `Kernel` functions updated to readonly mode:
     *   `Kernel::charset()`;
     *   `Kernel::environment()`;
     *   `Kernel::path()`;
@@ -144,48 +158,53 @@
     *   `Kernel::systemVersion()`;
 *   Support to `PHPMailer` upgraded to v6.x;
 *   Added GitHub Actions test case;
-*   Deprecated 'CONTROLER_PATH' index in `sysconf.php` configuration file;
-*   Deprecated 'CLASS_PATH' index in `sysconf.php` configuration file;
-*   Deprecated 'SPRINGY_PATH' index in `sysconf.php` configuration file;
-*   Deprecated 'VENDOR_PATH' index in `sysconf.php` configuration file;
-*   Deprecated `Controller::_authorizationCheck()`;
-*   Deprecated `Controller::_forbidden()`;
-*   Deprecated `Controller::_pageNotFound()`;
-*   Deprecated `Controller::_redirect()`;
-*   Deprecated `Controller::_template()`;
-*   Deprecated `Controller::_userSpecialVerifications()`;
-*   Deprecated `CreditCardValidation` class;
-*   Deprecated `Error::handler()`;
-*   Deprecated `Kernel::PATH_CONFIGURATION` constant;
-*   Deprecated `Kernel::PATH_SYSTEM` constant;
-*   Deprecated `Kernel::PATH_CLASS` constant;
-*   Deprecated `Log` class;
-*   Deprecated `Container\DIContainer::has()`;
-*   Deprecated `Container\DIContainer::resolve()`;
-*   Deprecated `DB::castDateBrToDb()`;
-*   Deprecated `DB::castDateDbToBr()`;
-*   Deprecated `DB::longBrazilianDate()`;
-*   Deprecated `Events\Mediator::on()`;
-*   Deprecated `Events\Mediator::off()`;
-*   Deprecated `Security\AclManager::setDefaultModule()`;
-*   Deprecated `Security\AclManager::getDefaultModule()`;
-*   Deprecated `Strings::cep()`;
-*   Deprecated `Strings::data()`;
-*   Deprecated `Strings::guid()`;
-*   Deprecated `Strings::hora()`;
-*   Deprecated `Strings::numero()`;
-*   Deprecated `Strings::sizeMatch()`;
-*   Deprecated `Strings::telefone()`;
-*   Deprecated `Utils\Excel class`;
-*   Deprecated `Utils\ZipFile class`;
-*   Removed deprecated function `URI::_GET()`;
-*   Removed deprecated function `URI::getHost()`;
-*   Removed deprecated function `Cookie::del()`;
+*   Deprecated indexes from `sysconf.php` configuration file:
+    *   'CONTROLER_PATH';
+    *   'CLASS_PATH';
+    *   'SPRINGY_PATH';
+    *   'VENDOR_PATH';
+*   Deprecated classes:
+    *   `CreditCardValidation`;
+    *   `Log`;
+    *   `Utils\Excel`;
+    *   `Utils\ZipFile`;
+*   Deprecated constants:
+    *   `Kernel::PATH_CONFIGURATION`;
+    *   `Kernel::PATH_SYSTEM` constant;
+    *   `Kernel::PATH_CLASS` constant;
+*   Deprecated functions:
+    *   `springyAutoload` autoload function;
+    *   `Controller::_authorizationCheck()`;
+    *   `Controller::_forbidden()`;
+    *   `Controller::_pageNotFound()`;
+    *   `Controller::_redirect()`;
+    *   `Controller::_template()`;
+    *   `Controller::_userSpecialVerifications()`;
+    *   `Container\DIContainer::has()`;
+    *   `Container\DIContainer::resolve()`;
+    *   `DB::castDateBrToDb()`;
+    *   `DB::castDateDbToBr()`;
+    *   `DB::longBrazilianDate()`;
+    *   `Error::handler()`;
+    *   `Events\Mediator::on()`;
+    *   `Events\Mediator::off()`;
+    *   `Security\AclManager::setDefaultModule()`;
+    *   `Security\AclManager::getDefaultModule()`;
+    *   `Strings::cep()`;
+    *   `Strings::data()`;
+    *   `Strings::guid()`;
+    *   `Strings::hora()`;
+    *   `Strings::numero()`;
+    *   `Strings::sizeMatch()`;
+    *   `Strings::telefone()`;
 *   Removed `SOAP` class;
+*   Removed functions (already deprecated):
+    *   `URI::_GET()`;
+    *   `URI::getHost()`;
+    *   `Cookie::del()`;
 *   Updated error HTML asset files;
 *   Removed required suffix '.conf' and '.default.conf' from configuration
     files;
-*   Deprecated `springyAutoload` autoload function;
 *   Deprecated `$over_conf` variable in configuration files;
 *   Deprecated configuratios:
     *   `uri.host_controller_path`;
