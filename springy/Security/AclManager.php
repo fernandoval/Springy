@@ -1,14 +1,14 @@
 <?php
 
 /**
- * ACL (Access Control List) Authorization class for the application.
+ * Access Control List (ACL) Authorization for web application.
  *
  * @copyright 2014 Fernando Val
  * @author    Allan Marques <allan.marques@ymail.com>
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   1.1.1
+ * @version   1.3.0
  */
 
 namespace Springy\Security;
@@ -16,9 +16,6 @@ namespace Springy\Security;
 use Springy\Kernel;
 use Springy\URI;
 
-/**
- * ACL (Access Control List) Authorization class for the application.
- */
 class AclManager
 {
     /// Nome do módulo no qual o usuário se encontra no request atual
@@ -29,7 +26,7 @@ class AclManager
     protected $action;
     /// Prefixo dos módulos
     protected $modulePrefix = '';
-    /// Current user object
+    /** @var IdentityInterface the current user object */
     protected $user;
     /// Caracter separador utilizado para concatenar o nome da permissão
     protected $separator = '|';
@@ -39,9 +36,9 @@ class AclManager
     /**
      * Constructor.
      *
-     * @param AclUserInterface $user
+     * @param IdentityInterface $user
      */
-    public function __construct(AclUserInterface $user)
+    public function __construct(IdentityInterface $user)
     {
         $this->user = $user;
 
@@ -185,11 +182,11 @@ class AclManager
     /**
      * Defines the user object.
      *
-     * @param AclUserInterface $user
+     * @param IdentityInterface $user
      *
      * @return void
      */
-    public function setAclUser(AclUserInterface $user)
+    public function setAclUser(IdentityInterface $user)
     {
         $this->user = $user;
     }
@@ -197,7 +194,7 @@ class AclManager
     /**
      * Gets the user object.
      *
-     * @return AclUserInterface object
+     * @return IdentityInterface object
      */
     public function getAclUser()
     {
@@ -211,7 +208,7 @@ class AclManager
      */
     public function isPermitted()
     {
-        return (bool) $this->user->getPermissionFor($this->getAclObjectName());
+        return $this->user->hasPermissionFor($this->getAclObjectName());
     }
 
     /**
