@@ -4,6 +4,8 @@
 
 ### 4.6.0-dev
 
+*   Added support to PHP 8.3;
+*   Droped support to PHP 8.1;
 *   Added dependency to [PHP dotenv](https://github.com/vlucas/phpdotenv);
 *   Added `consts` file in project root directory. This is a PHP file to starts
     application constants. Constants in `consts` file:
@@ -53,6 +55,7 @@
     'ENVIRONMENT_ALIAS' key from `sysconf.php`.
 *   Added optional second parameters to `config_get()` helper function to
     defines a default value;
+*   Added PHPUnit test for `Utils\JSON` class;
 *   Helpers functions script moved from web root directory to `springy/Core`
     directory;
 *   Migration script `public/migration.php` moved to root directory and renamed
@@ -124,6 +127,8 @@
     *   `Controller::_redirect()` deprecated at version 4.5;
     *   `Controller::_template()` deprecated at version 4.5;
     *   `Controller::_userSpecialVerifications()` deprecated at version 4.5;
+    *   `Utils\JSON::getDados()` deprecated at version 4.4;
+    *   `Utils\JSON::printJ()` deprecated at version 4.4;
     *   `with()` helper function;
 *   Removed classes:
     *   `CreditCardValidation`;
@@ -134,6 +139,7 @@
     *   `uri.host_controller_path`;
     *   `uri.redirects`;
     *   `uri.routes`.
+*   PHPUnit class upgraded to v10.5;
 
 ### 4.5.0
 
