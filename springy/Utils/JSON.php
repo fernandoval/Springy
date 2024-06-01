@@ -8,12 +8,11 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   1.1.12
+ * @version   1.2.0
  */
 
 namespace Springy\Utils;
 
-use Springy\Configuration;
 use Springy\Core\Debug;
 use Springy\Kernel;
 
@@ -33,8 +32,6 @@ class JSON
      */
     public function __construct($data = null, $status = 200)
     {
-        Configuration::set('system', 'ajax', true);
-
         if ($data) {
             $this->add($data);
         }
@@ -49,7 +46,7 @@ class JSON
      *
      * @return void
      */
-    public function add(array $data)
+    public function add(array $data): void
     {
         $this->data = array_merge($this->data, $data);
     }
@@ -65,25 +62,13 @@ class JSON
     }
 
     /**
-     * Pega todos os dados do JSON.
-     *
-     * This method will be deprecated in future version.
-     *
-     * @deprecated 4.4.0
-     */
-    public function getDados()
-    {
-        return $this->getData();
-    }
-
-    /**
      * Changes the header status code.
      *
      * @param int $status
      *
      * @return void
      */
-    public function setHeaderStatus($status)
+    public function setHeaderStatus($status): void
     {
         $this->statusCode = $status;
     }
@@ -114,7 +99,7 @@ class JSON
      */
     public function output($andDie = true)
     {
-        if (Configuration::get('system', 'debug')) {
+        if (config_get('system.debug')) {
             $this->data['debug'] = Debug::get();
         }
 
@@ -142,18 +127,6 @@ class JSON
         if ($andDie) {
             exit;
         }
-    }
-
-    /**
-     * Back compatibility method. Is deprecated. Use the output method.
-     *
-     * This method is deprecated and will be removed in future version.
-     *
-     * @deprecated 4.4.0
-     */
-    public function printJ($andDie = true)
-    {
-        $this->output($andDie);
     }
 
     /**

@@ -1,49 +1,54 @@
 <?php
-/** \file
- *  Springy.
+
+/**
+ * Classe statica para tratamento JSON.
  *
- *  \brief      Classe stática para tratamento JSON.
- *  \copyright  Copyright (c) 2009-2013 Lucas Cardozo
- *  \author     Lucas Cardozo - lucas.cardozo@gmail.com
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    1.2.2
- *  \ingroup    framework
+ * @copyright 2009 Lucas Cardozo
+ * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
+ * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
+ *
+ * @version   1.2.3
  */
 
 namespace Springy\Utils;
 
 /**
- *  \brief Classe stática para tratamento JSON.
+ * phpcs:disable Squiz.Classes.ValidClassName.NotCamelCaps
  */
 class JSON_Static
 {
     private static $defaultVars = [];
 
     /**
-     *	\brief Método statico que adiciona uma variável a todas as instancias do JSON.
+     * Adds a variable value.
+     *
+     * @param string $name
+     * @param mixed $value
+     *
+     * @return void
      */
-    public static function addDefaultVar($name, $value)
+    public static function addDefaultVar(string $name, mixed $value): void
     {
         self::$defaultVars[$name] = $value;
     }
 
     /**
-     *	\brief Método statico que retorna todas as variáveis registradas.
+     * Get all registered vars.
      */
-    public static function getDefaultVars()
+    public static function getDefaultVars(): array
     {
         return self::$defaultVars;
     }
 
     /**
-     *	\brief Método statico que retorna uma variável definida como padrão a todas as instancias da Template.
+     * Gets a defined variable.
      *
-     *	\param[in] String $name
+     * @param string $name
      *
-     *	\return mixed
+     * @return mixed
      */
-    public static function getDefaultVar($name)
+    public static function getDefaultVar(string $name, mixed $default = null): mixed
     {
-        return isset(self::$defaultVars[$name]) ? self::$defaultVars[$name] : null;
+        return self::$defaultVars[$name] ?? $default;
     }
 }
