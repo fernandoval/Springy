@@ -8,13 +8,12 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   0.5.2
+ * @version   0.5.3
  */
 
 namespace Springy\Validation;
 
 use Springy\Core\Input;
-use Springy\Kernel;
 use Springy\Utils\MessageContainer;
 use Springy\Utils\Strings;
 
@@ -81,7 +80,7 @@ class Validator
      */
     public function __construct($input = [], array $rules = [], $messages = [])
     {
-        $this->charset = Kernel::charset();
+        $this->charset = charset();
         $this->setInput($input);
         $this->rules = $rules;
         $this->messages = $messages;

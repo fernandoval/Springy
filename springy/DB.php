@@ -9,7 +9,7 @@
  * @author    Allan Marques <allan.marques@ymail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   1.10.1
+ * @version   1.10.2
  */
 
 namespace Springy;
@@ -180,7 +180,7 @@ class DB
     private function roundRobinConnect($database, $dbconf)
     {
         // Lê as configurações de controle de round robin
-        $roundRobin = Configuration::get('db', 'round_robin');
+        $roundRobin = Configuration::get('db.round_robin');
 
         if ($roundRobin['type'] == 'memcached') {
             // Efetua controle de round robin por Memcached
@@ -399,7 +399,7 @@ class DB
         $sql = null;
 
         // Recupera a configuração de cache
-        $dbcache = Configuration::get('db', 'cache');
+        $dbcache = Configuration::get('db.cache');
         // Limpa o que estiver em memória e tiver sido carregado de cache
         $this->cacheStatement = null;
         // Configuração de cache está ligada?
@@ -505,7 +505,7 @@ class DB
             }
         }
 
-        if (self::$dbDebug || Configuration::get('system', 'sql_debug')) {
+        if (self::$dbDebug || Configuration::get('system.sql_debug')) {
             $conf = Configuration::get('db', self::$conectionIds[$this->database]['dbName']);
 
             debug(

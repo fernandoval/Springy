@@ -1,4 +1,4 @@
-#!/usr/bin/php
+#!/usr/bin/env php
 <?php
 
 /*
@@ -7,37 +7,35 @@
  * @copyright 2007 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
  *
- * @version 2.1.0
+ * @version 3.0.1
+ *
+ * @codingStandardsIgnoreFile
  */
 
-if (!file_exists('sysconf.php')) {
-    echo 'Internal System Error on Startup.',"\n";
-    echo 'Required file "sysconf.php" missing.',"\n";
-    exit(999);
-}
-if (!file_exists('_Main.php')) {
-    echo 'Internal System Error on Startup.',"\n";
-    echo 'Required file "_Main.php" missing.',"\n";
-    exit(999);
-}
+define('SPRINGY_START', microtime(true));
 
-if (!defined('STDIN') || empty($argc)) {
-    echo 'This script can be executed only in CLI mode.';
-    exit(998);
-}
+require __DIR__ . '/consts';
+// Loads the Composer autoload
+require __DIR__ . '/vendor/autoload.php';
 
 if ($argc < 2) {
-    require 'sysconf.php';
-
-    echo sysconf('SYSTEM_NAME') . ' v' . sysconf('SYSTEM_VERSION') . "\n";
+    echo app_name() . ' v' . app_version() . "\n";
     echo "\n";
     echo 'ERROR: Controller command missing.',"\n";
     echo "\n";
     echo 'Syntax:',"\n";
-    echo '$ php -f cmd.php <controller> [--query_string <uri_string>] [--http_host <host_name>] [args...]',"\n";
+    echo '$ php cmd <controller> [--query_string <uri_string>] [--http_host <host_name>] [args...]',"\n";
     echo "\n";
     exit(999);
 }
+
+// Load framework configuration
+$sysconf = file_exists(web_root() . '/sysconf.php') ? require_once web_root() . '/sysconf.php' : [];
+
+// Define error handlers
+error_reporting(E_ALL);
+set_exception_handler('springyExceptionHandler');
+set_error_handler('springyErrorHandler');
 
 $_SERVER['QUERY_STRING'] = '';
 $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
@@ -45,7 +43,7 @@ $_SERVER['REQUEST_METHOD'] = 'GET';
 $_SERVER['REQUEST_URI'] = $argv[1];
 $_SERVER['SERVER_PROTOCOL'] = 'CLI/Mode';
 $_SERVER['HTTP_HOST'] = 'cmd.shell';
-$_SERVER['DOCUMENT_ROOT'] = dirname(__FILE__);
+$_SERVER['DOCUMENT_ROOT'] = __DIR__;
 
 $arg = 1;
 while (++$arg < $argc) {
@@ -67,7 +65,9 @@ while (++$arg < $argc) {
             $_SERVER['HTTP_HOST'] = $argv[$arg];
         }
     }
-}
-$_SERVER['QUERY_STRING'] = trim($_SERVER['QUERY_STRING'], '&');
 
-require_once '_Main.php';
+    $_SERVER['QUERY_STRING'] = trim($_SERVER['QUERY_STRING'], '&');
+}
+
+ob_start();
+Springy\Kernel::run($sysconf);

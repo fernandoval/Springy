@@ -8,7 +8,7 @@
  * @author    Allan Marques <allan.marques@ymail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version    3.1.0
+ * @version   3.2.0
  */
 
 namespace Springy;
@@ -34,12 +34,13 @@ class Configuration
     /**
      * Gets the content of a configuration key.
      *
-     * @param string $local name of the configuration set.
-     * @param string $var   configuration key.
+     * @param string $local   name of the configuration set.
+     * @param string $var     configuration key.
+     * @param mixed  $default default value if configuration not exists.
      *
-     * @return mixed the value of configuration key or null if not defined.
+     * @return mixed the value of configuration key or $default if not defined.
      */
-    public static function get($local, $var = null)
+    public static function get(string $local, ?string $var = null, mixed $default = null)
     {
         if (is_null($var)) {
             $firstSegment = substr($local, 0, strpos($local, '.'));
@@ -58,7 +59,7 @@ class Configuration
             return self::$confs[$local];
         }
 
-        return Utils\ArrayUtils::newInstance()->dottedGet(self::$confs[$local], $var);
+        return Utils\ArrayUtils::newInstance()->dottedGet(self::$confs[$local], $var, $default);
     }
 
     /**
@@ -68,12 +69,12 @@ class Configuration
      * No changes will be made to the configuration files.
      *
      * @param string $local name of the configuration set.
-     * @param string $var   configuration key.
+     * @param mixed  $var   configuration key.
      * @param mixed  $valus new value for configuration.
      *
      * @return void
      */
-    public static function set($local, $var, $value = null)
+    public static function set(string $local, mixed $var, mixed $value = null)
     {
         if (is_null($value)) {
             $value = $var;
@@ -186,16 +187,15 @@ class Configuration
      */
     public static function load($local)
     {
-        $path = Kernel::path(Kernel::PATH_CONF);
         $environment = Kernel::environment();
         self::$confs[$local] = [];
 
         // Load the default configuration file
-        self::loadAll($path . DS . $local . '.default', $local);
-        self::loadAll($path . DS . $local, $local);
+        self::loadAll(config_dir() . DS . $local . '.default', $local);
+        self::loadAll(config_dir() . DS . $local, $local);
 
         // Load the configuration file for the current environment
-        self::loadAll($path . DS . $environment . DS . $local, $local);
+        self::loadAll(config_dir() . DS . $environment . DS . $local, $local);
 
         // Check if configuration was loaded
         if (empty(self::$confs[$local])) {
@@ -214,7 +214,7 @@ class Configuration
      */
     public static function save($local)
     {
-        $fileName = Kernel::path(Kernel::PATH_CONF) . DS . Kernel::environment() . DS . $local . '.json';
+        $fileName = config_dir() . DS . Kernel::environment() . DS . $local . '.json';
 
         if (!file_put_contents($fileName, json_encode(self::$confs[$local]))) {
             new SpringyException('Can not write to ' . $fileName);

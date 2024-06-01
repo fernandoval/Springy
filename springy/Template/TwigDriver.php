@@ -11,7 +11,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   0.17.1
+ * @version   0.17.2
  */
 
 namespace Springy\Template;
@@ -234,10 +234,11 @@ class TwigDriver implements TemplateDriverInterface
         $vars = [
             'HOST' => URI::buildURL(),
             'CURRENT_PAGE_URI' => URI::currentPageURI(),
-            'SYSTEM_NAME' => Kernel::systemName(),
-            'SYSTEM_VERSION' => Kernel::systemVersion(),
-            'PROJECT_CODE_NAME' => Kernel::projectCodeName(),
+            'SYSTEM_NAME' => app_name(),
+            'SYSTEM_VERSION' => app_version(),
+            'PROJECT_CODE_NAME' => app_codename(),
             'ACTIVE_ENVIRONMENT' => Kernel::environment(),
+            'APP_ENVIRONMENT' => Kernel::environment(),
         ];
 
         // Alimenta as variáveis padrão da aplicação

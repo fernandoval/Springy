@@ -7,16 +7,75 @@
  * @author    Allan Marques <allan.marques@ymail.com>
  * @author    Fernando Val <fernando.val@gmail.com>
  *
- * @version   0.2.5
+ * @version   1.0.0
  */
 
 namespace Springy\Security;
 
-/**
- * Session identity interface.
- */
 interface IdentityInterface
 {
+    /**
+     * Loads the identity class from the session.
+     *
+     * @param array $data the array with the identity data.
+     *
+     * @return void
+     */
+    public function fillFromSession(array $data): void;
+
+    /**
+     * Gets the identity id key.
+     *
+     * @return mixed the identity id key
+     */
+    public function getId(): mixed;
+
+    /**
+     * Gets the identity id column name.
+     *
+     * @return string the column name for the identity id key.
+     */
+    public function getIdField(): string;
+
+    /**
+     * Gets the session key name for the identity.
+     *
+     * @return string the session key name for the identity.
+     */
+    public function getSessionKey(): string;
+
+    /**
+     * Gets the identity session data.
+     *
+     * @return array the array with data to be saved in identity session.
+     */
+    public function getSessionData(): array;
+
+    /**
+     * Gets the identity credentials.
+     *
+     * @example Login and password.
+     *
+     * @return array the array with credential data.
+     */
+    public function getCredentials(): array;
+
+    /**
+     * Get the user permission for the given ACL.
+     *
+     * @param string $aclObjectName the name of the ACL.
+     *
+     * @return bool True if the user has permission to access or false if not.
+     */
+    public function hasPermissionFor(string $aclObjectName): bool;
+
+    /**
+     * Returns true if the user's data was loaded.
+     *
+     * @return bool
+     */
+    public function isLoaded(): bool;
+
     /**
      * Loads the identity data by given credential.
      *
@@ -26,51 +85,5 @@ interface IdentityInterface
      *
      * @return void
      */
-    public function loadByCredentials(array $data);
-
-    /**
-     * Load the identity class from the session.
-     *
-     * @param array $data the array with the identity data.
-     *
-     * @return void
-     */
-    public function fillFromSession(array $data);
-
-    /**
-     * Get the identity id key.
-     *
-     * @return string the identity id key
-     */
-    public function getId();
-
-    /**
-     * Get the identity id column name.
-     *
-     * @return string the column name for the identity id key.
-     */
-    public function getIdField();
-
-    /**
-     * Get the session key name for the identity.
-     *
-     * @return string the session key name for the identity.
-     */
-    public function getSessionKey();
-
-    /**
-     * Get the identity session data.
-     *
-     * @return array the array with data to be saved in identity session.
-     */
-    public function getSessionData();
-
-    /**
-     * Get the identity credentials.
-     *
-     * @example Login and password.
-     *
-     * @return array the array with credential data.
-     */
-    public function getCredentials();
+    public function loadByCredentials(array $data): void;
 }

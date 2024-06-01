@@ -9,9 +9,6 @@
  */
 
 return [
-    'host_controller_path' => [
-        'host.seusite.localhost' => ['diretorio'],
-    ],
     'dynamic' => $_SERVER['HTTP_HOST'],
     'static' => $_SERVER['HTTP_HOST'],
     'secure' => $_SERVER['HTTP_HOST'],

@@ -1,8 +1,6 @@
 # Springy
 
-[![Build Status](https://travis-ci.com/fernandoval/Springy.svg?branch=master)](https://travis-ci.com/fernandoval/Springy)
-[![StyleCI](https://styleci.io/repos/26294247/shield)](https://styleci.io/repos/26294247)
-[![Codacy Badge](https://api.codacy.com/project/badge/grade/6152e69cbc7d433d8a151622e0f6be4b)](https://www.codacy.com/app/fval/Springy)
+![Build Status](https://github.com/fernandoval/Springy/actions/workflows/tests.yml/badge.svg)
 
 A micro framework for smart PHP developers.
 
@@ -24,7 +22,7 @@ It was created based upon the KISS principle in which the simplicity is the base
 
 ## Requirements
 
-* PHP 8.0+
+* PHP 8.1+
 * [Composer](https://getcomposer.org/) Dependency Manager for PHP
 
 ## Language dependencies

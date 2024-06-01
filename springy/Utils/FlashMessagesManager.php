@@ -1,38 +1,32 @@
 <?php
-/** \file
- *  Springy.
+
+/**
+ * Session flash data manager.
  *
- *  \brief      Classe que gerenciar dados flash de sessão, ou seja, dados que ficam disponíveis por somente um request.
- *  \copyright  Copyright (c) 2007-2016 Fernando Val
- *  \author     Allan Marques - allan.marques@ymail.com
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.1.1
- *  \ingroup    framework
+ * @copyright 2015 Fernando Val
+ * @author    Allan Marques <allan.marques@ymail.com>
+ * @author    Fernando Val <fernando.val@gmail.com>
+ *
+ * @version 0.2.0
  */
 
 namespace Springy\Utils;
 
 use Springy\Session;
 
-/**
- * \brief Classe que gerenciar dados flash de sessão, ou seja, dados que ficam disponíveis por somente um request.
- */
 class FlashMessagesManager
 {
-    /// Mensagens de erros guardados no ultimo request
+    /** @var MessageContainer last request error messages */
     protected $oldErrors;
-    /// Mensagens genéricas guardadas no último request
+    /** @var MessageContainer last request generic messages */
     protected $oldMessages;
-    /// Mensagens de erros que serão guardadas para o próximo request
+    /** @var MessageContainer error messages saved to next request */
     protected $newErrors;
-    /// Mensagens genéricas que serão guardadas para o próximo request
+    /** @var MessageContainer generic messages saved to next request */
     protected $newMessages;
-    /// Nome identificador das mensagens na sessão
+    /** @var string flash data identificator */
     protected $flashKey = '__FLASHDATA__';
 
-    /**
-     *  \brief Construtor da classe.
-     */
     public function __construct()
     {
         $this->oldErrors = new MessageContainer();
@@ -41,13 +35,16 @@ class FlashMessagesManager
         $this->newMessages = new MessageContainer();
 
         $this->loadLastSessionData();
-        // Remove os dados da sessão guardados no último request
+        // Clear previous request data
         Session::unregister($this->flashKey);
     }
 
     /**
-     *  \brief Seta o container de mensagens de erros que serão guardados para o próximo request.
-     *  \param [in] (\Springy\Utils\MessageContainer) $errors - Container de mensagem de erros.
+     * Sets an error message container to the next request.
+     *
+     * @param MessageContainer $errors
+     *
+     * @return void
      */
     public function setErrors(MessageContainer $errors)
     {
@@ -55,8 +52,9 @@ class FlashMessagesManager
     }
 
     /**
-     *  \brief Retorna o container de mensagens de erros que serão guardados para o próximo request.
-     *  \return (\Springy\Utils\MessageContainer).
+     * Gets the error message container saved to next request.
+     *
+     * @return MessageContainer
      */
     public function errors()
     {
@@ -64,8 +62,11 @@ class FlashMessagesManager
     }
 
     /**
-     *  \brief Seta o container de mensagens genéricas que serão guardadas para o próximo request.
-     *  \param [in] (\Springy\Utils\MessageContainer) $errors - Container de mensagem de erros.
+     * Sets a generic message container to the next request.
+     *
+     * @param MessageContainer $messages
+     *
+     * @return void
      */
     public function setMessages(MessageContainer $messages)
     {
@@ -73,8 +74,9 @@ class FlashMessagesManager
     }
 
     /**
-     *  \brief Retorna o container de mensagens genéricas que serão guardadas para o próximo request.
-     *  \return (\Springy\Utils\MessageContainer).
+     * Gets the generic message container saved to the next request.
+     *
+     * @return MessageContainer
      */
     public function messages()
     {
@@ -82,8 +84,9 @@ class FlashMessagesManager
     }
 
     /**
-     *  \brief Retorna o container de mensagens de erros que foram guardados no último request.
-     *  \return (\Springy\Utils\MessageContainer).
+     * Gets the error message container saved at the previous request.
+     *
+     * @return MessageContainer
      */
     public function lastErrors()
     {
@@ -91,8 +94,9 @@ class FlashMessagesManager
     }
 
     /**
-     *  \brief Retorna o container de mensagens genéricas que foram guardadas no último request.
-     *  \return (\Springy\Utils\MessageContainer).
+     * Gets the generic messages container saved at the previous request.
+     *
+     * @return MessageContainer
      */
     public function lastMessages()
     {
@@ -100,7 +104,9 @@ class FlashMessagesManager
     }
 
     /**
-     *  \brief Carrega os containers de mensagens que foram guardanos no último request, se existirem.
+     * Loads the message container saved at the last request.
+     *
+     * @return void
      */
     protected function loadLastSessionData()
     {
@@ -116,7 +122,9 @@ class FlashMessagesManager
     }
 
     /**
-     *  \brief Guarda as mensagens para serem carregadas no próximo request.
+     * Saves the messages into session to be loaded at the next request.
+     *
+     * @return void
      */
     protected function registerSessionData()
     {
@@ -135,9 +143,6 @@ class FlashMessagesManager
         }
     }
 
-    /**
-     *  \brief Destrutor da classe.
-     */
     public function __destruct()
     {
         $this->registerSessionData();

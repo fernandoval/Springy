@@ -35,10 +35,10 @@
     "require-dev": {
         "squizlabs/php_codesniffer": "^3.5",
         "phpmd/phpmd": "@stable",
-        "phpunit/phpunit": "~9.0"
+        "phpunit/phpunit": "~10.5"
     },
     "require": {
-        "php": ">=8.0",
+        "php": ">=8.1",
 
         "smarty/smarty": "^4.3",
         "twig/twig": "^2.15",
@@ -46,11 +46,12 @@
         "matthiasmullie/minify": "^1.3",
         "sendgrid/sendgrid": "^7.8",
         "phpmailer/phpmailer": "^6.0",
+        "vlucas/phpdotenv": "^5.6",
 
         "components/jquery": "~3.1"
     },
     "autoload": {
-        "files": ["app/helpers.php"],
+        "files": ["springy/Core/helpers.php"],
         "psr-4": {
             "App\\": "app/",
             "Springy\\": "springy/"

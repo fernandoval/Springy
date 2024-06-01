@@ -7,6 +7,8 @@
  * @author    Allan Marques <allan.marques@ymail.com>
  * @author    Fernando Val <fernando.val@gmail.com>
  *
+ * @deprecated 4.6.0
+ *
  * @version    0.1.4
  */
 

@@ -1,0 +1,44 @@
+#!/usr/bin/env php
+<?php
+
+/*
+ * Command line migration script launcher.
+ *
+ * @copyright 2007 Fernando Val
+ * @author    Fernando Val <fernando.val@gmail.com>
+ *
+ * @version 0.5.1
+ *
+ * @codingStandardsIgnoreFile
+ */
+
+define('SPRINGY_START', microtime(true));
+
+require __DIR__ . '/consts';
+// Loads the Composer autoload
+require __DIR__ . '/vendor/autoload.php';
+
+// Load framework configuration
+$sysconf = file_exists(web_root() . '/sysconf.php') ? require_once web_root() . '/sysconf.php' : [];
+
+// Define error handlers
+error_reporting(E_ALL);
+set_exception_handler('springyExceptionHandler');
+set_error_handler('springyErrorHandler');
+
+// Starts required super globals
+$_SERVER['QUERY_STRING'] = '';
+$_SERVER['REMOTE_ADDR'] = '127.0.0.1';
+$_SERVER['REQUEST_METHOD'] = 'GET';
+$_SERVER['REQUEST_URI'] = '__migration__';
+$_SERVER['SERVER_PROTOCOL'] = 'CLI/Mode';
+$_SERVER['HTTP_HOST'] = 'cmd.shell';
+$_SERVER['DOCUMENT_ROOT'] = __DIR__;
+
+// Define error handlers
+error_reporting(E_ALL);
+set_exception_handler('springyExceptionHandler');
+set_error_handler('springyErrorHandler');
+
+ob_start();
+Springy\Kernel::run($sysconf);

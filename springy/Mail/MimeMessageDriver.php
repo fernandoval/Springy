@@ -9,7 +9,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   1.1.9
+ * @version   1.1.10
  */
 
 namespace Springy\Mail;
@@ -115,7 +115,7 @@ class MimeMessageDriver implements MailDriverInterface
      */
     public function addHeader($header, $value)
     {
-        $this->mailObj->SetEncodedHeader($header, $value, Kernel::charset());
+        $this->mailObj->SetEncodedHeader($header, $value, charset());
     }
 
     /**
@@ -124,9 +124,9 @@ class MimeMessageDriver implements MailDriverInterface
     public function setEmailHeader($header, $email, $name = '')
     {
         if (is_array($email)) {
-            $this->mailObj->SetMultipleEncodedEmailHeader($header, $email, Kernel::charset());
+            $this->mailObj->SetMultipleEncodedEmailHeader($header, $email, charset());
         } else {
-            $this->mailObj->SetEncodedEmailHeader($header, $email, $name, Kernel::charset());
+            $this->mailObj->SetEncodedEmailHeader($header, $email, $name, charset());
         }
     }
 
@@ -221,11 +221,11 @@ class MimeMessageDriver implements MailDriverInterface
     public function setBody($body, $html = true)
     {
         if ($html) {
-            $this->mailObj->CreateQuotedPrintableHTMLPart($html, Kernel::charset(), $htmlPart);
+            $this->mailObj->CreateQuotedPrintableHTMLPart($html, charset(), $htmlPart);
             $this->alternativeParts[] = $htmlPart;
         } else {
             $this->textMessage = $text;
-            $this->mailObj->CreateQuotedPrintableTextPart($text, Kernel::charset(), $textPart);
+            $this->mailObj->CreateQuotedPrintableTextPart($text, charset(), $textPart);
             $this->alternativeParts[] = $textPart;
         }
     }

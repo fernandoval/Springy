@@ -11,7 +11,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   1.7.22
+ * @version   1.7.23
  */
 
 namespace Springy\Template;
@@ -195,10 +195,11 @@ class SmartyDriver implements TemplateDriverInterface
         // Alimenta as variáveis CONSTANTES
         $this->tplObj->assign('HOST', URI::buildURL());
         $this->tplObj->assign('CURRENT_PAGE_URI', URI::currentPageURI());
-        $this->tplObj->assign('SYSTEM_NAME', Kernel::systemName());
-        $this->tplObj->assign('SYSTEM_VERSION', Kernel::systemVersion());
-        $this->tplObj->assign('PROJECT_CODE_NAME', Kernel::projectCodeName());
+        $this->tplObj->assign('SYSTEM_NAME', app_name());
+        $this->tplObj->assign('SYSTEM_VERSION', app_version());
+        $this->tplObj->assign('PROJECT_CODE_NAME', app_codename());
         $this->tplObj->assign('ACTIVE_ENVIRONMENT', Kernel::environment());
+        $this->tplObj->assign('APP_ENVIRONMENT', Kernel::environment());
 
         // Alimenta as variáveis padrão da aplicação
         foreach (Kernel::getTemplateVar() as $name => $value) {

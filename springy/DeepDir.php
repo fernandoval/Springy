@@ -1,4 +1,5 @@
 <?php
+
 /** \file
  *  Springy.
  *
@@ -16,7 +17,7 @@
  *  $dir->setDir('..');
  *  $dir->load();
  *  foreach($dir->getFiles() as $pathToFile) {
- *  	echo $pathToFile."\n";
+ *      echo $pathToFile."\n";
  *  }
  *
  *  // or
@@ -24,7 +25,7 @@
  *  $dir = new DeepDir('..');
  *  $dir->load();
  *  foreach($dir->getFiles() as $pathToFile) {
- *  	echo $pathToFile."\n";
+ *      echo $pathToFile."\n";
  *  }
  *  \endcode
  *
@@ -40,9 +41,9 @@
 namespace Springy;
 
 /**
- *  \brief  Classe para pegar arquivos de toda uma árvore de diretórios.
- *	\author (c) Ilya Nemihin
- *	\author Fernando Val - fernando.val@gmail.com.
+ * \brief  Classe para pegar arquivos de toda uma árvore de diretórios.
+ * \author (c) Ilya Nemihin
+ * \author Fernando Val - fernando.val@gmail.com.
  */
 class DeepDir
 {
@@ -52,7 +53,7 @@ class DeepDir
     private $dirFILO = null;
 
     /**
-     *	\brief Método construtor.
+     * \brief Método construtor.
      */
     public function __construct($dir = '.')
     {
@@ -61,7 +62,7 @@ class DeepDir
     }
 
     /**
-     *	\brief Define o diretório.
+     * \brief Define o diretório.
      */
     public function setDir($dir)
     {
@@ -73,7 +74,7 @@ class DeepDir
     }
 
     /**
-     *	\brief Pega o último erro encontrado.
+     * \brief Pega o último erro encontrado.
      */
     public function getError()
     {
@@ -81,8 +82,8 @@ class DeepDir
     }
 
     /**
-     *	\brief Pega os arquivos encontrados
-     *	\return Retorna um \c array contendo a árvore de diretórios.
+     * \brief Pega os arquivos encontrados
+     * \return Retorna um \c array contendo a árvore de diretórios.
      */
     public function getFiles()
     {
@@ -90,7 +91,7 @@ class DeepDir
     }
 
     /**
-     *	\brief Carrega a árvore de diretórios.
+     * \brief Carrega a árvore de diretórios.
      */
     public function load()
     {
@@ -100,7 +101,7 @@ class DeepDir
     }
 
     /**
-     *	\brief Carrega a relação de arquivos e diretórios do diretório corrente.
+     * \brief Carrega a relação de arquivos e diretórios do diretório corrente.
      */
     private function loadFromCurDir()
     {

@@ -9,13 +9,12 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.1.9
+ * @version   2.1.10
  */
 
 namespace Springy\Mail;
 
 use Springy\Configuration;
-use Springy\Kernel;
 
 /**
  * Driver class for sent mail using Swift Mailer class.
@@ -39,7 +38,7 @@ class SwiftMailerDriver implements MailDriverInterface
         }
 
         $this->mailObj = \Swift_Message::newInstance();
-        $this->mailObj->setCharset(Kernel::charset());
+        $this->mailObj->setCharset(charset());
 
         if ($cfg['protocol'] == 'smtp') {
             if (!isset($cfg['host'])) {

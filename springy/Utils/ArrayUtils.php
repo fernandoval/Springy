@@ -1,28 +1,27 @@
 <?php
-/** \file
- *  Springy.
+
+/**
+ * Array manipulation utils.
  *
- *  \brief      Classe de Utilidades para Manipulação de Arrays.
- *  \copyright  Copyright (c) 2007-2016 Fernando Val
- *  \author     Allan Marques - allan.marques@ymail.com
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    1.1.3
- *  \ingroup    framework
+ * @copyright 2015 Fernando Val
+ * @author    Fernando Val <fernando.val@gmail.com>
+ * @author    Allan Marques <allan.marques@ymail.com>
+ *
+ * @version 1.1.3
  */
 
 namespace Springy\Utils;
 
-/**
- *  \brief Classe de manipulação de arrays.
- */
 class ArrayUtils
 {
     /**
-     *  \brief Adiciona um valor ao array SOMENTE se já não houver valor na chave passada por parâmetro.
-     *  \param[in] (array) $array - array no qual o valor será adicionado
-     *  \param[in] (variant) $key - chave da posição na qual o valor será adicionado
-     *  \param[in] (variant) $value - valor a ser adicionado
-     *  \return void.
+     * Adiciona um valor ao array SOMENTE se já não houver valor na chave passada por parâmetro.
+     *
+     * @param array $array
+     * @param mixed $key
+     * @param mixed $value
+     *
+     * @return mixed
      */
     public function add($array, $key, $value)
     {
@@ -34,10 +33,12 @@ class ArrayUtils
     }
 
     /**
-     *  \brief Cria outro array com os dados filtrados por uma callback passada por parâmetro.
-     *  \param[in] (array) $array - array de origem
-     *  \param[in] (\Closure) $callback - Função de filtragem
-     *  \return (array) array criado.
+     * Cria outro array com os dados filtrados por uma callback passada por parâmetro.
+     *
+     * @param array    $array    array de origem.
+     * @param \Closure $callback Função de filtragem.
+     *
+     * @return array
      */
     public function make($array, \Closure $callback)
     {
@@ -53,11 +54,14 @@ class ArrayUtils
     }
 
     /**
-     *  \brief Cria um array com todos os valures de uma determinada chave de um array associativo multi-dimentcional.
-     *  \param[in] (array) $array - array de origem
-     *  \param[in] (variant) $value - Chave do valor a ser retirado de todos os elemntos do array
-     *  \param[in] (variant) $key - Chave do valor a ser retirado de todos os elemntos do array e colodo como chave do array criado
-     *  \return (array) array criado.
+     * Cria um array com todos os valures de uma determinada chave de um array associativo multi-dimentcional.
+     *
+     * @param array $array array de origem.
+     * @param mixed $value Chave do valor a ser retirado de todos os elemntos do array.
+     * @param mixed $key   Chave do valor a ser retirado de todos os elemntos do
+     *                     array e colodo como chave do array criado.
+     *
+     * @return array
      */
     public function pluck($array, $value, $key = null)
     {
@@ -79,9 +83,12 @@ class ArrayUtils
     }
 
     /**
-     *  \brief Retorna um array com as chaves do array de origem na posição 0 e os valores na posição 1 (ideal pra usar com o list().
-     *  \param[in] (array) $array - array de origem
-     *  \return (array) array criado.
+     * Retorna um array com as chaves do array de origem na posição 0 e os
+     * valores na posição 1 (ideal pra usar com o list().
+     *
+     * @param array $array
+     *
+     * @return void array
      */
     public function split($array)
     {
@@ -89,10 +96,12 @@ class ArrayUtils
     }
 
     /**
-     *  \brief Retorna um array somente com os valores das chaves passadas por parâmetro.
-     *  \param[in] (array) $array - array de origem
-     *  \param[in] (array) $array - array de chaves
-     *  \return (array) array criado.
+     * Retorna um array somente com os valores das chaves passadas por parâmetro.
+     *
+     * @param array $array array de origem.
+     * @param array $keys  array de chaves.
+     *
+     * @return array
      */
     public function only($array, $keys)
     {
@@ -100,10 +109,12 @@ class ArrayUtils
     }
 
     /**
-     *  \brief Retorna um array com todos os valores, exceto os que possuem as chaves passadas por parâmetro.
-     *  \param[in] (array) $array - array de origem
-     *  \param[in] (array) $array - array de chaves
-     *  \return (array) array criado.
+     * Retorna um array com todos os valores, exceto os que possuem as chaves passadas por parâmetro.
+     *
+     * @param array $array array de origem.
+     * @param array $keys  array de chaves.
+     *
+     * @return array
      */
     public function except($array, $keys)
     {
@@ -111,10 +122,12 @@ class ArrayUtils
     }
 
     /**
-     *  \brief Cria outro array com os dados ordenados por uma callback passado por parâmetro.
-     *  \param[in] (array) $array - array de origem
-     *  \param[in] (\Closure) $callback - Função de ordenagem
-     *  \return (array) array criado.
+     * Cria outro array com os dados ordenados por uma callback passado por parâmetro.
+     *
+     * @param array    $array    array de origem.
+     * @param \Closure $callback Função de ordenagem.
+     *
+     * @return array
      */
     public function sort($array, \Closure $callback)
     {
@@ -124,11 +137,13 @@ class ArrayUtils
     }
 
     /**
-     *  \brief Retorna o PRIMEIRO valor que passa na função teste passado por parâmetro ou o valor padrão.
-     *  \param[in] (array) $array - array de origem
-     *  \param[in] (\Closure) $callback - Função de teste
-     *  \param[in] (variant) $default - Valor padrão de retorno
-     *  \return (variant) valor que passou.
+     * Retorna o PRIMEIRO valor que passa na função teste passado por parâmetro ou o valor padrão.
+     *
+     * @param array    $array    array de origem.
+     * @param \Closure $callback Função de teste.
+     * @param mixed    $default  Valor padrão de retorno.
+     *
+     * @return mixed valor que passou.
      */
     public function firstThatPasses($array, \Closure $callback, $default = null)
     {
@@ -142,11 +157,13 @@ class ArrayUtils
     }
 
     /**
-     *  \brief Retorna o ÚLTIMO valor que passa na função teste passado por parâmetro ou o valor padrão.
-     *  \param[in] (array) $array - array de origem
-     *  \param[in] (\Closure) $callback - Função de teste
-     *  \param[in] (variant) $default - Valor padrão de retorno
-     *  \return (variant) valor que passou.
+     * Retorna o ÚLTIMO valor que passa na função teste passado por parâmetro ou o valor padrão.
+     *
+     * @param array    $array    array de origem.
+     * @param \Closure $callback Função de teste.
+     * @param mixed    $default  Valor padrão de retorno.
+     *
+     * @return mixed valor que passou.
      */
     public function lastThatPasses($array, \Closure $callback, $default = null)
     {
@@ -154,10 +171,12 @@ class ArrayUtils
     }
 
     /**
-     *  \brief Retorna o TODOS os valores que passaram na função teste passado por parâmetro.
-     *  \param[in] (array) $array - array de origem
-     *  \param[in] (\Closure) $callback - Função de teste
-     *  \return (array) valores que passaram.
+     * Retorna o TODOS os valores que passaram na função teste passado por parâmetro.
+     *
+     * @param array    $array    array de origem.
+     * @param \Closure $callback Função de teste.
+     *
+     * @return array valores que passaram.
      */
     public function allThatPasses($array, \Closure $callback)
     {
@@ -173,9 +192,11 @@ class ArrayUtils
     }
 
     /**
-     *  \brief Retorna um array de somente um nível "achatando" um array multi-dimencional.
-     *  \param[in] (array) $array - array de origem
-     *  \return (array) array criado.
+     * Retorna um array de somente um nível "achatando" um array multi-dimencional.
+     *
+     * @param array $array
+     *
+     * @return array
      */
     public function flatten($array)
     {
@@ -189,10 +210,14 @@ class ArrayUtils
     }
 
     /**
-     *  \brief Retorna um array de somente um nível "achatando" um array multi-dimencional, mas com a notação de pontos,
-     *         Exemplo: $array['key1']['key2] --> $array['key1.key2'].
-     *  \param[in] (array) $array - array de origem
-     *  \return (array) array criado.
+     * Retorna um array de somente um nível "achatando" um array multi-dimencional, mas com a notação de pontos.
+     *
+     * Exemplo: $array['key1']['key2] --> $array['key1.key2'].
+     *
+     * @param array  $array
+     * @param string $prepend
+     *
+     * @return array
      */
     public function dottedMake($array, $prepend = '')
     {
@@ -210,11 +235,13 @@ class ArrayUtils
     }
 
     /**
-     *  \brief Retorna o valor de um array utilizando a notação de pontos.
-     *  \param[in] (array) $array - array de origem
-     *  \param[in] (string) $key - Chave do valor requerido
-     *  \param[in] (variant) $default - Valor padrão de retorno
-     *  \return (variant) valor requisitado ou valor default.
+     * Retorna o valor de um array utilizando a notação de pontos.
+     *
+     * @param array $array   array de origem.
+     * @param mixed $key     Chave do valor requerido.
+     * @param mixed $default Valor padrão de retorno.
+     *
+     * @return mixed valor requisitado ou valor default.
      */
     public function dottedGet($array, $key, $default = null)
     {
@@ -238,10 +265,12 @@ class ArrayUtils
     }
 
     /**
-     *  \brief Retorna o valor de um array utilizando a notação de pontos, e o retira do array original.
-     *  \param[in] (array) $array - array de origem
-     *  \param[in] (string) $key - Chave do valor requerido
-     *  \return (variant) valor requisitadot.
+     * Retorna o valor de um array utilizando a notação de pontos, e o retira do array original.
+     *
+     * @param array $array array de origem.
+     * @param mixed $key   Chave do valor requerido.
+     *
+     * @return mixed valor requisitado.
      */
     public function dottedPull(&$array, $key)
     {
@@ -253,11 +282,13 @@ class ArrayUtils
     }
 
     /**
-     *  \brief Insere um valor deme um array utilizando a notação de pontos.
-     *  \param[in] (array) $array - array de origem
-     *  \param[in] (string) $key - Chave do valor requerido
-     *  \param[in] (variant) $valuet - Valor para ser inserido
-     *  \return (void).
+     * Insere um valor em um array utilizando a notação de pontos.
+     *
+     * @param array  $array array de origem (por referência).
+     * @param string $key   Chave do valor requerido.
+     * @param mixed  $value Valor para ser inserido.
+     *
+     * @return void
      */
     public function dottedSet(&$array, $key, $value)
     {
@@ -281,10 +312,12 @@ class ArrayUtils
     }
 
     /**
-     *  \brief Remove o valor de um array utilizando a notação de pontos.
-     *  \param[in] (array) $array - array de origem
-     *  \param[in] (string) $key - Chave do valor a ser removido
-     *  \return (void).
+     * Remove o valor de um array utilizando a notação de pontos.
+     *
+     * @param array  $array array de origem.
+     * @param string $key   Chave do valor a ser removido.
+     *
+     * @return void
      */
     public function dottedUnset(&$array, $key)
     {
@@ -304,10 +337,12 @@ class ArrayUtils
     }
 
     /**
-     *  \brief Retorna um array 'achatado' contendo o elemento selecionado.
-     *  \param[in] (array) $array - array de origem
-     *  \param[in] (string) $key - Chave dos valores a serem retornados
-     *  \return (void).
+     * Retorna um array 'achatado' contendo o elemento selecionado.
+     *
+     * @param array  $array array de origem.
+     * @param string $key   Chave dos valores a serem retornados.
+     *
+     * @return void
      */
     public function dottedFetch($array, $key)
     {
@@ -327,8 +362,9 @@ class ArrayUtils
     }
 
     /**
-     *  \brief Helper para retornar uma nova instância (útil para 'chaining"
-     *  \return (ArrayUtils).
+     * Helper para retornar uma nova instância (útil para 'chaining".
+     *
+     * @return self
      */
     public static function newInstance()
     {

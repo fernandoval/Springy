@@ -7,7 +7,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   3.1.24
+ * @version   3.1.25
  */
 
 namespace Springy;
@@ -24,13 +24,13 @@ class Mail
     public function __construct($mailer = null)
     {
         if (is_null($mailer)) {
-            if (Configuration::get('mail', 'default_driver')) {
-                $mailer = Configuration::get('mail', 'default_driver');
+            if (Configuration::get('mail.default_driver')) {
+                $mailer = Configuration::get('mail.default_driver');
             } else {
-                $mailer = key(Configuration::get('mail', 'mailers'));
+                $mailer = key(Configuration::get('mail.mailers'));
             }
         }
-        $cfg = Configuration::get('mail', 'mailers.' . $mailer);
+        $cfg = Configuration::get('mail.mailers.' . $mailer);
 
         if ($cfg == null) {
             throw new \Exception('Mail configuration \'mailers.' . $mailer . '\' undefined');
@@ -110,8 +110,8 @@ class Mail
     public function to($email, $name = '')
     {
         // Verifica se há a entrada forçando o envio de todos os emails para um destinatário específico
-        if (Configuration::get('mail', 'mails_go_to')) {
-            $email = Configuration::get('mail', 'mails_go_to');
+        if (Configuration::get('mail.mails_go_to')) {
+            $email = Configuration::get('mail.mails_go_to');
             $name = '';
         }
 

@@ -1,13 +1,13 @@
 <?php
-/** \file
- *  Springy.
+
+/**
+ * Classe para gerenciamento de dados de input de usuário (GET e POST).
  *
- *  \brief      Classe para gerenciamento de dados de input de usuário (GET e POST)
- *  \copyright  Copyright (c) 2007-2016 Fernando Val
- *  \author     Allan Marques - allan.marques@ymail.com
- *  \warning    Este arquivo é parte integrante do framework e não pode ser omitido
- *  \version    0.3.1
- *  \ingroup    framework
+ * @copyright 2015 Fernando Val
+ * @author    Allan Marques <allan.marques@ymail.com>
+ * @author    Fernando Val <fernando.val@gmail.com>
+ *
+ * @version 0.3.1
  */
 
 namespace Springy\Core;
@@ -17,48 +17,49 @@ use Springy\Session;
 use Springy\URI;
 use Springy\Utils\ArrayUtils;
 
-/**
- * \brief Classe para gerenciamento de dados de input de usuário (GET e POST).
- */
 class Input
 {
-    /// Dados contidos no GET e POST
+    // Dados contidos no GET e POST
     protected $data;
-    /// Dados de input antigos, guardados na sessão para consulta em um próximo request
+    // Dados de input antigos, guardados na sessão para consulta em um próximo request
     protected $oldData;
-    /// Classe helper para manipulação de arrays
+    // Classe helper para manipulação de arrays
     protected $arrUtils;
-    /// Chave identificadora dos dados de input antigos que serão guardados na sessão
+    // Chave identificadora dos dados de input antigos que serão guardados na sessão
     protected $oldDataSessionKey = '__OLDINPUT__';
-    /// Arquivos de upload enviados pelo usuário
+    // Arquivos de upload enviados pelo usuário
     protected $files;
 
-    /**
-     * \brief Construtor da classe.
-     */
     public function __construct()
     {
         $this->arrUtils = new ArrayUtils();
 
-        /// Concatena os dados de input do GET e do POST,
-        /// dando prioridade ao POST em dados com a mesma chave
+        // Concatena os dados de input do GET e do POST,
+        // dando prioridade ao POST em dados com a mesma chave
         $this->data = $this->sanitizeInputData($_POST) + $this->sanitizeInputData(URI::getParams());
 
-        /// Carrega os dados de dados de input que foram salvos pelo ultimo request
+        // Carrega os dados de dados de input que foram salvos pelo ultimo request
         $this->oldData = Session::get($this->oldDataSessionKey) or [];
 
-        /// Converte o array de dados dos arquivos enviados pelo usuário para
-        /// um array de objetos de Springy\Files\UploadedFile, que são bem mais fáceis de manipular
+        // Converte o array de dados dos arquivos enviados pelo usuário para
+        // um array de objetos de Springy\Files\UploadedFile, que são bem mais fáceis de manipular
         $this->files = UploadedFile::convertPHPUploadedFiles($_FILES);
 
-        /// Reseta os dados de inputs antigos
+        // Reseta os dados de inputs antigos
         Session::unregister($this->oldDataSessionKey);
     }
 
+    public function __destruct()
+    {
+        $this->storeForNextRequest();
+    }
+
     /**
-     * \brief Prepara dados de input para uso seguro
-     * \param [in] (array) $data - Dados de input serem preparados para manipulação
-     * \return (array).
+     * Prepara dados de input para uso seguro.
+     *
+     * @param array $data Dados de input serem preparados para manipulação.
+     *
+     * @return array
      */
     protected function sanitizeInputData($data)
     {
@@ -78,8 +79,9 @@ class Input
     }
 
     /**
-     * \brief Retorna se a requisição atual é um POST ou não
-     * \return (bool).
+     * Retorna se a requisição atual é um POST ou não.
+     *
+     * @return bool
      */
     public function isPost()
     {
@@ -87,8 +89,9 @@ class Input
     }
 
     /**
-     * \brief Retorna se a requisição atual é via AJAX ou não
-     * \return (bool).
+     * Retorna se a requisição atual é via AJAX ou não.
+     *
+     * @return bool
      */
     public function isAjax()
     {
@@ -97,9 +100,11 @@ class Input
     }
 
     /**
-     * \brief Retorna se o input atual contém um arquivo de upload com o nome passado por parâmetro
-     * \param [in] (string) $key - Chave identificadora do arquivo
-     * \return (bool).
+     * Retorna se o input atual contém um arquivo de upload com o nome passado por parâmetro.
+     *
+     * @param string $key Chave identificadora do arquivo.
+     *
+     * @return bool
      */
     public function hasFile($key)
     {
@@ -107,8 +112,9 @@ class Input
     }
 
     /**
-     * \brief Retorna todos os arquivos de upload enviados pelo usuário no input atual
-     * \return (array).
+     * Retorna todos os arquivos de upload enviados pelo usuário no input atual.
+     *
+     * @return array
      */
     public function allFiles()
     {
@@ -116,9 +122,11 @@ class Input
     }
 
     /**
-     * \brief Retorna o arquivo de upload com o nome passado por parâmetro
-     * \param [in] (string) $key - Chave identificadora do arquivo
-     * \return (variant).
+     * Retorna o arquivo de upload com o nome passado por parâmetro.
+     *
+     * @param string $key Chave identificadora do arquivo.
+     *
+     * @return mixed
      */
     public function file($key)
     {
@@ -126,8 +134,9 @@ class Input
     }
 
     /**
-     * \brief Retorna todos os dados de input contidos no request atual
-     * \return (array).
+     * Retorna todos os dados de input contidos no request atual.
+     *
+     * @return array
      */
     public function all()
     {
@@ -135,10 +144,12 @@ class Input
     }
 
     /**
-     * \brief Retorna somente os dados de input contidos no request atual
-     *        equivalentes as chaves identificadoras passadas por parâmetro
-     * \param [in] (array) $keys - Chaves identificadoras dos dados
-     * \return (array).
+     * Retorna somente os dados de input contidos no request atual equivalentes
+     * às chaves identificadoras passadas por parâmetro.
+     *
+     * @param array $keys Chaves identificadoras dos dados.
+     *
+     * @return array
      */
     public function only(array $keys)
     {
@@ -146,10 +157,12 @@ class Input
     }
 
     /**
-     * \brief Retorna todos os dados de input contidos no request atual,
-     *        exceto os equivalentes as chaves identificadoras passadas por parâmetro
-     * \param [in] (array) $keys - Chaves identificadoras dos dados
-     * \return (array).
+     * Retorna todos os dados de input contidos no request atual, exceto os
+     * equivalentes as chaves identificadoras passadas por parâmetro.
+     *
+     * @param array $keys Chaves identificadoras dos dados.
+     *
+     * @return array
      */
     public function except(array $keys)
     {
@@ -157,9 +170,12 @@ class Input
     }
 
     /**
-     * \brief Verifica se existe um dado de input na request atual com a chave identificadora passada por parâmetro.
-     * \param [in] (string) $key - CHave identificadora
-     * \return (bool).
+     * Verifica se existe um dado de input na request atual com a chave
+     * identificadora passada por parâmetro.
+     *
+     * @param string $key Chave identificadora.
+     *
+     * @return bool
      */
     public function has($key)
     {
@@ -167,10 +183,14 @@ class Input
     }
 
     /**
-     * \brief Retorna o dado de input contido no request atual equivalente a chave passada por parâmetro
-     * \param [in] (string) $key - Chave identificadora
-     * \param [in] (variant) $default - Valor padrão a ser retornado caso  a chave não seja encontrada
-     * \return (variant).
+     * Retorna o dado de input contido no request atual equivalente a chave
+     * passada por parâmetro.
+     *
+     * @param string $key     Chave identificadora.
+     * @param mixed  $default Valor padrão a ser retornado caso  a chave não
+     *                        seja encontrada.
+     *
+     * @return mixed
      */
     public function get($key, $default = null)
     {
@@ -178,10 +198,14 @@ class Input
     }
 
     /**
-     * \brief Retorna o dado de input contido na request anterior equivalente a chave passada por parâmetro
-     * \param [in] (string) $key - Chave identificadora
-     * \param [in] (variant) $default - Valor padrão a ser retornado caso  a chave não seja encontrada
-     * \return (variant).
+     * Retorna o dado de input contido na request anterior equivalente a chave
+     * passada por parâmetro.
+     *
+     * @param string $key     Chave identificadora.
+     * @param mixed  $default Valor padrão a ser retornado caso  a chave não
+     *                        seja encontrada.
+     *
+     * @return mixed
      */
     public function old($key, $default = null)
     {
@@ -189,20 +213,14 @@ class Input
     }
 
     /**
-     * \brief Guarda na sessão os dados de input do request atual por mais um request.
+     * Guarda na sessão os dados de input do request atual por mais um request.
+     *
+     * @return void
      */
     public function storeForNextRequest()
     {
         if (!empty($this->data)) {
             Session::set($this->oldDataSessionKey, $this->data);
         }
-    }
-
-    /**
-     * \brief Destrutor da classe.
-     */
-    public function __destruct()
-    {
-        $this->storeForNextRequest();
     }
 }

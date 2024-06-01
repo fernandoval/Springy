@@ -8,11 +8,12 @@ namespace App\Security;
 
 use App\Models\User;
 use Springy\Exceptions\SpringyException;
+use Springy\Security\IdentityInterface;
 use Springy\Session;
 use Springy\URI;
 use Springy\Utils\MessageContainer;
 
-class UserSession
+class UserSession implements IdentityInterface
 {
     // Authentication remember me cookie name
     private const IDENTITY_COOKIE = '_YourSessionCookieName_';
@@ -133,7 +134,7 @@ class UserSession
      *
      * @return void
      */
-    public function fillFromSession(array $data)
+    public function fillFromSession(array $data): void
     {
         $this->userId = $data[self::USER_ID] ?? $this->userData[User::COL_ID] ?? null;
         $this->userData = $data[self::USER_DATA] ?? [];
@@ -151,7 +152,7 @@ class UserSession
      *
      * @return array the array with credential data.
      */
-    public function getCredentials()
+    public function getCredentials(): array
     {
         return [
             'login' => User::COL_EMAIL,
@@ -194,7 +195,7 @@ class UserSession
      *
      * @return string the column name of the user uuid.
      */
-    public function getIdField()
+    public function getIdField(): string
     {
         return User::COL_UUID;
     }
@@ -230,23 +231,11 @@ class UserSession
     }
 
     /**
-     * Get the user permission for the given ACL.
-     *
-     * @param string $aclObjectName the name of the ACL.
-     *
-     * @return bool True if the user has permission to access or false if not.
-     */
-    public function getPermissionFor($aclObjectName)
-    {
-        return $this->hasAccess(URI::requestMethod(), $aclObjectName);
-    }
-
-    /**
      * Get the session data.
      *
      * @return array the array with data to be saved in session.
      */
-    public function getSessionData()
+    public function getSessionData(): array
     {
         return [
             self::USER_ID => $this->userId,
@@ -262,7 +251,7 @@ class UserSession
      *
      * @return string the name of the session key.
      */
-    public function getSessionKey()
+    public function getSessionKey(): string
     {
         return self::IDENTITY_COOKIE;
     }
@@ -278,16 +267,15 @@ class UserSession
     }
 
     /**
-     * Checks whether the user has access rights.
+     * Get the user permission for the given ACL.
      *
-     * @param string $method
-     * @param string $aclObjectName
+     * @param string $aclObjectName the name of the ACL.
      *
-     * @return bool
+     * @return bool True if the user has permission to access or false if not.
      */
-    public function hasAccess(string $method, string $aclObjectName): bool
+    public function hasPermissionFor(string $aclObjectName): bool
     {
-        $permissions = $this->permissions[$method] ?? [];
+        $permissions = $this->permissions[URI::requestMethod()] ?? [];
 
         return count(array_filter(
             $permissions,
@@ -320,7 +308,7 @@ class UserSession
      *
      * @return void
      */
-    public function loadByCredentials(array $data)
+    public function loadByCredentials(array $data): void
     {
         $user = loadModel(User::class, key($data), current($data));
 

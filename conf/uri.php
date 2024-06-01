@@ -73,31 +73,6 @@ $conf = [
     ],
 
     /*
-     * Old style regex routing.
-     *
-     * @deprecated 4.5.0
-     */
-    'routes' => [
-        'home(\/)*(\?(.*))*' => [
-            'segment' => 0,
-            'controller' => 'index',
-        ],
-    ],
-    /*
-     * Old style redirections.
-     *
-     * @deprecated 4.5.0
-     */
-    'redirects' => [
-        '404' => [
-            'segments' => [],
-            'get' => [],
-            'force_rewrite' => false,
-            'host' => 'dynamic',
-            'type' => 301,
-        ],
-    ],
-    /*
      * Old style controller rounting.
      *
      * @deprecated 4.5.0
@@ -105,14 +80,6 @@ $conf = [
     'prevalidate_controller' => [
         // 'mycontroller'      => ['command' => 301, 'segments' => 2],
         // 'myothercontroller' => ['command' => 404, 'segments' => 2, 'validate' => ['/^[a-z0-9\-]+$/', '/^[0-9]+$/']],
-    ],
-    /*
-     * Old style controller path by host.
-     *
-     * @deprecated 4.5.0
-     */
-    'host_controller_path' => [
-        // 'cmd.shell' => ['$command'],
     ],
     'system_root' => '/',
     // URLs comuns do site

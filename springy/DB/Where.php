@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class to construct WHERE clause.
  *
@@ -6,14 +7,11 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   0.1.0.3
+ * @version   0.1.4
  */
 
 namespace Springy\DB;
 
-/**
- * Class to construct WHERE clause.
- */
 class Where extends Conditions
 {
     /**

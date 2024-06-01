@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Session treatment class.
  *
@@ -141,7 +142,7 @@ class Session
             self::$data = [];
         }
 
-        register_shutdown_function(['\Springy\Session', '_saveDbSession']);
+        register_shutdown_function(['\Springy\Session', 'saveToDB']);
         self::$started = true;
     }
 
@@ -159,7 +160,7 @@ class Session
             self::$data = [];
         }
 
-        register_shutdown_function(['\Springy\Session', '_saveMcSession']);
+        register_shutdown_function(['\Springy\Session', 'saveToMC']);
         self::$started = true;
     }
 
@@ -216,8 +217,10 @@ class Session
 
     /**
      * Saves the session data in database table.
+     *
+     * @return void
      */
-    public static function _saveDbSession()
+    public static function saveToDB(): void
     {
         $value = serialize(self::$data);
         $sql = 'UPDATE `' . self::$dbTable . '` SET `session_value` = ?, `updated_at` = NOW() WHERE `id` = ?';
@@ -226,13 +229,45 @@ class Session
     }
 
     /**
-     * Saves session data in Memcached service.
+     * Back compatibility.
+     *
+     * phpcs:disable PSR2.Methods.MethodDeclaration.Underscore
+     *
+     * @deprecated 4.6.0
+     *
+     * @uses Session::saveToDB()
+     *
+     * @return void
      */
-    public static function _saveMcSession()
+    public static function _saveDbSession()
+    {
+        self::saveToDB();
+    }
+
+    /**
+     * Saves session data in Memcached service.
+     *
+     * @return void
+     */
+    public static function saveToMC(): void
     {
         $memcached = new \Memcached();
         $memcached->addServer(self::$mcAddr, self::$mcPort);
         $memcached->set('session_' . self::$sid, self::$data, self::$expires * 60);
+    }
+
+    /**
+     * Back compatibility.
+     *
+     * phpcs:disable PSR2.Methods.MethodDeclaration.Underscore
+     *
+     * @deprecated 4.6.0
+     *
+     * @uses Session::saveToMC()
+     */
+    public static function _saveMcSession()
+    {
+        self::saveToMC();
     }
 
     /**
