@@ -23,7 +23,7 @@ use Dotenv\Dotenv;
 class Kernel
 {
     // Framework version
-    public const VERSION = '4.6.0-dev';
+    public const VERSION = '4.6.0';
 
     // Default controller namespace
     public const DEFAULT_NS = 'App\\Web\\';
