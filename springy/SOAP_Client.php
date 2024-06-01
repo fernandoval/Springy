@@ -3,6 +3,8 @@
 /**
  * SOAP Client.
  *
+ * phpcs:disable Squiz.Classes.ValidClassName.NotCamelCaps
+ *
  * @copyright 2007 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT

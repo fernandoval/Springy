@@ -3,6 +3,8 @@
 /**
  * Classe statica para tratamento JSON.
  *
+ * phpcs:disable Squiz.Classes.ValidClassName.NotCamelCaps
+ *
  * @copyright 2009 Lucas Cardozo
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
@@ -12,9 +14,6 @@
 
 namespace Springy\Utils;
 
-/**
- * phpcs:disable Squiz.Classes.ValidClassName.NotCamelCaps
- */
 class JSON_Static
 {
     private static $defaultVars = [];

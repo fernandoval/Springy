@@ -231,6 +231,8 @@ class Session
     /**
      * Back compatibility.
      *
+     * phpcs:disable PSR2.Methods.MethodDeclaration.Underscore
+     *
      * @deprecated 4.6.0
      *
      * @uses Session::saveToDB()
@@ -256,6 +258,8 @@ class Session
 
     /**
      * Back compatibility.
+     *
+     * phpcs:disable PSR2.Methods.MethodDeclaration.Underscore
      *
      * @deprecated 4.6.0
      *

@@ -9,7 +9,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   0.2.3
+ * @version   0.3.0
  */
 
 namespace Springy\DB;
@@ -76,89 +76,13 @@ class Utils
         return $this->openQuote . $keyword . $this->closeQuote;
     }
 
-    private function _experimentalParseKeywords($table, $expression)
-    {
-        $teste = $expression;
-        $words = [];
-        while (strlen($teste)) {
-            if (preg_match_all('/^([^\w])(.*)$/', $teste, $matches, PREG_SET_ORDER, 0)) {
-                $words[] = [false, $matches[0][1]];
-                $teste = $matches[0][2];
-            } elseif (preg_match_all('/^([^\W]+)(.*)$/', $teste, $matches, PREG_SET_ORDER, 0)) {
-                $words[] = [true, $matches[0][1]];
-                $teste = $matches[0][2];
-            } else {
-                dd($teste);
-            }
-        }
-        $quoted = '';
-        $quoting = false;
-        foreach ($words as $index => $word) {
-            if ($quoting && $word[1] != $this->closeQuote) {
-                $quoted .= $word[1];
-            } elseif ($quoting && $word[1] == $this->closeQuote) {
-                $quoted .= $word[1];
-                $quoting = false;
-            } elseif (!$quoting && !$word[0] && $word[1] == $this->openQuote) {
-                $quoted .= $word[1];
-                $quoting = true;
-            } elseif (!$word[0]) {
-                $quoted .= $word[1];
-            } elseif (isset($words[$index + 1]) && !$words[$index + 1][0] && $words[$index + 1][1] == '(') {
-                $quoted .= $word[1];
-            } else {
-                $quoted .= $this->quote($word[1]);
-            }
-        }
-
-        return $quoted;
-    }
-
-    private function _parseKeywords($table, $expression)
-    {
-        $parsed = '';
-        $buffer = '';
-        $prefix = false;
-        $quoting = false;
-        while (strlen($expression)) {
-            $char = substr($expression, 0, 1);
-            $expression = substr($expression, 1);
-
-            if ($char == $this->openQuote && !$quoting) {
-                $quoting = true;
-            } elseif ($char == $this->closeQuote && $quoting) {
-                $quoting = false;
-            } elseif (strpos('_1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz', $char) !== false) {
-                $buffer .= $char;
-            } elseif ($char == '(') {
-                $parsed .= $buffer . $char;
-                $buffer = '';
-            } elseif ($char == '.') {
-                $parsed .= $this->quote($buffer) . $char;
-                $prefix = true;
-                $buffer = '';
-            } elseif (strpos('_1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz', $char) !== false) {
-                if ($buffer || !$parsed) {
-                    $parsed .= ($prefix ? '' : $this->quote($table) . '.') . $this->quote($buffer);
-                    $buffer = '';
-                    $prefix = false;
-                }
-                $parsed .= $char;
-            }
-        }
-
-        if ($buffer) {
-            $parsed .= ($prefix ? '' : $this->quote($table) . '.') . $this->quote($buffer);
-        }
-
-        return $parsed;
-    }
-
     /**
      * Parses the keywords in the expression.
      *
      * @param string $table      name of the table.
      * @param string $expression the expression with keyword(s).
+     *
+     * @deprecated 4.6
      *
      * @return string
      */
