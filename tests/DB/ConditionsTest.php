@@ -1,12 +1,16 @@
 <?php
+
 /**
  * Test case for DB\Conditions class.
+ *
+ * phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
  *
  * @copyright 2016 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
  *
  * @version   1.0.0.2
  */
+
 use PHPUnit\Framework\TestCase;
 use Springy\DB\Conditions;
 

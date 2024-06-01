@@ -1,6 +1,10 @@
 <?php
+
 /**
  * Test case for container class for dependecy injection.
+ *
+ * phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
+ * phpcs:disable PSR1.Classes.ClassDeclaration.MultipleClasses
  *
  * @copyright 2015 Fernando Val
  * @author    Allan Marques <allan.marques@ymail.com>
@@ -8,12 +12,10 @@
  *
  * @version    1.0.0.6
  */
+
 use PHPUnit\Framework\TestCase;
 use Springy\Container\DIContainer;
 
-/**
- * Test case for container class for dependecy injection.
- */
 class DIContainerTest extends TestCase
 {
     private $data;

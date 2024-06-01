@@ -3,6 +3,8 @@
 /**
  * Test case for Utils\ArrayUtils class.
  *
+ * phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
+ *
  * @copyright 2015 Fernando Val
  * @author    Allan Marques <allan.marques@ymail.com>
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -15,6 +17,9 @@ use Springy\Utils\ArrayUtils;
 
 class ArrayUtilsTest extends TestCase
 {
+    protected $arrayUtils;
+    protected $data;
+
     protected function setUp(): void
     {
         $this->arrayUtils = new ArrayUtils();

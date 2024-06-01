@@ -3,6 +3,8 @@
 /**
  * Test case for Validation\Validator class.
  *
+ * phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
+ *
  * @copyright 2015 Fernando Val
  * @author    Allan Marques <allan.marques@ymail.com>
  * @author    Fernando Val <fernando.val@gmail.com>

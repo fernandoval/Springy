@@ -1,6 +1,9 @@
 <?php
+
 /**
  * Test case for Springy\Core\Application class.
+ *
+ * phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
  *
  * @copyright 2015 Fernando Val
  * @author    Allan Marques <allan.marques@ymail.com>
@@ -8,12 +11,10 @@
  *
  * @version   1.0.0.4
  */
+
 use PHPUnit\Framework\TestCase;
 use Springy\Core\Application;
 
-/**
- * Test case for Springy\Core\Application class.
- */
 class ApplicationTest extends TestCase
 {
     private $app;

@@ -3,12 +3,12 @@
 /**
  * Test case for the class Springy\Core\Debug.
  *
+ * phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
+ *
  * @copyright 2016 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
  *
  * @version   1.0.4
- *
- * @codingStandardsIgnoreFile
  */
 
 use PHPUnit\Framework\TestCase;
