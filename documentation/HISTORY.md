@@ -140,6 +140,8 @@
     *   `uri.redirects`;
     *   `uri.routes`.
 *   PHPUnit class upgraded to v10.5;
+*   Droped code quality checking with [StyleCI](https://styleci.io/) and
+    [Travis](https://www.travis-ci.com/) (thank you for everything).
 
 ### 4.5.0
 
