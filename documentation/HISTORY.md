@@ -2,10 +2,10 @@
 
 ## Version 4
 
-### 4.6.0-dev
+### 4.6.0
 
 *   Added support to PHP 8.3;
-*   Droped support to PHP 8.1;
+*   Droped support to PHP 8.0;
 *   Added dependency to [PHP dotenv](https://github.com/vlucas/phpdotenv);
 *   Added `consts` file in project root directory. This is a PHP file to starts
     application constants. Constants in `consts` file:
