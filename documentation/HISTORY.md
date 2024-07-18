@@ -4,6 +4,7 @@
 
 ### 4.6.1
 
+*   Fixed automatic controller routing system
 *   Fixed `Security\AclManager::getAclObjectName()` function
 *   Removed functions and methods:
     *   `URI::checkRedirect()`

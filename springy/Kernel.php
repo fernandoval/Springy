@@ -7,8 +7,6 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
- *
- * @version   3.0.0
  */
 
 namespace Springy;
@@ -23,7 +21,7 @@ use Dotenv\Dotenv;
 class Kernel
 {
     // Framework version
-    public const VERSION = '4.6.0';
+    public const VERSION = '4.6.1';
 
     // Default controller namespace
     public const DEFAULT_NS = 'App\\Web\\';
@@ -193,10 +191,11 @@ class Kernel
      *
      * @param string $name
      * @param array  $arguments
+     * @param bool   $inject
      *
      * @return bool
      */
-    private static function checkController(string $name, array $arguments): bool
+    private static function checkController(string $name, array $arguments, bool $inject): bool
     {
         if (!class_exists($name)) {
             return false;
@@ -205,6 +204,11 @@ class Kernel
         self::$controllerName = $name;
         $namespace = explode('/', self::$ctrlNameSpace);
         array_shift($namespace);
+
+        if ($inject && !URI::getSegment(count($namespace), false)) {
+            URI::addSegment('index');
+        }
+
         URI::setCurrentPage(count($namespace) + count($arguments) - 1);
         URI::setClassController(URI::currentPage());
 
@@ -270,11 +274,37 @@ class Kernel
         $arguments = array_filter(URI::getAllSegments());
         $namespace = self::getNamespace($arguments);
 
-        if (self::hasController($namespace, $arguments, false)) {
-            return;
-        }
+        do {
+            if (
+                // Finds the full qualified name controller
+                (count($arguments) && self::checkController(
+                    self::buildControllerName($namespace, $arguments, false),
+                    $arguments,
+                    false
+                ))
+                // Adds and finds an Index controller in current $arguments path
+                || self::checkController(
+                    $namespace . self::normalizeNamePath(array_merge($arguments, ['Index'])),
+                    $arguments,
+                    true
+                )
+            ) {
+                return;
+            }
 
-        self::hasController($namespace, $arguments, true);
+            array_pop($arguments);
+
+            if (!count($arguments)) {
+                break;
+            }
+        } while (true);
+
+        // Finds in route conf
+        self::checkController(
+            self::buildControllerName($namespace, array_filter(URI::getAllSegments()), true),
+            $arguments,
+            false
+        );
     }
 
     /**
@@ -291,17 +321,17 @@ class Kernel
         $matches = [];
 
         foreach ($config['segments'] as $route => $namespace) {
-            $pattern = sprintf('#^\/%s(\/(.+))?$#', $route);
+            $pattern = sprintf('#^\/(%s)(\/(.+))?$#', $route);
 
             if (preg_match_all($pattern, $uri, $matches, PREG_PATTERN_ORDER)) {
-                $segments = explode('/', trim($matches[1][0], '/'));
-                self::$ctrlNameSpace = $config['module'] . '/' . $route;
+                $segments = explode('/', trim($matches[2][0], '/'));
+                self::$ctrlNameSpace = $matches[1][0] . '/';
 
                 return trim($namespace, " \t\0\x0B\\") . '\\';
             }
         }
 
-        self::$ctrlNameSpace = $config['module'];
+        self::$ctrlNameSpace = '';
 
         return trim($config['namespace'] ?? self::DEFAULT_NS, " \t\0\x0B\\") . '\\';
     }
@@ -321,7 +351,6 @@ class Kernel
                 self::$ctrlRoot = $data['template'] ?? [];
 
                 return [
-                    'module' => $data['module'] ?? '',
                     'namespace' => $data['namespace'] ?? self::DEFAULT_NS,
                     'segments' => $data['segments'] ?? [],
                 ];
@@ -329,47 +358,9 @@ class Kernel
         }
 
         return [
-            'module' => Configuration::get('uri.routing.module') ?: '',
             'namespace' => Configuration::get('uri.routing.namespace') ?: self::DEFAULT_NS,
             'segments' => Configuration::get('uri.routing.segments') ?: [],
         ];
-    }
-
-    /**
-     * Looking for the controller walking through the arguments.
-     *
-     * @param string $namespace
-     * @param array  $arguments
-     * @param bool   $routing
-     *
-     * @return bool
-     */
-    private static function hasController(string $namespace, array $arguments, bool $routing): bool
-    {
-        do {
-            if (
-                // Adds and finds an Index controller in current $arguments path
-                self::checkController(
-                    $namespace . self::normalizeNamePath(array_merge($arguments, ['Index'])),
-                    $arguments
-                )
-                ||
-                // Removes Index and finds the full qualified name controller
-                (
-                    count($arguments)
-                    && self::checkController(
-                        self::buildControllerName($namespace, $arguments, $routing),
-                        $arguments
-                    )
-                )
-            ) {
-                return true;
-            }
-
-            array_pop($arguments);
-        } while (count($arguments));
-
-        return false;
     }
 
     /**
@@ -468,7 +459,7 @@ class Kernel
     {
         $normalized = [];
 
-        foreach ($segments as $value) {
+        foreach (array_filter($segments) as $value) {
             $normalized[] = studly_caps($value);
         }
 
