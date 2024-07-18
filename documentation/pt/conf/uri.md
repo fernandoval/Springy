@@ -12,19 +12,9 @@ Você poderá adicionar entradas personalizadas de sua aplicação.
 
 ## Entradas de configuração:
 
--   **'prevalidate_controller'** - Validação prévia de formatação de URI para
-determinadas controladoras. Este modelo está descontinuado na versão 4.5.0 do
-framework. Use o novo sistema de rotas;
 -   **'system_root'** - URI da página inicial;
 -   **'common_urls'** - Essa entrada é um array de URLs comuns da aplicação que
 irão gerar variáveis de template.;
--   **'redirect_last_slash'** - Valor boleano que determina se a aplicação deve
-redirecionar requisições a URIs terminadas em barra (/) para URI semelhante sem
-a barra no final. Útil para evitar conteúdo duplicado em ferramentas SEO;
--   **'force_slash_on_index'** - Força o uso de barra (/) ao final da URL para o
-primeiro segmento (index). Se a URL acessada for da página principal (index) e
-não houver a barra ao final, faz o redirecionamento para a URL com / ao final.
-Esse parâmetro invalida *'redirect_last_slash'* para a página principal.
 -   **'ignored_segments'** - Quantidade de segmentos iniciais que devem ser
 ignorados na descoberta da controladora. Útil para sites onde alguns dos
 segmentos iniciais servem para algum parâmetro a ser passado para a aplicação,

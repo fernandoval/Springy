@@ -2,6 +2,16 @@
 
 ## Version 4
 
+### 4.6.1
+
+*   Fixed `Security\AclManager::getAclObjectName()` function
+*   Removed functions and methods:
+    *   `URI::checkRedirect()`
+*   Removed configurations:
+    *   `uri.prevalidate_controller`
+    *   `uri.redirect_last_slash`
+    *   `uri.force_slash_on_index`
+
 ### 4.6.0
 
 *   Added support to PHP 8.3;
@@ -138,7 +148,7 @@
 *   Removed configuratios:
     *   `uri.host_controller_path`;
     *   `uri.redirects`;
-    *   `uri.routes`.
+    *   `uri.routes`;
 *   PHPUnit class upgraded to v10.5;
 *   Droped code quality checking with [StyleCI](https://styleci.io/),
     [Travis](https://www.travis-ci.com/) and
