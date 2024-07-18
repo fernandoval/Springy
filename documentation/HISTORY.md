@@ -4,8 +4,14 @@
 
 ### 4.6.1
 
+*   Added functions:
+    *   `Kernel::getTemplatePrefix()`
+    *   `Kernel::setTemplatePrefix()`
 *   Fixed automatic controller routing system
 *   Fixed `Security\AclManager::getAclObjectName()` function
+*   Deprecated `Kernel::controllerRoot()` function
+*   Removed undocumented parameter from `URI::relativePathPage()` function
+*   Removed third parameter from `URI::getSegment()` function
 *   Removed functions and methods:
     *   `URI::checkRedirect()`
 *   Removed configurations:

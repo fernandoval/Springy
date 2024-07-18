@@ -38,8 +38,6 @@ class Kernel
     public const PATH_VENDOR = 'VENDOR';            // @deprecated 4.6.0
     public const PATH_MIGRATION = 'MIGRATION';      // @deprecated 4.6.0
 
-    // Determina o root de controladoras
-    private static $ctrlRoot = [];
     // The namespace of the controller
     private static $ctrlNameSpace = null;
     // The controller file class name
@@ -55,10 +53,12 @@ class Kernel
     // List of error hook functions
     private static $errorHooks = [];
 
+    // Template prefix
+    private static $tplPrefix = [];
     // Default template vars
-    private static $templateVars = [];
+    private static $tplVars = [];
     // Default template functions
-    private static $templateFuncs = [];
+    private static $tplFuncs = [];
 
     /**
      * Bootstrap the application.
@@ -348,7 +348,7 @@ class Kernel
         foreach ((Configuration::get('uri.routing.hosts') ?: []) as $route => $data) {
             $pattern = sprintf('#^%s$#', $route);
             if (preg_match_all($pattern, $host)) {
-                self::$ctrlRoot = $data['template'] ?? [];
+                self::$tplPrefix = $data['template'] ?? [];
 
                 return [
                     'namespace' => $data['namespace'] ?? self::DEFAULT_NS,
@@ -801,15 +801,17 @@ class Kernel
      *
      * @param array $cRoot if defined sets the new root controller.
      *
+     * @deprecated 4.6.1
+     *
      * @return array
      */
     public static function controllerRoot($cRoot = null)
     {
         if (!is_null($cRoot)) {
-            self::$ctrlRoot = $cRoot;
+            self::$tplPrefix = $cRoot;
         }
 
-        return self::$ctrlRoot;
+        return self::$tplPrefix;
     }
 
     /**
@@ -832,7 +834,17 @@ class Kernel
      */
     public static function assignTemplateVar($name, $value): void
     {
-        self::$templateVars[$name] = $value;
+        self::$tplVars[$name] = $value;
+    }
+
+    /**
+     * Gets template prefix array.
+     *
+     * @return array
+     */
+    public static function getTemplatePrefix(): array
+    {
+        return self::$tplPrefix;
     }
 
     /**
@@ -846,14 +858,14 @@ class Kernel
     public static function getTemplateVar($var = null)
     {
         if (is_null($var)) {
-            return self::$templateVars;
+            return self::$tplVars;
         }
 
-        if (!isset(self::$templateVars[$var])) {
+        if (!isset(self::$tplVars[$var])) {
             return;
         }
 
-        return self::$templateVars[$var];
+        return self::$tplVars[$var];
     }
 
     /**
@@ -880,7 +892,7 @@ class Kernel
      */
     public static function registerTemplateFunction($type, $name, $callback, $cacheable = null, $cacheAttrs = null)
     {
-        self::$templateFuncs[] = [$type, $name, $callback, $cacheable, $cacheAttrs];
+        self::$tplFuncs[] = [$type, $name, $callback, $cacheable, $cacheAttrs];
     }
 
     /**
@@ -890,7 +902,19 @@ class Kernel
      */
     public static function getTemplateFunctions()
     {
-        return self::$templateFuncs;
+        return self::$tplFuncs;
+    }
+
+    /**
+     * Sets template prefix array.
+     *
+     * @param array $prefix
+     *
+     * @return void
+     */
+    public static function setTemplatePrefix(array $prefix): void
+    {
+        self::$tplPrefix = $prefix;
     }
 
     /**

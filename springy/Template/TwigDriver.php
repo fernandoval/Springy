@@ -7,11 +7,11 @@
  *
  * @see       https://twig.symfony.com/
  *
- * @copyright 2014-2018 Fernando Val
+ * @copyright 2014 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   0.17.2
+ * @version   0.18.0
  */
 
 namespace Springy\Template;
@@ -278,14 +278,21 @@ class TwigDriver implements TemplateDriverInterface
     {
         // Se o nome do template não foi informado, define como relativo à controladora atual
         if ($tpl === null) {
-            // Pega o caminho relativo da página atual
-            $path = URI::relativePathPage(true);
-            $this->setTemplate($path . (empty($path) ? '' : DIRECTORY_SEPARATOR) . URI::getControllerClass());
+            $path = implode(
+                DS,
+                array_filter(
+                    array_merge(
+                        Kernel::getTemplatePrefix(),
+                        [URI::relativePathPage()]
+                    )
+                )
+            );
+            $this->setTemplate($path . (empty($path) ? '' : DS) . URI::getControllerClass());
 
             return;
         }
 
-        $this->templateName = ((is_array($tpl)) ? implode(DIRECTORY_SEPARATOR, $tpl) : $tpl);
+        $this->templateName = ((is_array($tpl)) ? implode(DS, $tpl) : $tpl);
 
         $compile = '';
         if (!is_null($tpl)) {

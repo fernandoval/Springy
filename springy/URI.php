@@ -223,18 +223,9 @@ class URI
      *
      * @return string
      */
-    public static function relativePathPage($consider_controller_root = false)
+    public static function relativePathPage(): string
     {
-        $path = count(Kernel::controllerRoot()) && $consider_controller_root
-            ? implode(DS, Kernel::controllerRoot())
-            : '';
-        $segs = array_slice(self::$segments, 0, self::$segment_page);
-
-        if (!empty($path)) {
-            array_unshift($segs, $path);
-        }
-
-        return implode(DS, $segs);
+        return implode(DS, array_slice(self::$segments, 0, self::$segment_page));
     }
 
     /**
@@ -279,16 +270,12 @@ class URI
      * @param int  $segment  is an integer with the number of the segment desired.
      * @param bool $rel2Page is a boolean value to determine if the desired segment is relative to the
      *                       current page (default = true) or the begin (false) of the array of segments.
-     * @param bool $decRoot  is a boolean value to determine if the number of segments of the
-     *                       root path of contollers must be decremented (true) or not (false = default).
      *
      * @return string|bool the value of the segment or false if it does not exists.
      */
-    public static function getSegment(int $segment, bool $rel2Page = true, bool $decRoot = false)
+    public static function getSegment(int $segment, bool $rel2Page = true)
     {
-        $realSegment = $segment
-            + ($rel2Page ? 1 + self::$segment_page : 0)
-            - ($decRoot ? count(Kernel::controllerRoot()) : 0);
+        $realSegment = $segment + ($rel2Page ? 1 + self::$segment_page : 0);
         $value = self::$segments[$realSegment] ?? false;
 
         return $value === '' ? 'index' : $value;
@@ -439,8 +426,6 @@ class URI
      *                               forced or the value of configuration will be used to it.
      * @param string $host           the configuration host name.
      * @param bool   $addIgnoredSgms define if URI will receive the ignored segments as prefix (default = true).
-     *
-     * @deprecated 4.6.1
      *
      * @return string
      */

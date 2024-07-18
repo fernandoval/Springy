@@ -7,11 +7,9 @@
  *
  * @see       http://www.smarty.net/
  *
- * @copyright 2014-2018 Fernando Val
+ * @copyright 2014 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
- *
- * @version   1.7.23
  */
 
 namespace Springy\Template;
@@ -243,18 +241,26 @@ class SmartyDriver implements TemplateDriverInterface
         // Se o nome do template não foi informado, define como relativo à controladora atual
         if ($tpl === null) {
             // Pega o caminho relativo da página atual
-            $path = URI::relativePathPage(true);
-            $this->setTemplate($path . (empty($path) ? '' : DIRECTORY_SEPARATOR) . URI::getControllerClass());
+            $path = implode(
+                DS,
+                array_filter(
+                    array_merge(
+                        Kernel::getTemplatePrefix(),
+                        [URI::relativePathPage()]
+                    )
+                )
+            );
+            $this->setTemplate($path . (empty($path) ? '' : DS) . URI::getControllerClass());
 
             return;
         }
 
-        $this->templateName = ((is_array($tpl)) ? implode(DIRECTORY_SEPARATOR, $tpl) : $tpl);
+        $this->templateName = ((is_array($tpl)) ? implode(DS, $tpl) : $tpl);
 
         $compile = '';
         if (!is_null($tpl)) {
-            $compile = is_array($tpl) ? implode(DIRECTORY_SEPARATOR, $tpl) : $tpl;
-            $compile = substr($compile, 0, strrpos(DIRECTORY_SEPARATOR, $compile));
+            $compile = is_array($tpl) ? implode(DS, $tpl) : $tpl;
+            $compile = substr($compile, 0, strrpos(DS, $compile));
         }
 
         $this->setCompileDir(config_get('template.compiled_template_path') . $compile);
@@ -411,8 +417,8 @@ class SmartyDriver implements TemplateDriverInterface
             return '#';
         }
 
-        $srcPath = config_get('system.assets_source_path') . DIRECTORY_SEPARATOR . $params['file'];
-        $filePath = config_get('system.assets_path') . DIRECTORY_SEPARATOR . $params['file'];
+        $srcPath = config_get('system.assets_source_path') . DS . $params['file'];
+        $filePath = config_get('system.assets_path') . DS . $params['file'];
         $fileURI = config_get('uri.assets_dir') . '/' . $params['file'];
         $get = [];
 
