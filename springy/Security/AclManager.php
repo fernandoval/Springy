@@ -7,8 +7,6 @@
  * @author    Allan Marques <allan.marques@ymail.com>
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
- *
- * @version   1.3.0
  */
 
 namespace Springy\Security;
@@ -218,6 +216,6 @@ class AclManager
      */
     public function getAclObjectName()
     {
-        return implode($this->separator, [$this->module, $this->controller, $this->action]);
+        return implode($this->separator, array_filter([$this->module, $this->controller, $this->action]));
     }
 }

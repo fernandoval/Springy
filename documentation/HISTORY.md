@@ -2,10 +2,33 @@
 
 ## Version 4
 
-### 4.6.0-dev
+### 4.6.1
+
+*   Added functions:
+    *   `Kernel::getTemplatePrefix()`
+    *   `Kernel::setTemplatePrefix()`
+*   Fixed automatic controller routing system
+*   Fixed `Security\AclManager::getAclObjectName()` function
+*   Use of MemcacheD as session driver redesigned
+*   Copyright page moved out to a HTML file
+*   Support to Smarty template updated to version 5
+*   Deprecated `Kernel::controllerRoot()` function
+*   Deprecated `Kernel::VERSION` constant
+*   Removed undocumented parameter from `URI::relativePathPage()` function
+*   Removed third parameter from `URI::getSegment()` function
+*   Removed functions and methods:
+    *   `Session::_saveDbSession()`
+    *   `Session::_saveMcSession()`
+    *   `URI::checkRedirect()`
+*   Removed configurations:
+    *   `uri.prevalidate_controller`
+    *   `uri.redirect_last_slash`
+    *   `uri.force_slash_on_index`
+
+### 4.6.0
 
 *   Added support to PHP 8.3;
-*   Droped support to PHP 8.1;
+*   Droped support to PHP 8.0;
 *   Added dependency to [PHP dotenv](https://github.com/vlucas/phpdotenv);
 *   Added `consts` file in project root directory. This is a PHP file to starts
     application constants. Constants in `consts` file:
@@ -138,7 +161,7 @@
 *   Removed configuratios:
     *   `uri.host_controller_path`;
     *   `uri.redirects`;
-    *   `uri.routes`.
+    *   `uri.routes`;
 *   PHPUnit class upgraded to v10.5;
 *   Droped code quality checking with [StyleCI](https://styleci.io/),
     [Travis](https://www.travis-ci.com/) and

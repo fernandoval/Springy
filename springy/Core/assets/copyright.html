@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Springy Framework</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <style type="text/css">
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #fff;
+            color: #333;
+            font-family: 'Roboto', sans-serif;
+            font-size: 13px;
+            line-height: 1.47;
+        }
+        a, a:link, a:active, a:visited {
+            text-decoration: none;
+            color: #3F92D2;
+        }
+        a:hover {
+            color:#0B61A4;
+            text-decoration: none;
+        }
+        header {
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 0;
+            margin-bottom: 16px;
+            border-bottom: 1px solid #eaeaea;
+            padding: 10px 32px;
+            background-color: #fff;
+            text-align: center;
+            z-index: 10;
+        }
+        header > a,
+        header > a:active,
+        header > a:hover,
+        header > a:visited {
+            color: #f90;
+            font-size: 32px;
+        }
+        header > a > img {
+            height: 64px;
+            vertical-align: middle;
+        }
+
+        .wraper {
+            margin-top: 85px;
+            margin-bottom: 60px;
+            padding: 0 32px;
+            text-align: center;
+        }
+
+        .note {
+            margin: 0;
+            padding: 15px 0;
+        }
+
+        .philosophy {
+            margin: 0;
+            padding: 25px;
+            color: #bfbfbf;
+        }
+        .philosophy > strong {
+            color: #f90;
+        }
+
+        .credits a {
+            font-weight: bold;
+        }
+
+        footer {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            border-top: 1px solid #eee;
+            background: #fcfcfc;
+            text-align: center;
+            font-size: 11px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="https://github.com/springy-framework">
+            <img src="https://avatars2.githubusercontent.com/u/39970059?s=200&v=4" title="" alt="logo"> Springy Framework
+        </a>
+    </header>
+
+    <div class="wraper">
+        <section>
+            <p class="note">This project was developed using Springy, a micro framework for smart <a href="http://php.net">PHP</a> developers.</p>
+
+            <p class="philosophy">
+                <strong>KISS</strong> is our philosophy.<br>
+                <strong>KISS</strong> is good.<br>
+                <strong>KISS</strong> is a principle.<br>
+                So write codes with <strong>KISS</strong> in your mind<br>
+                and <a href="https://en.wikipedia.org/wiki/KISS_principle">keep it simple, silly</a>.
+            </p>
+
+
+        </section>
+
+        <section class="credits">
+            <p>Credits</p>
+
+            <p>
+                <a href="https://github.com/fernandoval">Fernando Val</a><br>
+                <a href="https://www.linkedin.com/in/lucascardozo/">Lucas Cardozo</a><br>
+                <a href="https://github.com/m4n3z40">Allan Marques Baptista</a>
+            </p>
+        </section>
+    </div>
+
+    <footer>
+        <p class="license">
+            This framework is Open Source and distributed under <a href="https://opensource.org/licenses/MIT">MIT</a> license.
+        </p>
+    </footer>
+</body>
+</html>

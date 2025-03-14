@@ -13,13 +13,6 @@ $conf = [
      */
     'routing' => [
         /*
-         * Default module for controllers.
-         *
-         * @var string
-         */
-        'module' => '',
-
-        /*
          * Default namespace for controllers.
          *
          * @var string
@@ -72,15 +65,6 @@ $conf = [
         ],
     ],
 
-    /*
-     * Old style controller rounting.
-     *
-     * @deprecated 4.5.0
-     */
-    'prevalidate_controller' => [
-        // 'mycontroller'      => ['command' => 301, 'segments' => 2],
-        // 'myothercontroller' => ['command' => 404, 'segments' => 2, 'validate' => ['/^[a-z0-9\-]+$/', '/^[0-9]+$/']],
-    ],
     'system_root' => '/',
     // URLs comuns do site
     'common_urls' => [
@@ -89,8 +73,15 @@ $conf = [
         'urlLogin' => [['login'], [], false, 'secure', true],
         'urlLogout' => [['logout'], [], false, 'secure', true],
     ],
-    'redirect_last_slash' => true,
-    'force_slash_on_index' => true,
     'ignored_segments' => 0,
     'assets_dir' => 'assets',
+
+    /*
+     * Application hosts
+     *
+     * This configuration are used by url() function to create an URL.
+     *
+     * @var array
+     */
+    'hosts' => [],
 ];

@@ -6,8 +6,6 @@
  * @copyright 2007 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
- *
- * @version   3.0.0
  */
 
 namespace Springy;
@@ -20,13 +18,13 @@ class URI
     /** @var string HTTP host */
     private static $httpHost = '';
     /** @var string The URI string */
-    private static $uri_string = '';
+    private static $uriString = '';
     /** @var array The path segments */
     private static $segments = [];
     /** @var array Ignored segments */
     private static $ignored_segments = [];
     /** @var array Query string parameters array */
-    private static $get_params = [];
+    private static $queryVars = [];
     /** @var int Current page segment index */
     private static $segment_page = 0;
     /** @var string|null Class name of the controller */
@@ -54,106 +52,23 @@ class URI
     }
 
     /**
-     * Checks whether to redirect requests ending with slash.
-     *
-     * @param array $segments
-     *
-     * @return void
-     */
-    private static function checkRedirEndingBar(array $segments): void
-    {
-        if (
-            Configuration::get('uri', 'redirect_last_slash')
-            && substr(self::$uri_string, -1) == '/'
-            && !(Configuration::get('uri', 'force_slash_on_index')
-            && empty($segments))
-        ) {
-            dd(__LINE__);
-            // Redirects URIs ending with slash to avoid SEO problem.
-            self::redirect(
-                self::buildURL(
-                    explode('/', trim(self::$uri_string, '/')),
-                    $_GET ?? [],
-                    false,
-                    'dynamic',
-                    false
-                ),
-                301
-            );
-        } elseif (
-            self::$uri_string
-            && substr(self::$uri_string, -1) != '/'
-            && Configuration::get('uri', 'force_slash_on_index')
-            && empty($segments)
-        ) {
-            dd(__LINE__);
-            // Removes ending slash and redirects
-            self::redirect(
-                self::buildURL(
-                    array_merge(explode('/', trim(self::$uri_string, '/')), ['/']),
-                    $_GET ?? [],
-                    false,
-                    'dynamic',
-                    false
-                ),
-                301
-            );
-        }
-    }
-
-    /**
-     * Checks URI redirect option for not found controller.
-     *
-     * @param string|null $controller
-     * @param string      $uriString
-     *
-     * @return void
-     */
-    private static function checkRedirect(?string $controller, string $uriString): void
-    {
-        if (!is_null($controller)) {
-            return;
-        }
-
-        $redirects = Configuration::get('uri', 'redirects');
-
-        if (is_array($redirects)) {
-            foreach ($redirects as $key => $data) {
-                if (preg_match('/^' . $key . '$/', $uriString)) {
-                    foreach ($data['segments'] as $segment => $value) {
-                        if (substr($value, 0, 1) == '$') {
-                            $data['segments'][$segment] = self::$segments[(int) substr($value, 1)] ?? '';
-                        }
-                    }
-
-                    self::redirect(
-                        self::buildURL($data['segments'], $data['get'], $data['force_rewrite'], $data['host']),
-                        $data['type']
-                    );
-
-                    break;
-                }
-            }
-        }
-    }
-
-    /**
      * Gets the URI string.
      *
      * @return string
      */
     private static function fetchURI(): string
     {
-        // The is REQUEST_URI?
+        // There is REQUEST_URI?
         if (!empty($_SERVER['REQUEST_URI'])) {
             return explode('?', $_SERVER['REQUEST_URI'])[0];
         }
 
-        // Não há QUERY_STRING? Então a variável ORIG_PATH_INFO existe?
-        $path = (isset($_SERVER['ORIG_PATH_INFO'])) ? $_SERVER['ORIG_PATH_INFO'] : @getenv('ORIG_PATH_INFO');
-        if (trim($path, '/') != '' && $path != '/' . pathinfo(__FILE__, PATHINFO_BASENAME)) {
+        // ORIG_PATH_INFO existe?
+        $path = $_SERVER['ORIG_PATH_INFO'] ?? @getenv('ORIG_PATH_INFO') ?? '';
+
+        if (trim($path, '/') !== '' && $path !== '/' . pathinfo(__FILE__, PATHINFO_BASENAME)) {
             // remove caminho e informações do script, então temos uma boa URI
-            return str_replace($_SERVER['SCRIPT_NAME'], '', $path);
+            return str_replace($_SERVER['SCRIPT_NAME'] ?? '', '', $path);
         }
 
         return ''; // Uh oh! Huston, we have a problem!
@@ -249,10 +164,9 @@ class URI
     {
         self::checkHeadMethod();
         self::parseHost();
-        self::$uri_string = self::fetchURI();
-        $uriString = trim(self::$uri_string, '/');
+        self::$uriString = self::fetchURI();
+        $uriString = trim(self::$uriString, '/');
         $segments = self::getSegmentsFromURI($uriString);
-        self::checkRedirEndingBar($segments);
 
         // Adds 'index' if there is no segments
         if (count($segments) === 0) {
@@ -260,7 +174,7 @@ class URI
         }
 
         self::$segments = $segments;
-        self::$get_params = $_GET;
+        self::$queryVars = $_GET;
         $_GET = [];
     }
 
@@ -291,7 +205,7 @@ class URI
      */
     public static function getURIString()
     {
-        return self::$uri_string;
+        return self::$uriString;
     }
 
     /**
@@ -309,18 +223,9 @@ class URI
      *
      * @return string
      */
-    public static function relativePathPage($consider_controller_root = false)
+    public static function relativePathPage(): string
     {
-        $path = count(Kernel::controllerRoot()) && $consider_controller_root
-            ? implode(DS, Kernel::controllerRoot())
-            : '';
-        $segs = array_slice(self::$segments, 0, self::$segment_page);
-
-        if (!empty($path)) {
-            array_unshift($segs, $path);
-        }
-
-        return implode(DS, $segs);
+        return implode(DS, array_slice(self::$segments, 0, self::$segment_page));
     }
 
     /**
@@ -365,16 +270,12 @@ class URI
      * @param int  $segment  is an integer with the number of the segment desired.
      * @param bool $rel2Page is a boolean value to determine if the desired segment is relative to the
      *                       current page (default = true) or the begin (false) of the array of segments.
-     * @param bool $decRoot  is a boolean value to determine if the number of segments of the
-     *                       root path of contollers must be decremented (true) or not (false = default).
      *
      * @return string|bool the value of the segment or false if it does not exists.
      */
-    public static function getSegment(int $segment, bool $rel2Page = true, bool $decRoot = false)
+    public static function getSegment(int $segment, bool $rel2Page = true)
     {
-        $realSegment = $segment
-            + ($rel2Page ? 1 + self::$segment_page : 0)
-            - ($decRoot ? count(Kernel::controllerRoot()) : 0);
+        $realSegment = $segment + ($rel2Page ? 1 + self::$segment_page : 0);
         $value = self::$segments[$realSegment] ?? false;
 
         return $value === '' ? 'index' : $value;
@@ -461,9 +362,9 @@ class URI
      */
     public static function getParam($var, $numeric = false)
     {
-        if (array_key_exists($var, self::$get_params)) {
-            if (!$numeric || ($numeric && filter_var(self::$get_params[$var], FILTER_VALIDATE_INT))) {
-                return self::$get_params[$var];
+        if (array_key_exists($var, self::$queryVars)) {
+            if (!$numeric || ($numeric && filter_var(self::$queryVars[$var], FILTER_VALIDATE_INT))) {
+                return self::$queryVars[$var];
             }
         }
 
@@ -477,7 +378,7 @@ class URI
      */
     public static function getParams()
     {
-        return self::$get_params;
+        return self::$queryVars;
     }
 
     /**
@@ -499,7 +400,7 @@ class URI
      */
     public static function removeParam($var)
     {
-        unset(self::$get_params[$var]);
+        unset(self::$queryVars[$var]);
     }
 
     /**
@@ -512,7 +413,7 @@ class URI
      */
     public static function setParam($var, $value)
     {
-        self::$get_params[$var] = $value;
+        self::$queryVars[$var] = $value;
     }
 
     /**
