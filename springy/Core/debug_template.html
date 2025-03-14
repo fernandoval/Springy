@@ -198,9 +198,9 @@
                 if (!iniciaDoPrincipal) {
                     Debug.printAjaxResults('', {}, $('#Spring-Debug').find('.Spring-Debug-Data').first().html());
                 }
-                $('#Spring-Debug').find('.Spring-Debug-Button').first().bind('click', Debug.open);
-                $('#Spring-Debug').find('.Spring-Tool-Close').first().bind('click', Debug.close);
-                $('#Spring-Debug').find('.Spring-Tool-Clear').first().bind('click', Debug.clear);
+                $('#Spring-Debug').find('.Spring-Debug-Button').first().on('click', Debug.open);
+                $('#Spring-Debug').find('.Spring-Tool-Close').first().on('click', Debug.close);
+                $('#Spring-Debug').find('.Spring-Tool-Clear').first().on('click', Debug.clear);
                 if ($('#Spring-Debug .Spring-Debug-Content .Spring-Debug-Data div.Spring-Debug-Info').length > 1) {
                     Debug.startPulsate();
                 }
@@ -291,7 +291,7 @@
                 json = XMLHttpRequest.responseJSON;
             } else {
                 try {
-                    json = $.parseJSON(XMLHttpRequest.responseText);
+                    json = JSON.parse(XMLHttpRequest.responseText);
                 } catch (e) {
                     Debug.printAjaxResults('AJAX Result', p, XMLHttpRequest.responseText);
                     return;
@@ -304,7 +304,7 @@
         };
 
         // Observe all AJAX requests
-        $(window).bind('ajaxComplete', DebugAjaxComplete);
+        $(window).on('ajaxComplete', DebugAjaxComplete);
     });
 </script>
 <div class="Spring-Debug-Box" id="Spring-Debug">
