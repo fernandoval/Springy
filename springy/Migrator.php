@@ -20,7 +20,7 @@ use PDOException;
  */
 class Migrator extends DB
 {
-    private const VERSION = '0.4.0.8';
+    private const VERSION = '0.5.0';
     private const MSG_INFORMATION = 0;
     private const MSG_WARNING = 1;
     private const MSG_ERROR = 2;
@@ -63,14 +63,8 @@ class Migrator extends DB
         ob_end_flush();
 
         $this->output('', self::MSG_INFORMATION);
-        $this->output(
-            self::CS_INFORMATION . 'Springy' . self::CS_RESET . ' v' . Kernel::VERSION,
-            self::MSG_INFORMATION
-        );
-        $this->output('A micro framework for smart developers.', self::MSG_INFORMATION);
-        $this->output('', self::MSG_INFORMATION);
-        $this->output('Database Migration Tool v' . self::VERSION, self::MSG_INFORMATION);
-        $this->output('--------------------------------', self::MSG_INFORMATION);
+        $this->output('Springy Database Migration Tool v' . self::VERSION, self::MSG_INFORMATION);
+        $this->output('--------------------------------------', self::MSG_INFORMATION);
         $this->output('', self::MSG_INFORMATION);
         $this->output('Application: ' . app_name() . ' v' . app_version(), self::MSG_INFORMATION);
         $this->output('', self::MSG_INFORMATION);
