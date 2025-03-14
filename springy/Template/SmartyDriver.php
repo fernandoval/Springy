@@ -14,7 +14,7 @@
 
 namespace Springy\Template;
 
-use Smarty;
+use Smarty\Smarty;
 use Springy\Kernel;
 use Springy\URI;
 
@@ -60,14 +60,18 @@ class SmartyDriver implements TemplateDriverInterface
         $this->tplObj->debugging_ctrl = config_get('template.debugging_ctrl');
         $this->tplObj->use_sub_dirs = config_get('template.use_sub_dirs');
 
-        $this->setCacheDir(config_get('template.template_cached_path'));
-        $this->setTemplateDir([
-            'main' => config_get('template.template_path'),
-            'default' => config_get('template.default_template_path'),
+        $this->tplObj->setCacheDir(config_get('template.template_cached_path'));
+        $this->tplObj->setTemplateDir([
+            config_get('template.template_path'),
+            config_get('template.default_template_path'),
         ]);
-        $this->setCompileDir(config_get('template.compiled_template_path'));
-        $this->setConfigDir(config_get('template.template_config_path'));
-        $this->tplObj->addPluginsDir(config_get('template.template_plugins_path'));
+        $this->tplObj->setCompileDir(config_get('template.compiled_template_path'));
+        $this->tplObj->setConfigDir(config_get('template.template_config_path'));
+
+        foreach (config_get('template.smarty_extensions', []) as $extensionClass) {
+            $this->tplObj->addExtension(new $extensionClass());
+        }
+
         $this->setTemplate($tpl);
     }
 
@@ -214,12 +218,12 @@ class SmartyDriver implements TemplateDriverInterface
 
         // Inicializa as funções personalizadas padrão
         foreach (Kernel::getTemplateFunctions() as $func) {
-            $this->tplObj->registerPlugin($func[0], $func[1], $func[2], $func[3], $func[4]);
+            $this->tplObj->registerPlugin($func[0], $func[1], $func[2], $func[3]);
         }
 
         // Inicializa as funções personalizadas do template
         foreach ($this->templateFuncs as $func) {
-            $this->tplObj->registerPlugin($func[0], $func[1], $func[2], $func[3], $func[4]);
+            $this->tplObj->registerPlugin($func[0], $func[1], $func[2], $func[3]);
         }
 
         return $this->tplObj->fetch(
@@ -317,13 +321,12 @@ class SmartyDriver implements TemplateDriverInterface
      * @param string       $name        defines the name of the plugin.
      * @param string|array $callback    defines the callback.
      * @param mixed        $cacheable
-     * @param mixed        $cache_attrs
      *
      * @return void
      */
-    public function registerPlugin($type, $name, $callback, $cacheable = null, $cache_attrs = null)
+    public function registerPlugin($type, $name, $callback, $cacheable = null)
     {
-        $this->templateFuncs[] = [$type, $name, $callback, $cacheable, $cache_attrs];
+        $this->templateFuncs[] = [$type, $name, $callback, $cacheable];
     }
 
     /**

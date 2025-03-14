@@ -241,13 +241,12 @@ class Template
      * @param string       $name        defines the name of the plugin.
      * @param string|array $callback    defines the callback.
      * @param mixed        $cacheable
-     * @param mixed        $cache_attrs
      *
      * @return void
      */
-    public function registerPlugin($type, $name, $callback, $cacheable = null, $cache_attrs = null): void
+    public function registerPlugin($type, $name, $callback, $cacheable = null): void
     {
-        $this->tplObj->registerPlugin($type, $name, $callback, $cacheable, $cache_attrs);
+        $this->tplObj->registerPlugin($type, $name, $callback, $cacheable);
     }
 
     /**

@@ -9,10 +9,16 @@
     *   `Kernel::setTemplatePrefix()`
 *   Fixed automatic controller routing system
 *   Fixed `Security\AclManager::getAclObjectName()` function
+*   Use of MemcacheD as session driver redesigned
+*   Copyright page moved out to a HTML file
+*   Support to Smarty template updated to version 5
 *   Deprecated `Kernel::controllerRoot()` function
+*   Deprecated `Kernel::VERSION` constant
 *   Removed undocumented parameter from `URI::relativePathPage()` function
 *   Removed third parameter from `URI::getSegment()` function
 *   Removed functions and methods:
+    *   `Session::_saveDbSession()`
+    *   `Session::_saveMcSession()`
     *   `URI::checkRedirect()`
 *   Removed configurations:
     *   `uri.prevalidate_controller`

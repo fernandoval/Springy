@@ -356,13 +356,12 @@ class TwigDriver implements TemplateDriverInterface
      * @param string       $name        defines the name of the plugin.
      * @param string|array $callback    defines the callback.
      * @param mixed        $cacheable
-     * @param mixed        $cache_attrs
      *
      * @return void
      */
-    public function registerPlugin($type, $name, $callback, $cacheable = null, $cache_attrs = null)
+    public function registerPlugin($type, $name, $callback, $cacheable = null)
     {
-        $this->templateFuncs[] = [$type, $name, $callback, $cacheable, $cache_attrs];
+        $this->templateFuncs[] = [$type, $name, $callback, $cacheable];
     }
 
     /**
@@ -441,8 +440,8 @@ class TwigDriver implements TemplateDriverInterface
      */
     public function assetFile($file, $host = 'static')
     {
-        $srcPath = Configuration::get('system', 'assets_source_path') . DIRECTORY_SEPARATOR . $file;
-        $filePath = Configuration::get('system', 'assets_path') . DIRECTORY_SEPARATOR . $file;
+        $srcPath = Configuration::get('system', 'assets_source_path') . DS . $file;
+        $filePath = Configuration::get('system', 'assets_path') . DS . $file;
         $fileURI = Configuration::get('uri', 'assets_dir') . '/' . $file;
         $get = [];
 
