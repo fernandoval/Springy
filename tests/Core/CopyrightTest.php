@@ -7,8 +7,6 @@
  *
  * @copyright 2016 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
- *
- * @version    1.0.0.4
  */
 
 use PHPUnit\Framework\TestCase;
@@ -20,7 +18,6 @@ class CopyrightTest extends TestCase
     {
         $this->expectOutputRegex('/^<!DOCTYPE html>\n.+$/m');
 
-        $copyright = new Copyright(false);
-        $copyright->printCopyright();
+        new Copyright(true);
     }
 }
