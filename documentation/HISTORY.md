@@ -4,6 +4,10 @@
 
 ### 4.6.2
 
+*   Debug JavaScript updated
+*   Added command line script to run PHPUnit tests on all supported PHP versions
+    using Docker containers.
+
 ### 4.6.1
 
 *   Added functions:
