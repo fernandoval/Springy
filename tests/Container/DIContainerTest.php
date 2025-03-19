@@ -9,8 +9,6 @@
  * @copyright 2015 Fernando Val
  * @author    Allan Marques <allan.marques@ymail.com>
  * @author    Fernando Val <fernando.val@gmail.com>
- *
- * @version    1.0.0.6
  */
 
 use PHPUnit\Framework\TestCase;
@@ -70,16 +68,8 @@ class DIContainerTest extends TestCase
     {
         $DI = new DIContainer();
 
-        //Basic
-        $DI->bind('object1', function ($attr = null, $val = null) {
-            $obj = $this->createMock('SomeClass', ['someMethod']);
-
-            if (is_string($attr)) {
-                $obj->$attr = $val;
-            }
-
-            return $obj;
-        });
+        // Basic
+        $DI->bind('object1', fn () => new SomeClass());
 
         $this->assertTrue(is_object($DI->make('object1')));
         $this->assertTrue(method_exists($DI->make('object1'), 'someMethod'));
@@ -89,16 +79,21 @@ class DIContainerTest extends TestCase
         $object2 = $DI->make('object1');
         $this->assertNotSame($object1, $object2);
 
-        //With params
-        $objectWithParam = $DI->make('object1', ['name', 'Jack']);
+        // With params
+        $DI->bind('object2', function (string $name) {
+            $obj = new SomeClass();
+            $obj->someMethod($name);
+
+            return $obj;
+        });
+
+        $objectWithParam = $DI->make('object2', ['Jack']);
         $this->assertIsObject($objectWithParam);
         $this->assertTrue(property_exists($objectWithParam, 'name'));
         $this->assertEquals('Jack', $objectWithParam->name);
 
         //Array like
-        $DI['object2'] = function () {
-            return $this->createMock('AnotherClass', ['otherMethod']);
-        };
+        $DI['object2'] = fn () => new AnotherClass();
         $this->assertNotInstanceOf('Closure', $DI['object2']);
         $this->assertTrue(method_exists($DI['object2'], 'otherMethod'));
         $this->assertInstanceOf('AnotherClass', $DI['object2']);
@@ -117,19 +112,16 @@ class DIContainerTest extends TestCase
     {
         $DI = new DIContainer();
 
-        $DI['some.service'] = function ($container) {
-            return $this->getMockBuilder('someService');
-        };
+        $DI['some.service'] = fn () => new SomeClass();
+        $DI->extend('some.service', function (SomeClass $result) {
+            $result->name = 'someValue';
 
-        $DI->extend('some.service', function ($someService, $container) {
-            $someService->someAttribute = 'someValue';
-
-            return $someService;
+            return $result;
         });
 
         $this->assertIsObject($DI['some.service']);
-        $this->assertTrue(property_exists($DI['some.service'], 'someAttribute'));
-        $this->assertEquals('someValue', $DI['some.service']->someAttribute);
+        $this->assertTrue(property_exists($DI['some.service'], 'name'));
+        $this->assertEquals('someValue', $DI['some.service']->name);
 
         $extended1 = $DI['some.service'];
         $extended2 = $DI['some.service'];
@@ -185,8 +177,10 @@ class AnotherClass
 
 class SomeClass
 {
-    public function someMethod()
+    public string $name = '';
+
+    public function someMethod($value)
     {
-        return true;
+        $this->name = $value;
     }
 }

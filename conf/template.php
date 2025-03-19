@@ -20,6 +20,7 @@ return [
     'compiled_template_path' => var_dir() . DS . 'compiled',
     'template_cached_path' => cache_dir(),
     'use_sub_dirs' => false,
+    'smarty_extensions' => [],
     'errors' => [
         404 => '_error404',
         500 => '_error500',

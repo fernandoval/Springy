@@ -2,11 +2,19 @@
 
 ## Version 4
 
+### 4.6.2
+
+*   Debug JavaScript updated
+*   Added command line script to run PHPUnit tests on all supported PHP versions
+    using Docker containers.
+
 ### 4.6.1
 
 *   Added functions:
     *   `Kernel::getTemplatePrefix()`
     *   `Kernel::setTemplatePrefix()`
+*   Added `template.smarty_extensions` (`array`) configuration to implements
+    support to custom Smarty extensions
 *   Fixed automatic controller routing system
 *   Fixed `Security\AclManager::getAclObjectName()` function
 *   Use of MemcacheD as session driver redesigned
@@ -21,6 +29,7 @@
     *   `Session::_saveMcSession()`
     *   `URI::checkRedirect()`
 *   Removed configurations:
+    *   `template.template_plugins_path`
     *   `uri.prevalidate_controller`
     *   `uri.redirect_last_slash`
     *   `uri.force_slash_on_index`
