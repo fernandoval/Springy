@@ -12,6 +12,7 @@
 namespace Springy;
 
 use Dotenv\Dotenv;
+use Springy\Core\ErrorsList;
 
 /**
  * Framework kernel class.
@@ -165,9 +166,6 @@ class Kernel
             '_pi_' => config_get('system.system_internal_methods.phpinfo'),
             '_springy_' => config_get('system.system_internal_methods.about'),
             '_system_bug_' => config_get('system.system_internal_methods.system_errors') && self::systemBugAccess(),
-            '_system_bug_solved_' => config_get('system.system_internal_methods.system_errors')
-                && self::systemBugAccess()
-                && preg_match('/(^[0-9a-z]{8}(,[0-9a-z]{8})*|all)$/', URI::getSegment(1, false)),
             default => false,
         };
 
@@ -180,8 +178,7 @@ class Kernel
                     ob_end_flush();
                 },
                 '_springy_' => fn () => new Core\Copyright(true),
-                '_system_bug_' => fn () => (new Errors())->bugList(),
-                '_system_bug_solved_' => fn () => (new Errors())->bugSolved(URI::getSegment(1, false)),
+                '_system_bug_' => fn () => (new ErrorsList())(),
             }
         ) : new Errors(404, 'Page not found');
     }
@@ -588,116 +585,6 @@ class Kernel
     }
 
     /**
-     * Returns environment data.
-     *
-     * @param string $key
-     *
-     * @deprecated 4.6.0
-     *
-     * @uses env()
-     *
-     * @return mixed
-     */
-    public static function systemConfGlobal(string $key): mixed
-    {
-        return env($key, null);
-    }
-
-    /**
-     * The system name.
-     *
-     * Warning! This function will be removed in the future.
-     *
-     * @deprecated 4.6.0
-     *
-     * @uses app_name()
-     *
-     * @return string A string containing the system name.
-     */
-    public static function systemName(): string
-    {
-        return app_name();
-    }
-
-    /**
-     * The system version.
-     *
-     * Warning! This function will be removed in the future.
-     *
-     * @deprecated 4.6.0
-     *
-     * @uses app_version()
-     *
-     * @see https://semver.org
-     *
-     * @return string A string containing the system version.
-     */
-    public static function systemVersion(): string
-    {
-        if (defined('APP_VERSION')) {
-            return app_version();
-        }
-
-        [$major, $minor, $patch] = is_array(env('SYSTEM_VERSION', null))
-            ? env('SYSTEM_VERSION')
-            : explode(
-                '.',
-                (string) env('SYSTEM_VERSION', '0.0.0')
-            );
-
-        return implode('.', [$major ?? 0, $minor ?? 0, $patch ?? 0]);
-    }
-
-    /**
-     * The project code name.
-     *
-     * @see https://en.wikipedia.org/wiki/Code_name#Project_code_name
-     * @deprecated 4.6.0
-     *
-     * @uses app_codename()
-     *
-     * @return string A string containing the project code name.
-     */
-    public static function projectCodeName(): string
-    {
-        return app_codename();
-    }
-
-    /**
-     * The system charset.
-     *
-     * @deprecated 4.6.0
-     *
-     * @uses env('CHARSET')
-     *
-     * @return string A string containing the system charset.
-     */
-    public static function charset(): string
-    {
-        return env('CHARSET') ?? 'UTF-8';
-    }
-
-    /**
-     * A path of the system.
-     *
-     * @param string $component the component constant.
-     *
-     * @deprecated 4.6.0
-     *
-     * @return string A string containing the path of the component.
-     */
-    public static function path(string $component): string
-    {
-        return match ($component) {
-            self::PATH_APPLICATION => app_path(),
-            self::PATH_CONF => config_dir(),
-            self::PATH_MIGRATION => migration_dir(),
-            self::PATH_PROJECT => project_path(),
-            self::PATH_VAR => var_dir(),
-        };
-    }
-
-    /**
      * Adds an error code to the list of ignored errors.
      *
      * @param int|array $error an error code or an array of errors codes.
@@ -794,24 +681,6 @@ class Kernel
     public static function setErrorHook($errno, $funcHook): void
     {
         self::$errorHooks[$errno] = $funcHook;
-    }
-
-    /**
-     * Gets and/or sets the root controller.
-     *
-     * @param array $cRoot if defined sets the new root controller.
-     *
-     * @deprecated 4.6.1
-     *
-     * @return array
-     */
-    public static function controllerRoot($cRoot = null)
-    {
-        if (!is_null($cRoot)) {
-            self::$tplPrefix = $cRoot;
-        }
-
-        return self::$tplPrefix;
     }
 
     /**
