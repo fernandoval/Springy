@@ -6,8 +6,6 @@
  * @copyright 2015 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
  * @author    Allan Marques <allan.marques@ymail.com>
- *
- * @version   0.2.2
  */
 
 namespace Springy\Container;
@@ -221,34 +219,6 @@ class DIContainer implements ArrayAccess
         }
 
         throw new InvalidArgumentException("The '{$key}' key was not registered as a shared instance.");
-    }
-
-    /**
-     * Same as offsetExists (deprecated).
-     *
-     * @param string $key
-     *
-     * @return bool
-     *
-     * @deprecated 4.5.0
-     */
-    public function has(string $key): bool
-    {
-        return $this->offsetExists($key);
-    }
-
-    /**
-     * Same as offsetGet (deprecated).
-     *
-     * @param string $key
-     *
-     * @return mixed
-     *
-     * @deprecated 4.5.0
-     */
-    public function resolve(string $key)
-    {
-        return $this->offsetGet($key);
     }
 
     /**
