@@ -37,3 +37,9 @@ echo -e "${Green}Running PHPUnit tests on PHP 8.3${Color_Off}"
 echo -e "${Green}--------------------------------${Color_Off}"
 docker run --rm -v $(pwd):/var/www -w /var/www php:8.3 vendor/bin/phpunit
 echo ""
+
+echo ""
+echo -e "${Green}Running PHPUnit tests on PHP 8.4${Color_Off}"
+echo -e "${Green}--------------------------------${Color_Off}"
+docker run --rm -v $(pwd):/var/www -w /var/www php:8.4 vendor/bin/phpunit
+echo ""
