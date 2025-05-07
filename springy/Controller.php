@@ -8,8 +8,6 @@
  * @copyright 2016-2018 Fernando Val
  * @author    Allan Marques <allan.marques@ymail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
- *
- * @version   1.1.0
  */
 
 namespace Springy;
@@ -20,11 +18,14 @@ class Controller extends AclManager
 {
     /** @var bool Define if the controller is restricted to signed in users. */
     protected $authNeeded = false;
-    /**
-     * @var bool|string|array Define a URL to redirect the user if it is not signed ($authNeeded must be true).
-     *                        Can be a string or an array used by URI::buildUrl();
-     **/
-    protected $redirectUnsigned = false;
+    /** Define a URL to redirect the user if it is not signed ($authNeeded must be true). */
+    protected array $redirectUnsigned = [
+        'enabled'      => false,
+        'segments'     => [],
+        'query'        => [],
+        'forceRewrite' => false,
+        'host'         => 'dynamic',
+    ];
 
     /** @var Template|null The template object */
     protected $template = null;
@@ -43,32 +44,28 @@ class Controller extends AclManager
      */
     public function __construct()
     {
-        if (app('user.auth.manager')->check()) {
-            parent::__construct(app('user.auth.manager')->user());
-        } else {
-            parent::__construct(app('user.auth.identity'));
-        }
+        parent::__construct(
+            app('user.auth.manager')->check()
+                ? app('user.auth.manager')->user()
+                : app('user.auth.identity')
+        );
 
-        // Do nothing if is free for unsigned users
         if (!$this->authNeeded) {
+            // Do nothing if is free for unsigned users
             return;
-        }
-
-        // Verify if is an authenticated user
-        if ($this->user->isLoaded()) {
-            // Call user special verifications
-            if (!$this->userSpecialVerifications()) {
-                $this->forbidden();
-            }
-
-            // Check if the controller and respective method is permitted to the user
-            $this->authorizationCheck();
+        } elseif (!$this->user->isLoaded()) {
+            // Has no user logged in then kill the application with the 403 forbidden page.
+            $this->forbidden();
 
             return;
         }
 
-        // Kill the application with the 403 forbidden page.
-        $this->forbidden();
+        // Call user special verifications then...
+        $this->userSpecialVerifications()
+            // check if the controller and respective method is permitted to the user
+            ? $this->authorizationCheck()
+            // or kill with the 403 forbidden page
+            : $this->forbidden();
     }
 
     /**
@@ -114,26 +111,18 @@ class Controller extends AclManager
     /**
      * Sends a "403 - Forbidden" error and kill the application.
      */
-    protected function forbidden()
+    protected function forbidden(): never
     {
-        if ($this->redirectUnsigned) {
-            $this->redirect(
-                (
-                    is_array($this->redirectUnsigned)
-                    && isset($this->redirectUnsigned['segments'])
-                    && isset($this->redirectUnsigned['query'])
-                    && isset($this->redirectUnsigned['forceRewrite'])
-                    && isset($this->redirectUnsigned['host'])
-                ) ? URI::buildURL(
-                    $this->redirectUnsigned['segments'],
-                    $this->redirectUnsigned['query'],
-                    $this->redirectUnsigned['forceRewrite'],
-                    $this->redirectUnsigned['host']
-                ) : URI::buildURL($this->redirectUnsigned)
-            );
-        }
-
-        new Errors(403, 'Forbidden');
+        $this->redirectUnsigned['enabled']
+            ? $this->redirect(
+                URI::buildURL(
+                    $this->redirectUnsigned['segments'] ?? [],
+                    $this->redirectUnsigned['query'] ?? [],
+                    $this->redirectUnsigned['forceRewrite'] ?? false,
+                    $this->redirectUnsigned['host'] ?? 'dynamic'
+                )
+            )
+            : throw_error(403, 'Forbidden');
     }
 
     /**
@@ -147,7 +136,7 @@ class Controller extends AclManager
     /**
      * Sends a URL redirect to the user browser and kill the application.
      */
-    protected function redirect($url): void
+    protected function redirect($url): never
     {
         URI::redirect($url);
     }

@@ -12,6 +12,8 @@
  * @version    5.0.0
  */
 
+use Springy\Exceptions\SpringyException;
+
 // Definig the constantes
 if (!defined('DS')) {
     define('DS', DIRECTORY_SEPARATOR);
@@ -93,7 +95,7 @@ function app_path(): string
  */
 function app_version(): string
 {
-    return defined('APP_VERSION') ? APP_VERSION : Springy\Kernel::systemVersion();
+    return defined('APP_VERSION') ? APP_VERSION : '0.0.0';
 }
 
 /**
@@ -187,6 +189,8 @@ function cookie_get(string $name): mixed
 
 /**
  * A var_dump and die help function.
+ *
+ * @SuppressWarnings(PHPMD.ExitExpression)
  *
  * @param mixed $var the variable or value to be sent to standard output.
  * @param bool  $die a boolen flag to determine if system die after print the value of $var.
@@ -459,10 +463,11 @@ function sysconf($key): mixed
  * @param int    $status
  * @param string $message
  *
- * @return void
+ * @return never
  */
-function throw_error($status = 500, $message = 'Internal Server Error'): void
+function throw_error($status = 500, $message = 'Internal Server Error'): never
 {
+    throw new SpringyException($message, $status);
     new Springy\Errors($status, $message);
 }
 
@@ -487,6 +492,11 @@ function springyErrorHandler($errno, $errstr, $errfile, $errline)
         new Springy\Exceptions\SpringyException($errstr, $errno, null, $errfile, $errline),
         500
     );
+}
+
+function url(string $host): string
+{
+    return config_get('uri.' . $host, $host);
 }
 
 /**
