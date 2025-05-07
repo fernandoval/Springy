@@ -9,8 +9,6 @@
  * @copyright 2015 Fernando Val
  * @author    Allan Marques <allan.marques@ymail.com>
  * @author    Fernando Val <fernando.val@gmail.com>
- *
- * @version   1.0.0.5
  */
 
 use PHPUnit\Framework\TestCase;
@@ -30,20 +28,11 @@ class MediatorTest extends TestCase
 
     public function testThatMediatorCanRegisterAndForgetHandlers()
     {
-        //Normal
         $this->mediator->registerHandlerFor('global.someevent', function () {
         });
         $this->assertTrue($this->mediator->hasHandlersFor('global.someevent'));
 
         $this->mediator->forget('global.someevent');
-        $this->assertFalse($this->mediator->hasHandlersFor('global.someevent'));
-
-        //Alternative
-        $this->mediator->on('global.someevent', function () {
-        });
-        $this->assertTrue($this->mediator->hasHandlersFor('global.someevent'), 'message');
-
-        $this->mediator->off('global.someevent');
         $this->assertFalse($this->mediator->hasHandlersFor('global.someevent'));
     }
 
@@ -51,7 +40,7 @@ class MediatorTest extends TestCase
     {
         $toChange = 'not-changed';
 
-        $this->mediator->on('global.aevent', function () use (&$toChange) {
+        $this->mediator->registerHandlerFor('global.aevent', function () use (&$toChange) {
             $toChange = 'has-changed';
         });
 
@@ -69,7 +58,7 @@ class MediatorTest extends TestCase
         for ($i = 0; $i < 5; $i++) {
             $dataToChange[$i] = 'not-changed' . $i;
 
-            $this->mediator->on('global.event', function () use (&$dataToChange, $i) {
+            $this->mediator->registerHandlerFor('global.event', function () use (&$dataToChange, $i) {
                 $dataToChange[$i] = 'has-changed' . $i;
             });
         }
@@ -91,17 +80,17 @@ class MediatorTest extends TestCase
         $toChangeSecond = 0;
         $toChangeThird = 0;
 
-        $this->mediator->on('event', function () use (&$toChangeSecond) {
+        $this->mediator->registerHandlerFor('event', function () use (&$toChangeSecond) {
             usleep(100);
             $toChangeSecond = microtime(true);
         }, 2);
 
-        $this->mediator->on('event', function () use (&$toChangeThird) {
+        $this->mediator->registerHandlerFor('event', function () use (&$toChangeThird) {
             usleep(100);
             $toChangeThird = microtime(true);
         });
 
-        $this->mediator->on('event', function () use (&$toChangeFirst) {
+        $this->mediator->registerHandlerFor('event', function () use (&$toChangeFirst) {
             usleep(100);
             $toChangeFirst = microtime(true);
         }, 10);
@@ -116,7 +105,7 @@ class MediatorTest extends TestCase
     {
         $toChange = '';
 
-        $this->mediator->on('event', function ($arg1, $arg2) use (&$toChange) {
+        $this->mediator->registerHandlerFor('event', function ($arg1, $arg2) use (&$toChange) {
             $toChange = $arg1 . $arg2;
         });
 
@@ -128,7 +117,7 @@ class MediatorTest extends TestCase
     public function testTHatMediatorReturnsTheHandlersResponsesWhenFiring()
     {
         for ($i = 0; $i < 5; $i++) {
-            $this->mediator->on('event', function () use ($i) {
+            $this->mediator->registerHandlerFor('event', function () use ($i) {
                 return $i;
             });
         }
@@ -145,9 +134,9 @@ class MediatorTest extends TestCase
         };
 
         //default calls 'handle' method
-        $this->mediator->on('event', 'someService');
+        $this->mediator->registerHandlerFor('event', 'someService');
         //non-default calls method after '@'
-        $this->mediator->on('event', 'someService@doSomething');
+        $this->mediator->registerHandlerFor('event', 'someService@doSomething');
 
         $response = $this->mediator->fire('event', ['passed-', 'by-class']);
 
@@ -156,11 +145,11 @@ class MediatorTest extends TestCase
 
     public function testThatMediatorCanFireWildCardsEventHandlers()
     {
-        $this->mediator->on('event.subevent', function () {
+        $this->mediator->registerHandlerFor('event.subevent', function () {
             return 'fromSub';
         });
 
-        $this->mediator->on('event.*', function () {
+        $this->mediator->registerHandlerFor('event.*', function () {
             return 'fromWildcard';
         });
 
@@ -171,17 +160,17 @@ class MediatorTest extends TestCase
 
     public function testThatMediatorCanReturnTHeCurrentEvent()
     {
-        $this->mediator->on('event.subevent1', function () {
+        $this->mediator->registerHandlerFor('event.subevent1', function () {
             return 5;
         });
-        $this->mediator->on('event.subevent2', function () {
+        $this->mediator->registerHandlerFor('event.subevent2', function () {
             return -5;
         });
-        $this->mediator->on('event.subevent3', function () {
+        $this->mediator->registerHandlerFor('event.subevent3', function () {
             return 10;
         });
 
-        $this->mediator->on('event.*', function () {
+        $this->mediator->registerHandlerFor('event.*', function () {
             switch ($this->mediator->current()) {
                 case 'event.subevent1':
                     return 5;
@@ -206,19 +195,19 @@ class MediatorTest extends TestCase
 
     public function testThatMediatorStopsEventPropagationAfterAHandlerReturnsFalse()
     {
-        $this->mediator->on('event', function () {
+        $this->mediator->registerHandlerFor('event', function () {
             return 5;
         });
-        $this->mediator->on('event', function () {
+        $this->mediator->registerHandlerFor('event', function () {
             return -5;
         });
-        $this->mediator->on('event', function () {
+        $this->mediator->registerHandlerFor('event', function () {
             return 10;
         });
-        $this->mediator->on('event', function () {
+        $this->mediator->registerHandlerFor('event', function () {
             return false;
         });
-        $this->mediator->on('event', function () {
+        $this->mediator->registerHandlerFor('event', function () {
             return 10;
         });
 
@@ -229,7 +218,7 @@ class MediatorTest extends TestCase
 
     public function testThatMediatorCanRegisterAHandlerForSeveralEventsAtOnce()
     {
-        $this->mediator->on(['event1', 'event2', 'event3'], function () {
+        $this->mediator->registerHandlerFor(['event1', 'event2', 'event3'], function () {
             return 5;
         });
 
