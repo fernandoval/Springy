@@ -9,8 +9,6 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
- *
- * @version   3.2.2
  */
 
 namespace Springy;
@@ -149,7 +147,7 @@ class Errors
             E_USER_ERROR => 'User Error',
             E_USER_WARNING => 'User Warning',
             E_USER_NOTICE => 'User Notice',
-            E_STRICT => 'Fatal Error',
+            2048 => 'Fatal Error', // E_STRICT - Deprecated in PHP 8.4.0
             1044 => 'Access Denied to Database',
             E_DEPRECATED => 'Deprecated',
             E_USER_DEPRECATED => 'Deprecated by User',
@@ -281,7 +279,7 @@ class Errors
      *
      * @return void
      */
-    public function process(Throwable $error, $httpCode = 500)
+    public function process(Throwable $error, $httpCode = 500): void
     {
         if (
             in_array($error->getCode(), Kernel::getIgnoredError())
@@ -410,9 +408,9 @@ class Errors
      * @param int       $httpCode
      * @param Throwable $error
      *
-     * @return void
+     * @return never
      */
-    public function sendReport(string $errorId, string $title, int $httpCode, Throwable $error)
+    public function sendReport(string $errorId, string $title, int $httpCode, Throwable $error): never
     {
         restore_error_handler();
 
@@ -436,90 +434,27 @@ class Errors
     }
 
     /**
-     * Deletes an error from error log table.
+     * @deprecated 4.7
+     * @see        ErrorsList::delete()
+     * @throws     SpringyException
      *
-     * @param string $errorId
-     *
-     * @return void
+     * @return never
      */
-    public function bugSolved(string $errorId): void
+    public function bugSolved(string $errorId)
     {
-        $dbsrv = config_get('system.system_error.db_server') ?: 'default';
-        $table = config_get('system.system_error.table_name') ?: 'system_errors';
-        $dbcon = new DB($dbsrv);
-
-        if (!DB::connected($dbsrv)) {
-            throw_error(500, 'Fail to connect to database');
-        }
-
-        if ($errorId == 'all') {
-            $dbcon->execute('DELETE FROM ' . $table, []);
-            echo '<strong>ALL</strong> errors deleted from error log.';
-
-            return;
-        }
-
-        $idList = explode(',', $errorId);
-        $dbcon->execute(
-            'DELETE FROM ' . $table
-            . ' WHERE error_code ' . (
-                count($idList) > 1
-                    ? 'in (' . implode(',', array_fill(0, count($idList), '?')) . ')'
-                    : '= ?'
-            ),
-            count($idList) > 1 ? $idList : [$errorId]
-        );
-        echo 'Error(s) ID <strong>' . $errorId . '</strong> deleted from log.';
+        throw new SpringyException('Deprecated method - user ErrorsList::delete()', E_USER_DEPRECATED);
     }
 
     /**
-     * Prints the error log content.
+     * @deprecated 4.7
+     * @see        ErrorsList::print()
+     * @throws     SpringyException
      *
-     * @return void
+     * @return never
      */
     public function bugList()
     {
-        $template = $this->getTplPath('errors-list.html');
-
-        if (!is_file($template)) {
-            throw_error(404, 'Not Found');
-        }
-
-        $dbsrv = config_get('system.system_error.db_server') ?: 'default';
-        $table = config_get('system.system_error.table_name') ?: 'system_errors';
-        $dbcon = new DB($dbsrv);
-
-        if (!DB::connected($dbsrv)) {
-            throw_error(500, 'Fail to connect to database');
-        }
-
-        $order_column = URI::getParam('orderBy') ?: 'last_time';
-        $order_type = URI::getParam('sort') ?: 'DESC';
-        $dbcon->execute(
-            'SELECT id, error_code, description, occurrences, last_time, details' .
-            '  FROM ' . $table .
-            ' ORDER BY ' . $order_column . ' ' . $order_type
-        );
-        $errList = array_map(
-            function ($row) {
-                $json = json_decode($row['details']);
-
-                if (!json_last_error()) {
-                    $row['details'] = $json;
-                }
-
-                return $row;
-            },
-            $dbcon->fetchAll()
-        );
-
-        $output = file_get_contents($template);
-        $output = str_replace('{systemName}', app_name(), $output);
-        $output = str_replace('{sistemVersion}', app_version(), $output);
-        $output = str_replace('{errorsList}', json_encode($errList), $output);
-
-        header('Content-type: text/html; charset=UTF-8', true, 200);
-        echo $output;
+        throw new SpringyException('Deprecated method - user ErrorsList::print()', E_USER_DEPRECATED);
     }
 
     /**
@@ -531,7 +466,7 @@ class Errors
      *
      * @return void
      */
-    private function printHtml(string $errorId, $errorType, Throwable $error)
+    private function printHtml(string $errorId, $errorType, Throwable $error): void
     {
         $lineFeed = "\n";
 
