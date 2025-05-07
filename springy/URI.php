@@ -508,25 +508,27 @@ class URI
      * This method sends the status header with a URI redirection to the user
      * browser and finish the application execution.
      *
+     * @SuppressWarnings(PHPMD.ExitExpression)
+     *
      * @param string $url    the URI.
      * @param int    $header the redirection code (default = 302).
      *
-     * @return void
+     * @return never
      */
-    public static function redirect($url, $header = 302)
+    public static function redirect($url, $header = 302): never
     {
         $redirs = [
-            301 => 'Moved Permanently',
-            302 => 'Found',
-            303 => 'See Other',
-            307 => 'Temporary Redirect',
+            301 => ' Moved Permanently',
+            302 => ' Found',
+            303 => ' See Other',
+            307 => ' Temporary Redirect',
         ];
 
         if (ob_get_level() > 0) {
             ob_clean();
         }
 
-        header('HTTP/1.1 ' . $header . (isset($redirs[$header]) ? $redirs[$header] : ''), true);
+        header('HTTP/1.1 ' . $header . ($redirs[$header] ?? ''), true);
         header('Status: ' . $header, true);
         header('Location: ' . $url, true, $header);
 
