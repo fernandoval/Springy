@@ -60,9 +60,9 @@ configurações são necessárias para ter o mesmo efeito.
 
 ### Configuração
 
-O script de constantes *consts* é o arquivo de configuração geral do sistema.
-Nele estão entradas de definição como nome e versão do sistema, ambiente, árvore
-de diretórios da aplicação, charset e timezone. Mais detalhes
+O script de constantes *consts.php* é o arquivo de configuração geral do
+sistema. Nele estão entradas de definição como nome e versão do sistema,
+ambiente, árvore de diretórios da aplicação, charset e timezone. Mais detalhes
 [aqui](/documentation/pt/consts.md).
 
 As demais configurações da aplicação deverão estar no diretório e sub-diretórios

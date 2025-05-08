@@ -13,7 +13,7 @@
 
 define('SPRINGY_START', microtime(true));
 
-require __DIR__ . '/../consts';
+require __DIR__ . '/../consts.php';
 // Loads the Composer autoload
 require __DIR__ . '/../vendor/autoload.php';
 

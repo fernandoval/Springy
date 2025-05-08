@@ -1,8 +1,8 @@
-# consts - The main application configuration file
+# consts.php - The main application configuration file
 
 ## Definition
 
-The *consts* file is the general configuration script for the application.
+The *consts.php* file is the general configuration script for the application.
 
 This script sets application configurations in `Kernel` class.
 
