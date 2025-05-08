@@ -7,7 +7,7 @@
  * @copyright 2007 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
  *
- * @version 3.0.1
+ * @version 3.1.0
  *
  * @codingStandardsIgnoreFile
  */
@@ -28,9 +28,6 @@ if ($argc < 2) {
     echo "\n";
     exit(999);
 }
-
-// Load framework configuration
-$sysconf = file_exists(web_root() . '/sysconf.php') ? require_once web_root() . '/sysconf.php' : [];
 
 // Define error handlers
 error_reporting(E_ALL);
@@ -70,4 +67,4 @@ while (++$arg < $argc) {
 }
 
 ob_start();
-Springy\Kernel::run($sysconf);
+Springy\Kernel::run();

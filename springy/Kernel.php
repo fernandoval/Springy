@@ -413,21 +413,12 @@ class Kernel
     }
 
     /**
-     * Loads the .env file and merges to Kernel::$sysconf properties.
-     *
-     * The parameter $sysconf will be removed in v4.7.
-     *
-     * @param array $sysconf configuration loaded from sysconf.php file.
-     *
-     * @return void
+     * Loads the .env file.
      */
-    private static function loadEnvFile(array $sysconf): void
+    private static function loadEnvFile(): void
     {
         $envcache = cache_dir() . DS . '.env.php';
         $envfile = project_path() . DS . '.env';
-
-        // Put legacy sysconf.php array into env
-        array_walk($sysconf, fn ($value, $key) => putenv(sprintf('%s=%s', $key, $value)));
 
         if (
             file_exists($envfile) &&
@@ -518,16 +509,10 @@ class Kernel
 
     /**
      * Starts the application.
-     *
-     * The initialization parameter $sysconf will be removed in v4.7.
-     *
-     * @param array $sysconf configuration loaded from sysconf.php file.
-     *
-     * @return void
      */
-    public static function run(array $sysconf)
+    public static function run(): void
     {
-        self::loadEnvFile($sysconf);
+        self::loadEnvFile();
 
         self::setEnv();
 
