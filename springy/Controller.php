@@ -12,6 +12,8 @@
 
 namespace Springy;
 
+use Springy\Exceptions\HttpErrorForbidden;
+use Springy\Exceptions\HttpErrorNotFound;
 use Springy\Security\AclManager;
 
 class Controller extends AclManager
@@ -122,15 +124,15 @@ class Controller extends AclManager
                     $this->redirectUnsigned['host'] ?? 'dynamic'
                 )
             )
-            : throw_error(403, 'Forbidden');
+            : throw new HttpErrorForbidden();
     }
 
     /**
      * Sends a "404 - Page not found" error and kill the application.
      */
-    protected function pageNotFound(): void
+    protected function pageNotFound(): never
     {
-        new Errors(404, 'Page not found');
+        throw new HttpErrorNotFound();
     }
 
     /**

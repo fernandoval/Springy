@@ -45,7 +45,7 @@ class Template
                 $this->tplObj = new Template\TwigDriver($tpl);
                 break;
             default:
-                throw_error('500', 'Template engine not implemented');
+                throw_error(500, 'Template engine not implemented');
         }
 
         $this->addUriCommonUrls();

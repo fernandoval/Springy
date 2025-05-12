@@ -17,7 +17,7 @@
 namespace Springy\Template;
 
 use Springy\Configuration;
-use Springy\Errors;
+use Springy\Exceptions\HttpErrorNotFound;
 use Springy\Kernel;
 use Springy\URI;
 
@@ -227,7 +227,7 @@ class TwigDriver implements TemplateDriverInterface
     public function fetch()
     {
         if (!$this->templateExists($this->templateName)) {
-            new Errors(404, $this->templateName . self::TPL_NAME_SUFIX);
+            throw new HttpErrorNotFound($this->templateName . self::TPL_NAME_SUFIX);
         }
 
         // Alimenta as variáveis CONSTANTES

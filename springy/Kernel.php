@@ -13,6 +13,7 @@ namespace Springy;
 
 use Dotenv\Dotenv;
 use Springy\Core\ErrorsList;
+use Springy\Exceptions\HttpErrorNotFound;
 
 /**
  * Framework kernel class.
@@ -22,7 +23,7 @@ use Springy\Core\ErrorsList;
 class Kernel
 {
     // Framework version
-    public const VERSION = '4.6.2 (this constant is deprecated)';
+    public const VERSION = '4.7.0-RC-1 (this constant is deprecated)';
 
     // Default controller namespace
     public const DEFAULT_NS = 'App\\Web\\';
@@ -180,7 +181,7 @@ class Kernel
                 '_springy_' => fn () => new Core\Copyright(true),
                 '_system_bug_' => fn () => (new ErrorsList())(),
             }
-        ) : new Errors(404, 'Page not found');
+        ) : throw new HttpErrorNotFound();
     }
 
     /**

@@ -15,15 +15,6 @@ use Throwable;
 
 class SpringyException extends RuntimeException
 {
-    /**
-     * Constructor.
-     *
-     * @param string         $message
-     * @param int            $code
-     * @param Throwable|null $previous
-     * @param string|null    $file
-     * @param int|null       $line
-     */
     public function __construct(
         string $message,
         int $code = E_USER_ERROR,

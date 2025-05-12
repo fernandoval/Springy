@@ -3,7 +3,7 @@
 namespace Springy\Core;
 
 use Springy\DB;
-use Springy\Errors;
+use Springy\Exceptions\HttpErrorNotFound;
 use Springy\URI;
 
 class ErrorsList
@@ -30,7 +30,7 @@ class ErrorsList
             $errorCode === false => $this->printErrorsList(),
             preg_match('/^\\w{8}$/', $errorCode) === 1 => $this->printErrorDetails($errorCode),
             $errorCode === 'delete' => $this->delete(),
-            default => new Errors(404, 'Page not found'),
+            default => throw new HttpErrorNotFound(),
         };
     }
 
@@ -101,7 +101,7 @@ class ErrorsList
         $error = $this->dbConnection->fetchNext();
 
         if (!$error) {
-            new Errors(404, 'Error not found');
+            throw new HttpErrorNotFound();
         }
 
         $output = $this->getTemplate(__DIR__ . DS . 'assets' . DS . 'error-details.html');

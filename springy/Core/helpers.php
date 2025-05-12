@@ -8,10 +8,9 @@
  * @copyright  2014 Fernando Val
  * @author     Allan Marques <allan.marques@ymail.com>
  * @author     Fernando Val <fernando.val@gmail.com>
- *
- * @version    5.0.0
  */
 
+use Springy\Exceptions\HttpError;
 use Springy\Exceptions\SpringyException;
 
 // Definig the constantes
@@ -468,7 +467,6 @@ function sysconf($key): mixed
 function throw_error($status = 500, $message = 'Internal Server Error'): never
 {
     throw new SpringyException($message, $status);
-    new Springy\Errors($status, $message);
 }
 
 /**
@@ -480,7 +478,10 @@ function throw_error($status = 500, $message = 'Internal Server Error'): never
  */
 function springyExceptionHandler(Throwable $error)
 {
-    (new Springy\Errors())->process($error, 500);
+    (new Springy\Errors())->process(
+        $error,
+        $error instanceof HttpError ? $error->getCode() : 500
+    );
 }
 
 /**
@@ -489,7 +490,7 @@ function springyExceptionHandler(Throwable $error)
 function springyErrorHandler($errno, $errstr, $errfile, $errline)
 {
     (new Springy\Errors())->process(
-        new Springy\Exceptions\SpringyException($errstr, $errno, null, $errfile, $errline),
+        new SpringyException($errstr, $errno, null, $errfile, $errline),
         500
     );
 }
