@@ -16,6 +16,7 @@ namespace Springy;
 use Exception;
 use PDOException;
 use Springy\Exceptions\SpringyException;
+use Springy\Mail\Mailer;
 use Springy\Utils\Strings;
 use Throwable;
 
@@ -374,6 +375,10 @@ class Errors
      */
     protected function sendEmail(string $errorId, $errorType, Throwable $error): void
     {
+        if (!config_get('mail.errors_go_to')) {
+            return;
+        }
+
         $html = file_get_contents($this->getTplPath('system-error-email.html'));
         $html = str_replace('{systemName}', app_name(), $html);
         $html = str_replace('{sistemVersion}', app_version(), $html);
@@ -384,20 +389,17 @@ class Errors
         $html = str_replace('{errorFile}', $error->getFile(), $html);
         $html = str_replace('{errorLine}', $error->getLine(), $html);
 
-        $email = new Mail();
-        $email->to(config_get('mail.errors_go_to'), 'System Admin');
-        $email->from(
+        (new Mailer(
             config_get('mail.system_adm_mail'),
-            app_name() . ' - System Error Report'
-        );
-        $email->subject(
+            app_name() . ' - System Error Report',
             'Error on ' . app_name() .
             ' v' . app_version() .
             ' [' . Kernel::environment() .
             '] at ' . URI::getHost()
-        );
-        $email->body($html);
-        $email->send();
+        ))
+            ->addTo(config_get('mail.errors_go_to'), 'System Admin')
+            ->setBody($html, true)
+            ->send();
     }
 
     /**
