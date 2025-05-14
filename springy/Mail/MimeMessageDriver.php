@@ -9,7 +9,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   1.1.10
+ * @deprecated 4.7.0
  */
 
 namespace Springy\Mail;

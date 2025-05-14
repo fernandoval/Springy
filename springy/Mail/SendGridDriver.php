@@ -6,9 +6,7 @@
  * @copyright 2015 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
  *
- * @see       https://github.com/sendgrid/sendgrid-php
- *
- * @version    3.2.10
+ * @deprecated 4.7.0
  */
 
 namespace Springy\Mail;

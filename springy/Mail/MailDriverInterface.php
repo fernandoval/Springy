@@ -7,7 +7,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.1.6
+ * @deprecated 4.7.0
  */
 
 namespace Springy\Mail;

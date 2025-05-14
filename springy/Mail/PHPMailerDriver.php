@@ -8,7 +8,7 @@
  *
  * @see       https://github.com/PHPMailer/PHPMailer
  *
- * @version    1.2.2
+ * @deprecated 4.7.0
  */
 
 namespace Springy\Mail;

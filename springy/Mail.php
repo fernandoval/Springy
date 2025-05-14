@@ -7,7 +7,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   3.1.25
+ * @deprecated 4.7.0
  */
 
 namespace Springy;
