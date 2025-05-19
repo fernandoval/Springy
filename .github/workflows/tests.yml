@@ -103,6 +103,6 @@ jobs:
           DB_HOST: "127.0.0.1"
           DB_NAME: springy
           DB_USER: root
-          DB_PSSS: root
+          DB_PASS: root
           MYSQL: ${{ matrix.mysql-version }}
         run: vendor/bin/phpunit
