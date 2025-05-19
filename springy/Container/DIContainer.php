@@ -14,9 +14,6 @@ use ArrayAccess;
 use Closure;
 use InvalidArgumentException;
 
-/**
- * DIContainer class.
- */
 class DIContainer implements ArrayAccess
 {
     // Type constants
@@ -24,19 +21,14 @@ class DIContainer implements ArrayAccess
     public const TYPE_PARAM = 'param';
     public const TYPE_SHARED = 'shared';
 
-    /** @var array saves keys of all elements in container */
-    protected $registeredKeys;
+    // Keys of all elements in container
+    protected array $registeredKeys;
 
-    /** @var array saves all parameters */
-    protected $params;
-    /** @var array saves all factories */
-    protected $factories;
-    /** @var array saves all factory extensions */
-    protected $factoriesExtensions;
-    /** @var arry saves all shared instances */
-    protected $sharedInstances;
-    /** @var array saves factories that will be shared instances (lazy load) */
-    protected $sharedInstancesFactories;
+    protected array $params;
+    protected array $factories;
+    protected array $factoriesExtensions;
+    protected array $sharedInstances;
+    protected array $sharedInstancesFactories; // Factories that will be shared instances (lazy load)
 
     public function __construct()
     {
@@ -51,12 +43,11 @@ class DIContainer implements ArrayAccess
     /**
      * Registers a parameter.
      *
-     * @param string|Closure $key
-     * @param mixed          $value any type except object.
+     * The value can be any type except object.
      *
-     * @return mixed
+     * @throws InvalidArgumentException if value is an object.
      */
-    public function raw($key, $value = null): mixed
+    public function raw(string|Closure $key, mixed $value = null): mixed
     {
         // If key is a closure returns its result (useful in array mode)
         if ($key instanceof Closure) {
@@ -82,30 +73,19 @@ class DIContainer implements ArrayAccess
     /**
      * Returns the param registered with given key.
      *
-     * @param mixed $key
-     *
      * @throws InvalidArgumentException if parameter $key not exists in container.
-     *
-     * @return mixed
      */
-    public function param($key): mixed
+    public function param(string $key): mixed
     {
-        if (isset($this->params[$key])) {
-            return $this->params[$key];
-        }
-
-        throw new InvalidArgumentException("The '{$key}' key was not registered as a param.");
+        return $this->params[$key] ?? throw new InvalidArgumentException(
+            "The '{$key}' key was not registered as a param."
+        );
     }
 
     /**
      * Registers a factory (Closure).
      *
      * Useful to save complex objects creator functions.
-     *
-     * @param string  $key
-     * @param Closure $factory
-     *
-     * @return void
      */
     public function bind(string $key, Closure $factory): void
     {
@@ -116,12 +96,7 @@ class DIContainer implements ArrayAccess
     /**
      * Executes a factory and returs its result.
      *
-     * @param string $key
-     * @param array  $params
-     *
      * @throws InvalidArgumentException if factory not exists.
-     *
-     * @return mixed
      */
     public function make(string $key, array $params = []): mixed
     {
@@ -148,12 +123,7 @@ class DIContainer implements ArrayAccess
     /**
      * Registers an extension into a factory.
      *
-     * @param string  $key
-     * @param Closure $extension
-     *
      * @throws InvalidArgumentException if factory $key not exists.
-     *
-     * @return void
      */
     public function extend(string $key, Closure $extension): void
     {
@@ -171,10 +141,8 @@ class DIContainer implements ArrayAccess
      * @param Closure|object $instance
      *
      * @throws InvalidArgumentException if $instance if not a closure or object.
-     *
-     * @return mixed
      */
-    public function instance($key, $instance = null): mixed
+    public function instance(string|Closure $key, ?object $instance = null): mixed
     {
         // If key is a closure executes it and returns the result (useful in array mode)
         if ($key instanceof Closure) {
@@ -188,8 +156,6 @@ class DIContainer implements ArrayAccess
             $this->sharedInstancesFactories[$key] = $instance;
 
             return null;
-        } elseif (!is_object($instance)) {
-            throw new InvalidArgumentException('The argument passed is not an instance of an object.');
         }
 
         $this->sharedInstances[$key] = $instance;
@@ -200,33 +166,25 @@ class DIContainer implements ArrayAccess
     /**
      * Returns a shared instance identified by $key.
      *
-     * @param string $key
-     *
      * @throws InvalidArgumentException if instance not exists.
      *
      * @return object
      */
-    public function shared(string $key)
+    public function shared(string $key): object
     {
         // If has a lazy load executes it.
         if (isset($this->sharedInstancesFactories[$key])) {
-            $this->sharedInstances[$key] = call_user_func($this->sharedInstancesFactories[$key], $this);
+            $this->instance($key, call_user_func($this->sharedInstancesFactories[$key], $this));
             unset($this->sharedInstancesFactories[$key]);
         }
 
-        if (isset($this->sharedInstances[$key])) {
-            return $this->sharedInstances[$key];
-        }
-
-        throw new InvalidArgumentException("The '{$key}' key was not registered as a shared instance.");
+        return $this->sharedInstances[$key] ?? throw new InvalidArgumentException(
+            "The '{$key}' key was not registered as a shared instance."
+        );
     }
 
     /**
      * Same as offsetUnset (deprecated).
-     *
-     * @param string $key
-     *
-     * @return void
      */
     public function forget(string $key): void
     {
@@ -244,13 +202,14 @@ class DIContainer implements ArrayAccess
             throw new InvalidArgumentException("The '{$offset}' key was not registered as a dependency.");
         }
 
-        $getter = [
-            self::TYPE_FACTORY => fn ($key) => $this->make($key),
-            self::TYPE_SHARED => fn ($key) => $this->shared($key),
-            self::TYPE_PARAM => fn ($key) => $this->param($key),
-        ];
-
-        return call_user_func($getter[$this->registeredKeys[$offset]], $offset);
+        return call_user_func(
+            match ($this->registeredKeys[$offset]) {
+                self::TYPE_FACTORY => fn ($key) => $this->make($key),
+                self::TYPE_SHARED => fn ($key) => $this->shared($key),
+                self::TYPE_PARAM => fn ($key) => $this->param($key),
+            },
+            $offset
+        );
     }
 
     public function offsetSet($offset, $value): void
@@ -274,30 +233,28 @@ class DIContainer implements ArrayAccess
 
     public function offsetUnset($offset): void
     {
-        $unset = [
-            self::TYPE_FACTORY => function ($key) {
-                unset($this->factories[$key]);
-                unset($this->factoriesExtensions[$key]);
+        call_user_func(
+            match ($this->registeredKeys[$offset] ?? '') {
+                self::TYPE_FACTORY => function ($key) {
+                    unset($this->factories[$key]);
+                    unset($this->factoriesExtensions[$key]);
+                },
+                self::TYPE_SHARED => function ($key) {
+                    unset($this->sharedInstances[$key]);
+                },
+                self::TYPE_PARAM => function ($key) {
+                    unset($this->params[$key]);
+                },
+                default => fn () => null,
             },
-            self::TYPE_SHARED => function ($key) {
-                unset($this->sharedInstances[$key]);
-            },
-            self::TYPE_PARAM => function ($key) {
-                unset($this->params[$key]);
-            },
-        ];
-
-        if (isset($unset[$this->registeredKeys[$offset] ?? ''])) {
-            call_user_func($unset[$this->registeredKeys[$offset]], $offset);
-        }
+            $offset
+        );
 
         unset($this->registeredKeys[$offset]);
     }
 
     /**
      * Returns a new instance of this class.
-     *
-     * @return self
      */
     public static function newInstance(): self
     {
