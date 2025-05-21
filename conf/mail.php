@@ -125,19 +125,6 @@ return [
                 'turn_off_ssl_verification' => false,
             ],
         ],
-        // Sample for Sendgrid API using auth method
-        'sendgrid-auth' => [
-            'driver' => 'sendgrid',
-            'username' => 'put-your-sendgrid-user-here',
-            'password' => 'put-your-sendgrid-pass-here',
-            'options' => [
-                'protocol' => 'https',
-                // 'host' => 'smtp.sendgrid.net',
-                // 'port' => 465,
-                'raise_exceptions' => false,
-                'turn_off_ssl_verification' => false,
-            ],
-        ],
         // Sample using Manuel Lemos' Mime Message class (NOT IMPLEMENTED)
         'mimemessage' => [
             'driver' => 'mimemessage',
