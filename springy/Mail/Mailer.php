@@ -26,6 +26,7 @@ class Mailer
     protected array $vars;
     protected array $vcc;
     protected string $fakeTo;
+    protected string $templateId;
     protected string $lastError;
 
     /** @var object the mailer driver object */
@@ -34,8 +35,7 @@ class Mailer
     public function __construct(
         protected string $fromEmail = '',
         protected string $fromName = '',
-        protected string $subject = '',
-        protected string $templateId = ''
+        protected string $subject = ''
     ) {
         $this->attachments = [];
         $this->bcc = [];
@@ -47,6 +47,7 @@ class Mailer
         $this->vars = [];
         $this->vcc = [];
         $this->fakeTo = config_get('mail.fake_to', '');
+        $this->templateId = '';
         $this->lastError = '';
 
         $driverClass = config_get('mail.driver');
