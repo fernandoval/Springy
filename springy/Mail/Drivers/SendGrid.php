@@ -81,7 +81,7 @@ class SendGrid implements MailDriverInterface
         $this->mail->addHeader($header, $value);
     }
 
-    public function addTemplateVar(string $name, string $value): void
+    public function addTemplateVar(string $name, mixed $value): void
     {
         $this->mail->addSubstitution($name, $value);
     }

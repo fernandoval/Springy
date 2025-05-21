@@ -54,9 +54,9 @@ interface MailDriverInterface
      * Adds value to a template variable.
      *
      * @param string $name  name of the template variable.
-     * @param string $value the value.
+     * @param mixed  $value the value.
      */
-    public function addTemplateVar(string $name, string $value): void;
+    public function addTemplateVar(string $name, mixed $value): void;
 
     /**
      * Adds an address to the 'To' field.

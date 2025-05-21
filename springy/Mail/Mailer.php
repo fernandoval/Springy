@@ -148,9 +148,9 @@ class Mailer
      * Adds value to a template variable.
      *
      * @param string $name  name of the template variable.
-     * @param string $value the value.
+     * @param mixed  $value the value.
      */
-    public function addTemplateVar(string $name, string $value): self
+    public function addTemplateVar(string $name, mixed $value): self
     {
         $this->vars[] = [
             'name' => $name,
@@ -210,9 +210,11 @@ class Mailer
         $driver = $this->createDriver();
         $driver->setFrom($this->fromEmail, $this->fromName);
         $driver->setSubject($this->subject);
-        $driver->setBody($this->bodyHtml !== '' ? $this->bodyHtml : $this->bodyPlain, $this->bodyHtml !== '');
 
-        if ($this->bodyHtml !== '' && $this->bodyPlain !== '') {
+        if ($this->bodyHtml !== '') {
+            $driver->setBody($this->bodyHtml, true);
+        }
+        if ($this->bodyPlain !== '') {
             $driver->setAlternativeBody($this->bodyPlain);
         }
 
@@ -234,7 +236,7 @@ class Mailer
 
         if ($this->templateId !== '') {
             $driver->setTemplateId($this->templateId);
-            array_walk($this->vars, fn (string $var) => $driver->addTemplateVar($var['name'], $var['val']));
+            array_walk($this->vars, fn (array $var) => $driver->addTemplateVar($var['name'], $var['val']));
         }
 
         $driver->send();

@@ -77,7 +77,7 @@ class PhpMailer implements MailDriverInterface
         $this->mail->addCustomHeader($header, $value);
     }
 
-    public function addTemplateVar(string $name, string $value): void
+    public function addTemplateVar(string $name, mixed $value): void
     {
         throw new SpringyException('Mail template variables not supported by this driver');
     }
