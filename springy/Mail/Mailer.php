@@ -212,7 +212,7 @@ class Mailer
         $driver->setSubject($this->subject);
         $driver->setBody($this->bodyHtml !== '' ? $this->bodyHtml : $this->bodyPlain, $this->bodyHtml !== '');
 
-        if ($this->bodyHtml !== '') {
+        if ($this->bodyHtml !== '' && $this->bodyPlain !== '') {
             $driver->setAlternativeBody($this->bodyPlain);
         }
 
