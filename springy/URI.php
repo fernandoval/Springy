@@ -10,8 +10,7 @@
 
 namespace Springy;
 
-use Springy\Utils\Strings_ANSI;
-use Springy\Utils\Strings_UTF8;
+use Springy\Utils\Strings;
 
 class URI
 {
@@ -555,11 +554,7 @@ class URI
      */
     public static function makeSlug($txt, $space = '-', $accept = '', $lowercase = true)
     {
-        if (mb_check_encoding($txt, 'UTF-8')) {
-            $txt = Strings_UTF8::removeAccentedChars($txt);
-        } else {
-            $txt = Strings_ANSI::removeAccentedChars($txt);
-        }
+        $txt = Strings::removeAccentedChars($txt);
 
         if ($lowercase) {
             $txt = mb_strtolower(trim($txt));
@@ -588,6 +583,6 @@ class URI
     public static function isAjaxRequest(): bool
     {
         return !empty($_SERVER['HTTP_X_REQUESTED_WITH'])
-            && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+            && mb_strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
     }
 }

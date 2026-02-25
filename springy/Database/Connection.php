@@ -234,8 +234,8 @@ class Connection
     {
         if (
             $this->cacheLifeTime > 0
-            && strtoupper(substr(ltrim($query), 0, 19)) == 'SELECT FOUND_ROWS()'
-            && strtoupper(substr(ltrim($this->lastQuery), 0, 7)) == 'SELECT '
+            && mb_strtoupper(substr(ltrim($query), 0, 19)) == 'SELECT FOUND_ROWS()'
+            && mb_strtoupper(substr(ltrim($this->lastQuery), 0, 7)) == 'SELECT '
         ) {
             $this->lastQuery = $query . '; /* ' . md5(
                 implode(

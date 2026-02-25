@@ -7,10 +7,12 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   0.14.1
+ * @version   0.15.0
  */
 
 namespace Springy\Utils;
+
+use Normalizer;
 
 /**
  * Class library for string processing.
@@ -243,13 +245,9 @@ class Strings
     /**
      * Troca caracteres acentuados por não acentuado.
      */
-    public static function removeAccentedChars($txt)
+    public static function removeAccentedChars(string $txt): string
     {
-        if ((function_exists('mb_check_encoding') && mb_check_encoding($txt, 'UTF-8')) || self::checkUTF8($txt)) {
-            return Strings_UTF8::removeAccentedChars($txt);
-        }
-
-        return Strings_ANSI::removeAccentedChars($txt);
+        return preg_replace('/[\x{0300}-\x{036F}]/u', '', Normalizer::normalize($txt, Normalizer::NFD) ?: '');
     }
 
     /* As funções abaixo ainda estão em processo de migração para o framework e não devem ser utilizadas */

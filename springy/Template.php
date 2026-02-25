@@ -8,7 +8,7 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   4.3.0
+ * @version   4.3.1
  */
 
 namespace Springy;
@@ -37,7 +37,7 @@ class Template
         }
 
         // Inicializa a classe de template
-        switch (strtolower($driver)) {
+        switch (mb_strtolower($driver)) {
             case self::TPL_ENGINE_SMARTY:
                 $this->tplObj = new Template\SmartyDriver($tpl);
                 break;

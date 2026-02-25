@@ -9,8 +9,6 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @author    Allan Marques <allan.marques@ymail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
- *
- * @version   2.10.0
  */
 
 namespace Springy;
@@ -20,11 +18,6 @@ use Springy\DB\Conditions;
 use Springy\DB\Where;
 use Springy\Validation\Validator;
 
-/**
- * Parent class for models.
- *
- * This class extends the DB class.
- */
 class Model extends DB
 {
     /** @var string the name of the table */
@@ -1291,7 +1284,7 @@ class Model extends DB
         // Order by
         $order = [];
         foreach ($orderby as $column => $direction) {
-            $order[] = $column . ' ' . strtoupper($direction);
+            $order[] = $column . ' ' . mb_strtoupper($direction);
         }
         if (count($order)) {
             $sql .= ' ORDER BY ' . implode(', ', $order);

@@ -8,8 +8,6 @@
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @author    Allan Marques <allan.marques@ymail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
- *
- * @version   1.10.2
  */
 
 namespace Springy;
@@ -18,9 +16,6 @@ use Exception;
 use Springy\Core\Debug;
 use Springy\Exceptions\SpringyException;
 
-/**
- * Relational database access class.
- */
 class DB
 {
     /// Guarda os IDs de conexão com os SGBDs
@@ -385,8 +380,8 @@ class DB
          */
         if (
             (is_int($this->cacheExpires) || is_int($cacheLifeTime))
-            && strtoupper(substr(ltrim($sql), 0, 19)) == 'SELECT FOUND_ROWS()'
-            && strtoupper(substr(ltrim($this->lastQuery), 0, 7)) == 'SELECT '
+            && mb_strtoupper(substr(ltrim($sql), 0, 19)) == 'SELECT FOUND_ROWS()'
+            && mb_strtoupper(substr(ltrim($this->lastQuery), 0, 7)) == 'SELECT '
         ) {
             $this->lastQuery = $sql . '; /* ' . md5(
                 implode('//', array_merge([$this->lastQuery], $this->lastValues))
@@ -414,7 +409,7 @@ class DB
             // O comando é um SELECT e é para guardar em cache?
             if (
                 (is_int($this->cacheExpires) || is_int($cacheLifeTime))
-                && strtoupper(substr(ltrim($this->lastQuery), 0, 7)) == 'SELECT '
+                && mb_strtoupper(substr(ltrim($this->lastQuery), 0, 7)) == 'SELECT '
             ) {
                 try {
                     $mc = new \Memcached();
@@ -481,7 +476,7 @@ class DB
                 // O comando é um SELECT e é para guardar em cache?
                 if (
                     (is_int($this->cacheExpires) || is_int($cacheLifeTime))
-                    && strtoupper(substr(ltrim($this->lastQuery), 0, 7)) == 'SELECT '
+                    && mb_strtoupper(substr(ltrim($this->lastQuery), 0, 7)) == 'SELECT '
                 ) {
                     try {
                         $mc = new \Memcached();

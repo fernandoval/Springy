@@ -2,6 +2,13 @@
 
 ## Version 4
 
+### 4.7.0 [unreleased]
+
+*   Adjusted compatibility to PHP 8.2;
+*   Added bitwise comparison to `Springy\DB\Conditions` class;
+*   Removed class `Springy\Utils\Strings_ANSI`;
+*   Removed class `Springy\Utils\Strings_UTF8`;
+
 ### 4.6.2
 
 *   Debug JavaScript updated
@@ -11,23 +18,24 @@
 ### 4.6.1
 
 *   Added functions:
-    *   `Kernel::getTemplatePrefix()`
-    *   `Kernel::setTemplatePrefix()`
+    *   `Springy\Kernel::getTemplatePrefix()`
+    *   `Springy\Kernel::setTemplatePrefix()`
 *   Added `template.smarty_extensions` (`array`) configuration to implements
     support to custom Smarty extensions
 *   Fixed automatic controller routing system
-*   Fixed `Security\AclManager::getAclObjectName()` function
+*   Fixed `Springy\Security\AclManager::getAclObjectName()` function
 *   Use of MemcacheD as session driver redesigned
 *   Copyright page moved out to a HTML file
 *   Support to Smarty template updated to version 5
-*   Deprecated `Kernel::controllerRoot()` function
-*   Deprecated `Kernel::VERSION` constant
-*   Removed undocumented parameter from `URI::relativePathPage()` function
-*   Removed third parameter from `URI::getSegment()` function
+*   Deprecated `Springy\Kernel::controllerRoot()` function
+*   Deprecated `Springy\Kernel::VERSION` constant
+*   Removed undocumented parameter from `Springy\URI::relativePathPage()`
+    function
+*   Removed third parameter from `Springy\URI::getSegment()` function
 *   Removed functions and methods:
-    *   `Session::_saveDbSession()`
-    *   `Session::_saveMcSession()`
-    *   `URI::checkRedirect()`
+    *   `Springy\Session::_saveDbSession()`
+    *   `Springy\Session::_saveMcSession()`
+    *   `Springy\URI::checkRedirect()`
 *   Removed configurations:
     *   `template.template_plugins_path`
     *   `uri.prevalidate_controller`
@@ -87,7 +95,7 @@
     'ENVIRONMENT_ALIAS' key from `sysconf.php`.
 *   Added optional second parameters to `config_get()` helper function to
     defines a default value;
-*   Added PHPUnit test for `Utils\JSON` class;
+*   Added PHPUnit test for `Springy\Utils\JSON` class;
 *   Helpers functions script moved from web root directory to `springy/Core`
     directory;
 *   Migration script `public/migration.php` moved to root directory and renamed
@@ -96,37 +104,39 @@
     `cmd`;
 *   `Kernel::controllerNamespace()` function now is readonly;
 *   `URI::parseURI()` function now returns void;
-*   Rafactored `Core\Debug` class;
+*   Rafactored `Springy\Core\Debug` class;
 *   Deprecated `sysconf.php` configuration file on web root directory. Use
     `consts` and `.env` files in project root.
 *   Deprecated controllers loading without namespace and with '.page.php'
     extension for previously routing discovery;
 *   Deprecated `_global.php` pre-controller load;
 *   Deprecated classes:
-    *   `DeepDir`;
-    *   `Soap_Client` - uses `Springy\Utils\SoapClient`;
+    *   `Springy\DeepDir`;
+    *   `Springy\Soap_Client` - uses `Springy\Utils\SoapClient`;
     *   `Springy\Security\AclUserInterface`;
 *   Deprecated constants:
-    *   `Kernel::PATH_APPLICATION` (see `app_path()` helper function);
-    *   `Kernel::PATH_CLASSES`;
-    *   `Kernel::PATH_CONF` (see `config_dir()` helper function);
-    *   `Kernel::PATH_CONTROLLER`;
-    *   `Kernel::PATH_LIBRARY`;
-    *   `Kernel::PATH_MIGRATION` (see `migration_dir()` helper function);
-    *   `Kernel::PATH_PROJECT` (see `project_path()` helper function);
-    *   `Kernel::PATH_VAR` (see `var_dir()` helper function);
-    *   `Kernel::PATH_VENDOR`;
-    *   `Kernel::PATH_WEB_ROOT`;
+    *   `Springy\Kernel::PATH_APPLICATION` (see `app_path()` helper function);
+    *   `Springy\Kernel::PATH_CLASSES`;
+    *   `Springy\Kernel::PATH_CONF` (see `config_dir()` helper function);
+    *   `Springy\Kernel::PATH_CONTROLLER`;
+    *   `Springy\Kernel::PATH_LIBRARY`;
+    *   `Springy\Kernel::PATH_MIGRATION` (see `migration_dir()` helper
+        function);
+    *   `Springy\Kernel::PATH_PROJECT` (see `project_path()` helper function);
+    *   `Springy\Kernel::PATH_VAR` (see `var_dir()` helper function);
+    *   `Springy\Kernel::PATH_VENDOR`;
+    *   `Springy\Kernel::PATH_WEB_ROOT`;
 *   Deprecated functions:
     *   `sysconf()` - use `env()` helper function;
-    *   `Kernel::charset()` - use `env('CHARSET')` helper function;
-    *   `Kernel::path()` - use apropriated helper function or constant;
-    *   `Kernel::projectCodeName()` - use `app_codename()` helper function;
-    *   `Kernel::systemName()` - use `app_name()` helper function;
-    *   `Kernel::systemConfGlobal()` - use `env()` helper function;
-    *   `Kernel::systemVersion()` - use `app_version()` helper function;
-    *   `Session::_saveDbSession()` - use `Session::saveToDB()`;
-    *   `Session::_saveMcSession()` - use `Session::saveToMC()`;
+    *   `Springy\Kernel::charset()` - use `env('CHARSET')` helper function;
+    *   `Springy\Kernel::path()` - use apropriated helper function or constant;
+    *   `Springy\Kernel::projectCodeName()` - use `app_codename()` helper
+        function;
+    *   `Springy\Kernel::systemName()` - use `app_name()` helper function;
+    *   `Springy\Kernel::systemConfGlobal()` - use `env()` helper function;
+    *   `Springy\Kernel::systemVersion()` - use `app_version()` helper function;
+    *   `Springy\Session::_saveDbSession()` - use `Session::saveToDB()`;
+    *   `Springy\Session::_saveMcSession()` - use `Session::saveToMC()`;
 *   Removed configuration keys from `sysconf.php` (will be ignored if exists):
     *   'ACTIVE_ENVIRONMENT' - set the value in SPRINGY_ENVIRONMENT key at the
         .env file;
@@ -147,26 +157,27 @@
 *   Deprecated support to suffix '.conf' and '.default.conf' on configuration
     files;
 *   Removed constants:
-    *   `Kernel::PATH_CONFIGURATION`;
-    *   `Kernel::PATH_ROOT`;
-    *   `Kernel::PATH_SYSTEM`;
-    *   `Kernel::PATH_CLASS`;
+    *   `Springy\Kernel::PATH_CONFIGURATION`;
+    *   `Springy\Kernel::PATH_ROOT`;
+    *   `Springy\Kernel::PATH_SYSTEM`;
+    *   `Springy\Kernel::PATH_CLASS`;
 *   Removed functions and methods:
     *   `springyAutoload` autoload function;
-    *   `Controller::_authorizationCheck()` deprecated at version 4.5;
-    *   `Controller::_forbidden()` deprecated at version 4.5;
-    *   `Controller::_pageNotFound()` deprecated at version 4.5;
-    *   `Controller::_redirect()` deprecated at version 4.5;
-    *   `Controller::_template()` deprecated at version 4.5;
-    *   `Controller::_userSpecialVerifications()` deprecated at version 4.5;
-    *   `Utils\JSON::getDados()` deprecated at version 4.4;
-    *   `Utils\JSON::printJ()` deprecated at version 4.4;
+    *   `Springy\Controller::_authorizationCheck()` deprecated at version 4.5;
+    *   `Springy\Controller::_forbidden()` deprecated at version 4.5;
+    *   `Springy\Controller::_pageNotFound()` deprecated at version 4.5;
+    *   `Springy\Controller::_redirect()` deprecated at version 4.5;
+    *   `Springy\Controller::_template()` deprecated at version 4.5;
+    *   `Springy\Controller::_userSpecialVerifications()` deprecated at version
+        4.5;
+    *   `Springy\Utils\JSON::getDados()` deprecated at version 4.4;
+    *   `Springy\Utils\JSON::printJ()` deprecated at version 4.4;
     *   `with()` helper function;
 *   Removed classes:
-    *   `CreditCardValidation`;
-    *   `Log`;
-    *   `Utils\Excel`;
-    *   `Utils\ZipFile`;
+    *   `Springy\CreditCardValidation`;
+    *   `Springy\Log`;
+    *   `Springy\Utils\Excel`;
+    *   `Springy\Utils\ZipFile`;
 *   Removed configuratios:
     *   `uri.host_controller_path`;
     *   `uri.redirects`;
@@ -191,12 +202,12 @@
 *   Fixed bugs to `Migrator` an `Errors` class;
 *   Added `Kernel::systemConfGlobal()` to get global system configuration data;
 *   `Kernel` functions updated to readonly mode:
-    *   `Kernel::charset()`;
-    *   `Kernel::environment()`;
-    *   `Kernel::path()`;
-    *   `Kernel::projectCodeName()`;
-    *   `Kernel::systemName()`;
-    *   `Kernel::systemVersion()`;
+    *   `Springy\Kernel::charset()`;
+    *   `Springy\Kernel::environment()`;
+    *   `Springy\Kernel::path()`;
+    *   `Springy\Kernel::projectCodeName()`;
+    *   `Springy\Kernel::systemName()`;
+    *   `Springy\Kernel::systemVersion()`;
 *   Support to `PHPMailer` upgraded to v6.x;
 *   Added GitHub Actions test case;
 *   Deprecated indexes from `sysconf.php` configuration file:
@@ -205,44 +216,44 @@
     *   'SPRINGY_PATH';
     *   'VENDOR_PATH';
 *   Deprecated classes:
-    *   `CreditCardValidation`;
-    *   `Log`;
-    *   `Utils\Excel`;
-    *   `Utils\ZipFile`;
+    *   `Springy\CreditCardValidation`;
+    *   `Springy\Log`;
+    *   `Springy\Utils\Excel`;
+    *   `Springy\Utils\ZipFile`;
 *   Deprecated constants:
-    *   `Kernel::PATH_CONFIGURATION`;
-    *   `Kernel::PATH_SYSTEM` constant;
-    *   `Kernel::PATH_CLASS` constant;
+    *   `Springy\Kernel::PATH_CONFIGURATION`;
+    *   `Springy\Kernel::PATH_SYSTEM` constant;
+    *   `Springy\Kernel::PATH_CLASS` constant;
 *   Deprecated functions:
     *   `springyAutoload` autoload function;
-    *   `Controller::_authorizationCheck()`;
-    *   `Controller::_forbidden()`;
-    *   `Controller::_pageNotFound()`;
-    *   `Controller::_redirect()`;
-    *   `Controller::_template()`;
-    *   `Controller::_userSpecialVerifications()`;
-    *   `Container\DIContainer::has()`;
-    *   `Container\DIContainer::resolve()`;
-    *   `DB::castDateBrToDb()`;
-    *   `DB::castDateDbToBr()`;
-    *   `DB::longBrazilianDate()`;
-    *   `Error::handler()`;
-    *   `Events\Mediator::on()`;
-    *   `Events\Mediator::off()`;
-    *   `Security\AclManager::setDefaultModule()`;
-    *   `Security\AclManager::getDefaultModule()`;
-    *   `Strings::cep()`;
-    *   `Strings::data()`;
-    *   `Strings::guid()`;
-    *   `Strings::hora()`;
-    *   `Strings::numero()`;
-    *   `Strings::sizeMatch()`;
-    *   `Strings::telefone()`;
-*   Removed `SOAP` class;
+    *   `Springy\Controller::_authorizationCheck()`;
+    *   `Springy\Controller::_forbidden()`;
+    *   `Springy\Controller::_pageNotFound()`;
+    *   `Springy\Controller::_redirect()`;
+    *   `Springy\Controller::_template()`;
+    *   `Springy\Controller::_userSpecialVerifications()`;
+    *   `Springy\Container\DIContainer::has()`;
+    *   `Springy\Container\DIContainer::resolve()`;
+    *   `Springy\DB::castDateBrToDb()`;
+    *   `Springy\DB::castDateDbToBr()`;
+    *   `Springy\DB::longBrazilianDate()`;
+    *   `Springy\Error::handler()`;
+    *   `Springy\Events\Mediator::on()`;
+    *   `Springy\Events\Mediator::off()`;
+    *   `Springy\Security\AclManager::setDefaultModule()`;
+    *   `Springy\Security\AclManager::getDefaultModule()`;
+    *   `Springy\Strings::cep()`;
+    *   `Springy\Strings::data()`;
+    *   `Springy\Strings::guid()`;
+    *   `Springy\Strings::hora()`;
+    *   `Springy\Strings::numero()`;
+    *   `Springy\Strings::sizeMatch()`;
+    *   `Springy\Strings::telefone()`;
+*   Removed `Springy\SOAP` class;
 *   Removed functions (already deprecated):
-    *   `URI::_GET()`;
-    *   `URI::getHost()`;
-    *   `Cookie::del()`;
+    *   `Springy\URI::_GET()`;
+    *   `Springy\URI::getHost()`;
+    *   `Springy\Cookie::del()`;
 *   Updated error HTML asset files;
 *   Removed required suffix '.conf' and '.default.conf' from configuration
     files;
@@ -256,15 +267,15 @@
 
 ### 4.4.0
 
-*   Added support to `Controller` suffix without underscore to controller names
-    to help in convertion to new namespace method;
-*   Added support to `App\Controller` namespace without `Controller` or
+*   Added support to `Springy\Controller` suffix without underscore to
+    controller names to help in convertion to new namespace method;
+*   Added support to `Springy\App\Controller` namespace without `Controller` or
     `_Controller` name suffix to controllers;
 *   Deprecated `.class` suffix for application classes;
 *   Deprecated `.static` suffix for application classes;
 *   Deprecated application classes with hiphen in its name;
 *   Deprecated `with()` helper function;
-*   Deprecated `URI::_GET()` function;
+*   Deprecated `Springy\URI::_GET()` function;
 *   Adds functions without underscore prefix to deprecate old standard
     functions;
 *   Adds support to bootstrap application script as an alternative to deprecated
@@ -280,14 +291,14 @@
 *   Hook controllers signed as deprecated;
 *   Empty function `_ignore_global` to ignore Global pre-controller deprecated;
 *   Removed the following classes:
-    *   `DBDelete`;
-    *   `DBExpression`;
-    *   `DBFiltro`;
-    *   `DBInsert`;
-    *   `DBSelect`;
-    *   `DBUpdate`;
-    *   `DBWhere`;
-*   Removed `Pagination` class;
+    *   `Springy\DBDelete`;
+    *   `Springy\DBExpression`;
+    *   `Springy\DBFiltro`;
+    *   `Springy\DBInsert`;
+    *   `Springy\DBSelect`;
+    *   `Springy\DBUpdate`;
+    *   `Springy\DBWhere`;
+    *   `Springy\Pagination`;
 *   Deleted Doxygen documentation.
 
 ### 4.3.1

@@ -7,7 +7,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   0.5.2
+ * @version   0.5.3
  */
 
 namespace Springy;
@@ -585,7 +585,7 @@ class Migrator extends DB
      */
     private function runFile($file)
     {
-        $extension = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+        $extension = mb_strtolower(pathinfo($file, PATHINFO_EXTENSION));
 
         switch ($extension) {
             case 'sql':

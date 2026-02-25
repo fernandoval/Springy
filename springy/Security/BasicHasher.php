@@ -7,8 +7,6 @@
  * @author    Allan Marques <allan.marques@ymail.com>
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
- *
- * @version   0.2.0
  */
 
 namespace Springy\Security;
@@ -67,7 +65,7 @@ class BasicHasher implements HasherInterface
      */
     public function generateHash($senha, $times = null)
     {
-        $md5 = md5(strtolower(self::SALT . $senha));
+        $md5 = md5(mb_strtolower(self::SALT . $senha));
 
         return base64_encode($md5 ^ md5($senha));
     }
