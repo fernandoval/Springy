@@ -17,7 +17,7 @@ class ErrorsList
         $this->errorTable = config_get('system.system_error.table_name') ?: '_system_errors';
         $this->dbConnection = new DB($dbServer);
 
-        if (!DB::connected($dbServer)) {
+        if (!$this->dbConnection->isConnected()) {
             throw_error(500, 'Fail to connect to database');
         }
     }

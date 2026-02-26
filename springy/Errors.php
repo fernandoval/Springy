@@ -339,7 +339,7 @@ class Errors
 
         $dbc = new DB($dbsrv);
 
-        if (!DB::connected($dbsrv)) {
+        if (!$dbc->isConnected()) {
             return true;
         }
 
@@ -508,9 +508,10 @@ class Errors
 
         $output = file_get_contents($this->getTplPath('system-error.html'));
         $output = str_replace('{systemName}', app_name(), $output);
-        $output = str_replace('{sistemVersion}', app_version(), $output);
+        $output = str_replace('{systemVersion}', app_version(), $output);
         $output = str_replace('{errorId}', $errorId, $output);
         $output = str_replace('{errorCode}', $errorType, $output);
+        $output = str_replace('{errorMessage}', $error->getMessage(), $output);
         echo $output;
     }
 

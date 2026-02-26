@@ -13,17 +13,18 @@
 namespace Springy;
 
 use Exception;
+use PDO;
+use PDOException;
 use Springy\Core\Debug;
 use Springy\Exceptions\SpringyException;
 
 class DB
 {
-    /// Guarda os IDs de conexão com os SGBDs
-    private static $conectionIds = [];
+    // connection instances
+    private static array $conectionIds = [];
+
     /// SQL Resource
     private $resSQL = null;
-    /// Tempo em segundos da validade do cache
-    private $cacheExpires = null;
     /// Cache dos registros
     private $cacheStatement = null;
     /// Último comando executado
@@ -36,10 +37,8 @@ class DB
     private $sqlErrorInfo = null;
     /// Contador de comandos SQL executados
     private static $sqlNum = 0;
-    /// Recurso de conexão atual
-    private $dataConnect = false;
-    /// Entrada de configuração de banco atual
-    private $database = false;
+    // Datanase connection resource
+    private PDO|null $dataConnect;
     /// Flag de habilitação do relatório de erros
     private $reportError = true;
     /// Flag do modo debug
@@ -50,14 +49,14 @@ class DB
     /**
      * Constructor.
      *
-     * @param string   $database     DB configuration key.
+     * @param string   $dbIdentifier database configuration identifier.
      * @param int|null $cacheExpires cached query expiration time in seconds.
      */
-    public function __construct($database = 'default', $cacheExpires = null)
-    {
-        $this->cacheExpires = $cacheExpires;
-        $this->database = $database;
-        $this->dataConnect = $this->connect($this->database);
+    public function __construct(
+        private string $dbIdentifier = 'default',
+        private ?int $cacheExpires = null
+    ) {
+        $this->connect($this->dbIdentifier);
     }
 
     /**
@@ -65,82 +64,83 @@ class DB
      */
     public function __destruct()
     {
-        if ($this->resSQL === null) {
-            return;
+        if (!is_null($this->resSQL)) {
+            $this->resSQL->closeCursor();
+            $this->resSQL = null;
         }
+    }
 
-        $this->resSQL->closeCursor();
-        $this->resSQL = null;
+    /**
+     * Checks if there is a connection.
+     *
+     * @throws Exception
+     */
+    private function checkConnection(): void
+    {
+        if (is_null($this->dataConnect)) {
+            trigger_error('No connection to database.', E_USER_ERROR);
+        }
     }
 
     /**
      * Connects to the DBMS.
      *
-     * @param string $database DB configuration key.
-     *
-     * @return PDO|bool
+     * @param string $identifier DB configuration key.
      */
-    public function connect($database)
+    public function connect(string $identifier): void
     {
-        if (isset(self::$conErrors[$database])) {
-            return false;
+        $this->dataConnect = null;
+        $this->dbIdentifier = $identifier;
+
+        if (isset(self::$conErrors[$identifier])) {
+            return;
+        } elseif ((self::$conectionIds[$identifier] ?? null) instanceof PDO) {
+            $this->dataConnect = self::$conectionIds[$identifier];
+
+            return;
         }
 
-        // Verifica se a instância já está definida e conectada
-        if (isset(self::$conectionIds[$database])) {
-            return self::$conectionIds[$database]['PDO'];
-        }
-
-        // Lê as configurações de acesso ao banco de dados
-        $conf = Configuration::get('db', $database);
-
-        // Verifica se o servidor é um pool (round robin)
-        if ($conf['database_type'] == 'pool' && is_array($conf['host_name'])) {
-            return $this->roundRobinConnect($database, $conf);
-        }
-
-        $pdoConf = [
-            \PDO::ATTR_CASE => \PDO::CASE_NATURAL,
-            // \PDO::ATTR_EMULATE_PREPARES => false,
-            \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
-            \PDO::ATTR_ORACLE_NULLS => \PDO::NULL_NATURAL,
-            \PDO::ATTR_STRINGIFY_FETCHES => false,
-        ];
-        if ($conf['database_type'] == 'mysql') {
-            $pdoConf[\PDO::MYSQL_ATTR_INIT_COMMAND] = 'SET NAMES \'' . ($conf['charset'] ?? 'UTF8') . '\'';
-        }
-
-        if ($conf['persistent']) {
-            $pdoConf[\PDO::ATTR_PERSISTENT] = true;
-        }
-
-        /*
-         * A variável abaixo é setada pois caso a conexão com o banco falhe, o callback de erro será chamado e a
-         * variável já estará setada.
-         * Caso a conexão seja feita com sucesso, a variavel é removida.
-         */
-        self::$conErrors[$database] = true;
+        $conf = Configuration::get('db', $identifier);
 
         if (!$conf['host_name'] || !$conf['database']) {
             $this->reportError('Hostname or database not defined.');
         }
 
+        // PDO configuration
+        $pdoConf = [
+            PDO::ATTR_CASE => PDO::CASE_NATURAL,
+            // PDO::ATTR_EMULATE_PREPARES => false,
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_ORACLE_NULLS => PDO::NULL_NATURAL,
+            PDO::ATTR_STRINGIFY_FETCHES => false,
+            PDO::ATTR_PERSISTENT => $conf['persistent'] ?? true,
+        ];
+
+        if ($conf['database_type'] === 'mysql') {
+            $pdoConf[PDO::MYSQL_ATTR_INIT_COMMAND] = 'SET NAMES \'' . ($conf['charset'] ?? 'UTF8') . '\'';
+        }
+
+        /*
+         * A variável abaixo é setada pois caso a conexão com o banco falhe, o
+         * callback de erro será chamado e a variável já estará setada.
+         * Caso a conexão seja feita com sucesso, a variavel é removida.
+         */
+        self::$conErrors[$identifier] = true;
+
         $retries = $conf['retries'] ?? 3;
         $sleep = $conf['sleep'] ?? 1;
+
         do {
             try {
                 // a instância de conexão é estática, para nao criar uma nova a cada nova instãncia da classe
-                self::$conectionIds[$database] = [
-                    'PDO' => new \PDO(
-                        $conf['database_type'] . ':host=' . $conf['host_name'] . ';dbname=' . $conf['database'],
-                        $conf['user_name'],
-                        $conf['password'],
-                        $pdoConf
-                    ),
-                    'dbName' => $database,
-                ];
-                unset(self::$conErrors[$database]);
-            } catch (\PDOException $error) {
+                self::$conectionIds[$identifier] = new PDO(
+                    $conf['database_type'] . ':host=' . $conf['host_name'] . ';dbname=' . $conf['database'],
+                    $conf['user_name'],
+                    $conf['password'],
+                    $pdoConf
+                );
+                unset(self::$conErrors[$identifier]);
+            } catch (PDOException $error) {
                 if ($retries) {
                     $retries -= 1;
                     sleep($sleep);
@@ -151,68 +151,17 @@ class DB
                 $callers = debug_backtrace();
                 if (
                     !isset($callers[1])
-                    || $callers[1]['class'] != 'Springy\Errors'
+                    || $callers[1]['class'] != Errors::class
                     || $callers[1]['function'] != 'sendReport'
                 ) {
                     (new Errors())->process($error);
                 }
             }
-        } while (!isset(self::$conectionIds[$database]));
+        } while (!isset(self::$conectionIds[$identifier]));
 
         unset($pdoConf);
 
-        return self::$conectionIds[$database]['PDO'];
-    }
-
-    /**
-     * Round robin database connection.
-     *
-     * @param string $database DB configuration key.
-     * @param array  $dbconf   Database configutation.
-     *
-     * @return PDO|bool
-     */
-    private function roundRobinConnect($database, $dbconf)
-    {
-        // Lê as configurações de controle de round robin
-        $roundRobin = Configuration::get('db.round_robin');
-
-        if ($roundRobin['type'] == 'memcached') {
-            // Efetua controle de round robin por Memcached
-            $memCached = new \Memcached();
-            $memCached->addServer($roundRobin['server_addr'], $roundRobin['server_port']);
-
-            // Define o próximo servidor do pool
-            if (!($actual = (int) $memCached->get('dbrr_' . $database))) {
-                $actual = 0;
-            }
-            if (++$actual >= count($dbconf['host_name'])) {
-                $actual = 0;
-            }
-
-            $memCached->set('dbrr_' . $database, $actual, 0);
-        } elseif ($roundRobin['type'] == 'file') {
-            // Efetua controle de round robin em arquivo
-            $actual = file_exists($roundRobin['server_addr'] . DS . 'dbrr_' . $database)
-                ? (int) file_get_contents($roundRobin['server_addr'] . DS . 'dbrr_' . $database)
-                : 0;
-
-            if (++$actual >= count($dbconf['host_name'])) {
-                $actual = 0;
-            }
-
-            file_put_contents($roundRobin['server_addr'] . DIRECTORY_SEPARATOR . 'dbrr_' . $database, $actual);
-        } else {
-            return false;
-        }
-
-        // Tenta conectar ao banco e retorna o resultado
-        self::$conectionIds[$database] = [
-            'PDO' => $this->connect($dbconf['host_name'][$actual]),
-            'dbName' => $dbconf['host_name'][$actual],
-        ];
-
-        return self::$conectionIds[$database]['PDO'];
+        $this->dataConnect = self::$conectionIds[$identifier];
     }
 
     /**
@@ -220,29 +169,18 @@ class DB
      *
      * @param string $database DB configuration key.
      *
-     * @return bool
+     * @deprecated 4.7.0
      */
-    public static function connected($database = 'default')
+    public static function connected(string $database = 'default'): bool
     {
+        trigger_error(
+            'DB::connected is deprecated since version 4.7.0 and will be removed in the next release.'
+            . ' Use DB::isConnected instead.',
+            E_USER_DEPRECATED
+        );
+
         return !isset(self::$conErrors[$database])
-            && isset(self::$conectionIds[$database])
-            && self::$conectionIds[$database]['PDO'];
-    }
-
-    /**
-     * Closes database connection.
-     *
-     * @return void
-     */
-    public function disconnect()
-    {
-        if (static::connected($this->database)) {
-            // a instância de conexão é estática, para não criar uma nova a cada nova instância da classe
-            unset(self::$conectionIds[$this->database]['PDO']);
-            $this->dataConnect = false;
-        }
-
-        unset(self::$conectionIds[$this->database]);
+            && (self::$conectionIds[$database] ?? null) instanceof PDO;
     }
 
     /**
@@ -252,7 +190,7 @@ class DB
      *
      * @return bool
      */
-    public function errorReportStatus($status = null)
+    public function errorReportStatus(?bool $status = null): bool
     {
         if (is_bool($status)) {
             $this->reportError = $status;
@@ -263,12 +201,8 @@ class DB
 
     /**
      * Sends the error occurrency to the webmaster.
-     *
-     * @param string $msg
-     *
-     * @return void
      */
-    private function reportError($msg)
+    private function reportError(string $msg): void
     {
         if (!$this->reportError) {
             return;
@@ -299,64 +233,55 @@ class DB
 
     /**
      * Sets the database debug state.
-     *
-     * @param bool $debug
-     *
-     * @return void
      */
-    public static function debug($debug)
+    public static function debug(bool $debug): void
     {
         self::$dbDebug = $debug;
     }
 
     /**
      * Begins a DB transaction.
-     *
-     * @param string $database DB configuration key.
-     *
-     * @return void
      */
-    public static function beginTransaction($database = 'default')
+    public function beginTransaction(): void
     {
-        self::connect($database)->beginTransaction();
+        $this->checkConnection();
+        $this->dataConnect->beginTransaction();
     }
 
     /**
      * Rolls back a DB transaction.
-     *
-     * @param string $database DB configuration key.
-     *
-     * @return void
      */
-    public static function rollBack($database = 'default')
+    public function rollBack(): void
     {
-        self::connect($database)->rollBack();
+        $this->checkConnection();
+        $this->dataConnect->inTransaction() && $this->dataConnect->rollBack();
     }
 
     /**
      * Commits a DB transaction.
-     *
-     * @param string $database DB configuration key.
-     *
-     * @return void
      */
-    public static function commit($database = 'default')
+    public function commit(): void
     {
-        self::connect($database)->commit();
+        $this->checkConnection();
+        $this->dataConnect->inTransaction() && $this->dataConnect->commit();
     }
 
     /**
      * Rolls back all active transactions.
-     *
-     * @return void
      */
-    public static function rollBackAll()
+    public static function rollBackAll(): void
     {
         foreach (self::$conectionIds as $database) {
-            if ($database['PDO']->inTransaction()) {
-                $database['PDO']->rollBack();
-            }
+            $database->inTransaction() && $database->rollBack();
         }
+    }
+
+    /**
+     * Returns current connection status.
+     */
+    public function isConnected(): bool
+    {
+        return $this->dataConnect instanceof PDO;
     }
 
     /**
@@ -426,9 +351,11 @@ class DB
 
         // Se o resultado não foi pego do cache, consulta o banco
         if (is_null($this->cacheStatement)) {
-            if (($this->resSQL = $this->dataConnect->prepare($this->lastQuery)) === false) {
-                $this->sqlErrorCode = $this->resSQL->errorCode();
-                $this->sqlErrorInfo = $this->resSQL->errorInfo();
+            $this->resSQL = $this->dataConnect->prepare($this->lastQuery);
+
+            if ($this->resSQL === false) {
+                $this->sqlErrorCode = $this->dataConnect->errorCode();
+                $this->sqlErrorInfo = $this->dataConnect->errorInfo();
                 $this->reportError('Error preparing query.');
 
                 return false;
@@ -438,28 +365,19 @@ class DB
                 $numeric = 0;
 
                 foreach ($this->lastValues as $key => $where) {
-                    switch (gettype($where)) {
-                        case 'boolean':
-                            $param = \PDO::PARAM_BOOL;
-                            break;
-                        case 'integer':
-                            $param = \PDO::PARAM_INT;
-                            break;
-                        case 'NULL':
-                            $param = \PDO::PARAM_NULL;
-                            break;
-                        default:
-                            $param = \PDO::PARAM_STR;
-                            break;
-                    }
+                    $param = match (gettype($where)) {
+                        'boolean' => PDO::PARAM_BOOL,
+                        'integer' => PDO::PARAM_INT,
+                        'NULL' => PDO::PARAM_NULL,
+                        default => PDO::PARAM_STR,
+                    };
 
-                    if (is_numeric($key)) {
-                        $this->resSQL->bindValue(++$numeric, $where, $param);
-                    } else {
-                        $this->resSQL->bindValue(':' . $key, $where, $param);
-                    }
+                    $this->resSQL->bindValue(
+                        is_numeric($key) ? (++$numeric) : (':' . $key),
+                        $where,
+                        $param
+                    );
                 }
-                unset($key, $where, $param, $numeric);
             }
 
             $this->resSQL->closeCursor();
@@ -501,7 +419,7 @@ class DB
         }
 
         if (self::$dbDebug || Configuration::get('system.sql_debug')) {
-            $conf = Configuration::get('db', self::$conectionIds[$this->database]['dbName']);
+            $conf = Configuration::get('db', $this->dbIdentifier);
 
             debug(
                 '<pre>' . $this->lastQuery . '</pre><br />Values: ' .
@@ -518,76 +436,62 @@ class DB
 
     /**
      * Returns the last executed query.
-     *
-     * @return string
      */
-    public function lastQuery()
+    public function lastQuery(): string
     {
         return $this->lastQuery;
     }
 
     /**
      * Returns the last error code occurred.
-     *
-     * @return string
      */
-    public function errorCode()
+    public function errorCode(): ?string
     {
         return $this->dataConnect->errorCode();
     }
 
     /**
      * Returns the last error information array.
-     *
-     * @return array
      */
-    public function errorInfo()
+    public function errorInfo(): array
     {
         return $this->dataConnect->errorInfo();
     }
 
     /**
      * Returns the string with error code occurred on last execute method call.
-     *
-     * @return string
      */
-    public function statmentErrorCode()
+    public function statmentErrorCode(): ?string
     {
         return $this->sqlErrorCode;
     }
 
     /**
      * Returns the array with information about error occurred on last execute method call.
-     *
-     * @return array
      */
-    public function statmentErrorInfo()
+    public function statmentErrorInfo(): array
     {
-        return $this->sqlErrorInfo;
+        return $this->sqlErrorInfo ?? [0, null, 'No error'];
     }
 
     /**
      * Returns the database driver name of the current connection.
-     *
-     * @return string
      */
-    public function driverName()
+    public function driverName(): string
     {
-        if ($this->dataConnect === false) {
-            return '';
-        }
-
-        return $this->dataConnect->getAttribute(\PDO::ATTR_DRIVER_NAME);
+        return $this->dataConnect instanceof PDO
+            ? $this->dataConnect->getAttribute(PDO::ATTR_DRIVER_NAME)
+            : '';
     }
 
     /**
      * Returns the DBMS version informations.
-     *
-     * @return int
      */
-    public function serverVersion()
+    public function serverVersion(): mixed
     {
-        return $this->dataConnect->getAttribute(\PDO::ATTR_SERVER_VERSION);
+        return $this->dataConnect instanceof PDO
+            ? $this->dataConnect->getAttribute(PDO::ATTR_SERVER_VERSION)
+            : '';
     }
 
     /**
@@ -609,119 +513,82 @@ class DB
      */
     public function affectedRows()
     {
-        if ($this->cacheStatement === null) {
-            return $this->resSQL->rowCount();
-        }
-
-        return count($this->cacheStatement);
+        return is_null($this->cacheStatement)
+            ? $this->resSQL->rowCount()
+            : count($this->cacheStatement);
     }
 
     /**
      * Returns all rows of the resultset.
      *
      * @param int $resultType
-     *
-     * @return array|bool
      */
-    public function fetchAll($resultType = \PDO::FETCH_ASSOC)
+    public function fetchAll($resultType = PDO::FETCH_ASSOC): array
     {
-        if ($this->cacheStatement !== null) {
-            return $this->cacheStatement;
-        } elseif ($this->resSQL) {
-            return $this->resSQL->fetchAll($resultType);
-        }
-
-        return false;
+        return $this->cacheStatement
+            ?? ($this->resSQL ? $this->resSQL->fetchAll($resultType) : []);
     }
 
     /**
      * Returns the first row of the resultset.
      *
      * @param int $resultType
-     *
-     * @return array|bool
      */
-    public function fetchFirst($resultType = \PDO::FETCH_ASSOC)
+    public function fetchFirst($resultType = PDO::FETCH_ASSOC): array|bool
     {
-        if ($this->cacheStatement !== null) {
-            return reset($this->cacheStatement);
-        } elseif ($this->resSQL) {
-            return $this->resSQL->fetch($resultType, \PDO::FETCH_ORI_FIRST);
-        }
-
-        return false;
+        return is_null($this->cacheStatement)
+            ? ($this->resSQL ? $this->resSQL->fetch($resultType) : false)
+            : reset($this->cacheStatement);
     }
 
     /**
      * Returns the previous row of the resultset.
      *
      * @param int $resultType
-     *
-     * @return array|bool
      */
-    public function fetchPrev($resultType = \PDO::FETCH_ASSOC)
+    public function fetchPrev($resultType = PDO::FETCH_ASSOC): array|bool
     {
-        if ($this->cacheStatement !== null) {
-            return prev($this->cacheStatement);
-        } elseif ($this->resSQL) {
-            return $this->resSQL->fetch($resultType, \PDO::FETCH_ORI_PRIOR);
-        }
-
-        return false;
+        return is_null($this->cacheStatement)
+            ? ($this->resSQL ? $this->resSQL->fetch($resultType, PDO::FETCH_ORI_PRIOR) : false)
+            : prev($this->cacheStatement);
     }
 
     /**
      * Returns the next row of the resultset.
      *
      * @param int $resultType
-     *
-     * @return array|bool
      */
-    public function fetchNext($resultType = \PDO::FETCH_ASSOC)
+    public function fetchNext($resultType = PDO::FETCH_ASSOC): array|bool
     {
-        if ($this->cacheStatement !== null) {
+        if (!is_null($this->cacheStatement)) {
             $current = current($this->cacheStatement);
             next($this->cacheStatement);
 
             return $current;
-        } elseif ($this->resSQL) {
-            return $this->resSQL->fetch($resultType);
         }
 
-        return false;
+        return $this->resSQL ? $this->resSQL->fetch($resultType) : false;
     }
 
     /**
      * Returns the last row of the resultset.
      *
      * @param int $resultType
-     *
-     * @return array|bool
      */
-    public function fetchLast($resultType = \PDO::FETCH_ASSOC)
+    public function fetchLast($resultType = PDO::FETCH_ASSOC): array|bool
     {
-        if ($this->cacheStatement !== null) {
-            return end($this->cacheStatement);
-        } elseif ($this->resSQL) {
-            return $this->resSQL->fetch($resultType, \PDO::FETCH_ORI_LAST);
-        }
-
-        return false;
+        return is_null($this->cacheStatement)
+            ? ($this->resSQL ? $this->resSQL->fetch($resultType, PDO::FETCH_ORI_LAST) : false)
+            : end($this->cacheStatement);
     }
 
     /**
      * Returns the value of a column.
-     *
-     * @param int $var
-     *
-     * @return mixed
      */
-    public function getColumn($var = 0)
+    public function getColumn(mixed $var = 0): mixed
     {
-        if ($this->cacheStatement !== null) {
-            $current = current($this->cacheStatement);
-
-            return $current[$var];
+        if (!is_null($this->cacheStatement)) {
+            return current($this->cacheStatement)[$var];
         } elseif ($this->resSQL && is_numeric($var)) {
             return $this->resSQL->fetchColumn($var);
         }
@@ -732,88 +599,26 @@ class DB
     }
 
     /**
-     * Converts a brazilian date string to ISO DBMS format.
-     *
-     * @param string $datetime Date and time in brazilian format (d/m/Y H:i:s)
-     * @param bool   $flgtime
-     *
-     * @deprecated 4.6.0
-     *
-     * @return string
-     */
-    public static function castDateBrToDb($datetime, $flgtime = false)
-    {
-        $date = \DateTime::createFromFormat('d/m/Y H:i:s', $datetime);
-
-        return $flgtime ? $date->format('Y-m-d H:i:s') : $date->format('Y-m-d');
-    }
-
-    /**
-     * Converts an ISO DB date string to brazilian format.
-     *
-     * @param string $datetime
-     * @param bool   $flgtime
-     * @param bool   $sec
-     *
-     * @deprecated 4.6.0
-     *
-     * @return string
-     */
-    public static function castDateDbToBr($datetime, $flgtime = false, $sec = false)
-    {
-        $date = \DateTime::createFromFormat('Y-m-d H:i:s', $datetime);
-
-        if (!$flgtime) {
-            return $date->format('d/m/Y');
-        }
-
-        return $sec ? $date->format('d/m/Y H:i') : $date->format('d/m/Y H:i:s');
-    }
-
-    /**
      * Converts a date string in ISO format to UNIX timestamp.
      *
      * @param string $dateTime
+     *
+     * @deprecated 4.7.0
      *
      * @return int
      */
     public static function makeDbDateTime($dateTime)
     {
+        trigger_error(
+            'DB::makeDbDateTime is deprecated since version 4.7.0 and will be removed in the next release.'
+            . ' Use DateTime::createFromFormat instead.',
+            E_USER_DEPRECATED
+        );
+
         if (preg_match('/^([0-9]{4})-([0-9]{2})-([0-9]{2})/', $dateTime)) {
             return \DateTime::createFromFormat('Y-m-d H:i:s', $dateTime)->getTimestamp();
         } elseif (preg_match('/^([0-9]{2})\/([0-9]{2})\/([0-9]{4})/', $dateTime)) {
             return \DateTime::createFromFormat('d/m/Y H:i:s', $dateTime)->getTimestamp();
         }
-    }
-
-    /**
-     * Converts a date string in DBMS ISO format to a long date string in brazilian portuguese.
-     *
-     * @param string $dataTimeStamp
-     *
-     * @deprecated 4.6.0
-     *
-     * @return string
-     */
-    public static function longBrazilianDate($dataTimeStamp)
-    {
-        $dateTime = static::makeDbDateTime($dataTimeStamp);
-        $mes = [
-            'Janeiro',
-            'Fevereiro',
-            'Março',
-            'Abril',
-            'Maio',
-            'Junho',
-            'Julho',
-            'Agosto',
-            'Setembro',
-            'Outubro',
-            'Novembro',
-            'Dezembro',
-        ];
-        $numMes = (int) date('m', $dateTime);
-
-        return date('d', $dateTime) . ' de ' . $mes[--$numMes] . ' de ' . date('Y', $dateTime);
     }
 }

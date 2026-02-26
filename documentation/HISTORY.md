@@ -5,11 +5,25 @@
 ### 4.7.0 [unreleased]
 
 *   Adjusted compatibility to PHP 8.2
+*   Added funcion `Springy\DB::isConnected()`
 *   Added bitwise comparison to `Springy\DB\Conditions` class
+*   The funcion `Springy\DB::connect()` changed to set internal identifier and
+    return void
+*   The funcion `Springy\DB::beginTransaction()` is no longer static and no
+    longer receive parameter
+*   The funcion `Springy\DB::commit()` is no longer static and no longer
+    receive parameter
+*   Deprecated funcion `Springy\DB::connected()`. Use DB::isConnected instead
+*   The funcion `Springy\DB::rollBack()` is no longer static
 *   Deprecated 'pool' round robin database connection configuration
+*   Deprecated `Springy\DB::makeDbDateTime()` function
 *   Removed class `Springy\Utils\Strings_ANSI`
 *   Removed class `Springy\Utils\Strings_UTF8`
 *   Removed the `db.round_robin` configuration
+*   Removed `Springy\DB::disconnect()` funcion
+*   Removed deprecated `Springy\DB::castDateBrToDb()` funcion
+*   Removed deprecated `Springy\DB::castDateDbToBr()` funcion
+*   Removed deprecated `Springy\DB::longBrazilianDate()` funcion
 
 ### 4.6.2
 
