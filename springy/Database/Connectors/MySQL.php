@@ -36,7 +36,11 @@ class MySQL extends Connector implements ConnectorInterface
             throw new SpringyException('Undefined database server host and socket.');
         }
 
-        $this->options[PDO::MYSQL_ATTR_INIT_COMMAND] = 'SET NAMES \'' . $this->charset . '\'';
+        $this->options[
+            defined('Pdo\\Mysql::ATTR_INIT_COMMAND')
+            ? Pdo\Mysql::ATTR_INIT_COMMAND
+            : PDO::MYSQL_ATTR_INIT_COMMAND
+        ] = 'SET NAMES \'' . $this->charset . '\'';
         $this->options[PDO::ATTR_PERSISTENT] = $config['persistent'] ?? true;
     }
 

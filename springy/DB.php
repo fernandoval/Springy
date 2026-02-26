@@ -117,7 +117,11 @@ class DB
         ];
 
         if ($conf['database_type'] === 'mysql') {
-            $pdoConf[PDO::MYSQL_ATTR_INIT_COMMAND] = 'SET NAMES \'' . ($conf['charset'] ?? 'UTF8') . '\'';
+            $pdoConf[
+                defined('Pdo\\Mysql::ATTR_INIT_COMMAND')
+                ? Pdo\Mysql::ATTR_INIT_COMMAND
+                : PDO::MYSQL_ATTR_INIT_COMMAND
+            ] = 'SET NAMES \'' . ($conf['charset'] ?? 'UTF8') . '\'';
         }
 
         /*
