@@ -5,6 +5,7 @@
 ### 4.7.0 [unreleased]
 
 *   Adjusted compatibility to PHP 8.2
+*   Added `array_dotted_set()` helper function
 *   Added funcion `Springy\DB::isConnected()`
 *   Added bitwise comparison to `Springy\DB\Conditions` class
 *   The funcion `Springy\DB::connect()` changed to set internal identifier and

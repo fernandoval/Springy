@@ -106,9 +106,23 @@ function app_version(): string
  *
  * @return mixed
  */
-function array_dotted_get(array $array, string $key, $default = null)
+function array_dotted_get(array $array, string $key, $default = null): mixed
 {
     return Springy\Utils\ArrayUtils::newInstance()->dottedGet($array, $key, $default);
+}
+
+/**
+ * Gets a key into the array using dotted notation.
+ *
+ * @param array  $array
+ * @param string $key
+ * @param mixed  $default
+ *
+ * @return mixed
+ */
+function array_dotted_set(array &$array, string $key, mixed $value): void
+{
+    Springy\Utils\ArrayUtils::newInstance()->dottedSet($array, $key, $value);
 }
 
 /**
