@@ -18,6 +18,7 @@
 *   The funcion `Springy\DB::rollBack()` is no longer static
 *   Deprecated 'pool' round robin database connection configuration
 *   Deprecated `Springy\DB::makeDbDateTime()` function
+*   Deprecated `Springy\Utils\UUID` class
 *   Removed class `Springy\Utils\Strings_ANSI`
 *   Removed class `Springy\Utils\Strings_UTF8`
 *   Removed the `db.round_robin` configuration
