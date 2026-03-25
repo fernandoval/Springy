@@ -38,8 +38,8 @@ class MySQL extends Connector implements ConnectorInterface
 
         $this->options[
             defined('Pdo\\Mysql::ATTR_INIT_COMMAND')
-            ? Pdo\Mysql::ATTR_INIT_COMMAND
-            : PDO::MYSQL_ATTR_INIT_COMMAND
+                ? Pdo\Mysql::ATTR_INIT_COMMAND
+                : PDO::MYSQL_ATTR_INIT_COMMAND
         ] = 'SET NAMES \'' . $this->charset . '\'';
         $this->options[PDO::ATTR_PERSISTENT] = $config['persistent'] ?? true;
     }

@@ -4,57 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "928af1d05b4d64920e27cec46ea58cf1",
+    "content-hash": "fc442d1a9cabc8ce2add96d817ef374d",
     "packages": [
-        {
-            "name": "components/jquery",
-            "version": "v3.7.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/components/jquery.git",
-                "reference": "8edc7785239bb8c2ad2b83302b856a1d61de60e7"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/components/jquery/zipball/8edc7785239bb8c2ad2b83302b856a1d61de60e7",
-                "reference": "8edc7785239bb8c2ad2b83302b856a1d61de60e7",
-                "shasum": ""
-            },
-            "type": "component",
-            "extra": {
-                "component": {
-                    "files": [
-                        "jquery.min.js",
-                        "jquery.min.map",
-                        "jquery.slim.js",
-                        "jquery.slim.min.js",
-                        "jquery.slim.min.map"
-                    ],
-                    "scripts": [
-                        "jquery.js"
-                    ]
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "JS Foundation and other contributors"
-                }
-            ],
-            "description": "jQuery JavaScript Library",
-            "homepage": "http://jquery.com",
-            "support": {
-                "forum": "http://forum.jquery.com",
-                "irc": "irc://irc.freenode.org/jquery",
-                "issues": "https://github.com/jquery/jquery/issues",
-                "source": "https://github.com/jquery/jquery",
-                "wiki": "http://docs.jquery.com/"
-            },
-            "time": "2023-09-22T01:43:46+00:00"
-        },
         {
             "name": "graham-campbell/result-type",
             "version": "v1.1.3",
@@ -575,16 +526,16 @@
         },
         {
             "name": "smarty/smarty",
-            "version": "v5.5.0",
+            "version": "v5.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/smarty-php/smarty.git",
-                "reference": "372f7cf41a6e2a9ca2e7253bc5f5c4f38df25a63"
+                "reference": "78d259d3b971c59a0cd719c270cc5cbb740c36a7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/smarty-php/smarty/zipball/372f7cf41a6e2a9ca2e7253bc5f5c4f38df25a63",
-                "reference": "372f7cf41a6e2a9ca2e7253bc5f5c4f38df25a63",
+                "url": "https://api.github.com/repos/smarty-php/smarty/zipball/78d259d3b971c59a0cd719c270cc5cbb740c36a7",
+                "reference": "78d259d3b971c59a0cd719c270cc5cbb740c36a7",
                 "shasum": ""
             },
             "require": {
@@ -639,7 +590,7 @@
             "support": {
                 "forum": "https://github.com/smarty-php/smarty/discussions",
                 "issues": "https://github.com/smarty-php/smarty/issues",
-                "source": "https://github.com/smarty-php/smarty/tree/v5.5.0"
+                "source": "https://github.com/smarty-php/smarty/tree/v5.8.0"
             },
             "funding": [
                 {
@@ -647,7 +598,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-05-03T21:36:46+00:00"
+            "time": "2026-02-15T14:27:15+00:00"
         },
         {
             "name": "starkbank/ecdsa",
@@ -3738,8 +3689,14 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=8.1"
+        "php": ">=8.1",
+        "ext-ctype": "*",
+        "ext-gmp": "*",
+        "ext-hash": "*",
+        "ext-intl": "*",
+        "ext-mbstring": "*",
+        "ext-session": "*"
     },
-    "platform-dev": {},
-    "plugin-api-version": "2.6.0"
+    "platform-dev": [],
+    "plugin-api-version": "2.3.0"
 }
