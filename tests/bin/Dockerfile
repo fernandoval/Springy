@@ -9,4 +9,4 @@ COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 COPY . /usr/src/springy
 WORKDIR /usr/src/springy
 RUN composer install --optimize-autoloader
-CMD [ "php", "vendor/bin/phpunit" ]
+CMD [ "composer", "run", "test" ]
