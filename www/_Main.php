@@ -7,8 +7,6 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  *
  * @version   6.1.0
- *
- * @codingStandardsIgnoreFile
  */
 
 define('SPRINGY_START', microtime(true));

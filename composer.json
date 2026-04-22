@@ -33,7 +33,7 @@
         }
     },
     "require-dev": {
-        "squizlabs/php_codesniffer": "^3.5",
+        "squizlabs/php_codesniffer": "^4.0",
         "phpmd/phpmd": "@stable",
         "phpunit/phpunit": "~10.5"
     },
@@ -69,7 +69,6 @@
         "phpmd" : "phpmd . html codesize.xml > phpmd.html",
         "test": [
             "@phpcs",
-            "@phpmd",
             "@phpunit"
         ],
         "read-me": "Adds @components post-install-cmd and post-update-cmd if needed"

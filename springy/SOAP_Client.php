@@ -3,7 +3,7 @@
 /**
  * SOAP Client.
  *
- * phpcs:disable Squiz.Classes.ValidClassName.NotCamelCaps
+ * phpcs:disable Squiz.Classes.ValidClassName.NotPascalCase
  *
  * @copyright 2007 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>

@@ -1,8 +1,11 @@
 <?xml version="1.0"?>
 <ruleset name="Springy">
-    <description>Coding standard for Boobam project</description>
+    <description>Coding standard for Springy project</description>
 
     <file>./springy</file>
+    <file>./cmd</file>
+    <file>./migrate</file>
+    <file>./www/_Main.php</file>
 
     <exclude-pattern>./tests</exclude-pattern>
     <exclude-pattern>./var</exclude-pattern>
@@ -15,14 +18,6 @@
     <arg value="sp"/>
 
     <rule ref="PSR12">
-        <!-- <exclude name="Generic.NamingConventions.CamelCapsFunctionName.Invalid" /> -->
-        <!-- <exclude name="PSR1.Classes.ClassDeclaration.MissingNamespace"/> -->
         <exclude name="PSR1.Files.SideEffects.FoundWithSymbols"/>
-        <!-- <exclude name="Squiz.Classes.ValidClassName.NotCamelCaps"/> -->
     </rule>
-    <!-- <rule ref="PSR1">
-        <exclude name="PSR1.Classes.ClassDeclaration.MissingNamespace"/>
-        <exclude name="Squiz.Classes.ValidClassName.NotCamelCaps"/>
-    </rule> -->
-    <!-- <rule ref="Generic.Arrays.DisallowLongArraySyntax"/> -->
 </ruleset>
