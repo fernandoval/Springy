@@ -3,7 +3,7 @@
 /**
  * Classe statica para tratamento JSON.
  *
- * phpcs:disable Squiz.Classes.ValidClassName.NotCamelCaps
+ * phpcs:disable Squiz.Classes.ValidClassName.NotPascalCase
  *
  * @copyright 2009 Lucas Cardozo
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
