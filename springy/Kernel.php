@@ -23,7 +23,7 @@ use Springy\Exceptions\HttpErrorNotFound;
 class Kernel
 {
     // Framework version
-    public const VERSION = '4.7.0-RC-1 (this constant is deprecated)';
+    public const VERSION = '4.7.0-RC-2';
 
     // Default controller namespace
     public const DEFAULT_NS = 'App\\Web\\';
@@ -44,6 +44,8 @@ class Kernel
     private static $ctrlNameSpace = null;
     // The controller file class name
     private static $controllerName = null;
+    // Fallback to index controller if the segments do not match any controller
+    private static bool $fallbackToIndex = false;
 
     // System environment
     private static $environment = '';
@@ -90,7 +92,7 @@ class Kernel
         if ($routing) {
             $path = implode('/', $arguments);
 
-            foreach ((Configuration::get('uri.routing.routes.' . $namespace) ?: []) as $route => $controller) {
+            foreach (config_get('uri.routing.routes.' . $namespace, []) as $route => $controller) {
                 if (preg_match('#' . $route . '#', $path)) {
                     return $namespace . $controller;
                 }
@@ -221,8 +223,8 @@ class Kernel
     private static function checkDevAccessDebug(): void
     {
         // Has a developer credential?
-        $devUser = Configuration::get('system.developer_user');
-        $devPass = Configuration::get('system.developer_pass');
+        $devUser = config_get('system.developer_user', '');
+        $devPass = config_get('system.developer_pass', '');
         if (!$devUser || !$devPass) {
             return;
         }
@@ -242,8 +244,8 @@ class Kernel
         }
 
         // Has a DBA credential?
-        $dbaUser = Configuration::get('system.dba_user');
-        if (!Configuration::get('system.debug') || !$dbaUser) {
+        $dbaUser = config_get('system.dba_user', '');
+        if (!config_get('system.debug', false) || !$dbaUser) {
             return;
         }
 
@@ -286,16 +288,18 @@ class Kernel
                     $arguments,
                     true
                 )
+                // Fallback to index controller in current $arguments path if the segments do not match any controller
+                || (self::$fallbackToIndex && count($arguments) === 1 && self::checkController(
+                    $namespace . 'Index',
+                    $arguments,
+                    false
+                ))
             ) {
                 return;
             }
 
             array_pop($arguments);
-
-            if (!count($arguments)) {
-                break;
-            }
-        } while (true);
+        } while (count($arguments) > 0);
 
         // Finds in route conf
         self::checkController(
@@ -343,10 +347,11 @@ class Kernel
     {
         $host = URI::getHost();
 
-        foreach ((Configuration::get('uri.routing.hosts') ?: []) as $route => $data) {
+        foreach (config_get('uri.routing.hosts', []) as $route => $data) {
             $pattern = sprintf('#^%s$#', $route);
             if (preg_match_all($pattern, $host)) {
                 self::$tplPrefix = $data['template'] ?? [];
+                self::$fallbackToIndex = $data['fallbackToIndex'] ?? false;
 
                 return [
                     'namespace' => $data['namespace'] ?? self::DEFAULT_NS,
@@ -355,9 +360,11 @@ class Kernel
             }
         }
 
+        self::$fallbackToIndex = config_get('uri.routing.fallbackToIndex', false);
+
         return [
-            'namespace' => Configuration::get('uri.routing.namespace') ?: self::DEFAULT_NS,
-            'segments' => Configuration::get('uri.routing.segments') ?: [],
+            'namespace' => config_get('uri.routing.namespace', self::DEFAULT_NS),
+            'segments' => config_get('uri.routing.segments', []),
         ];
     }
 
@@ -368,7 +375,7 @@ class Kernel
      */
     private static function httpAuthNeeded(): void
     {
-        $auth = Configuration::get('system.authentication');
+        $auth = config_get('system.authentication');
 
         // HTTP authentication credential not defined?
         if (
@@ -410,7 +417,7 @@ class Kernel
         }
 
         // Send Cache-Control header
-        header('Cache-Control: ' . Configuration::get('system.cache-control'), true);
+        header('Cache-Control: ' . config_get('system.cache-control', ''), true);
     }
 
     /**
@@ -463,7 +470,7 @@ class Kernel
     private static function setEnv(): void
     {
         $env = env('SPRINGY_ENVIRONMENT');
-        $byHosts = Configuration::get('env_by_host');
+        $byHosts = config_get('env_by_host', []);
 
         if (is_array($byHosts) && count($byHosts)) {
             $host = URI::getHost() ?: 'localhost';
@@ -488,7 +495,7 @@ class Kernel
     private static function systemBugAccess(): bool
     {
         // Has a credential to system bug page?
-        $auth = Configuration::get('system.bug_authentication');
+        $auth = config_get('system.bug_authentication', []);
 
         if (empty($auth['user']) || empty($auth['pass'])) {
             return true;
@@ -519,7 +526,7 @@ class Kernel
 
         ini_set('date.timezone', env('TIMEZONE') ?: 'UTC');
         ini_set('default_charset', charset());
-        ini_set('display_errors', Configuration::get('system.debug') ? 1 : 0);
+        ini_set('display_errors', config_get('system.debug', false) ? 1 : 0);
         header('Content-Type: text/html; charset=' . charset(), true);
 
         // Pre start check list of application
@@ -528,7 +535,7 @@ class Kernel
         self::checkDevAccessDebug();
 
         // System is under maintenance mode?
-        if (Configuration::get('system.maintenance')) {
+        if (config_get('system.maintenance', false)) {
             new Errors(503, 'The system is under maintenance');
         }
 
@@ -643,8 +650,8 @@ class Kernel
             $hook = self::$errorHooks['default'];
         } elseif (isset(self::$errorHooks['all'])) {
             $hook = self::$errorHooks['all'];
-        } elseif (!$hook = Configuration::get('system.system_error.hook.' . $errno)) {
-            $hook = Configuration::get('system.system_error.hook.default');
+        } elseif (!$hook = config_get('system.system_error.hook.' . $errno)) {
+            $hook = config_get('system.system_error.hook.default', false);
         }
 
         if ($hook) {

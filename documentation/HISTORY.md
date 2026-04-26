@@ -8,6 +8,8 @@
 *   Added `array_dotted_set()` helper function
 *   Added funcion `Springy\DB::isConnected()`
 *   Added bitwise comparison to `Springy\DB\Conditions` class
+*   Added `uri.routing.fallbackToIndex` boolean configuration
+*   Added `uri.routing.hosts.*.fallbackToIndex` boolean configuration
 *   The funcion `Springy\DB::connect()` changed to set internal identifier and
     return void
 *   The funcion `Springy\DB::beginTransaction()` is no longer static and no
