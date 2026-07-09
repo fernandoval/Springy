@@ -23,7 +23,7 @@ use Springy\Exceptions\HttpErrorNotFound;
 class Kernel
 {
     // Framework version
-    public const VERSION = '4.7.0-RC-2';
+    public const VERSION = '4.7.0';
 
     // Default controller namespace
     public const DEFAULT_NS = 'App\\Web\\';

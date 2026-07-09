@@ -2,7 +2,7 @@
 
 ## Version 4
 
-### 4.7.0 [unreleased]
+### 4.7.0
 
 *   Adjusted compatibility to PHP >= 8.2
 *   Updated `twig/twig` dependency to version 3.28
