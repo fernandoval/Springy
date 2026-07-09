@@ -5,6 +5,7 @@
 ### 4.7.0 [unreleased]
 
 *   Adjusted compatibility to PHP >= 8.2
+*   Updated `twig/twig` dependency to version 3.28
 *   Added `array_dotted_set()` helper function
 *   Added funcion `Springy\DB::isConnected()`
 *   Added bitwise comparison to `Springy\DB\Conditions` class

@@ -50,7 +50,7 @@
         "phpmailer/phpmailer": "^6.10",
         "sendgrid/sendgrid": "^8.1",
         "smarty/smarty": "^5.8",
-        "twig/twig": "^2.15",
+        "twig/twig": "^3.28",
         "vlucas/phpdotenv": "^5.6"
     },
     "autoload": {
