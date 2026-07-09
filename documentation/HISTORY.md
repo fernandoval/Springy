@@ -4,7 +4,7 @@
 
 ### 4.7.0 [unreleased]
 
-*   Adjusted compatibility to PHP 8.2
+*   Adjusted compatibility to PHP >= 8.2
 *   Added `array_dotted_set()` helper function
 *   Added funcion `Springy\DB::isConnected()`
 *   Added bitwise comparison to `Springy\DB\Conditions` class
@@ -28,6 +28,7 @@
 *   Removed deprecated `Springy\DB::castDateBrToDb()` funcion
 *   Removed deprecated `Springy\DB::castDateDbToBr()` funcion
 *   Removed deprecated `Springy\DB::longBrazilianDate()` funcion
+*   Removed `ircmaxell/password-compat` component dependency
 
 ### 4.6.2
 
