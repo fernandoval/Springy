@@ -18,8 +18,8 @@ use Springy\Security\AclManager;
 
 class Controller extends AclManager
 {
-    /** @var bool Define if the controller is restricted to signed in users. */
-    protected $authNeeded = false;
+    /** Define if the controller is restricted to signed in users. */
+    protected bool $authNeeded = false;
     /** Define a URL to redirect the user if it is not signed ($authNeeded must be true). */
     protected array $redirectUnsigned = [
         'enabled'      => false,
@@ -29,14 +29,14 @@ class Controller extends AclManager
         'host'         => 'dynamic',
     ];
 
-    /** @var Template|null The template object */
-    protected $template = null;
-    /** @var bool Define if the template's page must be cached. */
-    protected $tplIsCached = false;
-    /** @var int Define the live time (in seconds) of the cache. */
-    protected $tplCacheTime = 1800; // 30 minutes default
-    /// Define an identificator to the template cache.
-    protected $tplCacheId = null;
+    /** The template object */
+    protected ?Template $template = null;
+    /** Define if the template's page must be cached. */
+    protected bool $tplIsCached = false;
+    /** Define the live time (in seconds) of the cache. */
+    protected int $tplCacheTime = 1800; // 30 minutes default
+    /**Define an identificator to the template cache. */
+    protected ?string $tplCacheId = null;
 
     /**
      * The constructor method.

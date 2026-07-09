@@ -514,7 +514,7 @@ class URI
      *
      * @return never
      */
-    public static function redirect($url, $header = 302): never
+    public static function redirect(string $url, int $header = 302): never
     {
         $redirs = [
             301 => ' Moved Permanently',
