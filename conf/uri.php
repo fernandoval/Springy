@@ -29,6 +29,14 @@ $conf = [
         ],
 
         /*
+         * Fallback to index controller if the segments do not match any
+         * controller.
+         *
+         * @var bool
+         */
+        'fallbackToIndex' => false,
+
+        /*
          * Routing configuration by HTTP host.
          *
          * Keys are regular expressions.
@@ -42,6 +50,7 @@ $conf = [
                 'segments' => [
                     'api' => 'App\\Local\\Api',
                 ],
+                'fallbackToIndex' => false,
                 'template' => ['$admin'],
             ],
             // Command line controllers
@@ -49,6 +58,7 @@ $conf = [
                 'module' => '',
                 'namespace' => 'App\\Console',
                 'segments' => [],
+                'fallbackToIndex' => false,
                 'template' => [],
             ],
         ],

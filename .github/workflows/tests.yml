@@ -14,28 +14,74 @@ permissions:
 
 jobs:
   tests:
-    runs-on: ubuntu-latest
+    name: php-${{ matrix.php-version }}-mysql-${{ matrix.mysql-version }}
+
+    env:
+      extensions: curl, gmp, json, libxml, mbstring, mcrypt, pdo, pdo_mysql, zip
+      key: cache-v1
+
+    runs-on: ${{ matrix.os }}
 
     strategy:
       fail-fast: true
       matrix:
-        php: ['8.1', '8.2', '8.3']
+        os:
+          - ubuntu-latest
+        php-version: ['8.2', '8.3', '8.4', '8.5']
+        mysql-version:
+          - '8.0'
 
-    name: PHP ${{ matrix.php }}
+    services:
+      mysql:
+        image: mysql:${{ matrix.mysql-version }}
+        env:
+          MYSQL_DATABASE: springy
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup PHP
+      - name: Setup cache environment
+        id: cache-env
+        uses: shivammathur/cache-extensions@v1
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: ${{ env.extensions }}
+          key: ${{ env.key }}
+
+      - name: Cache extensions
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.cache-env.outputs.dir }}
+          key: ${{ steps.cache-env.outputs.key }}
+          restore-keys: ${{ steps.cache-env.outputs.key }}
+
+      - name: Install PHP with extensions
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php }}
-          extensions: curl, libxml, mbstring, mcrypt
+          php-version: ${{ matrix.php-version }}
+          extensions: ${{ env.extensions }}
+          ini-values: date.timezone='UTC'
           coverage: none
 
-      # - name: Validate composer.json and composer.lock
-      #   run: composer validate --strict
+      - name: Determine composer cache directory
+        if: matrix.os == 'ubuntu-latest'
+        run: echo "COMPOSER_CACHE_DIR=$(composer config cache-dir)" >> $GITHUB_ENV
+
+      - name: Cache dependencies installed with composer
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.COMPOSER_CACHE_DIR }}
+          key: php-${{ matrix.php-version }}-mysql-${{ matrix.mysql-version }}-${{ hashFiles('**/composer.json') }}
+          restore-keys: |
+            php-${{ matrix.php-version }}-composer-${{ matrix.mysql-version }}-
+
+      - name: Validate composer.json and composer.lock
+        run: composer validate
 
       # - name: Cache Composer packages
       #   id: composer-cache
@@ -47,10 +93,16 @@ jobs:
       #       ${{ runner.os }}-php-
 
       - name: Install dependencies
-        run: composer install --prefer-dist --no-interaction --no-progress --no-suggest
+        run: composer install --prefer-dist --no-interaction --no-progress --optimize-autoloader
 
       - name: Copy environment file
         run: cp .env.example .env
 
       - name: Run test suite
-        run: vendor/bin/phpunit
+        env:
+          DB_HOST: "127.0.0.1"
+          DB_NAME: springy
+          DB_USER: root
+          DB_PASS: root
+          MYSQL: ${{ matrix.mysql-version }}
+        run: composer run test

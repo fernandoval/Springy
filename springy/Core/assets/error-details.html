@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="System error">
+    <title>{systemName} v{sistemVersion} - Occurrence Errors</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+  </head>
+  <body>
+    <header class="navbar sticky-top navbar-expand-lg bg-body-tertiary">
+      <nav class="container-xxl bd-gutter flex-wrap flex-lg-nowrap" aria-label="Main navigation">
+        <a class="navbar-brand" href="/_system_bug_">{systemName}</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a id="delete-selected" class="btn btn-sm btn-outline-dark d-none" href="">Delete selected</a>
+            </li>
+          </ul>
+          <a id="delete" class="btn btn-sm btn-outline-danger" href="">Delete</a>
+        </div>
+      </nav>
+    </header>
+
+    <div class="container-xxl">
+      <h1 class="text-center">System Errors</h1>
+
+      <div id="error-viewer">
+        <template id="error-tpl">
+          <div class="card">
+            <div class="card-header">
+              <span class="badge text-bg-warning"> #{{error_code}} </span>
+              <span class="text-danger">{{description.name}}</span> - {{description.message}}
+              <a class="btn-close float-end" href="/_system_bug_" aria-label="Close"></a>
+            </div>
+            <div class="card-body">
+              <h5 class="card-title">Details</h5>
+              <div><span class="text-secondary">Error code:</span> {{details.error.code}}</div>
+              <div><span class="text-secondary">Error message:</span> {{details.error.message}}</div>
+              <div><span class="text-secondary">File:</span> {{details.error.file}}</div>
+              <div><span class="text-secondary">Line:</span> {{details.error.line}}</div>
+              <div><span class="text-secondary">Occurrences:</span> {{occurrences}}</div>
+            </div>
+
+            <div class="card-body">
+              <h5 class="card-title">System Information</h5>
+              <div><span class="text-secondary">System:</span> {{details.system.name}}</div>
+              <div><span class="text-secondary">Date:</span> {{details.system.timestamp}}</div>
+              <div><span class="text-secondary">Execution time:</span> {{details.system.exec_time}} secs</div>
+            </div>
+
+            <div class="card-body">
+              <h5 class="card-title">Request</h5>
+              <div><span class="text-secondary">Host:</span> {{details.request.host}}</div>
+              <div><span class="text-secondary">URI:</span> {{details.request.uri}}</div>
+              <div><span class="text-secondary">Method:</span> {{details.request.method}}</div>
+              <div><span class="text-secondary">Query String:</span> {{details.request.query_string}}</div>
+              <div><span class="text-secondary">Protocol:</span> {{details.request.protocol}}</div>
+              <div><span class="text-secondary">Content-Type:</span> {{details.request.content_type}}</div>
+              <div><span class="text-secondary">Referrer:</span> {{details.client.referer}}</div>
+              <div><span class="text-secondary">Client IP:</span> {{details.client.ip}}</div>
+              <div><span class="text-secondary">Reverse:</span> {{details.client.reverse}}</div>
+              <div><span class="text-secondary">User agent:</span> {{details.client.user_agent}}</div>
+            </div>
+          </div>
+
+          <div class="card mt-3">
+            <div class="card-header">Backtrace</div>
+            <ul class="list-group list-group-flush">
+              {{#each details.backtrace}}
+                <li class="list-group-item text-break">
+                  {{#if file}}
+                    <em class="font-monospace text-secondary">{{file}}</em>: <strong>{{line}}</strong><br>
+                  {{/if}}
+                  <span class="font-monospace">{{class}}{{type}}{{function}}()</span>
+                </li>
+              {{/each}}
+            </ul>
+          </div>
+
+          <div class="card mb-4 mt-3">
+            <div class="card-header">Additional Information</div>
+            <div class="card-body">
+              {{{details.additional}}}
+            </div>
+          </div>
+        </template>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+    <script type="module">
+      import Handlebars from 'https://cdn.jsdelivr.net/npm/handlebars@4.7.7/+esm';
+
+      const delBtn = document.getElementById('delete');
+      const errTpl = Handlebars.compile(document.getElementById('error-tpl').innerHTML);
+      const range = document.createRange();
+      const viewer = document.getElementById('error-viewer');
+      const errorData = {errorData};
+
+      function decodeOldDesc(error) {
+        const el = range.createContextualFragment(error.description);
+        const typ = el.children[0] || null;
+        const msg = el.children[1] || error.description;
+        const fil = el.children[2] || null;
+        const lin = el.children[3] || null;
+
+        return {
+          name: typ.innerHTML,
+          message: msg.innerHTML,
+          file: fil.innerHTML,
+          line: lin.innerHTML,
+        };
+      }
+
+      function getDesc(error) {
+        if (typeof error.details === 'string') {
+          return decodeOldDesc(error);
+        }
+
+        return error.details.error;
+      }
+
+      function getDetails(error) {
+        if (typeof error.details === 'string') {
+          return {
+            additional: error.details.replaceAll(' collapse', '')
+          };
+        }
+
+        return error.details;
+      }
+
+      viewer.innerHTML = errTpl({
+        id: errorData.id,
+        error_code: errorData.error_code,
+        description: getDesc(errorData),
+        occurrences: errorData.occurrences,
+        details: getDetails(errorData),
+      });
+      delBtn.href = `/_system_bug_/delete/${errorData.error_code}`;
+    </script>
+  </body>
+</html>

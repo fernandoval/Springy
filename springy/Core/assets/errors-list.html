@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="System error">
+    <title>{systemName} v{sistemVersion} - Occurrence Errors</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+  </head>
+  <body>
+    <header class="navbar sticky-top navbar-expand-lg bg-body-tertiary">
+      <nav class="container-xxl bd-gutter flex-wrap flex-lg-nowrap" aria-label="Main navigation">
+        <a class="navbar-brand" href="">{systemName}</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a id="delete-selected" class="btn btn-sm btn-outline-dark d-none" href="">Delete selected</a>
+            </li>
+          </ul>
+          <a id="delete-all" class="btn btn-sm btn-outline-danger disabled" href="/_system_bug_/delete/all">Delete all</a>
+        </div>
+      </nav>
+    </header>
+
+    <div class="container-xxl">
+      <h1 class="text-center">System Errors</h1>
+
+      <table class="table table-striped table-hover">
+        <thead>
+          <tr>
+            <th scope="col"></th>
+            <th scope="col">#</th>
+            <th scope="col">Error</th>
+            <th scope="col">Description</th>
+            <th scope="col">File</th>
+            <th scope="col">Line</th>
+            <th scope="col">Occurrences</th>
+          </tr>
+        </thead>
+        <tbody id="errors-table" role="button">
+          <template id="error-row">
+            <td><input type="checkbox"></td>
+            <td>{{error_code}}</td>
+            <td>{{description.name}}</td>
+            <td>{{description.message}}</td>
+            <td>{{description.file}}</td>
+            <td class="text-end">{{description.line}}</td>
+            <td class="text-end">{{occurrences}}</td>
+          </template>
+        </tbody>
+      </table>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+    <script type="module">
+      import Handlebars from 'https://cdn.jsdelivr.net/npm/handlebars@4.7.7/+esm';
+
+      const delAll = document.getElementById('delete-all');
+      const delSel = document.getElementById('delete-selected');
+      const tblBody = document.getElementById('errors-table');
+      const tblRow = Handlebars.compile(document.getElementById('error-row').innerHTML);
+      const range = document.createRange();
+      const errorList = {errorsList};
+
+      function decodeOldDesc(error)
+      {
+        const el = range.createContextualFragment(error.description);
+        const typ = el.children[0] || null;
+        const msg = el.children[1] || error.description;
+        const fil = el.children[2] || null;
+        const lin = el.children[3] || null;
+
+        return {
+          name: typ.innerHTML,
+          message: msg.innerHTML,
+          file: fil.innerHTML,
+          line: lin.innerHTML,
+        };
+      }
+
+      function findError(id) {
+        return errorList.find(error => error.id == id);
+      }
+
+      function getDesc(error) {
+        if (typeof error.details === 'string') {
+          return decodeOldDesc(error);
+        }
+
+        return error.details.error;
+      }
+
+      tblBody.innerHTML = '';
+      errorList.forEach(error => {
+        const el = tblRow({
+          id: error.id,
+          error_code: error.error_code,
+          description: getDesc(error),
+          occurrences: error.occurrences,
+          details: error.details,
+        });
+        const row = document.createElement('tr');
+
+        row.innerHTML = el;
+        row.dataset.id = error.id;
+        tblBody.append(row);
+
+        delAll.classList.remove('disabled');
+      });
+
+      delSel.addEventListener('click', evt => {
+        const codes = [];
+
+        evt.preventDefault();
+
+        [...tblBody.querySelectorAll('input:checked')].forEach(
+          inp => codes.push(findError(inp.closest('tr').dataset.id).error_code)
+        );
+
+        location.href = '/_system_bug_/delete/' + codes.join(',');
+      });
+
+      tblBody.addEventListener('click', evt => {
+        if (evt.target.tagName === 'INPUT') {
+          delSel.classList.toggle('d-none', [...tblBody.querySelectorAll('input:checked')].length === 0);
+
+          return;
+        }
+
+        const id = evt.target.parentElement.dataset.id;
+        const code = findError(evt.target.parentElement.dataset.id)?.error_code;
+
+        window.location.assign(`_system_bug_/${code}`);
+      });
+    </script>
+  </body>
+</html>

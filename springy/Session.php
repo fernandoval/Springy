@@ -6,8 +6,6 @@
  * @copyright 2007 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
- *
- * @version   2.3.0
  */
 
 namespace Springy;
@@ -187,7 +185,8 @@ class Session
             $res = $db->fetchNext();
             self::$data = unserialize($res['session_value']);
         } else {
-            $sql = 'INSERT INTO ' . self::sessionTableName() . '(`id`, `session_value`, `updated_at`) VALUES (?, NULL, NOW())';
+            $sql = 'INSERT INTO ' . self::sessionTableName()
+                . '(`id`, `session_value`, `updated_at`) VALUES (?, NULL, NOW())';
             $db->execute($sql, [self::$sid]);
             self::$data = [];
         }

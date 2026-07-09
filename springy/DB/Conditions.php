@@ -6,15 +6,10 @@
  * @copyright 2016-2018 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
- *
- * @version   0.6.0
  */
 
 namespace Springy\DB;
 
-/**
- * Class to construct database conditions clauses.
- */
 class Conditions
 {
     // Conditions array
@@ -41,6 +36,7 @@ class Conditions
     public const OP_NOT_LIKE = 'NOT LIKE';
     public const OP_MATCH = 'MATCH';
     public const OP_MATCH_BOOLEAN_MODE = 'MATCH BOOLEAN';
+    public const OP_BITWISE_EQUAL = '&';
 
     // Comparison constants aliases
     public const OP_EQUAL_ALIAS = 'EQ';
@@ -135,6 +131,11 @@ class Conditions
 
                 return $expression . ' MATCH (' . $condition['column'] . ') AGAINST (?' .
                     ($condition['operator'] === self::OP_MATCH_BOOLEAN_MODE ? ' IN BOOLEAN MODE' : '') . ')';
+            case self::OP_BITWISE_EQUAL:
+                $this->parameters[] = $condition['value'];
+                $this->parameters[] = $condition['value'];
+
+                return $expression . ' ' . $condition['column'] . ' ' . $condition['operator'] . ' ? = ?';
         }
 
         throw new \Exception('Unknown condition operator.', 500);
@@ -210,7 +211,7 @@ class Conditions
             'type' => self::EXPR_SIMPLE,
             'column' => $column,
             'value' => $value,
-            'operator' => strtoupper($operator),
+            'operator' => mb_strtoupper($operator),
             'expression' => $expression,
         ];
     }
@@ -330,7 +331,7 @@ class Conditions
         foreach ($filter as $field => $value) {
             if (is_array($value)) {
                 foreach ($value as $method => $key) {
-                    $method = strtolower($method);
+                    $method = mb_strtolower($method);
                     $this->condition($field, $key, isset($operators[$method]) ? $operators[$method] : self::OP_EQUAL);
                 }
             } else {

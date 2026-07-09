@@ -7,60 +7,55 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   3.1.25
+ * @deprecated 4.7.0
  */
 
 namespace Springy;
 
+use Springy\Exceptions\SpringyException;
+use Springy\Mail\Drivers\PhpMailer;
+use Springy\Mail\Drivers\SendGrid;
+use Springy\Mail\Mailer;
+
 class Mail
 {
-    public const MAIL_ENGINE_PHPMAILER = 'phpmailer';
-    public const MAIL_ENGINE_SWIFTMAILER = 'swiftmailer';
-    public const MAIL_ENGINE_SENDGRID = 'sendgrid';
-    public const MAIL_ENGINE_MIMEMESSAGE = 'mimemessage';
-
-    private $mailObj = null;
+    private Mailer $newMailer;
 
     public function __construct($mailer = null)
     {
-        if (is_null($mailer)) {
-            if (Configuration::get('mail.default_driver')) {
-                $mailer = Configuration::get('mail.default_driver');
-            } else {
-                $mailer = key(Configuration::get('mail.mailers'));
-            }
-        }
-        $cfg = Configuration::get('mail.mailers.' . $mailer);
+        $driver = $mailer ?? config_get('mail.default_driver');
 
-        if ($cfg == null) {
-            throw new \Exception('Mail configuration \'mailers.' . $mailer . '\' undefined');
-        }
-        if (!isset($cfg['driver'])) {
-            throw new \Exception('Mail configuration \'driver\' undefined');
-        }
+        if (is_null($driver)) {
+            $this->newMailer = new Mailer();
 
-        // Inicializa a classe de template
-        switch (strtolower($cfg['driver'])) {
-            case self::MAIL_ENGINE_PHPMAILER:
-                $this->mailObj = new Mail\PHPMailerDriver($cfg);
-                break;
-            case self::MAIL_ENGINE_SWIFTMAILER:
-                $this->mailObj = new Mail\SwiftMailerDriver($cfg);
-                break;
-            case self::MAIL_ENGINE_SENDGRID:
-                $this->mailObj = new Mail\SendGridDriver($cfg);
-                break;
-            case self::MAIL_ENGINE_MIMEMESSAGE:
-                $this->mailObj = new Mail\MimeMessageDriver($cfg);
-                break;
-            default:
-                throw new \Exception('Mail driver invalid');
-        }
+            return;
+        };
+
+        $cfg = config_get('mail.mailers.' . $driver)
+            ?? throw new SpringyException('Mail configuration \'mailers.' . $driver . '\' undefined');
+
+        match ($cfg['driver'] ?? 'undefined') {
+            'phpmailer' => $this->startPhpMailer($cfg),
+            'sendgrid' => $this->startSendGrid($cfg),
+            'swiftmailer' => throw new SpringyException('SwiftMailer driver not implemented anymore'),
+            'mimemessage' => throw new SpringyException('MimeMessage driver not implemented anymore'),
+            'undefined' => throw new SpringyException('Mimee driver undefined'),
+            default => throw new SpringyException('Mail configuration driver unsupported'),
+        };
+
+        $this->newMailer = new Mailer();
     }
 
-    public function __destruct()
+    private function startPhpMailer(array $cfg): void
     {
-        unset($this->mailObj);
+        config_set('mail.driver', PhpMailer::class);
+        config_set('mail.settings', $cfg);
+    }
+
+    private function startSendGrid(array $cfg): void
+    {
+        config_set('mail.driver', SendGrid::class);
+        config_set('mail.settings', $cfg);
     }
 
     /**
@@ -68,7 +63,7 @@ class Mail
      */
     public function addHeader($header, $value)
     {
-        $this->mailObj->addHeader($header, $value);
+        $this->newMailer->addHeader($header, $value);
     }
 
     /**
@@ -84,7 +79,7 @@ class Mail
      */
     public function setTemplate($name)
     {
-        $this->mailObj->setTemplate($name);
+        $this->newMailer->setTemplateId($name);
     }
 
     /**
@@ -92,7 +87,7 @@ class Mail
      */
     public function addTemplateVar($name, $value)
     {
-        $this->mailObj->addTemplateVar($name, $value);
+        $this->newMailer->addTemplateVar($name, $value);
     }
 
     /**
@@ -109,21 +104,15 @@ class Mail
      */
     public function to($email, $name = '')
     {
-        // Verifica se há a entrada forçando o envio de todos os emails para um destinatário específico
-        if (Configuration::get('mail.mails_go_to')) {
-            $email = Configuration::get('mail.mails_go_to');
-            $name = '';
-        }
-
         if (is_array($email)) {
             foreach ($email as $mail => $name) {
-                $this->mailObj->addTo($mail, $name);
+                $this->newMailer->addTo($mail, $name);
             }
-        } else {
-            $this->mailObj->addTo($email, $name);
+
+            return;
         }
 
-        return true;
+        $this->newMailer->addTo($email, $name);
     }
 
     /**
@@ -133,13 +122,13 @@ class Mail
     {
         if (is_array($email)) {
             foreach ($email as $mail => $name) {
-                $this->mailObj->addCC($mail, $name);
+                $this->newMailer->addCC($mail, $name);
             }
-        } else {
-            $this->mailObj->addCC($email, $name);
+
+            return;
         }
 
-        return true;
+        $this->newMailer->addCC($email, $name);
     }
 
     /**
@@ -149,13 +138,13 @@ class Mail
     {
         if (is_array($email)) {
             foreach ($email as $mail => $name) {
-                $this->mailObj->addBCC($mail, $name);
+                $this->newMailer->addBCC($mail, $name);
             }
-        } else {
-            $this->mailObj->addBCC($email, $name);
+
+            return;
         }
 
-        return true;
+        $this->newMailer->addBCC($email, $name);
     }
 
     /**
@@ -163,9 +152,7 @@ class Mail
      */
     public function from($email, $name = '')
     {
-        $this->mailObj->setFrom($email, $name);
-
-        return true;
+        $this->newMailer->setFrom($email, $name);
     }
 
     /**
@@ -173,9 +160,7 @@ class Mail
      */
     public function subject($subject)
     {
-        $this->mailObj->setSubject($subject);
-
-        return true;
+        $this->newMailer->setSubject($subject);
     }
 
     /**
@@ -184,10 +169,10 @@ class Mail
     public function body($html = '', $text = '')
     {
         if ($text) {
-            $this->mailObj->setAlternativeBody($text);
+            $this->newMailer->setAlternativeBody($text);
         }
         if ($html) {
-            $this->mailObj->setBody($html);
+            $this->newMailer->setBody($html, true);
         }
     }
 
@@ -196,13 +181,7 @@ class Mail
      */
     public function addAttach($path, $name = '', $type = '', $encoding = 'base64')
     {
-        if (is_array($path)) {
-            $name = $path['name'];
-            $type = $path['type'];
-            $path = $path['tmp_name'];
-        }
-
-        $this->mailObj->addAttachment($path, $name, $type, $encoding);
+        $this->newMailer->addAttachment($path, $name, $type, $encoding);
     }
 
     /**
@@ -212,17 +191,15 @@ class Mail
      */
     public function addCategory($category)
     {
-        $this->mailObj->addCategory($category);
+        $this->newMailer->addCategory($category);
     }
 
     /**
      * Sends the message.
-     *
-     * @return mixed
      */
     public function send()
     {
-        return $this->mailObj->send();
+        return $this->newMailer->send()->getLastError();
     }
 
     /**

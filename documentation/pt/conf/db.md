@@ -18,14 +18,12 @@ usadas como nomes de conexão. São elas:
 
 -   **'default'** - conexão padrão;
 -   **'cache'** - configuração de cache de banco em MemcacheD;
--   **'round_robin'** - configuração de round robin de banco.
 
 ### Entradas de configuração de conexão:
 
 -   **'database_type'** - Determina o tipo de banco de dados. Veja "Tipos de
 banco de dados suportados";
--   **'host_name'** - Nome do host. Se database_type for 'pool', essa entrada
-deve ser um array contendo das entradas de configuração do pool de conexão.
+-   **'host_name'** - Nome do host.
 -   **'user_name'** - Nome do usuário
 -   **'password'** - Senha de acesso
 -   **'database'** - Banco ou schema
@@ -37,20 +35,10 @@ deve ser um array contendo das entradas de configuração do pool de conexão.
 -   **'mysql'** - Bancos de dados MySQL;
 -   **'pgsql'** ou **'postgresql'** - Banco de dados PostgreSQL;
 -   **'sqlite'** - Banco de dados SQLite;
--   **'pool'** - Configuração para pool de conexão de banco de dados por round
-robin. Nesse caso, o **'host_name'** deverá ser um array com as entradas de
-configuração.
 
 ### Entradas da configuração de cache de consulta em MemcacheD:
 
 -   **'type'** - Tipo de sistema de cache ('off' | 'memcached');
--   **'server_addr'** - Endereço do servidor memcached ou caminho do arquivo de
-controle;
--   **'server_port'** - Porta do servidor memcached.
-
-### Entradas da configuração de pool por round_robin:
-;
--   **'type'** - Tipo de controle do round robin (file | memcached);
 -   **'server_addr'** - Endereço do servidor memcached ou caminho do arquivo de
 controle;
 -   **'server_port'** - Porta do servidor memcached.

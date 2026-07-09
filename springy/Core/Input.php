@@ -1,13 +1,11 @@
 <?php
 
 /**
- * Classe para gerenciamento de dados de input de usuário (GET e POST).
+ * GET and POST input data management class.
  *
  * @copyright 2015 Fernando Val
  * @author    Allan Marques <allan.marques@ymail.com>
  * @author    Fernando Val <fernando.val@gmail.com>
- *
- * @version 0.3.1
  */
 
 namespace Springy\Core;
@@ -96,7 +94,7 @@ class Input
     public function isAjax()
     {
         return isset($_SERVER['HTTP_X_REQUESTED_WITH']) &&
-               strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+               mb_strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
     }
 
     /**

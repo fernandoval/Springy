@@ -59,15 +59,15 @@ are required to reproduce the same effect.
 
 ### Configuration
 
-The `consts` file defines the application name, version and project code name,
-as well as application directory paths.
+The `consts.php` file defines the application name, version and project code
+name, as well as application directory paths.
 
 The `.env` file defines your application's configuration entries. This file
 should not be added to your repository. Create it from the existing
 `.env.example` file in the project root.
 
 All other configuration stays in files inside the folder defined by `CONFIG_DIR`
-constant defined in `consts` file.
+constant defined in `consts.php` file.
 
 #### Configuration files
 

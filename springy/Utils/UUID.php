@@ -8,19 +8,14 @@
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
  * @version   0.1.6
+ *
+ * @deprecated Use Ramsey\Uuid\Uuid instead.
+ *
+ * @see https://github.com/ramsey/uuid
  */
 
 namespace Springy\Utils;
 
-/**
- * Class library for generate Universally Unique Identifiers (UUID) RFC 4211 compatible.
- *
- * Esta classe foi construída a partir da classe desenvolvida por Andrew Moore em comentário
- * na documentação da função uniqid() do PHP.
- *
- * A classe original pode ser obtida no seguinte endereço:
- * http://php.net/manual/en/function.uniqid.php
- */
 class UUID
 {
     /**

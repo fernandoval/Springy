@@ -6,12 +6,12 @@
  * @copyright 2015 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
  *
- * @version   1.1.0
+ * @version   1.2.0
  */
 
 define('SPRINGY_START', microtime(true));
 
-require __DIR__ . '/../consts';
+require __DIR__ . '/../consts.php';
 // Loads the Composer autoload
 require __DIR__ . '/../vendor/autoload.php';
 

@@ -15,6 +15,7 @@
 namespace Springy\Template;
 
 use Smarty\Smarty;
+use Springy\Exceptions\HttpErrorNotFound;
 use Springy\Kernel;
 use Springy\URI;
 
@@ -191,7 +192,7 @@ class SmartyDriver implements TemplateDriverInterface
     public function fetch()
     {
         if (!$this->templateExists($this->templateName)) {
-            throw_error(404, $this->templateName . self::TPL_NAME_SUFIX);
+            throw new HttpErrorNotFound($this->templateName . self::TPL_NAME_SUFIX);
         }
 
         // Alimenta as variáveis CONSTANTES

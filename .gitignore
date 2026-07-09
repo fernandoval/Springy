@@ -1,7 +1,8 @@
-.env
-.phpunit.result.cache
+/.env
+/.phpunit.result.cache
+/components/*
 /components.lock
+/node_modules/*
 /phpcs.log
 /phpmd.html
-/components/*
-/node_modules/*
+/TODO

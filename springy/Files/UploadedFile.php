@@ -6,8 +6,6 @@
  * @copyright 2014 Fernando Val
  * @author    Allan Marques <allan.marques@ymail.com>
  * @author    Fernando Val <fernando.val@gmail.com>
- *
- * @version   0.1.5
  */
 
 namespace Springy\Files;
@@ -190,7 +188,7 @@ class UploadedFile extends File
      */
     public static function getMaxFilesize()
     {
-        $iniMax = strtolower(ini_get('upload_max_filesize'));
+        $iniMax = mb_strtolower(ini_get('upload_max_filesize'));
 
         if ('' === $iniMax) {
             return PHP_INT_MAX;

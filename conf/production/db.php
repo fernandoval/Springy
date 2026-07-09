@@ -9,11 +9,6 @@
  */
 
 return [
-    'round_robin' => [
-        'type' => 'memcached',
-        'server_addr' => 'youmemcachedserver.localnetwork',
-        'server_port' => 11211,
-    ],
     'cache' => [
         'type' => 'off',
         'server_addr' => 'youmemcachedserver.localnetwork',

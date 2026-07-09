@@ -12,6 +12,8 @@
 namespace Springy;
 
 use Dotenv\Dotenv;
+use Springy\Core\ErrorsList;
+use Springy\Exceptions\HttpErrorNotFound;
 
 /**
  * Framework kernel class.
@@ -21,7 +23,7 @@ use Dotenv\Dotenv;
 class Kernel
 {
     // Framework version
-    public const VERSION = '4.6.2 (this constant is deprecated)';
+    public const VERSION = '4.7.0';
 
     // Default controller namespace
     public const DEFAULT_NS = 'App\\Web\\';
@@ -42,6 +44,8 @@ class Kernel
     private static $ctrlNameSpace = null;
     // The controller file class name
     private static $controllerName = null;
+    // Fallback to index controller if the segments do not match any controller
+    private static bool $fallbackToIndex = false;
 
     // System environment
     private static $environment = '';
@@ -88,7 +92,7 @@ class Kernel
         if ($routing) {
             $path = implode('/', $arguments);
 
-            foreach ((Configuration::get('uri.routing.routes.' . $namespace) ?: []) as $route => $controller) {
+            foreach (config_get('uri.routing.routes.' . $namespace, []) as $route => $controller) {
                 if (preg_match('#' . $route . '#', $path)) {
                     return $namespace . $controller;
                 }
@@ -165,9 +169,6 @@ class Kernel
             '_pi_' => config_get('system.system_internal_methods.phpinfo'),
             '_springy_' => config_get('system.system_internal_methods.about'),
             '_system_bug_' => config_get('system.system_internal_methods.system_errors') && self::systemBugAccess(),
-            '_system_bug_solved_' => config_get('system.system_internal_methods.system_errors')
-                && self::systemBugAccess()
-                && preg_match('/(^[0-9a-z]{8}(,[0-9a-z]{8})*|all)$/', URI::getSegment(1, false)),
             default => false,
         };
 
@@ -180,10 +181,9 @@ class Kernel
                     ob_end_flush();
                 },
                 '_springy_' => fn () => new Core\Copyright(true),
-                '_system_bug_' => fn () => (new Errors())->bugList(),
-                '_system_bug_solved_' => fn () => (new Errors())->bugSolved(URI::getSegment(1, false)),
+                '_system_bug_' => fn () => (new ErrorsList())(),
             }
-        ) : new Errors(404, 'Page not found');
+        ) : throw new HttpErrorNotFound();
     }
 
     /**
@@ -223,8 +223,8 @@ class Kernel
     private static function checkDevAccessDebug(): void
     {
         // Has a developer credential?
-        $devUser = Configuration::get('system.developer_user');
-        $devPass = Configuration::get('system.developer_pass');
+        $devUser = config_get('system.developer_user', '');
+        $devPass = config_get('system.developer_pass', '');
         if (!$devUser || !$devPass) {
             return;
         }
@@ -244,8 +244,8 @@ class Kernel
         }
 
         // Has a DBA credential?
-        $dbaUser = Configuration::get('system.dba_user');
-        if (!Configuration::get('system.debug') || !$dbaUser) {
+        $dbaUser = config_get('system.dba_user', '');
+        if (!config_get('system.debug', false) || !$dbaUser) {
             return;
         }
 
@@ -288,16 +288,18 @@ class Kernel
                     $arguments,
                     true
                 )
+                // Fallback to index controller in current $arguments path if the segments do not match any controller
+                || (self::$fallbackToIndex && count($arguments) === 1 && self::checkController(
+                    $namespace . 'Index',
+                    $arguments,
+                    false
+                ))
             ) {
                 return;
             }
 
             array_pop($arguments);
-
-            if (!count($arguments)) {
-                break;
-            }
-        } while (true);
+        } while (count($arguments) > 0);
 
         // Finds in route conf
         self::checkController(
@@ -345,10 +347,11 @@ class Kernel
     {
         $host = URI::getHost();
 
-        foreach ((Configuration::get('uri.routing.hosts') ?: []) as $route => $data) {
+        foreach (config_get('uri.routing.hosts', []) as $route => $data) {
             $pattern = sprintf('#^%s$#', $route);
             if (preg_match_all($pattern, $host)) {
                 self::$tplPrefix = $data['template'] ?? [];
+                self::$fallbackToIndex = $data['fallbackToIndex'] ?? false;
 
                 return [
                     'namespace' => $data['namespace'] ?? self::DEFAULT_NS,
@@ -357,9 +360,11 @@ class Kernel
             }
         }
 
+        self::$fallbackToIndex = config_get('uri.routing.fallbackToIndex', false);
+
         return [
-            'namespace' => Configuration::get('uri.routing.namespace') ?: self::DEFAULT_NS,
-            'segments' => Configuration::get('uri.routing.segments') ?: [],
+            'namespace' => config_get('uri.routing.namespace', self::DEFAULT_NS),
+            'segments' => config_get('uri.routing.segments', []),
         ];
     }
 
@@ -370,7 +375,7 @@ class Kernel
      */
     private static function httpAuthNeeded(): void
     {
-        $auth = Configuration::get('system.authentication');
+        $auth = config_get('system.authentication');
 
         // HTTP authentication credential not defined?
         if (
@@ -412,25 +417,16 @@ class Kernel
         }
 
         // Send Cache-Control header
-        header('Cache-Control: ' . Configuration::get('system.cache-control'), true);
+        header('Cache-Control: ' . config_get('system.cache-control', ''), true);
     }
 
     /**
-     * Loads the .env file and merges to Kernel::$sysconf properties.
-     *
-     * The parameter $sysconf will be removed in v4.7.
-     *
-     * @param array $sysconf configuration loaded from sysconf.php file.
-     *
-     * @return void
+     * Loads the .env file.
      */
-    private static function loadEnvFile(array $sysconf): void
+    private static function loadEnvFile(): void
     {
         $envcache = cache_dir() . DS . '.env.php';
         $envfile = project_path() . DS . '.env';
-
-        // Put legacy sysconf.php array into env
-        array_walk($sysconf, fn ($value, $key) => putenv(sprintf('%s=%s', $key, $value)));
 
         if (
             file_exists($envfile) &&
@@ -474,7 +470,7 @@ class Kernel
     private static function setEnv(): void
     {
         $env = env('SPRINGY_ENVIRONMENT');
-        $byHosts = Configuration::get('env_by_host');
+        $byHosts = config_get('env_by_host', []);
 
         if (is_array($byHosts) && count($byHosts)) {
             $host = URI::getHost() ?: 'localhost';
@@ -499,7 +495,7 @@ class Kernel
     private static function systemBugAccess(): bool
     {
         // Has a credential to system bug page?
-        $auth = Configuration::get('system.bug_authentication');
+        $auth = config_get('system.bug_authentication', []);
 
         if (empty($auth['user']) || empty($auth['pass'])) {
             return true;
@@ -521,22 +517,16 @@ class Kernel
 
     /**
      * Starts the application.
-     *
-     * The initialization parameter $sysconf will be removed in v4.7.
-     *
-     * @param array $sysconf configuration loaded from sysconf.php file.
-     *
-     * @return void
      */
-    public static function run(array $sysconf)
+    public static function run(): void
     {
-        self::loadEnvFile($sysconf);
+        self::loadEnvFile();
 
         self::setEnv();
 
         ini_set('date.timezone', env('TIMEZONE') ?: 'UTC');
         ini_set('default_charset', charset());
-        ini_set('display_errors', Configuration::get('system.debug') ? 1 : 0);
+        ini_set('display_errors', config_get('system.debug', false) ? 1 : 0);
         header('Content-Type: text/html; charset=' . charset(), true);
 
         // Pre start check list of application
@@ -545,7 +535,7 @@ class Kernel
         self::checkDevAccessDebug();
 
         // System is under maintenance mode?
-        if (Configuration::get('system.maintenance')) {
+        if (config_get('system.maintenance', false)) {
             new Errors(503, 'The system is under maintenance');
         }
 
@@ -585,116 +575,6 @@ class Kernel
     public static function environment(): ?string
     {
         return self::$environment;
-    }
-
-    /**
-     * Returns environment data.
-     *
-     * @param string $key
-     *
-     * @deprecated 4.6.0
-     *
-     * @uses env()
-     *
-     * @return mixed
-     */
-    public static function systemConfGlobal(string $key): mixed
-    {
-        return env($key, null);
-    }
-
-    /**
-     * The system name.
-     *
-     * Warning! This function will be removed in the future.
-     *
-     * @deprecated 4.6.0
-     *
-     * @uses app_name()
-     *
-     * @return string A string containing the system name.
-     */
-    public static function systemName(): string
-    {
-        return app_name();
-    }
-
-    /**
-     * The system version.
-     *
-     * Warning! This function will be removed in the future.
-     *
-     * @deprecated 4.6.0
-     *
-     * @uses app_version()
-     *
-     * @see https://semver.org
-     *
-     * @return string A string containing the system version.
-     */
-    public static function systemVersion(): string
-    {
-        if (defined('APP_VERSION')) {
-            return app_version();
-        }
-
-        [$major, $minor, $patch] = is_array(env('SYSTEM_VERSION', null))
-            ? env('SYSTEM_VERSION')
-            : explode(
-                '.',
-                (string) env('SYSTEM_VERSION', '0.0.0')
-            );
-
-        return implode('.', [$major ?? 0, $minor ?? 0, $patch ?? 0]);
-    }
-
-    /**
-     * The project code name.
-     *
-     * @see https://en.wikipedia.org/wiki/Code_name#Project_code_name
-     * @deprecated 4.6.0
-     *
-     * @uses app_codename()
-     *
-     * @return string A string containing the project code name.
-     */
-    public static function projectCodeName(): string
-    {
-        return app_codename();
-    }
-
-    /**
-     * The system charset.
-     *
-     * @deprecated 4.6.0
-     *
-     * @uses env('CHARSET')
-     *
-     * @return string A string containing the system charset.
-     */
-    public static function charset(): string
-    {
-        return env('CHARSET') ?? 'UTF-8';
-    }
-
-    /**
-     * A path of the system.
-     *
-     * @param string $component the component constant.
-     *
-     * @deprecated 4.6.0
-     *
-     * @return string A string containing the path of the component.
-     */
-    public static function path(string $component): string
-    {
-        return match ($component) {
-            self::PATH_APPLICATION => app_path(),
-            self::PATH_CONF => config_dir(),
-            self::PATH_MIGRATION => migration_dir(),
-            self::PATH_PROJECT => project_path(),
-            self::PATH_VAR => var_dir(),
-        };
     }
 
     /**
@@ -770,8 +650,8 @@ class Kernel
             $hook = self::$errorHooks['default'];
         } elseif (isset(self::$errorHooks['all'])) {
             $hook = self::$errorHooks['all'];
-        } elseif (!$hook = Configuration::get('system.system_error.hook.' . $errno)) {
-            $hook = Configuration::get('system.system_error.hook.default');
+        } elseif (!$hook = config_get('system.system_error.hook.' . $errno)) {
+            $hook = config_get('system.system_error.hook.default', false);
         }
 
         if ($hook) {
@@ -794,24 +674,6 @@ class Kernel
     public static function setErrorHook($errno, $funcHook): void
     {
         self::$errorHooks[$errno] = $funcHook;
-    }
-
-    /**
-     * Gets and/or sets the root controller.
-     *
-     * @param array $cRoot if defined sets the new root controller.
-     *
-     * @deprecated 4.6.1
-     *
-     * @return array
-     */
-    public static function controllerRoot($cRoot = null)
-    {
-        if (!is_null($cRoot)) {
-            self::$tplPrefix = $cRoot;
-        }
-
-        return self::$tplPrefix;
     }
 
     /**

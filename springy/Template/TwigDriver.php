@@ -17,9 +17,12 @@
 namespace Springy\Template;
 
 use Springy\Configuration;
-use Springy\Errors;
+use Springy\Exceptions\HttpErrorNotFound;
 use Springy\Kernel;
 use Springy\URI;
+use Twig\Environment;
+use Twig\Loader\FilesystemLoader;
+use Twig\TwigFunction;
 
 /**
  * Class driver for Twig template engine.
@@ -90,8 +93,8 @@ class TwigDriver implements TemplateDriverInterface
         }
 
         $this->templatePath = $templatePath;
-        $loader = new \Twig_Loader_Filesystem($templatePath);
-        $this->tplObj = new \Twig_Environment($loader, $this->envOptions);
+        $loader = new FilesystemLoader($templatePath);
+        $this->tplObj = new Environment($loader, $this->envOptions);
     }
 
     /**
@@ -227,7 +230,7 @@ class TwigDriver implements TemplateDriverInterface
     public function fetch()
     {
         if (!$this->templateExists($this->templateName)) {
-            new Errors(404, $this->templateName . self::TPL_NAME_SUFIX);
+            throw new HttpErrorNotFound($this->templateName . self::TPL_NAME_SUFIX);
         }
 
         // Alimenta as variáveis CONSTANTES
@@ -252,16 +255,16 @@ class TwigDriver implements TemplateDriverInterface
         }
 
         // Inicializa a função padrão assetFile
-        $this->tplObj->addFunction(new \Twig_SimpleFunction('assetFile', [$this, 'assetFile']));
+        $this->tplObj->addFunction(new TwigFunction('assetFile', [$this, 'assetFile']));
 
         // Inicializa as funções personalizadas padrão
         foreach (Kernel::getTemplateFunctions() as $func) {
-            $this->tplObj->addFunction(new \Twig_SimpleFunction($func[1], $func[2]));
+            $this->tplObj->addFunction(new TwigFunction($func[1], $func[2]));
         }
 
         // Inicializa as funções personalizadas do template
         foreach ($this->templateFuncs as $func) {
-            $this->tplObj->addFunction(new \Twig_SimpleFunction($func[1], $func[2]));
+            $this->tplObj->addFunction(new TwigFunction($func[1], $func[2]));
         }
 
         return $this->tplObj->render($this->templateName . self::TPL_NAME_SUFIX, $vars);

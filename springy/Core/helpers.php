@@ -8,9 +8,10 @@
  * @copyright  2014 Fernando Val
  * @author     Allan Marques <allan.marques@ymail.com>
  * @author     Fernando Val <fernando.val@gmail.com>
- *
- * @version    5.0.0
  */
+
+use Springy\Exceptions\HttpError;
+use Springy\Exceptions\SpringyException;
 
 // Definig the constantes
 if (!defined('DS')) {
@@ -93,7 +94,7 @@ function app_path(): string
  */
 function app_version(): string
 {
-    return defined('APP_VERSION') ? APP_VERSION : Springy\Kernel::systemVersion();
+    return defined('APP_VERSION') ? APP_VERSION : '0.0.0';
 }
 
 /**
@@ -105,9 +106,23 @@ function app_version(): string
  *
  * @return mixed
  */
-function array_dotted_get(array $array, string $key, $default = null)
+function array_dotted_get(array $array, string $key, $default = null): mixed
 {
     return Springy\Utils\ArrayUtils::newInstance()->dottedGet($array, $key, $default);
+}
+
+/**
+ * Gets a key into the array using dotted notation.
+ *
+ * @param array  $array
+ * @param string $key
+ * @param mixed  $default
+ *
+ * @return mixed
+ */
+function array_dotted_set(array &$array, string $key, mixed $value): void
+{
+    Springy\Utils\ArrayUtils::newInstance()->dottedSet($array, $key, $value);
 }
 
 /**
@@ -187,6 +202,8 @@ function cookie_get(string $name): mixed
 
 /**
  * A var_dump and die help function.
+ *
+ * @SuppressWarnings(PHPMD.ExitExpression)
  *
  * @param mixed $var the variable or value to be sent to standard output.
  * @param bool  $die a boolen flag to determine if system die after print the value of $var.
@@ -459,11 +476,11 @@ function sysconf($key): mixed
  * @param int    $status
  * @param string $message
  *
- * @return void
+ * @return never
  */
-function throw_error($status = 500, $message = 'Internal Server Error'): void
+function throw_error($status = 500, $message = 'Internal Server Error'): never
 {
-    new Springy\Errors($status, $message);
+    throw new SpringyException($message, $status);
 }
 
 /**
@@ -475,7 +492,10 @@ function throw_error($status = 500, $message = 'Internal Server Error'): void
  */
 function springyExceptionHandler(Throwable $error)
 {
-    (new Springy\Errors())->process($error, 500);
+    (new Springy\Errors())->process(
+        $error,
+        $error instanceof HttpError ? $error->getCode() : 500
+    );
 }
 
 /**
@@ -484,9 +504,14 @@ function springyExceptionHandler(Throwable $error)
 function springyErrorHandler($errno, $errstr, $errfile, $errline)
 {
     (new Springy\Errors())->process(
-        new Springy\Exceptions\SpringyException($errstr, $errno, null, $errfile, $errline),
+        new SpringyException($errstr, $errno, null, $errfile, $errline),
         500
     );
+}
+
+function url(string $host): string
+{
+    return config_get('uri.' . $host, $host);
 }
 
 /**

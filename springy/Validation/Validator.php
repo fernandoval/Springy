@@ -7,8 +7,6 @@
  * @author    Allan Marques <allan.marques@ymail.com>
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
- *
- * @version   0.5.3
  */
 
 namespace Springy\Validation;
@@ -17,9 +15,6 @@ use Springy\Core\Input;
 use Springy\Utils\MessageContainer;
 use Springy\Utils\Strings;
 
-/**
- * Valuation class for the user-assigned data.
- */
 class Validator
 {
     // Validator constants
@@ -286,7 +281,7 @@ class Validator
      */
     protected function parseMethod($rule)
     {
-        return 'validate' . str_replace(' ', '', ucwords(strtolower(str_replace('_', ' ', $rule))));
+        return 'validate' . str_replace(' ', '', ucwords(mb_strtolower(str_replace('_', ' ', $rule))));
     }
 
     /**

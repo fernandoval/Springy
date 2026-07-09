@@ -10,8 +10,7 @@
 
 namespace Springy;
 
-use Springy\Utils\Strings_ANSI;
-use Springy\Utils\Strings_UTF8;
+use Springy\Utils\Strings;
 
 class URI
 {
@@ -508,25 +507,27 @@ class URI
      * This method sends the status header with a URI redirection to the user
      * browser and finish the application execution.
      *
+     * @SuppressWarnings(PHPMD.ExitExpression)
+     *
      * @param string $url    the URI.
      * @param int    $header the redirection code (default = 302).
      *
-     * @return void
+     * @return never
      */
-    public static function redirect($url, $header = 302)
+    public static function redirect(string $url, int $header = 302): never
     {
         $redirs = [
-            301 => 'Moved Permanently',
-            302 => 'Found',
-            303 => 'See Other',
-            307 => 'Temporary Redirect',
+            301 => ' Moved Permanently',
+            302 => ' Found',
+            303 => ' See Other',
+            307 => ' Temporary Redirect',
         ];
 
         if (ob_get_level() > 0) {
             ob_clean();
         }
 
-        header('HTTP/1.1 ' . $header . (isset($redirs[$header]) ? $redirs[$header] : ''), true);
+        header('HTTP/1.1 ' . $header . ($redirs[$header] ?? ''), true);
         header('Status: ' . $header, true);
         header('Location: ' . $url, true, $header);
 
@@ -553,11 +554,7 @@ class URI
      */
     public static function makeSlug($txt, $space = '-', $accept = '', $lowercase = true)
     {
-        if (mb_check_encoding($txt, 'UTF-8')) {
-            $txt = Strings_UTF8::removeAccentedChars($txt);
-        } else {
-            $txt = Strings_ANSI::removeAccentedChars($txt);
-        }
+        $txt = Strings::removeAccentedChars($txt);
 
         if ($lowercase) {
             $txt = mb_strtolower(trim($txt));
@@ -586,6 +583,6 @@ class URI
     public static function isAjaxRequest(): bool
     {
         return !empty($_SERVER['HTTP_X_REQUESTED_WITH'])
-            && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+            && mb_strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
     }
 }

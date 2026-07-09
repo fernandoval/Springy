@@ -9,7 +9,7 @@
  * @author    Allan Marques <allan.marques@ymail.com>
  * @author    Fernando Val <fernando.val@gmail.com>
  *
- * @version   1.0.0.3
+ * @version   1.0.4
  */
 
 use PHPUnit\Framework\TestCase;
@@ -26,6 +26,11 @@ class StringsTest extends TestCase
         $this->assertFalse(Strings::validateEmailAddress('fernandofval.com.br', false));
         $this->assertFalse(Strings::validateEmailAddress('fernando@fval.nonexiuuste'));
         $this->assertTrue(Strings::validateEmailAddress('fernando@fval.nonexiuuste', false));
+    }
+
+    public function testRemoveAccentedChars()
+    {
+        $this->assertEquals('aeiou', Strings::removeAccentedChars('áéíóú'));
     }
 
     public function testCnpj()
