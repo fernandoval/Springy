@@ -35,7 +35,7 @@ class Controller extends AclManager
     protected bool $tplIsCached = false;
     /** Define the live time (in seconds) of the cache. */
     protected int $tplCacheTime = 1800; // 30 minutes default
-    /**Define an identificator to the template cache. */
+    /** Define an identifier to the template cache. */
     protected ?string $tplCacheId = null;
 
     /**

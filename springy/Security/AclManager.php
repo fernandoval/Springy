@@ -22,11 +22,11 @@ class AclManager
     protected $controller;
     /// Nome da action na qual o usuário se encontra no request atual
     protected $action;
-    /// Prefixo dos módulos
+    /** @var string Module prefix string. */
     protected $modulePrefix = '';
     /** @var IdentityInterface the current user object */
     protected $user;
-    /// Caracter separador utilizado para concatenar o nome da permissão
+    /** @var string ACL separator char. */
     protected $separator = '|';
     /// Nome do módulo padrão, usado quando não estiver em nenhum módulo
     protected $defaultModule = 'default';
