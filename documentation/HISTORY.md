@@ -2,6 +2,13 @@
 
 ## Version 4
 
+### Unreleased
+
+*   Code enhancements
+*   Use of `Springy\Soap_Client` now throws a `E_USER_DEPRECATED` exception
+*   Removed the `soap` configurations
+    *   Use `network.soap` instead
+
 ### 4.7.0
 
 *   Adjusted compatibility to PHP >= 8.2
