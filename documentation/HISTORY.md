@@ -8,6 +8,8 @@
 *   Use of `Springy\Soap_Client` now throws a `E_USER_DEPRECATED` exception
 *   Removed the `soap` configurations
     *   Use `network.soap` instead
+*   Removed the `springy/CreditCardValidation` directory and its legacy files
+    *   The project no longer includes the deprecated card validation assets
 
 ### 4.7.0
 
