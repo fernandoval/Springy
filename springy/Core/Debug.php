@@ -5,8 +5,6 @@
  *
  * @copyright 2007 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
- *
- * @version    1.1.0
  */
 
 namespace Springy\Core;
@@ -299,6 +297,7 @@ class Debug
         foreach ($backtrace as &$value) {
             $file = $value['file'] ?? null;
             $line = $value['line'] ?? null;
+            $lines = [];
 
             if (!is_null($file)) {
                 $lines = $clean
