@@ -6,6 +6,10 @@
 
 *   Removed support to PHP 8.1
 *   Code enhancements
+*   Improved `memory_string()` to support zero and negative values and sizes up
+    to EiB
+*   Fixed debug backtrace line extraction for PHP 8.3 and newer
+*   Added tests for helper functions
 *   Use of `Springy\Soap_Client` now throws a `E_USER_DEPRECATED` exception
 *   Removed the `soap` configurations
     *   Use `network.soap` instead

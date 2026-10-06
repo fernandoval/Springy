@@ -106,7 +106,7 @@ function app_version(): string
  *
  * @return mixed
  */
-function array_dotted_get(array $array, string $key, $default = null): mixed
+function array_dotted_get(array $array, string $key, mixed $default = null): mixed
 {
     return Springy\Utils\ArrayUtils::newInstance()->dottedGet($array, $key, $default);
 }
@@ -116,9 +116,8 @@ function array_dotted_get(array $array, string $key, $default = null): mixed
  *
  * @param array  $array
  * @param string $key
- * @param mixed  $default
  *
- * @return mixed
+ * @return void
  */
 function array_dotted_set(array &$array, string $key, mixed $value): void
 {
@@ -191,7 +190,7 @@ function config_set(string $key, mixed $val): void
 /**
  * An alias for Springy\Cookie::get() method.
  *
- * @param string $key the name of the cookie variable.
+ * @param string $name the name of the cookie variable.
  *
  * @return mixed the value of the cookie.
  */
@@ -280,7 +279,7 @@ function env(string $key, $default = null)
  * Helper function to Springy\URI::makeSlug().
  *
  * @param string $text
- * @param string $space
+ * @param string $separator
  * @param string $accept
  * @param bool   $lowercase
  *
@@ -311,12 +310,12 @@ function memory_string(int $memory): string
         'GiB',
         'TiB',
         'PiB',
+        'EiB',
     ];
+    // log() is not finite for values below 1
+    $idx = $memory > 0 ? min(intval(floor(log($memory, 1024))), count($unit) - 1) : 0;
 
-    return round(
-        $memory / pow(1024, $idx = floor(log($memory, 1024))),
-        2
-    ) . ' ' . $unit[$idx];
+    return round($memory / pow(1024, $idx), 2) . ' ' . $unit[$idx];
 }
 
 /**
@@ -335,12 +334,12 @@ function migration_dir(): string
  * @note Is recommend the use of the Minify class by Matthias Mullie.
  *       https://github.com/matthiasmullie/minify
  *
- * @param string $name    the source file name.
+ * @param string $source  the source file name.
  * @param string $destiny the destination file name.
  *
- * @return void
+ * @return int|false
  */
-function minify($source, $destiny)
+function minify(string $source, string $destiny)
 {
     $fileType = (substr($source, -4) == '.css' ? 'css' : (substr($source, -3) == '.js' ? 'js' : 'off'));
     $path = pathinfo($destiny, PATHINFO_DIRNAME);
@@ -445,13 +444,17 @@ function project_path(): string
  */
 function studly_caps(string $value): string
 {
-    $normalized = [];
-    $segments = explode('-', $value);
-    foreach ($segments as $value) {
-        $normalized[] = $value ? ucwords($value, '_') : '-';
-    }
-
-    return implode('', $normalized);
+    return implode(
+        '',
+        array_reduce(
+            explode('-', $value),
+            function ($carry, $item) {
+                $carry[] = $item ? ucwords($item, '_') : '-';
+                return $carry;
+            },
+            []
+        )
+    );
 }
 
 /**
@@ -501,7 +504,7 @@ function springyExceptionHandler(Throwable $error)
 /**
  * Error handler.
  */
-function springyErrorHandler($errno, $errstr, $errfile, $errline)
+function springyErrorHandler(int $errno, string $errstr, string $errfile, int $errline)
 {
     (new Springy\Errors())->process(
         new SpringyException($errstr, $errno, null, $errfile, $errline),

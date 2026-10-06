@@ -293,6 +293,8 @@ class Debug
     private static function translateBacktrace(array $backtrace, bool $clean = false): array
     {
         $translated = [];
+        // Since PHP 8.3 highlight_file() breaks lines with "\n" instead of "<br />"
+        $lineBreak = PHP_VERSION_ID >= 80300 ? "\n" : '<br />';
 
         foreach ($backtrace as &$value) {
             $file = $value['file'] ?? null;
@@ -303,10 +305,10 @@ class Debug
                 $lines = $clean
                     ? file($file)
                     : explode(
-                        '<br />',
+                        $lineBreak,
                         str_replace(
-                            '<br /></span>',
-                            '</span><br />',
+                            $lineBreak . '</span>',
+                            '</span>' . $lineBreak,
                             highlight_file($file, true)
                         )
                     );
@@ -318,7 +320,7 @@ class Debug
                 'args' => $value['args'] ?? [],
                 'content' => (is_null($file) || is_null($line))
                     ? 'unknown file'
-                    : trim(preg_replace('/^(&nbsp;)+/', '', $lines[$line - 1])),
+                    : trim(preg_replace('/^(&nbsp;)+/', '', $lines[$line - 1] ?? '')),
             ];
 
             // Releasing memory
