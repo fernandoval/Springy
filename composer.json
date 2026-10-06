@@ -38,7 +38,7 @@
         "squizlabs/php_codesniffer": "^4.0"
     },
     "require": {
-        "php": ">=8.1",
+        "php": ">=8.2",
         "ext-ctype": "*",
         "ext-gmp": "*",
         "ext-hash": "*",

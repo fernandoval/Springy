@@ -12,7 +12,7 @@
 
 SCRIPT=$(readlink -f "$0")
 SCRIPTPATH=$(dirname "$SCRIPT")
-VERSIONS=${@:-8.1 8.2 8.3 8.4 8.5}
+VERSIONS=${@:-8.2 8.3 8.4 8.5}
 
 # Colors
 Color_Off='\033[0m'

@@ -4,6 +4,7 @@
 
 ### Unreleased
 
+*   Removed support to PHP 8.1
 *   Code enhancements
 *   Use of `Springy\Soap_Client` now throws a `E_USER_DEPRECATED` exception
 *   Removed the `soap` configurations
