@@ -98,6 +98,7 @@ for version in $VERSIONS; do
         -e DB_USER=$DB_USER \
         -e DB_PASS=$DB_PASS \
         "$IMAGE_NAME"
+    printf '%s\n' "$(printf '=%.0s' $(seq 1 $(tput cols)))"
 done
 
 echo -e "${Green}All tests completed!${Color_Off}"
