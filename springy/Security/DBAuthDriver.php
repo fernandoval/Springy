@@ -7,8 +7,6 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @author    Allan Marques <allan.marques@ymail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
- *
- * @version 1.1.0
  */
 
 namespace Springy\Security;
@@ -20,20 +18,14 @@ use Springy\Core\Application;
  */
 class DBAuthDriver implements AuthDriverInterface
 {
-    /** @var HasherInterface hasher generator */
-    protected $hasher;
-    /** @var IdentityInterface identity class */
-    protected $identity;
-    /** @var IdentityInterface last valid identity */
-    protected $lastValidIdentity;
+    /** The hasher generator */
+    protected HasherInterface $hasher;
+    /** The identity class */
+    protected IdentityInterface $identity;
+    /** Last valid identity */
+    protected ?IdentityInterface $lastValidIdentity = null;
 
-    /**
-     * Constructor.
-     *
-     * @param HasherInterface   $hasher
-     * @param IdentityInterface $identity
-     */
-    public function __construct(HasherInterface $hasher = null, IdentityInterface $identity = null)
+    public function __construct(HasherInterface $hasher, IdentityInterface $identity)
     {
         $this->setHasher($hasher);
         $this->setDefaultIdentity($identity);
@@ -54,9 +46,9 @@ class DBAuthDriver implements AuthDriverInterface
     /**
      * Returns the current hasher.
      *
-     * @return Springy\Security\HasherInterface
+     * @return HasherInterface
      */
-    public function getHasher()
+    public function getHasher(): HasherInterface
     {
         return $this->hasher;
     }
@@ -78,9 +70,9 @@ class DBAuthDriver implements AuthDriverInterface
      *
      * @param mixed $iid
      *
-     * @return Springy\Security\IdentityInterface
+     * @return IdentityInterface
      */
-    public function getIdentityById($iid)
+    public function getIdentityById($iid): IdentityInterface
     {
         $idField = $this->identity->getIdField();
         $this->identity->loadByCredentials([$idField => $iid]);
@@ -91,9 +83,9 @@ class DBAuthDriver implements AuthDriverInterface
     /**
      * Returns last valid identity.
      *
-     * @return Springy\Security\IdentityInterface
+     * @return IdentityInterface|null null if no identity has been successfully authenticated yet.
      */
-    public function getLastValidIdentity()
+    public function getLastValidIdentity(): ?IdentityInterface
     {
         return $this->lastValidIdentity;
     }
@@ -141,9 +133,9 @@ class DBAuthDriver implements AuthDriverInterface
     /**
      * Returns the default identity driver.
      *
-     * @return Springy\Security\IdentityInterface
+     * @return IdentityInterface
      */
-    public function getDefaultIdentity()
+    public function getDefaultIdentity(): IdentityInterface
     {
         return $this->identity;
     }

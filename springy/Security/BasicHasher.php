@@ -20,11 +20,11 @@ class BasicHasher implements HasherInterface
      * Cria e retorna a string com o hash gerado da string passada por parâmetro.
      *
      * @param string $stringToHash string para gerar o hash.
-     * @param string $times        numero de vezes para rodar o algorítmo.
+     * @param int    $times        numero de vezes para rodar o algorítmo.
      *
      * @return string
      */
-    public function make($stringToHash, $times = null)
+    public function make(string $stringToHash, int $times = 10): string
     {
         return $this->generateHash($stringToHash);
     }
@@ -32,12 +32,12 @@ class BasicHasher implements HasherInterface
     /**
      * Verifica se a string equivale ao hash.
      *
-     * @param string $stringToCHeck String para comparar.
-     * @param string $hash          Hash para comparação.
+     * @param string $hash  Hash para comparação.
+     * @param int    $times numero de vezes para rodar o algorítmo.
      *
      * @return bool
      */
-    public function needsRehash($hash, $times = null)
+    public function needsRehash(string $hash, int $times = 10): bool
     {
         return false;
     }
@@ -45,12 +45,12 @@ class BasicHasher implements HasherInterface
     /**
      * Verifica se a string necessita ser criptografada novamente.
      *
-     * @param string $hash  String para verificar.
-     * @param string $times Quantas vezes o hash deveria ter sido rodado.
+     * @param string $stringToCheck String para verificar.
+     * @param string $hash          Hash para comparação.
      *
      * @return bool
      */
-    public function verify(string $stringToCheck, string $hash)
+    public function verify(string $stringToCheck, string $hash): bool
     {
         return $this->generateHash($stringToCheck) === $hash;
     }
@@ -59,11 +59,11 @@ class BasicHasher implements HasherInterface
      * Cria e retorna a string com o hash gerado da string passada por parâmetro.
      *
      * @param string $senha string para gerar o hash.
-     * @param string $times numero de vezes para rodar o algorítmo.
+     * @param int    $times numero de vezes para rodar o algorítmo.
      *
      * @return string
      */
-    public function generateHash($senha, $times = null)
+    public function generateHash(string $senha, int $times = 10): string
     {
         $md5 = md5(mb_strtolower(self::SALT . $senha));
 

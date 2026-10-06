@@ -15,6 +15,11 @@
     *   Use `network.soap` instead
 *   Removed the `springy/CreditCardValidation` directory and its legacy files
     *   The project no longer includes the deprecated card validation assets
+*   Added database query conditions with comparison operators and `AND`/`OR`
+    groups
+*   Strengthened type declarations in the authentication component; the
+    `DBAuthDriver` constructor now requires a hasher and an identity
+*   Added tests for `BasicHasher` and `DBAuthDriver`, and expanded hasher tests
 
 ### 4.7.0
 

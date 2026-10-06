@@ -7,8 +7,6 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @author    Allan Marques <allan.marques@ymail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
- *
- * @version 1.1.0
  */
 
 namespace Springy\Security;
@@ -21,17 +19,17 @@ use Springy\Session;
  */
 class Authentication
 {
-    /** @var AuthDriverInterface authentication driver */
-    protected $driver;
-    /** @var stdClass|null user object */
-    protected $user;
+    // The authentication driver.
+    protected AuthDriverInterface $driver;
+    // The current user object.
+    protected ?IdentityInterface $user = null;
 
     /**
      * Constructor.
      *
      * @param AuthDriverInterface $driver
      */
-    public function __construct(AuthDriverInterface $driver = null)
+    public function __construct(?AuthDriverInterface $driver = null)
     {
         $this->setDriver($driver);
 
@@ -50,7 +48,6 @@ class Authentication
 
         if (is_array($identitySessionData)) {
             $this->user = $this->driver->getDefaultIdentity();
-
             $this->user->fillFromSession($identitySessionData);
         }
     }
@@ -62,11 +59,10 @@ class Authentication
      */
     protected function rememberSession(): void
     {
-        if (
-            is_null($this->user)
-            && $id = Cookie::get($this->driver->getIdentitySessionKey())
-        ) {
-            $this->loginWithId($id);
+        $uid = Cookie::get($this->driver->getIdentitySessionKey());
+
+        if (is_null($this->user) && !empty($uid)) {
+            $this->loginWithId($uid);
         }
     }
 
@@ -123,7 +119,7 @@ class Authentication
      *
      * @return bool
      */
-    public function validate($login, $password): bool
+    public function validate(string $login, string $password): bool
     {
         return $this->attempt($login, $password, false, false);
     }
@@ -136,7 +132,7 @@ class Authentication
      *
      * @return void
      */
-    public function login(IdentityInterface $user, $remember = false): void
+    public function login(IdentityInterface $user, bool $remember = false): void
     {
         $this->user = $user;
 
@@ -158,12 +154,12 @@ class Authentication
     /**
      * Logs in an user by givens id.
      *
-     * @param mixed $id
+     * @param mixed $uid
      * @param bool  $remember if true saves the user id into identity cookie.
      *
      * @return void
      */
-    public function loginWithId($uid, $remember = false): void
+    public function loginWithId(mixed $uid, bool $remember = false): void
     {
         $user = $this->driver->getIdentityById($uid);
 
@@ -197,9 +193,9 @@ class Authentication
     /**
      * Returns current user.
      *
-     * @return \Springy\Security\IdentityInterface
+     * @return IdentityInterface|null
      */
-    public function user()
+    public function user(): ?IdentityInterface
     {
         return $this->user;
     }

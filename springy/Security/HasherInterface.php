@@ -22,7 +22,7 @@ interface HasherInterface
      *
      * @return string
      */
-    public function make($stringToHash, $times);
+    public function make(string $stringToHash, int $times): string;
 
     /**
      * Checks the string against the hash.
@@ -32,7 +32,7 @@ interface HasherInterface
      *
      * @return bool
      */
-    public function verify(string $stringToCheck, string $hash);
+    public function verify(string $stringToCheck, string $hash): bool;
 
     /**
      * Checks if the string needs to be re-encrypted.
@@ -42,5 +42,5 @@ interface HasherInterface
      *
      * @return bool
      */
-    public function needsRehash($hash, $times);
+    public function needsRehash(string $hash, int $times): bool;
 }

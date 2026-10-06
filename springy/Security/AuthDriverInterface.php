@@ -6,8 +6,6 @@
  * @copyright 2016 Fernando Val
  * @author    Allan Marques <allan.marques@ymail.com>
  * @author    Fernando Val <fernando.val@gmail.com>
- *
- * @version   0.2.0
  */
 
 namespace Springy\Security;
@@ -19,7 +17,7 @@ interface AuthDriverInterface
      *
      * @return string
      */
-    public function getIdentitySessionKey();
+    public function getIdentitySessionKey(): string;
 
     /**
      * Checks if the login and password of the current identity are valid.
@@ -29,7 +27,7 @@ interface AuthDriverInterface
      *
      * @return bool
      */
-    public function isValid(string $login, string $password);
+    public function isValid(string $login, string $password): bool;
 
     /**
      * Sets the identity that will be the default type to perform the authentication.
@@ -38,28 +36,28 @@ interface AuthDriverInterface
      *
      * @return void
      */
-    public function setDefaultIdentity(IdentityInterface $identity);
+    public function setDefaultIdentity(IdentityInterface $identity): void;
 
     /**
      * Returns the identity type to perform the authentication.
      *
-     * @return \Springy\Security\IdentityInterface
+     * @return IdentityInterface
      */
-    public function getDefaultIdentity();
+    public function getDefaultIdentity(): IdentityInterface;
 
     /**
      * Returns the last identity to successfully pass authentication.
      *
-     * @return \Springy\Security\IdentityInterface
+     * @return IdentityInterface|null null if no identity has been successfully authenticated yet.
      */
-    public function getLastValidIdentity();
+    public function getLastValidIdentity(): ?IdentityInterface;
 
     /**
      * Returns the identity by the ID that identifies it.
      *
-     * @param string $iid
+     * @param mixed $iid
      *
-     * @return \Springy\Security\IdentityInterface
+     * @return IdentityInterface
      */
-    public function getIdentityById($iid);
+    public function getIdentityById($iid): IdentityInterface;
 }

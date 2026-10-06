@@ -7,10 +7,6 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @author    Allan Marques <allan.marques@ymail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
- *
- * @version 1.1.0
- *
- * @depends This class uses the password_compat class of Anthony Ferrara as a dependency.
  */
 
 namespace Springy\Security;
@@ -20,8 +16,8 @@ namespace Springy\Security;
  */
 class BCryptHasher implements HasherInterface
 {
-    protected $algorithm;
-    protected $salt;
+    protected string $algorithm;
+    protected string $salt;
 
     /**
      * Constructor.
@@ -29,7 +25,7 @@ class BCryptHasher implements HasherInterface
      * @param int|string $algorithm
      * @param string     $salt
      */
-    public function __construct($algorithm = PASSWORD_DEFAULT, $salt = '')
+    public function __construct(string $algorithm = PASSWORD_DEFAULT, string $salt = '')
     {
         $this->algorithm = $algorithm;
         $this->salt = $salt;
@@ -43,7 +39,7 @@ class BCryptHasher implements HasherInterface
      *
      * @return string
      */
-    public function make($stringToHash, $times = 10)
+    public function make(string $stringToHash, int $times = 10): string
     {
         return password_hash($stringToHash, $this->algorithm, $this->options($times));
     }
@@ -67,9 +63,9 @@ class BCryptHasher implements HasherInterface
      * @param string $hash
      * @param int    $times
      *
-     * @return bool.
+     * @return bool
      */
-    public function needsRehash($hash, $times = 10): bool
+    public function needsRehash(string $hash, int $times = 10): bool
     {
         return password_needs_rehash($hash, $this->algorithm, $this->options($times));
     }
@@ -81,7 +77,7 @@ class BCryptHasher implements HasherInterface
      *
      * @return array
      */
-    protected function options($times): array
+    protected function options(int $times): array
     {
         $options = ['cost' => $times];
 

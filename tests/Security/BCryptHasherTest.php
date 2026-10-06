@@ -9,19 +9,19 @@
  * @author    Allan Marques <allan.marques@ymail.com>
  * @author    Fernando Val <fernando.val@gmail.com>
  *
- * @version   1.0.0.2
+ * @version   1.1.0
  */
 
 use PHPUnit\Framework\TestCase;
-use Springy\Security\BCryptHasher as Hasher;
+use Springy\Security\BCryptHasher;
 
-class HasherTest extends TestCase
+class BCryptHasherTest extends TestCase
 {
-    public $hasher;
+    public BCryptHasher $hasher;
 
     protected function setUp(): void
     {
-        $this->hasher = new Hasher();
+        $this->hasher = new BCryptHasher();
     }
 
     public function testThatHasherCanGenerateASecureHash()
