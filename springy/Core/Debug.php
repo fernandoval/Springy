@@ -23,7 +23,7 @@ class Debug
     /**
      * Add a information to the debug window.
      */
-    public static function add($txt, $name = '', $highlight = true, $revert = true)
+    public static function add(mixed $txt, string $name = '', bool $highlight = true, bool $revert = true)
     {
         $debug = [
             memory_get_usage(true),
@@ -45,7 +45,7 @@ class Debug
     /**
      * Parses the backtrace to HTML string.
      *
-     * @param array $debug
+     * @param array $backtrace
      *
      * @return string
      */

@@ -227,14 +227,14 @@ function dd($var, $die = true)
 /**
  * An alias for Springy\Core\Debug::add() method.
  *
- * @param string $txt       the text to be printed in debug.
+ * @param mixed  $txt       the text to be printed in debug.
  * @param string $name      a name to the debut information.
  * @param bool   $highlight a flag to set if information will be highlighted.
  * @param bool   $revert.
  *
  * @return void
  */
-function debug($txt, $name = '', $highlight = true, $revert = true)
+function debug(mixed $txt, string $name = '', bool $highlight = true, bool $revert = true)
 {
     Springy\Core\Debug::add($txt, $name, $highlight, $revert);
 }
