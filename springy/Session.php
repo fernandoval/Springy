@@ -15,7 +15,7 @@ use Springy\Exceptions\SpringyException;
 
 class Session
 {
-    private const SESS_KEY = '_ffw_';
+    public const SESS_KEY = '_ffw_';
 
     // Session type constants
     public const ST_STANDARD = 'file';
