@@ -59,7 +59,7 @@ final class MemcachedRememberTokenStorage implements RememberTokenStorageInterfa
         $token = RememberToken::fromArray($entry['token']);
 
         if ($this->fetch($this->getGenerationKey($token->identityId)) !== $entry['generation']) {
-            $this->delete($selector);
+            $this->remove($this->getTokenKey($selector));
 
             return null;
         }
@@ -67,9 +67,14 @@ final class MemcachedRememberTokenStorage implements RememberTokenStorageInterfa
         return $token;
     }
 
-    public function delete(string $selector): void
+    public function delete(string $selector): bool
     {
-        $this->remove($this->getTokenKey($selector));
+        // A token whose generation was dropped is already revoked, so removing it does not count.
+        if ($this->findBySelector($selector) === null) {
+            return false;
+        }
+
+        return $this->remove($this->getTokenKey($selector));
     }
 
     public function deleteAllByIdentity(string $identityId): void
@@ -107,10 +112,17 @@ final class MemcachedRememberTokenStorage implements RememberTokenStorageInterfa
         return $value;
     }
 
-    private function remove(string $key): void
+    /**
+     * Removes the key and returns whether it existed.
+     */
+    private function remove(string $key): bool
     {
-        if ($this->memcached->delete($key) || $this->memcached->getResultCode() === Memcached::RES_NOTFOUND) {
-            return;
+        if ($this->memcached->delete($key)) {
+            return true;
+        }
+
+        if ($this->memcached->getResultCode() === Memcached::RES_NOTFOUND) {
+            return false;
         }
 
         throw $this->createFailure('Could not delete from Memcached.');

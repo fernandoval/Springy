@@ -31,6 +31,11 @@
         it the "remember me" feature is disabled
     *   Added `Authentication::logoutFromAllDevices()`
     *   Added `system.remember_me` configurations
+    *   Token rotation is atomic regarding `revokeAllFor()`, so a concurrent
+        revocation can not be bypassed by the rotated token
+    *   `RememberTokenStorageInterface::delete()` now returns whether a valid
+        token was removed
+*   The `Authentication` constructor now requires the authentication driver
 
 ### 4.7.0
 

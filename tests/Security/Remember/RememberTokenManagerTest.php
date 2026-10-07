@@ -10,6 +10,7 @@
  */
 
 require_once __DIR__ . '/InMemoryRememberTokenStorage.php';
+require_once __DIR__ . '/InterleavedRememberTokenStorage.php';
 
 use PHPUnit\Framework\TestCase;
 use Springy\Security\Remember\InvalidRememberTokenException;
@@ -163,5 +164,42 @@ class RememberTokenManagerTest extends TestCase
         $this->assertNull($this->storage->findBySelector($stolen->selector));
         $this->assertNull($this->storage->findBySelector($otherDevice->selector));
         $this->assertNotNull($this->storage->findBySelector($otherUser->selector));
+    }
+
+    public function testThatRotateReplacesTheToken()
+    {
+        $old = $this->manager->issue('42');
+
+        [$identityId, $new] = $this->manager->rotate($old->toString());
+
+        $this->assertSame('42', $identityId);
+        $this->assertNotSame($old->selector, $new->selector);
+        $this->assertNull($this->storage->findBySelector($old->selector));
+        $this->assertSame('42', $this->manager->validate($new->toString()));
+        $this->assertCount(1, $this->storage->tokens);
+    }
+
+    public function testThatRotateRejectsInvalidCookies()
+    {
+        $this->expectException(InvalidRememberTokenException::class);
+
+        $this->manager->rotate('42');
+    }
+
+    public function testThatRotateDiscardsTheNewTokenWhenTheOldOneIsGone()
+    {
+        $storage = new InterleavedRememberTokenStorage($this->storage);
+        $manager = new RememberTokenManager($storage, 3600);
+        $cookieValue = $manager->issue('42')->toString();
+        $storage->before('delete', fn () => $manager->revokeAllFor('42'));
+
+        try {
+            $manager->rotate($cookieValue);
+            $this->fail('The rotation bypassed the revocation.');
+        } catch (InvalidRememberTokenException $exception) {
+            $this->assertStringContainsString('not found', $exception->getMessage());
+        }
+
+        $this->assertSame([], $this->storage->tokens);
     }
 }

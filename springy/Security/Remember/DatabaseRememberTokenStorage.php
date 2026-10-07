@@ -59,12 +59,12 @@ final class DatabaseRememberTokenStorage implements RememberTokenStorageInterfac
         return RememberToken::fromArray($rows[0]);
     }
 
-    public function delete(string $selector): void
+    public function delete(string $selector): bool
     {
-        $this->connection->run(
+        return $this->connection->execute(
             'DELETE FROM ' . $this->enclose($this->table) . ' WHERE ' . $this->enclose('selector') . ' = ?',
             [$selector]
-        );
+        ) > 0;
     }
 
     public function deleteAllByIdentity(string $identityId): void

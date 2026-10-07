@@ -27,9 +27,15 @@ final class InMemoryRememberTokenStorage implements RememberTokenStorageInterfac
         return $this->tokens[$selector] ?? null;
     }
 
-    public function delete(string $selector): void
+    public function delete(string $selector): bool
     {
+        if (!isset($this->tokens[$selector])) {
+            return false;
+        }
+
         unset($this->tokens[$selector]);
+
+        return true;
     }
 
     public function deleteAllByIdentity(string $identityId): void

@@ -12,6 +12,7 @@
  */
 
 require_once __DIR__ . '/Remember/InMemoryRememberTokenStorage.php';
+require_once __DIR__ . '/Remember/InterleavedRememberTokenStorage.php';
 
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
@@ -251,5 +252,27 @@ class AuthenticationRememberTest extends TestCase
         $this->assertFalse($auth->check());
         $this->assertCount(1, $this->storage->tokens);
         $this->assertNotNull($this->storage->findBySelector($otherUser->selector));
+    }
+
+    public function testThatDriverIsRequired()
+    {
+        $driver = (new ReflectionMethod(Authentication::class, '__construct'))->getParameters()[0];
+
+        $this->assertFalse($driver->allowsNull());
+        $this->assertFalse($driver->isOptional());
+    }
+
+    public function testThatRevokeAllDuringRestorationIsNotBypassed()
+    {
+        $storage = new InterleavedRememberTokenStorage($this->storage);
+        $this->manager = new RememberTokenManager($storage, 3600);
+        $cookieValue = $this->manager->issue('42')->toString();
+        $storage->before('delete', fn () => $this->manager->revokeAllFor('42'));
+
+        $auth = $this->startRequestWithCookie($cookieValue);
+
+        $this->assertFalse($auth->check());
+        $this->assertSame([], $this->storage->tokens);
+        $this->assertArrayNotHasKey(self::KEY, $_COOKIE);
     }
 }

@@ -23,6 +23,14 @@ final class RedisRememberTokenStorage implements RememberTokenStorageInterface
 {
     public const DEFAULT_PREFIX = 'springy:remember:';
 
+    // KEYS[1] is the identity index and ARGV[1] the token key prefix.
+    private const DELETE_ALL_SCRIPT = <<<'LUA'
+        for _, selector in ipairs(redis.call('SMEMBERS', KEYS[1])) do
+            redis.call('DEL', ARGV[1] .. selector)
+        end
+        return redis.call('DEL', KEYS[1])
+        LUA;
+
     public function __construct(
         private readonly Redis $redis,
         private readonly string $prefix = self::DEFAULT_PREFIX,
@@ -77,34 +85,44 @@ final class RedisRememberTokenStorage implements RememberTokenStorageInterface
         }
     }
 
-    public function delete(string $selector): void
+    public function delete(string $selector): bool
     {
         $token = $this->findBySelector($selector);
 
         if ($token === null) {
-            return;
+            return false;
         }
 
         try {
-            $this->redis->multi()
+            $result = $this->redis->multi()
                 ->del($this->getTokenKey($selector))
                 ->sRem($this->getIdentityKey($token->identityId), $selector)
                 ->exec();
         } catch (RedisException $exception) {
             throw $this->createFailure('delete the remember token', $exception);
         }
+
+        // DEL returns the number of removed keys, so only one concurrent call gets 1.
+        return is_array($result) && ($result[0] ?? 0) > 0;
     }
 
     public function deleteAllByIdentity(string $identityId): void
     {
-        $identityKey = $this->getIdentityKey($identityId);
-
         try {
-            $selectors = $this->redis->sMembers($identityKey);
-            $keys = array_map($this->getTokenKey(...), is_array($selectors) ? $selectors : []);
-            $this->redis->del([...$keys, $identityKey]);
+            // A script runs atomically, so no token can be added to the index between reading and deleting it.
+            $result = $this->redis->eval(
+                self::DELETE_ALL_SCRIPT,
+                [$this->getIdentityKey($identityId), $this->getTokenKey('')],
+                1
+            );
         } catch (RedisException $exception) {
             throw $this->createFailure('delete the identity tokens', $exception);
+        }
+
+        if ($result === false) {
+            throw new RememberTokenStorageException(
+                'Redis refused to delete the identity tokens. ' . $this->redis->getLastError()
+            );
         }
     }
 

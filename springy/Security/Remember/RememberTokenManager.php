@@ -66,34 +66,38 @@ final class RememberTokenManager
     /**
      * Validates the cookie value and returns the identity id that owns it.
      *
-     * A known selector with a wrong validator means the cookie was probably
-     * stolen and already used by someone else (tokens rotate on each use),
-     * so every token of that identity is revoked.
-     *
      * @throws InvalidRememberTokenException when the cookie value can not be accepted.
      */
     public function validate(string $cookieValue): string
     {
-        $credential = RememberTokenCredential::fromString($cookieValue);
-        $token = $this->storage->findBySelector($credential->selector);
+        return $this->findValidToken($cookieValue)->identityId;
+    }
 
-        if ($token === null) {
+    /**
+     * Replaces the token kept in the cookie value by a new one.
+     *
+     * The new token is saved before the old one is consumed, and it is
+     * discarded when the old one was already gone. So a revokeAllFor() running
+     * at the same time either finds the new token and revokes it, or revokes
+     * the old one first and the rotation fails. The same happens when two
+     * requests rotate the same cookie: only one of them succeeds.
+     *
+     * @return array{0: string, 1: RememberTokenCredential} the identity id and the new credential.
+     *
+     * @throws InvalidRememberTokenException when the cookie value can not be accepted.
+     */
+    public function rotate(string $cookieValue): array
+    {
+        $token = $this->findValidToken($cookieValue);
+        $credential = $this->issue($token->identityId);
+
+        if (!$this->storage->delete($token->selector)) {
+            $this->storage->delete($credential->selector);
+
             throw InvalidRememberTokenException::notFound();
         }
 
-        if ($token->isExpired()) {
-            $this->storage->delete($token->selector);
-
-            throw InvalidRememberTokenException::expired();
-        }
-
-        if (!$token->hasValidator($credential->validator)) {
-            $this->storage->deleteAllByIdentity($token->identityId);
-
-            throw InvalidRememberTokenException::validatorMismatch();
-        }
-
-        return $token->identityId;
+        return [$token->identityId, $credential];
     }
 
     /**
@@ -118,5 +122,38 @@ final class RememberTokenManager
     public function revokeAllFor(string $identityId): void
     {
         $this->storage->deleteAllByIdentity($identityId);
+    }
+
+    /**
+     * Finds the stored token for the cookie value and checks it.
+     *
+     * A known selector with a wrong validator means the cookie was probably
+     * stolen and already used by someone else (tokens rotate on each use),
+     * so every token of that identity is revoked.
+     *
+     * @throws InvalidRememberTokenException when the cookie value can not be accepted.
+     */
+    private function findValidToken(string $cookieValue): RememberToken
+    {
+        $credential = RememberTokenCredential::fromString($cookieValue);
+        $token = $this->storage->findBySelector($credential->selector);
+
+        if ($token === null) {
+            throw InvalidRememberTokenException::notFound();
+        }
+
+        if ($token->isExpired()) {
+            $this->storage->delete($token->selector);
+
+            throw InvalidRememberTokenException::expired();
+        }
+
+        if (!$token->hasValidator($credential->validator)) {
+            $this->storage->deleteAllByIdentity($token->identityId);
+
+            throw InvalidRememberTokenException::validatorMismatch();
+        }
+
+        return $token;
     }
 }

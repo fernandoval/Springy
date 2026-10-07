@@ -9,6 +9,8 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  */
 
+require_once __DIR__ . '/InterleavedRememberTokenStorage.php';
+
 use PHPUnit\Framework\TestCase;
 use Springy\Security\Remember\InvalidRememberTokenException;
 use Springy\Security\Remember\RememberToken;
@@ -78,11 +80,27 @@ abstract class RememberTokenStorageTestCase extends TestCase
         $this->assertNull($this->storage->findBySelector($token->selector));
     }
 
-    public function testThatDeletingUnknownSelectorDoesNotFail()
+    public function testThatDeletingUnknownSelectorReturnsFalse()
     {
-        $this->storage->delete(RememberTokenCredential::generate()->selector);
+        $this->assertFalse($this->storage->delete(RememberTokenCredential::generate()->selector));
+    }
 
-        $this->addToAssertionCount(1);
+    public function testThatOnlyTheFirstDeleteOfATokenReturnsTrue()
+    {
+        $token = $this->createToken($this->createIdentityId());
+        $this->storage->save($token);
+
+        $this->assertTrue($this->storage->delete($token->selector));
+        $this->assertFalse($this->storage->delete($token->selector));
+    }
+
+    public function testThatDeletingARevokedTokenReturnsFalse()
+    {
+        $token = $this->createToken($this->createIdentityId());
+        $this->storage->save($token);
+        $this->storage->deleteAllByIdentity($token->identityId);
+
+        $this->assertFalse($this->storage->delete($token->selector));
     }
 
     public function testThatDeleteAllByIdentityRemovesOnlyThatIdentityTokens()
@@ -140,5 +158,85 @@ abstract class RememberTokenStorageTestCase extends TestCase
         $this->expectException(InvalidRememberTokenException::class);
 
         $manager->validate($cookieValue);
+    }
+
+    /**
+     * Rotates the cookie while revokeAllFor() runs right before the given storage operation.
+     *
+     * The rotation must fail and leave the identity without any valid token.
+     */
+    private function assertRevokeAllWinsOverRotation(string $operation): void
+    {
+        $identityId = $this->createIdentityId();
+        $storage = new InterleavedRememberTokenStorage($this->storage);
+        $manager = new RememberTokenManager($storage, 3600);
+        $cookieValue = $manager->issue($identityId)->toString();
+
+        $storage->before($operation, fn () => $this->storage->deleteAllByIdentity($identityId));
+
+        try {
+            $manager->rotate($cookieValue);
+            $this->fail('The rotation bypassed the revocation.');
+        } catch (InvalidRememberTokenException $exception) {
+            $this->assertStringContainsString('not found', $exception->getMessage());
+        }
+
+        $this->assertCount(2, $storage->savedSelectors);
+
+        foreach ($storage->savedSelectors as $selector) {
+            $this->assertNull($this->storage->findBySelector($selector));
+        }
+
+        $this->storage->deleteAllByIdentity($identityId);
+    }
+
+    public function testThatRevokeAllBeforeRotationIssuesTheNewTokenWins()
+    {
+        $this->assertRevokeAllWinsOverRotation('save');
+    }
+
+    public function testThatRevokeAllBeforeRotationConsumesTheOldTokenWins()
+    {
+        $this->assertRevokeAllWinsOverRotation('delete');
+    }
+
+    public function testThatRevokeAllAfterRotationRevokesTheNewToken()
+    {
+        $identityId = $this->createIdentityId();
+        $manager = new RememberTokenManager($this->storage, 3600);
+        $cookieValue = $manager->issue($identityId)->toString();
+
+        [$rotatedIdentityId, $credential] = $manager->rotate($cookieValue);
+        $this->assertSame($identityId, $rotatedIdentityId);
+        $this->assertSame($identityId, $manager->validate($credential->toString()));
+
+        $manager->revokeAllFor($identityId);
+
+        $this->assertNull($this->storage->findBySelector($credential->selector));
+    }
+
+    public function testThatConcurrentRotationsOfTheSameCookieHaveOneWinner()
+    {
+        $identityId = $this->createIdentityId();
+        $storage = new InterleavedRememberTokenStorage($this->storage);
+        $manager = new RememberTokenManager($storage, 3600);
+        $cookieValue = $manager->issue($identityId)->toString();
+        $winner = null;
+
+        $storage->before('delete', function () use ($cookieValue, &$winner) {
+            [, $winner] = (new RememberTokenManager($this->storage, 3600))->rotate($cookieValue);
+        });
+
+        try {
+            $manager->rotate($cookieValue);
+            $this->fail('The same cookie was rotated twice.');
+        } catch (InvalidRememberTokenException $exception) {
+            $this->assertStringContainsString('not found', $exception->getMessage());
+        }
+
+        $this->assertInstanceOf(RememberTokenCredential::class, $winner);
+        $this->assertSame($identityId, $manager->validate($winner->toString()));
+
+        $this->storage->deleteAllByIdentity($identityId);
     }
 }

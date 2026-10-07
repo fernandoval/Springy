@@ -31,12 +31,20 @@ interface RememberTokenStorageInterface
     /**
      * Removes the token identified by the selector, if it exists.
      *
+     * Returns true only when this call removed a token that was still valid
+     * (not revoked). When concurrent calls remove the same token, at most one
+     * of them returns true. The token rotation relies on this to consume a
+     * token only once.
+     *
      * @throws RememberTokenStorageException when the storage fails.
      */
-    public function delete(string $selector): void;
+    public function delete(string $selector): bool;
 
     /**
      * Removes every token that belongs to the identity.
+     *
+     * Must be atomic regarding save(): every token saved before this call
+     * begins must be revoked when it returns.
      *
      * @throws RememberTokenStorageException when the storage fails.
      */

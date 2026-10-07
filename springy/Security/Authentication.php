@@ -13,6 +13,7 @@ namespace Springy\Security;
 
 use Springy\Cookie;
 use Springy\Security\Remember\InvalidRememberTokenException;
+use Springy\Security\Remember\RememberTokenCredential;
 use Springy\Security\Remember\RememberTokenManager;
 use Springy\Session;
 
@@ -34,7 +35,7 @@ class Authentication
      * @param AuthDriverInterface       $driver
      * @param RememberTokenManager|null $rememberTokens
      */
-    public function __construct(?AuthDriverInterface $driver = null, ?RememberTokenManager $rememberTokens = null)
+    public function __construct(AuthDriverInterface $driver, ?RememberTokenManager $rememberTokens = null)
     {
         $this->setDriver($driver);
         $this->rememberTokens = $rememberTokens;
@@ -61,8 +62,10 @@ class Authentication
     /**
      * Restores user session from the "remember me" cookie if exists.
      *
-     * The used token is revoked and a new one is issued (rotation), so a stolen
-     * cookie stops working as soon as the legitimate user comes back.
+     * The used token is replaced by a new one (rotation), so a stolen cookie
+     * stops working as soon as the legitimate user comes back. The rotation is
+     * atomic regarding RememberTokenManager::revokeAllFor(), so a concurrent
+     * revocation can not be bypassed by the token issued here.
      *
      * @return void
      */
@@ -75,19 +78,24 @@ class Authentication
         }
 
         try {
-            $identityId = $this->rememberTokens->validate($cookieValue);
+            [$identityId, $credential] = $this->rememberTokens->rotate($cookieValue);
         } catch (InvalidRememberTokenException) {
             $this->forgetRememberCookie();
 
             return;
         }
 
-        $this->rememberTokens->revoke($cookieValue);
-        $this->loginWithId($identityId, true);
+        $user = $this->driver->getIdentityById($identityId);
 
-        if (!$this->check()) {
+        if (!$user->isLoaded()) {
+            $this->rememberTokens->revoke($credential->toString());
             $this->forgetRememberCookie();
+
+            return;
         }
+
+        $this->login($user);
+        $this->saveRememberCookie($credential, $this->rememberTokens->getLifetime());
     }
 
     /**
@@ -259,12 +267,26 @@ class Authentication
      */
     protected function rememberUser(RememberTokenManager $rememberTokens): void
     {
-        $credential = $rememberTokens->issue((string) $this->user->getId());
+        $this->saveRememberCookie(
+            $rememberTokens->issue((string) $this->user->getId()),
+            $rememberTokens->getLifetime()
+        );
+    }
 
+    /**
+     * Saves the "remember me" credential into identity cookie.
+     *
+     * @param RememberTokenCredential $credential
+     * @param int                     $lifetime
+     *
+     * @return void
+     */
+    protected function saveRememberCookie(RememberTokenCredential $credential, int $lifetime): void
+    {
         Cookie::set(
             $this->driver->getIdentitySessionKey(),
             $credential->toString(),
-            $rememberTokens->getLifetime(),
+            $lifetime,
             '/',
             config_get('system.session.domain'),
             config_get('system.session.secure'),
