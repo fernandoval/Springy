@@ -1,8 +1,6 @@
 # Springy framework update history
 
-## Version 4
-
-### Unreleased
+## Unreleased
 
 *   Removed support to PHP 8.1
 *   Code enhancements
@@ -36,6 +34,8 @@
     *   `RememberTokenStorageInterface::delete()` now returns whether a valid
         token was removed
 *   The `Authentication` constructor now requires the authentication driver
+
+## Version 4
 
 ### 4.7.0
 
