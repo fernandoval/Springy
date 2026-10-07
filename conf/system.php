@@ -72,6 +72,50 @@ return [
     ],
 
     /*
+     * "Remember me" token configuration.
+     *
+     * The storage driver is chosen in the 'security.remember.storage' binding
+     * (see app/helpers.php). Only the section of the chosen driver is used.
+     */
+    'remember_me' => [
+        /*
+         * Token and cookie lifetime in seconds. Default: 60 days.
+         */
+        'lifetime' => 5184000,
+
+        /*
+         * Redis or Valkey service configurations.
+         */
+        'redis' => [
+            'host' => env('REDIS_HOST', '127.0.0.1'),
+            'port' => (int) env('REDIS_PORT', 6379),
+            'password' => env('REDIS_PASSWORD', ''),
+            'database' => (int) env('REDIS_DATABASE', 0),
+            'timeout' => 2.0,
+            'prefix' => 'springy:remember:',
+        ],
+
+        /*
+         * MemcacheD service configurations.
+         */
+        'memcached' => [
+            'address' => env('MEMCACHED_HOST', '127.0.0.1'),
+            'port' => (int) env('MEMCACHED_PORT', 11211),
+            'prefix' => 'springy.remember.',
+        ],
+
+        /*
+         * Database configurations.
+         * Table structure: springy/Security/Remember/remember_tokens_create_table.sql
+         */
+        'database' => [
+            // Connection name from conf/database.php. Null uses the default connection.
+            'connection' => null,
+            'table' => '_remember_tokens',
+        ],
+    ],
+
+    /*
      * System error configurations.
      */
     'system_error' => [

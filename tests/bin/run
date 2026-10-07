@@ -32,10 +32,12 @@ DB_HOST="mysql-teste-$(date +%s)"
 DB_NAME=springy
 DB_USER=root
 DB_PASS=root
+REDIS_HOST="valkey-teste-$(date +%s)"
+MEMCACHED_HOST="memcached-teste-$(date +%s)"
 
-# Cleanup function to stop and remove the MySQL container and network
+# Cleanup function to stop and remove the service containers and network
 cleanup() {
-    docker stop "$DB_HOST" > /dev/null 2>&1
+    docker stop "$DB_HOST" "$REDIS_HOST" "$MEMCACHED_HOST" > /dev/null 2>&1
     docker network rm "$NET_NAME" > /dev/null 2>&1
     echo -e "${Green}Network and Container removed.${Color_Off}"
 }
@@ -63,6 +65,11 @@ docker run --name "$DB_HOST" \
     -p 3306:3306 \
     --network $NET_NAME \
     --rm -d mysql:8.0 > /dev/null
+
+# Start Valkey (Redis compatible) and MemcacheD containers for testing
+echo -e "${Yellow}Starting Valkey and MemcacheD...${Color_Off}"
+docker run --name "$REDIS_HOST" --network $NET_NAME --rm -d valkey/valkey:8-alpine > /dev/null
+docker run --name "$MEMCACHED_HOST" --network $NET_NAME --rm -d memcached:1.6-alpine > /dev/null
 
 echo -e "${Yellow}Waiting for MySQL...${Color_Off}"
 TIMEOUT=30
@@ -97,6 +104,8 @@ for version in $VERSIONS; do
         -e DB_NAME=$DB_NAME \
         -e DB_USER=$DB_USER \
         -e DB_PASS=$DB_PASS \
+        -e REDIS_HOST=$REDIS_HOST \
+        -e MEMCACHED_HOST=$MEMCACHED_HOST \
         "$IMAGE_NAME"
     printf '%s\n' "$(printf '=%.0s' $(seq 1 $(tput cols)))"
 done

@@ -12,6 +12,8 @@
 namespace Springy\Security;
 
 use Springy\Cookie;
+use Springy\Security\Remember\InvalidRememberTokenException;
+use Springy\Security\Remember\RememberTokenManager;
 use Springy\Session;
 
 /**
@@ -23,15 +25,19 @@ class Authentication
     protected AuthDriverInterface $driver;
     // The current user object.
     protected ?IdentityInterface $user = null;
+    // The "remember me" token manager. Without it the "remember me" feature is disabled.
+    protected ?RememberTokenManager $rememberTokens = null;
 
     /**
      * Constructor.
      *
-     * @param AuthDriverInterface $driver
+     * @param AuthDriverInterface       $driver
+     * @param RememberTokenManager|null $rememberTokens
      */
-    public function __construct(?AuthDriverInterface $driver = null)
+    public function __construct(?AuthDriverInterface $driver = null, ?RememberTokenManager $rememberTokens = null)
     {
         $this->setDriver($driver);
+        $this->rememberTokens = $rememberTokens;
 
         $this->wakeupSession();
         $this->rememberSession();
@@ -53,16 +59,34 @@ class Authentication
     }
 
     /**
-     * Restores user session from identity cookie if exists.
+     * Restores user session from the "remember me" cookie if exists.
+     *
+     * The used token is revoked and a new one is issued (rotation), so a stolen
+     * cookie stops working as soon as the legitimate user comes back.
      *
      * @return void
      */
     protected function rememberSession(): void
     {
-        $uid = Cookie::get($this->driver->getIdentitySessionKey());
+        $cookieValue = Cookie::get($this->driver->getIdentitySessionKey());
 
-        if (is_null($this->user) && !empty($uid)) {
-            $this->loginWithId($uid);
+        if ($this->user !== null || $this->rememberTokens === null || !is_string($cookieValue) || $cookieValue === '') {
+            return;
+        }
+
+        try {
+            $identityId = $this->rememberTokens->validate($cookieValue);
+        } catch (InvalidRememberTokenException) {
+            $this->forgetRememberCookie();
+
+            return;
+        }
+
+        $this->rememberTokens->revoke($cookieValue);
+        $this->loginWithId($identityId, true);
+
+        if (!$this->check()) {
+            $this->forgetRememberCookie();
         }
     }
 
@@ -93,7 +117,7 @@ class Authentication
      *
      * @param string $login       the user login.
      * @param string $password    the user password.
-     * @param bool   $remember    saves remember cookie.
+     * @param bool   $remember    saves remember cookie (requires a RememberTokenManager).
      * @param bool   $saveSession saves in session if successful.
      *
      * @return bool
@@ -128,7 +152,8 @@ class Authentication
      * Logs in the user and saves it into session.
      *
      * @param IdentityInterface $user
-     * @param bool              $remember if true saves the user id into identity cookie.
+     * @param bool              $remember if true issues a "remember me" token into identity cookie.
+     *                                    Ignored when no RememberTokenManager was given.
      *
      * @return void
      */
@@ -138,16 +163,8 @@ class Authentication
 
         Session::set($this->driver->getIdentitySessionKey(), $this->user->getSessionData());
 
-        if ($remember) {
-            Cookie::set(
-                $this->driver->getIdentitySessionKey(), //Chave do cookie
-                $this->user->getId(), //Id do usuário
-                5184000, //60 dias
-                '/',
-                config_get('system.session.domain'),
-                config_get('system.session.secure'),
-                true
-            );
+        if ($remember && $this->rememberTokens !== null) {
+            $this->rememberUser($this->rememberTokens);
         }
     }
 
@@ -155,7 +172,7 @@ class Authentication
      * Logs in an user by givens id.
      *
      * @param mixed $uid
-     * @param bool  $remember if true saves the user id into identity cookie.
+     * @param bool  $remember if true issues a "remember me" token into identity cookie.
      *
      * @return void
      */
@@ -163,7 +180,7 @@ class Authentication
     {
         $user = $this->driver->getIdentityById($uid);
 
-        if ($user) {
+        if ($user->isLoaded()) {
             $this->login($user, $remember);
         }
     }
@@ -178,6 +195,20 @@ class Authentication
         $this->user = null;
 
         $this->destroyUserData();
+    }
+
+    /**
+     * Logs out the current user and invalidates all its "remember me" tokens in every device.
+     *
+     * @return void
+     */
+    public function logoutFromAllDevices(): void
+    {
+        if ($this->user !== null && $this->rememberTokens !== null) {
+            $this->rememberTokens->revokeAllFor((string) $this->user->getId());
+        }
+
+        $this->logout();
     }
 
     /**
@@ -210,10 +241,48 @@ class Authentication
         Session::set($this->driver->getIdentitySessionKey(), null);
         Session::unregister($this->driver->getIdentitySessionKey());
 
+        $cookieValue = Cookie::get($this->driver->getIdentitySessionKey());
+
+        if ($this->rememberTokens !== null && is_string($cookieValue)) {
+            $this->rememberTokens->revoke($cookieValue);
+        }
+
+        $this->forgetRememberCookie();
+    }
+
+    /**
+     * Issues a new "remember me" token for the current user and saves it into identity cookie.
+     *
+     * @param RememberTokenManager $rememberTokens
+     *
+     * @return void
+     */
+    protected function rememberUser(RememberTokenManager $rememberTokens): void
+    {
+        $credential = $rememberTokens->issue((string) $this->user->getId());
+
+        Cookie::set(
+            $this->driver->getIdentitySessionKey(),
+            $credential->toString(),
+            $rememberTokens->getLifetime(),
+            '/',
+            config_get('system.session.domain'),
+            config_get('system.session.secure'),
+            true
+        );
+    }
+
+    /**
+     * Removes the "remember me" cookie from the client.
+     *
+     * @return void
+     */
+    protected function forgetRememberCookie(): void
+    {
         Cookie::set(
             $this->driver->getIdentitySessionKey(),
             '',
-            time() - 3600,
+            -3600,
             '/',
             config_get('system.session.domain'),
             config_get('system.session.secure'),

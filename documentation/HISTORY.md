@@ -20,6 +20,14 @@
 *   Strengthened type declarations in the authentication component; the
     `DBAuthDriver` constructor now requires a hasher and an identity
 *   Added tests for `BasicHasher` and `DBAuthDriver`, and expanded hasher tests
+*   Added revocable "remember me" tokens in `Springy\Security\Remember`, with
+    Redis/Valkey, MemcacheD and database storage drivers
+    *   The "remember me" cookie no longer holds the user id; it holds a
+        selector and validator token that rotates on each use
+    *   `Authentication` receives an optional `RememberTokenManager`; without
+        it the "remember me" feature is disabled
+    *   Added `Authentication::logoutFromAllDevices()`
+    *   Added `system.remember_me` configurations
 
 ### 4.7.0
 

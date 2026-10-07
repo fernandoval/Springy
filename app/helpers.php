@@ -42,9 +42,28 @@ function bindDefaultDependencies(): void
         return new Springy\Security\DBAuthDriver($hasher, $user);
     });
 
+    // Define where the "remember me" tokens are stored. Choose the driver you prefer:
+    // DatabaseRememberTokenStorage (below), RedisRememberTokenStorage (Redis or Valkey),
+    // MemcachedRememberTokenStorage or your own RememberTokenStorageInterface implementation.
+    // All of them are in Springy\Security\Remember namespace.
+    $app->bind('security.remember.storage', function () {
+        return new Springy\Security\Remember\DatabaseRememberTokenStorage(
+            new Springy\Database\Connection(config_get('system.remember_me.database.connection')),
+            config_get('system.remember_me.database.table')
+        );
+    });
+
+    // Define the "remember me" token manager.
+    $app->bind('security.remember.manager', function ($c) {
+        return new Springy\Security\Remember\RememberTokenManager(
+            $c['security.remember.storage'],
+            config_get('system.remember_me.lifetime')
+        );
+    });
+
     // Define the authentication manager for you application. Change the methods in your user model class.
     $app->instance('user.auth.manager', function ($c) {
-        return new Springy\Security\Authentication($c['user.auth.driver']);
+        return new Springy\Security\Authentication($c['user.auth.driver'], $c['security.remember.manager']);
     });
 
     // Initiate the flash message manager. This is used by Errors class. Do not remove it.
