@@ -16,7 +16,10 @@
 *   Removed the `springy/CreditCardValidation` directory and its legacy files
     *   The project no longer includes the deprecated card validation assets
 *   Added database query conditions with comparison operators and `AND`/`OR`
-    groups
+    groups, with tests for condition building and parameter handling
+*   Added the `USER_AUTH_DRIVER` constant while preserving the
+    `USER_AUTH_DRIVE` alias
+*   Skipped initialization of web-only input and flash-message services in CLI
 *   Strengthened type declarations in the authentication component; the
     `DBAuthDriver` constructor now requires a hasher and an identity
 *   Added tests for `BasicHasher` and `DBAuthDriver`, and expanded hasher tests

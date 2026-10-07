@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Application helper funcions.
+ * Application helper functions.
  *
  * You can put global custom functions here.
  */
@@ -13,31 +13,35 @@ use Springy\Model;
 use Springy\URI;
 
 /**
- * Initiates all application dependecies.
+ * Initiates all application dependencies.
  *
- * This method starts all application dependencies, used by some framework libraries and your application.
- * You can change its content, but try no remove our code.
+ * This method starts all application dependencies, used by some framework
+ * libraries and your application. You can change its content, but try not to
+ * remove our code.
  */
 function bindDefaultDependencies(): void
 {
     /** @var Springy\Core\Application Load the application helper. */
     $app = app();
 
-    // Start the security hasher for user passwords. We like BCrypt, but you can use another you prefer.
-    $app->bind('security.hasher', function () {
+    // Start the security hasher for user passwords.
+    // We like BCrypt, but you can use another you prefer.
+    $app->bind(USER_AUTH_HASHER, function () {
         return new Springy\Security\BCryptHasher();
     });
 
-    // Define the user model class. We made a sample model class User. You can change it or use another.
-    $app->bind('user.auth.identity', function () {
+    // Define the user authentication class.
+    // We made a sample authentication class User. You can change it or use another.
+    $app->bind(USER_AUTH_IDENTITY, function () {
         // Here you can return a new instance of your user model class.
         return new UserSession();
     });
 
-    // Define the authentication driver for test users sign in. Change the methods in your user model class.
-    $app->bind('user.auth.driver', function ($c) {
-        $hasher = $c['security.hasher'];
-        $user = $c['user.auth.identity'];
+    // Define the authentication driver for user sign in.
+    // Change the methods in your user authentication class.
+    $app->bind(USER_AUTH_DRIVER, function ($drv) {
+        $hasher = $drv[USER_AUTH_HASHER];
+        $user = $drv[USER_AUTH_IDENTITY];
 
         return new Springy\Security\DBAuthDriver($hasher, $user);
     });
@@ -61,16 +65,19 @@ function bindDefaultDependencies(): void
         );
     });
 
-    // Define the authentication manager for you application. Change the methods in your user model class.
-    $app->instance('user.auth.manager', function ($c) {
-        return new Springy\Security\Authentication($c['user.auth.driver'], $c['security.remember.manager']);
+    // Define the authentication manager for your application.
+    // Change the methods in your user authentication class.
+    $app->instance(USER_AUTH_MANAGER, function ($c) {
+        return new Springy\Security\Authentication($c[USER_AUTH_DRIVER], $c['security.remember.manager']);
     });
 
-    // Initiate the flash message manager. This is used by Errors class. Do not remove it.
-    $app->instance('session.flashdata', new Springy\Utils\FlashMessagesManager());
+    if (PHP_SAPI !== 'cli') {
+        // Initiate the flash message manager. This is used by Errors class. Do not remove it.
+        $app->instance('session.flashdata', new Springy\Utils\FlashMessagesManager());
 
-    // Initiate the input helper. You can remove it ou can use it. :)
-    $app->instance('input', new Springy\Core\Input());
+        // Initiate the input helper. You can remove it ou can use it. :)
+        $app->instance('input', new Springy\Core\Input());
+    }
 }
 
 /**

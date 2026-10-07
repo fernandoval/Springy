@@ -20,8 +20,11 @@ if (!defined('DS')) {
 if (!defined('LF')) {
     define('LF', "\n");
 }
+if (!defined('USER_AUTH_DRIVER')) {
+    define('USER_AUTH_DRIVER', 'user.auth.driver');
+}
 if (!defined('USER_AUTH_DRIVE')) {
-    define('USER_AUTH_DRIVE', 'user.auth.driver');
+    define('USER_AUTH_DRIVE', USER_AUTH_DRIVER);
 }
 if (!defined('USER_AUTH_HASHER')) {
     define('USER_AUTH_HASHER', 'security.hasher');
