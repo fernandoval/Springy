@@ -17,8 +17,8 @@ jobs:
     name: php-${{ matrix.php-version }}-mysql-${{ matrix.mysql-version }}
 
     env:
-      extensions: curl, gmp, json, libxml, mbstring, mcrypt, pdo, pdo_mysql, zip
-      key: cache-v1
+      extensions: curl, gmp, json, libxml, mbstring, memcached, pdo, pdo_mysql, redis, zip
+      key: cache-v2
 
     runs-on: ${{ matrix.os }}
 
@@ -40,6 +40,17 @@ jobs:
         ports:
           - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+      valkey:
+        image: valkey/valkey:8-alpine
+        ports:
+          - 6379:6379
+        options: --health-cmd="valkey-cli ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+      memcached:
+        image: memcached:1.6-alpine
+        ports:
+          - 11211:11211
 
     steps:
       - name: Checkout
@@ -105,4 +116,8 @@ jobs:
           DB_USER: root
           DB_PASS: root
           MYSQL: ${{ matrix.mysql-version }}
+          REDIS_HOST: "127.0.0.1"
+          REDIS_PORT: 6379
+          MEMCACHED_HOST: "127.0.0.1"
+          MEMCACHED_PORT: 11211
         run: composer run test
