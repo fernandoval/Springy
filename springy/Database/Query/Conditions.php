@@ -95,7 +95,7 @@ class Conditions
     public function addColumn(
         string $column,
         mixed $value = null,
-        OperatorComparation $operator = OperatorComparation::Equal,
+        OperatorComparison $operator = OperatorComparison::Equal,
         OperatorGroup $expression = OperatorGroup::And,
         bool $compareCols = false
     ): self {

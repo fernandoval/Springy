@@ -26,7 +26,7 @@ class Condition
     public function __construct(
         protected string $column,
         protected mixed $value,
-        protected OperatorComparation $operator = OperatorComparation::Equal,
+        protected OperatorComparison $operator = OperatorComparison::Equal,
         protected bool $valueIsColumn = false
     ) {
     }
@@ -41,40 +41,40 @@ class Condition
     public function __toString(): string
     {
         return match ($this->operator) {
-            OperatorComparation::Equal,
-            OperatorComparation::NotEqual,
-            OperatorComparation::Greater,
-            OperatorComparation::GreaterEqual,
-            OperatorComparation::Less,
-            OperatorComparation::LessEqual,
-            OperatorComparation::Is,
-            OperatorComparation::IsNot,
-            OperatorComparation::Like,
-            OperatorComparation::NotLike => $this->comparationGeneral(),
-            OperatorComparation::In,
-            OperatorComparation::NotIn => $this->comparationIn(),
-            OperatorComparation::Match,
-            OperatorComparation::MatchBooleanMode => $this->comparationMatch(),
+            OperatorComparison::Equal,
+            OperatorComparison::NotEqual,
+            OperatorComparison::Greater,
+            OperatorComparison::GreaterEqual,
+            OperatorComparison::Less,
+            OperatorComparison::LessEqual,
+            OperatorComparison::Is,
+            OperatorComparison::IsNot,
+            OperatorComparison::Like,
+            OperatorComparison::NotLike => $this->comparisonGeneral(),
+            OperatorComparison::In,
+            OperatorComparison::NotIn => $this->comparisonIn(),
+            OperatorComparison::Match,
+            OperatorComparison::MatchBooleanMode => $this->comparisonMatch(),
             default => throw new SpringyException('Unknown condition operator.'),
         };
     }
 
     /**
-     * Builds a general comparation string.
+     * Builds a general comparison string.
      *
      * @return string
      */
-    protected function comparationGeneral(): string
+    protected function comparisonGeneral(): string
     {
         return $this->column . $this->operator->toString() . $this->getQuestionMark();
     }
 
     /**
-     * Builds a comparation string for IN and NOT IN condition.
+     * Builds a comparison string for IN and NOT IN condition.
      *
      * @return string
      */
-    protected function comparationIn(): string
+    protected function comparisonIn(): string
     {
         return $this->column
             . $this->operator->toString()
@@ -84,17 +84,17 @@ class Condition
     }
 
     /**
-     * Builds a comparation string for MATCH condition.
+     * Builds a comparison string for MATCH condition.
      *
      * The MATCH condition is used to performs filters for
      * FULLTEXT indexes in MySQL tables.
      *
      * @return string
      */
-    protected function comparationMatch(): string
+    protected function comparisonMatch(): string
     {
         return 'MATCH (' . $this->column . ') AGAINST (' . $this->getQuestionMark() . (
-            $this->operator === OperatorComparation::MatchBooleanMode ? ' IN BOOLEAN MODE' : ''
+            $this->operator === OperatorComparison::MatchBooleanMode ? ' IN BOOLEAN MODE' : ''
         ) . ')';
     }
 
@@ -113,7 +113,7 @@ class Condition
         return $this->column;
     }
 
-    public function getOperator(): OperatorComparation
+    public function getOperator(): OperatorComparison
     {
         return $this->operator;
     }

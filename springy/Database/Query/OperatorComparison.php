@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Enum of operators for comparation conditions.
+ * Enum of operators for comparison conditions.
  *
  * @copyright 2025 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -10,7 +10,7 @@
 
 namespace Springy\Database\Query;
 
-enum OperatorComparation: string
+enum OperatorComparison: string
 {
     case Equal = '=';
     case NotEqual = '!=';
