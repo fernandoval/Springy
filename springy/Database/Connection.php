@@ -114,18 +114,23 @@ class Connection
     }
 
     /**
-     * Executes the quary again if is caused by lost connection.
+     * Reconnects and executes the query again if the error was caused by lost connection.
+     *
+     * The query is not retried inside a transaction, because the reconnection
+     * would discard the previous statements of the transaction.
      *
      * @throws PDOException
      */
     protected function executeAgainIfLostConnection(Throwable $err): void
     {
-        if (!$this->isLostConnection($err)) {
+        if (!$this->isLostConnection($err) || $this->getPdo()->inTransaction()) {
             throw $err;
         }
 
         try {
             $this->lastError = '';
+            $this->disconnect();
+            $this->connect();
             $this->executeQuery();
         } catch (Throwable $err) {
             debug($err->getMessage());

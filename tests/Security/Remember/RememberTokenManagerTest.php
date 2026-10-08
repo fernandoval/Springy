@@ -202,4 +202,44 @@ class RememberTokenManagerTest extends TestCase
 
         $this->assertSame([], $this->storage->tokens);
     }
+
+    public function testThatRotateWithWrongValidatorRevokesTheIdentityWithoutIssuing()
+    {
+        $stolen = $this->manager->issue('42');
+        $otherDevice = $this->manager->issue('42');
+        $forged = new RememberTokenCredential($stolen->selector, RememberTokenCredential::generate()->validator);
+
+        try {
+            $this->manager->rotate($forged->toString());
+            $this->fail('Forged token was rotated.');
+        } catch (InvalidRememberTokenException $exception) {
+            $this->assertStringContainsString('mismatch', $exception->getMessage());
+        }
+
+        $this->assertNull($this->storage->findBySelector($stolen->selector));
+        $this->assertNull($this->storage->findBySelector($otherDevice->selector));
+        $this->assertSame([], $this->storage->tokens);
+    }
+
+    public function testThatOnlyOneOfTwoConcurrentRotationsSucceeds()
+    {
+        $storage = new InterleavedRememberTokenStorage($this->storage);
+        $manager = new RememberTokenManager($storage, 3600);
+        $cookieValue = $manager->issue('42')->toString();
+        $winner = null;
+        $storage->before('delete', function () use ($manager, $cookieValue, &$winner) {
+            [, $winner] = $manager->rotate($cookieValue);
+        });
+
+        try {
+            $manager->rotate($cookieValue);
+            $this->fail('Both rotations succeeded.');
+        } catch (InvalidRememberTokenException $exception) {
+            $this->assertStringContainsString('not found', $exception->getMessage());
+        }
+
+        $this->assertInstanceOf(RememberTokenCredential::class, $winner);
+        $this->assertCount(1, $this->storage->tokens);
+        $this->assertSame('42', $manager->validate($winner->toString()));
+    }
 }

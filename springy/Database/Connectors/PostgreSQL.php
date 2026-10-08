@@ -29,7 +29,7 @@ class PostgreSQL extends Connector implements ConnectorInterface
         parent::__construct($config);
 
         $this->charset = $config['charset'] ?? 'UTF8';
-        $this->host = $settings['host'] ?? '';
+        $this->host = $config['host'] ?? '';
         $this->onSuccessConnect = $this->afterConnectSettings(...);
         $this->port = $config['port'] ?? 5432;
         $this->retries = $config['retries'] ?? 3;

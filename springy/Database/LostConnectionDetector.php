@@ -22,6 +22,12 @@ trait LostConnectionDetector
             FILE_SKIP_EMPTY_LINES | FILE_IGNORE_NEW_LINES
         );
 
-        return in_array($err->getMessage(), $messages);
+        foreach ($messages as $message) {
+            if (str_contains($err->getMessage(), $message)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
