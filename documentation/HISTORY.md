@@ -36,6 +36,9 @@
     *   The Redis/Valkey driver touches one key per command, so it works on
         Redis/Valkey Cluster and AWS ElastiCache Serverless, and accepts a
         `RedisCluster` client
+    *   Added `LazyRememberTokenStorage`, which creates the real storage
+        driver only when a token is read, saved or revoked, so requests that
+        never use the "remember me" feature do not open its connection
 *   After a lost connection, `Connection` retries only read-only queries
     (`SELECT`, `SHOW`, `DESCRIBE`); a failed write is thrown to the caller,
     because the server may have applied it before the connection dropped
