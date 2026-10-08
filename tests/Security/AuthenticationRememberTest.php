@@ -19,7 +19,9 @@ use PHPUnit\Framework\TestCase;
 use Springy\Security\Authentication;
 use Springy\Security\AuthDriverInterface;
 use Springy\Security\IdentityInterface;
+use Springy\Security\Remember\LazyRememberTokenStorage;
 use Springy\Security\Remember\RememberTokenManager;
+use Springy\Security\Remember\RememberTokenStorageException;
 use Springy\Session;
 
 #[RunTestsInSeparateProcesses]
@@ -239,7 +241,7 @@ class AuthenticationRememberTest extends TestCase
         $this->assertNotNull($this->storage->findBySelector($otherDevice->selector));
     }
 
-    public function testThatLogoutFromAllDevicesRevokesEveryUserToken()
+    public function testThatLogoutAndRevokeRememberTokensRevokesEveryUserToken()
     {
         $this->manager->issue('42');
         $this->manager->issue('42');
@@ -247,11 +249,53 @@ class AuthenticationRememberTest extends TestCase
         $auth = new Authentication($this->driver, $this->manager);
         $auth->loginWithId(42);
 
-        $auth->logoutFromAllDevices();
+        $auth->logoutAndRevokeRememberTokens();
 
         $this->assertFalse($auth->check());
         $this->assertCount(1, $this->storage->tokens);
         $this->assertNotNull($this->storage->findBySelector($otherUser->selector));
+    }
+
+    public function testThatStorageOutageKeepsTheRequestAnonymousAndTheCookie()
+    {
+        $cookieValue = $this->manager->issue('42')->toString();
+        $this->manager = $this->createUnavailableManager();
+
+        $auth = $this->startRequestWithCookie($cookieValue);
+
+        $this->assertFalse($auth->check());
+        $this->assertSame($cookieValue, $_COOKIE[self::KEY] ?? null);
+        $this->assertCount(1, $this->storage->tokens);
+    }
+
+    public function testThatLogoutClearsTheCookieDuringStorageOutage()
+    {
+        $auth = new Authentication($this->driver, $this->createUnavailableManager());
+        $auth->loginWithId(42);
+        $_COOKIE[self::KEY] = $this->manager->issue('42')->toString();
+
+        $auth->logout();
+
+        $this->assertFalse($auth->check());
+        $this->assertNull(Session::get(self::KEY));
+        $this->assertArrayNotHasKey(self::KEY, $_COOKIE);
+    }
+
+    public function testThatLogoutAndRevokeRememberTokensLogsOutBeforeReportingStorageOutage()
+    {
+        $auth = new Authentication($this->driver, $this->createUnavailableManager());
+        $auth->loginWithId(42);
+        $_COOKIE[self::KEY] = $this->manager->issue('42')->toString();
+
+        try {
+            $auth->logoutAndRevokeRememberTokens();
+            $this->fail('RememberTokenStorageException was not thrown.');
+        } catch (RememberTokenStorageException) {
+        }
+
+        $this->assertFalse($auth->check());
+        $this->assertNull(Session::get(self::KEY));
+        $this->assertArrayNotHasKey(self::KEY, $_COOKIE);
     }
 
     public function testThatDriverIsRequired()
@@ -274,5 +318,16 @@ class AuthenticationRememberTest extends TestCase
         $this->assertFalse($auth->check());
         $this->assertSame([], $this->storage->tokens);
         $this->assertArrayNotHasKey(self::KEY, $_COOKIE);
+    }
+
+    /**
+     * Creates a token manager whose storage backend is unreachable.
+     */
+    private function createUnavailableManager(): RememberTokenManager
+    {
+        return new RememberTokenManager(
+            new LazyRememberTokenStorage(fn () => throw new RuntimeException('Connection refused.')),
+            3600
+        );
     }
 }

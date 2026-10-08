@@ -27,7 +27,12 @@
         selector and validator token that rotates on each use
     *   `Authentication` receives an optional `RememberTokenManager`; without
         it the "remember me" feature is disabled
-    *   Added `Authentication::logoutFromAllDevices()`
+    *   Added `Authentication::logoutAndRevokeRememberTokens()`, which logs
+        out the current session and revokes every "remember me" token of the
+        user; PHP sessions already open on other devices are not affected
+    *   A "remember me" storage outage no longer breaks the request: the
+        session is not restored, the cookie is kept for a later retry, and
+        logout clears the cookie before a best-effort token revocation
     *   Added `system.remember_me` configurations
     *   Token rotation is atomic regarding `revokeAllFor()`, so a concurrent
         revocation can not be bypassed by the rotated token

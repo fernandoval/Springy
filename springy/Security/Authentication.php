@@ -15,6 +15,7 @@ use Springy\Cookie;
 use Springy\Security\Remember\InvalidRememberTokenException;
 use Springy\Security\Remember\RememberTokenCredential;
 use Springy\Security\Remember\RememberTokenManager;
+use Springy\Security\Remember\RememberTokenStorageException;
 use Springy\Session;
 
 /**
@@ -67,6 +68,10 @@ class Authentication
      * atomic regarding RememberTokenManager::revokeAllFor(), so a concurrent
      * revocation can not be bypassed by the token issued here.
      *
+     * When the token storage is unavailable the request goes on as anonymous
+     * and the cookie is kept, so the session is restored once the storage
+     * recovers.
+     *
      * @return void
      */
     protected function rememberSession(): void
@@ -83,13 +88,15 @@ class Authentication
             $this->forgetRememberCookie();
 
             return;
+        } catch (RememberTokenStorageException) {
+            return;
         }
 
         $user = $this->driver->getIdentityById($identityId);
 
         if (!$user->isLoaded()) {
-            $this->rememberTokens->revoke($credential->toString());
             $this->forgetRememberCookie();
+            $this->revokeRememberToken($credential->toString());
 
             return;
         }
@@ -206,17 +213,27 @@ class Authentication
     }
 
     /**
-     * Logs out the current user and invalidates all its "remember me" tokens in every device.
+     * Logs out the current user and invalidates all its "remember me" tokens.
+     *
+     * Other devices can no longer restore the session from their cookies, but
+     * PHP sessions already open on them are not affected.
+     *
+     * The local logout is done first, so the current device is logged out even
+     * if the revocation fails.
      *
      * @return void
+     *
+     * @throws RememberTokenStorageException when the tokens could not be revoked.
      */
-    public function logoutFromAllDevices(): void
+    public function logoutAndRevokeRememberTokens(): void
     {
-        if ($this->user !== null && $this->rememberTokens !== null) {
-            $this->rememberTokens->revokeAllFor((string) $this->user->getId());
-        }
+        $identityId = $this->user?->getId();
 
         $this->logout();
+
+        if ($identityId !== null && $this->rememberTokens !== null) {
+            $this->rememberTokens->revokeAllFor((string) $identityId);
+        }
     }
 
     /**
@@ -242,6 +259,8 @@ class Authentication
     /**
      * Destroys the current logged in user session.
      *
+     * The cookie is removed before the token revocation, which is best-effort.
+     *
      * @return void
      */
     protected function destroyUserData(): void
@@ -251,11 +270,34 @@ class Authentication
 
         $cookieValue = Cookie::get($this->driver->getIdentitySessionKey());
 
-        if ($this->rememberTokens !== null && is_string($cookieValue)) {
-            $this->rememberTokens->revoke($cookieValue);
+        $this->forgetRememberCookie();
+
+        if (is_string($cookieValue)) {
+            $this->revokeRememberToken($cookieValue);
+        }
+    }
+
+    /**
+     * Revokes the "remember me" token kept in the cookie value, if possible.
+     *
+     * A storage failure is ignored: the client no longer holds the token and it
+     * expires by itself.
+     *
+     * @param string $cookieValue
+     *
+     * @return void
+     */
+    protected function revokeRememberToken(string $cookieValue): void
+    {
+        if ($this->rememberTokens === null) {
+            return;
         }
 
-        $this->forgetRememberCookie();
+        try {
+            $this->rememberTokens->revoke($cookieValue);
+        } catch (RememberTokenStorageException) {
+            return;
+        }
     }
 
     /**
