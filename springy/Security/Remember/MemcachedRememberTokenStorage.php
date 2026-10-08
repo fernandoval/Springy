@@ -95,8 +95,11 @@ final class MemcachedRememberTokenStorage implements RememberTokenStorageInterfa
             throw $this->createFailure('Could not create the identity generation on Memcached.');
         }
 
-        // Keeps the generation alive as long as its newest token.
-        $this->memcached->touch($key, $expiration);
+        // Keeps the generation alive as long as its newest token. It fails if the generation was
+        // evicted or revoked after the read, and a token stamped with it would be born invalid.
+        if (!$this->memcached->touch($key, $expiration)) {
+            throw $this->createFailure('Could not extend the identity generation on Memcached.');
+        }
 
         return $generation;
     }

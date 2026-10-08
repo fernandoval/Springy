@@ -23,7 +23,7 @@ connection is no longer usable
 Login timeout expired
 SQLSTATE[HY000] [2002] Connection refused
 running with the --read-only option so it cannot execute this statement
-The connection is broken and recovery is not possible. The connection is marked by the client driver as unrecoverable. No attempt was made trestore the connection.',
+The connection is broken and recovery is not possible. The connection is marked by the client driver as unrecoverable. No attempt was made to restore the connection
 SQLSTATE[HY000] [2002] php_network_getaddresses: getaddrinfo failed: Try again
 SQLSTATE[HY000] [2002] php_network_getaddresses: getaddrinfo failed: Name or service not known
 SQLSTATE[HY000] [2002] php_network_getaddresses: getaddrinfo for
@@ -47,7 +47,7 @@ SSL error: sslv3 alert unexpected message
 unrecognized SSL error code:
 SQLSTATE[HY000] [1045] Access denied for user
 SQLSTATE[HY000] [2002] No connection could be made because the target machine actively refused it
-SQLSTATE[HY000] [2002] A connection attempt failed because the connected party did not properly respond after a period of time, or establisheconnection failed because connected host has failed to respond',
+SQLSTATE[HY000] [2002] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond
 SQLSTATE[HY000] [2002] Network is unreachable
 SQLSTATE[HY000] [2002] The requested address is not valid in its context
 SQLSTATE[HY000] [2002] A socket operation was attempted to an unreachable network
