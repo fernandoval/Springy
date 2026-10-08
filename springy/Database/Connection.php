@@ -108,7 +108,7 @@ class Connection
      */
     protected function checkMissingConnection(): void
     {
-        if (is_null($this->getPdo())) {
+        if (!$this->isConnected()) {
             $this->connect();
         }
     }
@@ -171,7 +171,7 @@ class Connection
      */
     protected function getPdo(): PDO
     {
-        if (!isset(self::$conectionIds[$this->identity])) {
+        if (!$this->isConnected()) {
             $this->connect();
         }
 
@@ -290,8 +290,9 @@ class Connection
             ]
         );
 
-        self::$conectionIds[$this->identity] = $connector;
+        // Registers the connector only after a successful connection.
         $connector->connect();
+        self::$conectionIds[$this->identity] = $connector;
     }
 
     /**

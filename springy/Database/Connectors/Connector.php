@@ -128,9 +128,9 @@ class Connector
     }
 
     /**
-     * Returns the PDO object.
+     * Returns the PDO object, or null if the connection was not established.
      */
-    public function getPdo(): PDO
+    public function getPdo(): ?PDO
     {
         return $this->pdo;
     }
