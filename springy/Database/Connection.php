@@ -119,6 +119,11 @@ class Connection
      * The query is not retried inside a transaction, because the reconnection
      * would discard the previous statements of the transaction.
      *
+     * Only read-only queries are retried. The server may have applied a write
+     * before the connection dropped, so running it again could apply it twice.
+     * In that case the error is thrown and the next statement opens a new
+     * connection.
+     *
      * @throws PDOException
      */
     protected function executeAgainIfLostConnection(Throwable $err): void
@@ -127,9 +132,14 @@ class Connection
             throw $err;
         }
 
+        $this->disconnect();
+
+        if (!$this->isReadOnlyQuery($this->lastQuery)) {
+            throw $err;
+        }
+
         try {
             $this->lastError = '';
-            $this->disconnect();
             $this->connect();
             $this->executeQuery();
         } catch (Throwable $err) {
@@ -176,6 +186,25 @@ class Connection
         }
 
         return self::$conectionIds[$this->identity]->getPdo();
+    }
+
+    /**
+     * Returns true if the query only reads data, so running it twice is safe.
+     *
+     * Leading blanks, comments and parentheses are skipped. WITH is not
+     * accepted because a common table expression may modify data, and
+     * SELECT ... INTO creates a table or writes a file. Functions with side
+     * effects called by a SELECT can not be detected.
+     */
+    protected function isReadOnlyQuery(string $query): bool
+    {
+        $query = preg_replace('/^(?:\s+|\(|--[^\n]*|#[^\n]*|\/\*.*?\*\/)*/s', '', $query);
+
+        if (!preg_match('/^(SELECT|SHOW|DESCRIBE|DESC)\b/i', $query, $matches)) {
+            return false;
+        }
+
+        return strcasecmp($matches[1], 'SELECT') !== 0 || !preg_match('/\bINTO\b/i', $query);
     }
 
     /**

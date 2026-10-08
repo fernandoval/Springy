@@ -33,6 +33,12 @@
         revocation can not be bypassed by the rotated token
     *   `RememberTokenStorageInterface::delete()` now returns whether a valid
         token was removed
+    *   The Redis/Valkey driver touches one key per command, so it works on
+        Redis/Valkey Cluster and AWS ElastiCache Serverless, and accepts a
+        `RedisCluster` client
+*   After a lost connection, `Connection` retries only read-only queries
+    (`SELECT`, `SHOW`, `DESCRIBE`); a failed write is thrown to the caller,
+    because the server may have applied it before the connection dropped
 *   The `Authentication` constructor now requires the authentication driver
 
 ## Version 4

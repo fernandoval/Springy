@@ -3,9 +3,14 @@
 /**
  * "Remember me" token storage driver for Redis and Valkey.
  *
- * Requires the phpredis extension. Each token is kept in its own key with
- * a TTL matching its expiration, and a set per identity indexes its tokens
- * so they can be revoked at once.
+ * Requires the phpredis extension. The tokens of an identity are kept as
+ * fields of one hash, so revoking them all is a single DEL. A pointer key
+ * per selector, with a TTL matching the token expiration, maps the selector
+ * to its identity.
+ *
+ * Every command and transaction touches only one key. So the driver works
+ * on Redis Cluster, Valkey Cluster and AWS ElastiCache Serverless, which
+ * reject multi-key operations spanning different hash slots (CROSSSLOT).
  *
  * @copyright 2026 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -16,6 +21,8 @@ namespace Springy\Security\Remember;
 
 use JsonException;
 use Redis;
+use RedisCluster;
+use RedisClusterException;
 use RedisException;
 use Throwable;
 
@@ -23,16 +30,8 @@ final class RedisRememberTokenStorage implements RememberTokenStorageInterface
 {
     public const DEFAULT_PREFIX = 'springy:remember:';
 
-    // KEYS[1] is the identity index and ARGV[1] the token key prefix.
-    private const DELETE_ALL_SCRIPT = <<<'LUA'
-        for _, selector in ipairs(redis.call('SMEMBERS', KEYS[1])) do
-            redis.call('DEL', ARGV[1] .. selector)
-        end
-        return redis.call('DEL', KEYS[1])
-        LUA;
-
     public function __construct(
-        private readonly Redis $redis,
+        private readonly Redis|RedisCluster $redis,
         private readonly string $prefix = self::DEFAULT_PREFIX,
     ) {
     }
@@ -45,23 +44,24 @@ final class RedisRememberTokenStorage implements RememberTokenStorageInterface
             return;
         }
 
-        $tokenKey = $this->getTokenKey($token->selector);
-        $identityKey = $this->getIdentityKey($token->identityId);
+        $tokensKey = $this->getTokensKey($token->identityId);
 
         try {
             $payload = json_encode($token->toArray(), JSON_THROW_ON_ERROR);
 
-            // The newest token always has the longest TTL, so the index lives as long as any token.
+            // The newest token always has the longest TTL, so the hash lives as long as any token.
             $result = $this->redis->multi()
-                ->setEx($tokenKey, $ttl, $payload)
-                ->sAdd($identityKey, $token->selector)
-                ->expire($identityKey, $ttl)
+                ->hSet($tokensKey, $token->selector, $payload)
+                ->expire($tokensKey, $ttl)
                 ->exec();
-        } catch (JsonException | RedisException $exception) {
+
+            // Written after the hash field: a revocation in between deletes the field and the pointer finds nothing.
+            $pointer = $this->redis->setEx($this->getSelectorKey($token->selector), $ttl, $token->identityId);
+        } catch (JsonException | RedisException | RedisClusterException $exception) {
             throw $this->createFailure('save the remember token', $exception);
         }
 
-        if (!is_array($result) || in_array(false, $result, true)) {
+        if (!is_array($result) || in_array(false, $result, true) || $pointer === false) {
             throw new RememberTokenStorageException('Redis refused to save the remember token.');
         }
     }
@@ -69,8 +69,13 @@ final class RedisRememberTokenStorage implements RememberTokenStorageInterface
     public function findBySelector(string $selector): ?RememberToken
     {
         try {
-            $payload = $this->redis->get($this->getTokenKey($selector));
-        } catch (RedisException $exception) {
+            $identityId = $this->redis->get($this->getSelectorKey($selector));
+
+            // A missing field means the identity tokens were revoked.
+            $payload = is_string($identityId)
+                ? $this->redis->hGet($this->getTokensKey($identityId), $selector)
+                : false;
+        } catch (RedisException | RedisClusterException $exception) {
             throw $this->createFailure('read the remember token', $exception);
         }
 
@@ -94,36 +99,38 @@ final class RedisRememberTokenStorage implements RememberTokenStorageInterface
         }
 
         try {
-            $result = $this->redis->multi()
-                ->del($this->getTokenKey($selector))
-                ->sRem($this->getIdentityKey($token->identityId), $selector)
-                ->exec();
-        } catch (RedisException $exception) {
+            // HDEL returns the number of removed fields, so only one concurrent call gets 1.
+            $removed = $this->redis->hDel($this->getTokensKey($token->identityId), $selector);
+        } catch (RedisException | RedisClusterException $exception) {
             throw $this->createFailure('delete the remember token', $exception);
         }
 
-        // DEL returns the number of removed keys, so only one concurrent call gets 1.
-        return is_array($result) && ($result[0] ?? 0) > 0;
+        $this->deleteSelectorKeys([$selector]);
+
+        return is_int($removed) && $removed > 0;
     }
 
     public function deleteAllByIdentity(string $identityId): void
     {
+        $tokensKey = $this->getTokensKey($identityId);
+
         try {
-            // A script runs atomically, so no token can be added to the index between reading and deleting it.
-            $result = $this->redis->eval(
-                self::DELETE_ALL_SCRIPT,
-                [$this->getIdentityKey($identityId), $this->getTokenKey('')],
-                1
-            );
-        } catch (RedisException $exception) {
+            // Revoking is the DEL alone. HKEYS runs in the same transaction only to find the pointers to clean up.
+            $result = $this->redis->multi()
+                ->hKeys($tokensKey)
+                ->del($tokensKey)
+                ->exec();
+        } catch (RedisException | RedisClusterException $exception) {
             throw $this->createFailure('delete the identity tokens', $exception);
         }
 
-        if ($result === false) {
+        if (!is_array($result) || !is_array($result[0] ?? null) || !is_int($result[1] ?? null)) {
             throw new RememberTokenStorageException(
                 'Redis refused to delete the identity tokens. ' . $this->redis->getLastError()
             );
         }
+
+        $this->deleteSelectorKeys($result[0]);
     }
 
     private function createFailure(string $action, Throwable $previous): RememberTokenStorageException
@@ -131,13 +138,34 @@ final class RedisRememberTokenStorage implements RememberTokenStorageInterface
         return new RememberTokenStorageException('Could not ' . $action . ' on Redis.', previous: $previous);
     }
 
-    private function getTokenKey(string $selector): string
+    /**
+     * Removes the pointers of tokens already deleted from the identity hash.
+     *
+     * It is only a cleanup: a pointer without its hash field finds no token,
+     * and it expires with the token anyway. So failures are ignored. Each key
+     * is deleted by its own command because the pointers live in different
+     * hash slots.
+     *
+     * @param string[] $selectors
+     */
+    private function deleteSelectorKeys(array $selectors): void
     {
-        return $this->prefix . 'token:' . $selector;
+        try {
+            foreach ($selectors as $selector) {
+                $this->redis->del($this->getSelectorKey($selector));
+            }
+        } catch (RedisException | RedisClusterException) {
+            // The revocation is already done.
+        }
     }
 
-    private function getIdentityKey(string $identityId): string
+    private function getSelectorKey(string $selector): string
     {
-        return $this->prefix . 'identity:' . $identityId;
+        return $this->prefix . 'selector:' . $selector;
+    }
+
+    private function getTokensKey(string $identityId): string
+    {
+        return $this->prefix . 'tokens:' . $identityId;
     }
 }

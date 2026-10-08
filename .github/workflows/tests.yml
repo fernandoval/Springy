@@ -106,6 +106,15 @@ jobs:
       - name: Install dependencies
         run: composer install --prefer-dist --no-interaction --no-progress --optimize-autoloader
 
+      # Service containers can not receive arguments, so the cluster node is started here.
+      - name: Start Valkey Cluster node
+        run: |
+          docker run -d --name valkey-cluster -p 7000:7000 valkey/valkey:8-alpine \
+            valkey-server --port 7000 --cluster-enabled yes --cluster-announce-ip 127.0.0.1
+          until docker exec valkey-cluster valkey-cli -p 7000 ping; do sleep 1; done
+          docker exec valkey-cluster valkey-cli -p 7000 cluster addslotsrange 0 16383
+          until docker exec valkey-cluster valkey-cli -p 7000 cluster info | grep -q cluster_state:ok; do sleep 1; done
+
       - name: Copy environment file
         run: cp .env.example .env
 
@@ -118,6 +127,8 @@ jobs:
           MYSQL: ${{ matrix.mysql-version }}
           REDIS_HOST: "127.0.0.1"
           REDIS_PORT: 6379
+          REDIS_CLUSTER_HOST: "127.0.0.1"
+          REDIS_CLUSTER_PORT: 7000
           MEMCACHED_HOST: "127.0.0.1"
           MEMCACHED_PORT: 11211
         run: composer run test
