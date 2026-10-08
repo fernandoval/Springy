@@ -249,12 +249,10 @@ class Connection
             $mmc = new Memcached();
             $mmc->addServer($this->cache['host'], $this->cache['port']);
 
+            // getAll() closes the cursor and keeps the rows in the statement property.
             $rows = $this->getAll();
 
             $mmc->set('dbCache_' . $cacheKey, $rows, $this->cacheLifeTime);
-
-            $this->statement->closeCursor();
-            $this->statement = $rows;
         } catch (Throwable $err) {
             debug($this->lastQuery);
             debug('Erro: ' . $err->getMessage());

@@ -25,7 +25,7 @@ RUN pecl install memcached redis \
 # 4. Clean cache to reduce image size
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
-COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
+COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 
 COPY . /usr/src/springy
 WORKDIR /usr/src/springy

@@ -44,10 +44,16 @@
     *   Added `LazyRememberTokenStorage`, which creates the real storage
         driver only when a token is read, saved or revoked, so requests that
         never use the "remember me" feature do not open its connection
+    *   `Authentication::login()` issues the "remember me" token before
+        writing the session, so a storage failure no longer leaves the user
+        logged in while the login reports an error
+    *   The database storage driver reports every database failure as
+        `RememberTokenStorageException`
 *   After a lost connection, `Connection` retries only read-only queries
     (`SELECT`, `SHOW`, `DESCRIBE`); a failed write is thrown to the caller,
     because the server may have applied it before the connection dropped
 *   The `Authentication` constructor now requires the authentication driver
+*   Fixed a spurious debug error on every `Connection` query cache miss
 
 ## Version 4
 

@@ -298,6 +298,21 @@ class AuthenticationRememberTest extends TestCase
         $this->assertArrayNotHasKey(self::KEY, $_COOKIE);
     }
 
+    public function testThatLoginWithRememberDuringStorageOutageDoesNotAuthenticate()
+    {
+        $auth = new Authentication($this->driver, $this->createUnavailableManager());
+
+        try {
+            $auth->loginWithId(42, true);
+            $this->fail('RememberTokenStorageException was not thrown.');
+        } catch (RememberTokenStorageException) {
+        }
+
+        $this->assertFalse($auth->check());
+        $this->assertNull(Session::get(self::KEY));
+        $this->assertArrayNotHasKey(self::KEY, $_COOKIE);
+    }
+
     public function testThatDriverIsRequired()
     {
         $driver = (new ReflectionMethod(Authentication::class, '__construct'))->getParameters()[0];

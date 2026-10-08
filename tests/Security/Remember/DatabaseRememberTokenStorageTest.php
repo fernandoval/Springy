@@ -15,6 +15,7 @@ require_once __DIR__ . '/RememberTokenStorageTestCase.php';
 
 use Springy\Database\Connection;
 use Springy\Security\Remember\DatabaseRememberTokenStorage;
+use Springy\Security\Remember\RememberTokenStorageException;
 use Springy\Security\Remember\RememberTokenStorageInterface;
 
 class DatabaseRememberTokenStorageTest extends RememberTokenStorageTestCase
@@ -51,6 +52,28 @@ class DatabaseRememberTokenStorageTest extends RememberTokenStorageTestCase
         $this->assertSame(1, $this->storage->deleteExpired());
         $this->assertNull($this->storage->findBySelector($expired->selector));
         $this->assertNotNull($this->storage->findBySelector($valid->selector));
+    }
+
+    public function testThatDatabaseFailuresAreWrappedInStorageException()
+    {
+        $storage = new DatabaseRememberTokenStorage($this->connection, '_missing_remember_tokens');
+        $token = $this->createToken($this->createIdentityId());
+        $operations = [
+            'save' => fn () => $storage->save($token),
+            'findBySelector' => fn () => $storage->findBySelector($token->selector),
+            'delete' => fn () => $storage->delete($token->selector),
+            'deleteAllByIdentity' => fn () => $storage->deleteAllByIdentity($token->identityId),
+            'deleteExpired' => fn () => $storage->deleteExpired(),
+        ];
+
+        foreach ($operations as $name => $operation) {
+            try {
+                $operation();
+                $this->fail($name . '() did not throw RememberTokenStorageException.');
+            } catch (RememberTokenStorageException $exception) {
+                $this->assertInstanceOf(PDOException::class, $exception->getPrevious(), $name . '()');
+            }
+        }
     }
 
     public function testThatOnlyTheValidatorHashIsStored()

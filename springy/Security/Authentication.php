@@ -170,16 +170,25 @@ class Authentication
      * @param bool              $remember if true issues a "remember me" token into identity cookie.
      *                                    Ignored when no RememberTokenManager was given.
      *
+     * The "remember me" token is issued before the session is written, so a
+     * storage failure leaves the user logged out instead of half logged in.
+     *
      * @return void
+     *
+     * @throws RememberTokenStorageException when the "remember me" token could not be issued.
      */
     public function login(IdentityInterface $user, bool $remember = false): void
     {
+        $credential = $remember && $this->rememberTokens !== null
+            ? $this->rememberTokens->issue((string) $user->getId())
+            : null;
+
         $this->user = $user;
 
         Session::set($this->driver->getIdentitySessionKey(), $this->user->getSessionData());
 
-        if ($remember && $this->rememberTokens !== null) {
-            $this->rememberUser($this->rememberTokens);
+        if ($credential !== null) {
+            $this->saveRememberCookie($credential, $this->rememberTokens->getLifetime());
         }
     }
 
@@ -298,21 +307,6 @@ class Authentication
         } catch (RememberTokenStorageException) {
             return;
         }
-    }
-
-    /**
-     * Issues a new "remember me" token for the current user and saves it into identity cookie.
-     *
-     * @param RememberTokenManager $rememberTokens
-     *
-     * @return void
-     */
-    protected function rememberUser(RememberTokenManager $rememberTokens): void
-    {
-        $this->saveRememberCookie(
-            $rememberTokens->issue((string) $this->user->getId()),
-            $rememberTokens->getLifetime()
-        );
     }
 
     /**
