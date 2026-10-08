@@ -50,6 +50,9 @@
         logged in while the login reports an error
     *   The database storage driver reports every database failure as
         `RememberTokenStorageException`
+    *   Added `Authentication` tests for session restoration: rotated cookie
+        and session data, replay, tampered and expired tokens, active
+        sessions and storage failures during rotation and cleanup
 *   After a lost connection, `Connection` retries only read-only queries
     (`SELECT`, `SHOW`, `DESCRIBE`); a failed write is thrown to the caller,
     because the server may have applied it before the connection dropped

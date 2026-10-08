@@ -13,6 +13,7 @@
 
 require_once __DIR__ . '/Remember/InMemoryRememberTokenStorage.php';
 require_once __DIR__ . '/Remember/InterleavedRememberTokenStorage.php';
+require_once __DIR__ . '/RecordingAuthentication.php';
 
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
@@ -20,6 +21,8 @@ use Springy\Security\Authentication;
 use Springy\Security\AuthDriverInterface;
 use Springy\Security\IdentityInterface;
 use Springy\Security\Remember\LazyRememberTokenStorage;
+use Springy\Security\Remember\RememberToken;
+use Springy\Security\Remember\RememberTokenCredential;
 use Springy\Security\Remember\RememberTokenManager;
 use Springy\Security\Remember\RememberTokenStorageException;
 use Springy\Session;
@@ -36,6 +39,7 @@ class AuthenticationRememberTest extends TestCase
     protected function setUp(): void
     {
         $_COOKIE = [];
+        RecordingAuthentication::reset();
         $this->storage = new InMemoryRememberTokenStorage();
         $this->manager = new RememberTokenManager($this->storage, 3600);
         $this->driver = $this->createDriver([42 => 'johndoe', 7 => 'janedoe']);
@@ -148,7 +152,7 @@ class AuthenticationRememberTest extends TestCase
         Session::unregister(self::KEY);
         $_COOKIE[self::KEY] = $cookieValue;
 
-        return new Authentication($this->driver, $this->manager);
+        return new RecordingAuthentication($this->driver, $this->manager);
     }
 
     public function testThatLoginWithRememberIssuesAToken()
@@ -333,6 +337,135 @@ class AuthenticationRememberTest extends TestCase
         $this->assertFalse($auth->check());
         $this->assertSame([], $this->storage->tokens);
         $this->assertArrayNotHasKey(self::KEY, $_COOKIE);
+    }
+
+    public function testThatRestorationSavesTheSessionAndSendsTheRotatedCookie()
+    {
+        $credential = $this->manager->issue('42');
+
+        $auth = $this->startRequestWithCookie($credential->toString());
+
+        $newSelector = array_key_first($this->storage->tokens);
+        $this->assertTrue($auth->check());
+        $this->assertSame(['id' => 42, 'login' => 'johndoe'], Session::get(self::KEY));
+        $this->assertCount(1, RecordingAuthentication::$sentCookies);
+        $this->assertSame(3600, RecordingAuthentication::$sentCookies[0]['lifetime']);
+        $this->assertSame(
+            $newSelector,
+            RememberTokenCredential::fromString(RecordingAuthentication::$sentCookies[0]['value'])->selector
+        );
+        $this->assertNotSame($credential->selector, $newSelector);
+        $this->assertSame(0, RecordingAuthentication::$forgottenCookies);
+    }
+
+    public function testThatRotatedCookieCanNotBeReplayed()
+    {
+        $oldCookieValue = $this->manager->issue('42')->toString();
+        $this->startRequestWithCookie($oldCookieValue);
+        RecordingAuthentication::reset();
+
+        $auth = $this->startRequestWithCookie($oldCookieValue);
+
+        $this->assertFalse($auth->check());
+        $this->assertNull(Session::get(self::KEY));
+        $this->assertSame([], RecordingAuthentication::$sentCookies);
+        $this->assertSame(1, RecordingAuthentication::$forgottenCookies);
+        $this->assertArrayNotHasKey(self::KEY, $_COOKIE);
+        $this->assertCount(1, $this->storage->tokens);
+    }
+
+    public function testThatTamperedValidatorRevokesEveryTokenOfTheIdentity()
+    {
+        $credential = $this->manager->issue('42');
+        $this->manager->issue('42');
+        $otherUser = $this->manager->issue('7');
+        $tampered = new RememberTokenCredential($credential->selector, str_repeat('0', 64));
+
+        $auth = $this->startRequestWithCookie($tampered->toString());
+
+        $this->assertFalse($auth->check());
+        $this->assertNull(Session::get(self::KEY));
+        $this->assertSame(1, RecordingAuthentication::$forgottenCookies);
+        $this->assertArrayNotHasKey(self::KEY, $_COOKIE);
+        $this->assertSame([$otherUser->selector], array_keys($this->storage->tokens));
+    }
+
+    public function testThatExpiredTokenIsDiscarded()
+    {
+        $credential = RememberTokenCredential::generate();
+        $this->storage->save(new RememberToken(
+            selector: $credential->selector,
+            validatorHash: $credential->getValidatorHash(),
+            identityId: '42',
+            expiresAt: new DateTimeImmutable('-1 second'),
+        ));
+
+        $auth = $this->startRequestWithCookie($credential->toString());
+
+        $this->assertFalse($auth->check());
+        $this->assertSame([], $this->storage->tokens);
+        $this->assertSame(1, RecordingAuthentication::$forgottenCookies);
+        $this->assertArrayNotHasKey(self::KEY, $_COOKIE);
+    }
+
+    public function testThatActiveSessionDoesNotConsumeTheCookie()
+    {
+        $credential = $this->manager->issue('42');
+        Session::set(self::KEY, ['id' => 7, 'login' => 'janedoe']);
+        $_COOKIE[self::KEY] = $credential->toString();
+
+        $auth = new RecordingAuthentication($this->driver, $this->manager);
+
+        $this->assertSame(7, $auth->user()->getId());
+        $this->assertNotNull($this->storage->findBySelector($credential->selector));
+        $this->assertCount(1, $this->storage->tokens);
+        $this->assertSame([], RecordingAuthentication::$sentCookies);
+        $this->assertSame(0, RecordingAuthentication::$forgottenCookies);
+        $this->assertSame($credential->toString(), $_COOKIE[self::KEY]);
+    }
+
+    public function testThatStorageFailureDuringRotationKeepsTheCookieForALaterRequest()
+    {
+        $storage = new InterleavedRememberTokenStorage($this->storage);
+        $this->manager = new RememberTokenManager($storage, 3600);
+        $credential = $this->manager->issue('42');
+        $storage->before('delete', fn () => throw new RememberTokenStorageException('Connection lost.'));
+
+        $auth = $this->startRequestWithCookie($credential->toString());
+
+        $this->assertFalse($auth->check());
+        $this->assertNull(Session::get(self::KEY));
+        $this->assertSame([], RecordingAuthentication::$sentCookies);
+        $this->assertSame(0, RecordingAuthentication::$forgottenCookies);
+        $this->assertSame($credential->toString(), $_COOKIE[self::KEY]);
+        $this->assertNotNull($this->storage->findBySelector($credential->selector));
+
+        $auth = $this->startRequestWithCookie($credential->toString());
+
+        $this->assertTrue($auth->check());
+        $this->assertSame(42, $auth->user()->getId());
+        $this->assertNull($this->storage->findBySelector($credential->selector));
+    }
+
+    public function testThatRemovedIdentityDiscardsTheCookieEvenIfRevocationFails()
+    {
+        $storage = new InterleavedRememberTokenStorage($this->storage);
+        $this->manager = new RememberTokenManager($storage, 3600);
+        $cookieValue = $this->manager->issue('99')->toString();
+        // The first delete consumes the old token during rotation; the second one revokes the new token.
+        $storage->before('delete', fn () => $storage->before(
+            'delete',
+            fn () => throw new RememberTokenStorageException('Connection lost.')
+        ));
+
+        $auth = $this->startRequestWithCookie($cookieValue);
+
+        $this->assertFalse($auth->check());
+        $this->assertNull(Session::get(self::KEY));
+        $this->assertSame([], RecordingAuthentication::$sentCookies);
+        $this->assertSame(1, RecordingAuthentication::$forgottenCookies);
+        $this->assertArrayNotHasKey(self::KEY, $_COOKIE);
+        $this->assertSame([$storage->savedSelectors[1]], array_keys($this->storage->tokens));
     }
 
     /**
