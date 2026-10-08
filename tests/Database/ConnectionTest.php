@@ -11,6 +11,7 @@
 
 use PHPUnit\Framework\TestCase;
 use Springy\Database\Connection;
+use Springy\Database\Connectors\SQLite;
 
 class ConnectionTest extends TestCase
 {
@@ -72,5 +73,28 @@ class ConnectionTest extends TestCase
 
         $result = $connection->execute('DELETE FROM `test_spf` WHERE `id` = ?', [7]);
         $this->assertEquals(1, $result);
+    }
+
+    public function testThatSharedConnectionLoadsCacheConfiguration(): void
+    {
+        $identity = 'phpunit_shared';
+        config_set('database.connections.' . $identity, [
+            'driver' => SQLite::class,
+            'database' => ':memory:',
+        ]);
+
+        $first = new Connection($identity);
+
+        try {
+            $first->run('CREATE TABLE "shared" ("id" INTEGER)');
+            $first->run('INSERT INTO "shared" VALUES (1)');
+
+            // The second instance reuses the connector, so connect() returns early.
+            $second = new Connection($identity);
+
+            $this->assertSame([['id' => 1]], $second->select('SELECT "id" FROM "shared"', [], null, 60));
+        } finally {
+            $first->disconnect();
+        }
     }
 }

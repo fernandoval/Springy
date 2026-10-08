@@ -13,8 +13,9 @@
     *   Use `network.soap` instead
 *   Removed the `springy/CreditCardValidation` directory and its legacy files
     *   The project no longer includes the deprecated card validation assets
-*   Added database query conditions with comparison operators and `AND`/`OR`
-    groups, with tests for condition building and parameter handling
+*   Added database query conditions with comparison operators
+    (`OperatorComparison`) and `AND`/`OR` groups, with tests for condition
+    building and parameter handling
 *   Added the `USER_AUTH_DRIVER` constant while preserving the
     `USER_AUTH_DRIVE` alias
 *   Skipped initialization of web-only input and flash-message services in CLI
@@ -54,6 +55,9 @@
     because the server may have applied it before the connection dropped
 *   The `Authentication` constructor now requires the authentication driver
 *   Fixed a spurious debug error on every `Connection` query cache miss
+*   Fixed the query cache of a `Connection` created for an identity that
+    already has an open connection, which failed with an uninitialized
+    property error
 
 ## Version 4
 

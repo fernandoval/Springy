@@ -46,6 +46,13 @@ class Connection
 
     public function __construct(?string $identity = null)
     {
+        // Loaded here because connect() returns early for already shared connections.
+        $this->cache = config_get(
+            'database.cache',
+            [
+                'driver' => 'none',
+            ]
+        );
         $this->cacheLifeTime = 0;
         $this->fetchStyle = PDO::FETCH_ASSOC;
         $this->identity = $identity ?? config_get('database.default');
@@ -309,13 +316,6 @@ class Connection
         if (!($connector instanceof Connector)) {
             throw new SpringyException('Database driver not supported.');
         }
-
-        $this->cache = config_get(
-            'database.cache',
-            [
-                'driver' => 'none',
-            ]
-        );
 
         // Registers the connector only after a successful connection.
         $connector->connect();
